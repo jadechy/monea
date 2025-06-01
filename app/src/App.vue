@@ -1,17 +1,13 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
- import { Button, InputText } from 'primevue';
-import ColoredLabel from './components/ColoredLabel.vue';
+  import { RouterView } from "vue-router"
+  import ColoredLabel from "./components/ColoredLabelComponent.vue"
+  import SpendCardComponent from "./components/SpendCardComponent.vue"
 </script>
 
 <template>
   <header>
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper"> 
-      <ColoredLabel label="restaurant" />
-
-      <InputText placeholder="lala" />
+    <div class="wrapper">
       <Button label="Submit" severity="primary" />
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -19,8 +15,10 @@ import ColoredLabel from './components/ColoredLabel.vue';
       </nav>
     </div>
   </header>
-
-  <RouterView />
+  <main class="px-10">
+    <SpendCardComponent label="lala" colored-label="restaurant" :price="90.0" people="Jean" />
+    <ColoredLabel label="restaurant" />
+    <InputText placeholder="lala" />
+    <RouterView />
+  </main>
 </template>
-
- 
