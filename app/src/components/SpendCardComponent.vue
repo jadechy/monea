@@ -3,7 +3,9 @@
     <div>
       <p class="font-bold mb-2.5">{{ label }}</p>
       <div class="flex items-center gap-2.5">
-        <ColoredLabelComponent :label="coloredLabel" />
+        <div v-if="coloredLabel">
+          <ColoredLabelComponent :label="coloredLabel" />
+        </div>
         <p>Payé par {{ people }}</p>
       </div>
     </div>
@@ -17,10 +19,12 @@
 <script setup lang="ts">
   import type { ColoredLabelProps } from "./ColoredLabelComponent.vue"
   import ColoredLabelComponent from "./ColoredLabelComponent.vue"
-  defineProps<{
+
+  export type SpendCardComponentProps = {
     label: string
-    coloredLabel: ColoredLabelProps
+    coloredLabel?: ColoredLabelProps
     people: string
     price: number
-  }>()
+  }
+  defineProps<SpendCardComponentProps>()
 </script>
