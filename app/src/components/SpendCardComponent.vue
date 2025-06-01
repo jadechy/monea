@@ -1,5 +1,5 @@
 <template>
-  <div class="flex shadow-lg rounded-4xl px-5 py-4 justify-between">
+  <div class="flex shadow px-5 py-4 justify-between w-full rounded-4xl">
     <div>
       <p class="font-bold mb-2.5">{{ label }}</p>
       <div class="flex items-center gap-2.5">

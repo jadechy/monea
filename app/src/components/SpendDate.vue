@@ -1,7 +1,9 @@
 <template>
-  <p>{{ date }}</p>
-  <div v-for="(spendCard, index) in spends" :key="index" class="gap-3">
+  <p class="italic text-gray-700">{{ date }}</p>
+  <div class="flex flex-col gap-3 mt-1.5">
     <SpendCardComponent
+      v-for="(spendCard, index) in spends"
+      :key="index"
       :price="spendCard.price"
       :label="spendCard.label"
       :people="spendCard.people"
