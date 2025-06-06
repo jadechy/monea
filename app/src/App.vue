@@ -1,31 +1,17 @@
 <script setup lang="ts">
   import { RouterView } from "vue-router"
-  import ColoredLabel from "./components/ColoredLabelComponent.vue"
-  import SpendDate, { type SpendDateProps } from "./components/SpendDate.vue"
-  import { spendsData } from "./data/spends"
-  const spends: SpendDateProps[] = spendsData
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-    <div class="wrapper">
-      <Button label="Submit" severity="primary" />
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
+  <header class="flex justify-between lg:px-10 px-5 mt-5 items-center">
+    <h1 class="font-extrabold text-4xl mb-1.5">Monéa</h1>
+    <nav class="flex gap-4">
+      <RouterLink to="/">Accueil</RouterLink>
+      <RouterLink to="/personal-space">Espace personnel</RouterLink>
+      <RouterLink to="/profil">Profil</RouterLink>
+    </nav>
   </header>
   <main class="lg:px-10 px-5">
-    <SpendDate
-      v-for="spend in spends"
-      :key="spend.date"
-      :spends="spend.spends"
-      :date="spend.date"
-    />
-    <ColoredLabel label="restaurant" />
-    <InputText placeholder="lala" />
     <RouterView />
   </main>
 </template>
