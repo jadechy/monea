@@ -8,14 +8,6 @@ export type CategoryLabel =
   | "default"
   | "loisir"
 
-export const categoryLabel: CategoryLabel[] = [
-  "course",
-  "restaurant",
-  "abonnement",
-  "shopping",
-  "loisir",
-  "default",
-]
 type Category = {
   label: CategoryLabel
   color: Color
@@ -28,3 +20,5 @@ export const categories: Category[] = [
   { label: "loisir", color: "orange" },
   { label: "default", color: "gray" },
 ]
+
+export const categoryLabel: CategoryLabel[] = categories.map((category) => category.label)

@@ -6,7 +6,7 @@ export type People = {
   pseudo: string
 }
 
-export const peopleData: People[] = [
+export const peoplesData: People[] = [
   {
     id: "1",
     firstname: "Jean",

@@ -1,13 +1,52 @@
 <script setup lang="ts">
+  import BaseSection from "@/components/BaseSection.vue"
+  import PeopleComponent from "@/components/PeopleComponent.vue"
   import SubHeader from "@/components/SubHeader.vue"
-  import { categoryLabel } from "@/data/categoryLabel"
+  import {
+    categories,
+    categoryLabel as categoryLabelData,
+    type CategoryLabel,
+  } from "@/data/categoryLabel"
+  import { peoplesData, type People } from "@/data/people"
   import { spacesData } from "@/data/spaces"
-  import { Select } from "primevue"
-  const selectedCity = defineModel()
+  import { Button, Checkbox, DatePicker, InputNumber, InputText, Select } from "primevue"
+  import { computed, onMounted } from "vue"
+  const selectedCategory = defineModel<CategoryLabel>("selectedCategory")
+  const selectedAuthor = defineModel<People>("selectedAuthor")
+  const selectedDate = defineModel<Date>("selectedDate")
+  const participants = defineModel<boolean[]>({
+    default: peoplesData.map(() => false),
+  })
 
   const props = defineProps<{ space_id: string }>()
   const space = spacesData.find((space) => space.id === props.space_id)
-  const categories = categoryLabel
+  const categoryLabel = categoryLabelData.filter((label) => label !== "default")
+  const colorStyle = computed(() => {
+    const colorMap: Record<CategoryLabel, { bg: string; color: string; hover: string }> =
+      categories.reduce(
+        (acc, category) => {
+          acc[category.label] = {
+            bg: `bg-${category.color}-50`,
+            color: `text-${category.color}-500`,
+            hover: `hover:bg-${category.color}-100`,
+          }
+          return acc
+        },
+        {} as Record<CategoryLabel, { bg: string; color: string; hover: string }>,
+      )
+    return colorMap[
+      categoryLabelData.some((category) => category === selectedCategory.value) &&
+      selectedCategory.value
+        ? selectedCategory.value
+        : "default"
+    ]
+  })
+  const handleClick = (i: number) => {
+    console.log("lala")
+    console.log(participants.value)
+    console.log(participants.value[i])
+    participants.value[i] = !participants.value[i]
+  }
 </script>
 
 <template>
@@ -17,14 +56,39 @@
     routeName="space"
     :params="{ id: space_id }"
   />
-  <!-- optionLabel="name" -->
-  <Select
-    editable
-    v-model="selectedCity"
-    :options="categories"
-    placeholder="Choisir une catégorie"
-    class="w-full md:w-56 rounded-4xl"
-  />
+  <div class="flex flex-col items-center gap-10 lg:w-2/3 mx-auto">
+    <Select
+      editable
+      showClear
+      v-model="selectedCategory"
+      :options="categoryLabel"
+      placeholder="Choisir une catégorie"
+      class="w-full md:w-56"
+      :class="[colorStyle.bg, colorStyle.hover]"
+      :labelClass="['capitalize', colorStyle.color]"
+    />
+    <InputText placeholder="Nom" class="w-full" />
+    <div class="flex gap-10 self-start">
+      <InputNumber placeholder="Prix" class="w-full" />
+      <p class="text-4xl font-black">€</p>
+    </div>
+    <div class="flex justify-between gap-4">
+      <Select
+        v-model="selectedAuthor"
+        :options="peoplesData.map((p) => p.pseudo)"
+        placeholder="Sélectionner une personne"
+        :labelClass="['capitalize']"
+        class="w-2/3"
+      />
+      <DatePicker v-model="selectedDate" showIcon iconDisplay="input" placeholder="jj/mm" />
+    </div>
+    <BaseSection label="Participants" class="w-full">
+      <PeopleComponent v-for="(people, i) in peoplesData" :key="i" :people="people">
+        <Checkbox :v-model="participants[i]" binary />
+      </PeopleComponent>
+    </BaseSection>
+    <Button class="w-64">Créer le paiement</Button>
+  </div>
 
   <div></div>
 </template>

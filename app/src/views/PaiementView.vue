@@ -31,18 +31,21 @@
   <div v-if="paiement" class="flex flex-col items-center gap-10">
     <div class="flex justify-between items-center w-full">
       <ColoredLabelComponent :label="paiement.coloredLabel" />
-      <p>{{ formatDateToDayMonth(paiement.date) }}</p>
+      <p>{{ formatDateToDayMonth(paiement.date) }} <i class="pi pi-calendar"></i></p>
     </div>
     <BaseSection label="Payé par" class="w-full">
-      <PeopleComponent :people="paiement.people" :price="paiement.price" />
+      <PeopleComponent :people="paiement.people">
+        <p>{{ paiement.price }} €</p>
+      </PeopleComponent>
     </BaseSection>
     <BaseSection label="Participants" class="w-full">
       <PeopleComponent
         v-for="participant in paiement.participants"
         :key="participant.id"
         :people="participant"
-        :price="paiement.price / paiement.participants.length"
-      />
+      >
+        <p>{{ paiement.price / paiement.participants.length }} €</p>
+      </PeopleComponent>
     </BaseSection>
     <Button class="w-64">Modifier</Button>
   </div>

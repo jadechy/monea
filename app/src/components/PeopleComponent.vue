@@ -4,10 +4,10 @@
       <div class="rounded-full h-14 w-14 bg-gray-500" />
       <p>{{ people.pseudo }}</p>
     </div>
-    <p>{{ price }} €</p>
+    <slot />
   </div>
 </template>
 <script setup lang="ts">
   import type { People } from "@/data/people"
-  defineProps<{ people: People; price?: number }>()
+  defineProps<{ people: People }>()
 </script>

@@ -16,27 +16,27 @@
 <template>
   <div class="flex flex-col gap-10">
     <InputText placeholder="Nom du space" class="w-full lg:w-3/4" />
-    <section class="flex flex-col lg:w-3/4">
+    <section class="flex flex-col w-full lg:w-3/4">
       <p>Ajouter un membre</p>
       <InputText placeholder="Pseudo/mail" class="w-full" />
       <Button variant="outlined" size="small" class="mt-2 ml-auto">
         <i class="pi pi-inbox"></i> Envoyer la demande
       </Button>
     </section>
-    <section class="lg:w-3/4">
+    <section class="w-full lg:w-3/4">
       <p>Budget total</p>
       <div class="flex gap-10">
         <InputNumber placeholder="0" class="w-full" />
         <p class="text-4xl font-black">€</p>
       </div>
     </section>
-    <section>
+    <section class="w-full">
       <p>Ajouter une catégorie</p>
       <div class="flex gap-1.5 flex-wrap">
         <ColoredLabelComponent v-for="category in categoryLabel" :label="category" add />
       </div>
     </section>
-    <section>
+    <section class="w-full">
       <p>Choisir la couleur</p>
       <div class="flex gap-1.5 flex-wrap">
         <ChoiceColor
@@ -48,7 +48,7 @@
         />
       </div>
     </section>
-    <Button>Créer le space</Button>
+    <Button class="w-64 self-center">Créer le space</Button>
   </div>
 </template>
 

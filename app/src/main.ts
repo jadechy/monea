@@ -7,6 +7,7 @@ import { definePreset } from "@primeuix/themes"
 import type { ButtonTokenSections } from "@primeuix/themes/types/button"
 import type { InputTextTokenSections } from "@primeuix/themes/types/inputtext"
 import "primeicons/primeicons.css"
+import type { SelectTokenSections } from "@primeuix/themes/types/select"
 
 const buttonRoot: ButtonTokenSections.Root = {
   primary: {
@@ -19,15 +20,31 @@ const buttonRoot: ButtonTokenSections.Root = {
 
 const inputtextRoot: InputTextTokenSections.Root = {
   borderRadius: "300px",
-  shadow: "0 4px 8px rgba(0,0,0,0.1)",
+  shadow: "0 4px 8px rgba(79,79,79,0.1)",
   borderColor: "none",
   placeholderColor: "{primitive.gray.400}",
   focusRing: {
-    shadow: "0 4px 8px rgba(0,0,0,0.1)",
+    shadow: "0 4px 8px rgba(79,79,79,0.1)",
     width: "1px",
     style: "solid",
     color: "{primitive.gray.100}",
   },
+}
+
+const selectRoot: SelectTokenSections.Root = {
+  borderRadius: "300px",
+  borderColor: "none",
+  shadow: "0 4px 8px rgba(79,79,79,0.1)",
+  focusRing: {
+    shadow: "0 4px 8px rgba(79,79,79,0.1)",
+  },
+}
+const selectOption: SelectTokenSections.Option = {
+  borderRadius: "300px",
+}
+const selectOverlay: SelectTokenSections.Overlay = {
+  shadow: "none",
+  borderRadius: "1rem",
 }
 
 const MyPreset = definePreset(Aura, {
@@ -132,6 +149,11 @@ const MyPreset = definePreset(Aura, {
     },
     inputtext: {
       root: inputtextRoot,
+    },
+    select: {
+      root: selectRoot,
+      option: selectOption,
+      overlay: selectOverlay,
     },
   },
 })
