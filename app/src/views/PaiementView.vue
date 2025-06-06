@@ -7,6 +7,7 @@
   import BaseSection from "@/components/BaseSection.vue"
   import PeopleComponent from "@/components/PeopleComponent.vue"
   import { Button } from "primevue"
+  import router from "@/router"
   const props = defineProps<{ id: string; space_id: string }>()
 
   const space = spacesData.find((space) => space.id === props.space_id)
@@ -47,7 +48,12 @@
         <p>{{ paiement.price / paiement.participants.length }} €</p>
       </PeopleComponent>
     </BaseSection>
-    <Button class="w-64">Modifier</Button>
+    <Button
+      class="w-64"
+      icon="pi pi-user"
+      @click="router.push({ name: 'edit_paiement', params: { id: id } })"
+      >Modifier</Button
+    >
   </div>
 </template>
 

@@ -32,6 +32,12 @@ const router = createRouter({
       component: NewPaiementView,
     },
     {
+      path: "/space/:space_id/:id/edit",
+      name: "edit_paiement",
+      props: true,
+      component: NewPaiementView,
+    },
+    {
       path: "/personal-space",
       name: "personal_space",
       props: true,
