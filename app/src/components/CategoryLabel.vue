@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
   import { categories, type CategoryLabel } from "@/data/categoryLabel"
+  import { getColor } from "@/services/getColor"
   import { computed } from "vue"
 
   const props = withDefaults(
@@ -27,18 +28,7 @@
     { label: "default" },
   )
   const labelStyle = computed(() => {
-    const colorMap: Record<CategoryLabel, { bg: string; color: string; hover: string }> =
-      categories.reduce(
-        (acc, category) => {
-          acc[category.label] = {
-            bg: `bg-${category.color}-100`,
-            color: `text-${category.color}-500`,
-            hover: `hover:bg-${category.color}-200`,
-          }
-          return acc
-        },
-        {} as Record<CategoryLabel, { bg: string; color: string; hover: string }>,
-      )
-    return colorMap[props.label]
+    const category = categories.find((cat) => cat.label === props.label) ?? categories[0]
+    return getColor({ array: categories.map((category) => category.color) })[category.color]
   })
 </script>

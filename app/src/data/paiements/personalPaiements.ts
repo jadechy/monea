@@ -1,6 +1,6 @@
 import { findPersonByPseudo, type PaiementData } from "./maisonPaiements"
 
-export const parcPaiements: PaiementData[] = [
+export const personalPaiements: PaiementData[] = [
   {
     date: new Date(2023, 7, 14),
     paiements: [

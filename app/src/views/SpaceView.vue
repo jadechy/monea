@@ -5,15 +5,32 @@
   import PaiementCardComponent from "@/components/PaiementCardComponent.vue"
   import BaseSection from "@/components/BaseSection.vue"
   import AddAction from "@/components/AddAction.vue"
+  import { Button } from "primevue"
+  import { computed } from "vue"
+  import { getColor } from "@/services/getColor"
+  import { colors } from "@/data/categoryLabel"
   const props = defineProps<{ id: string }>()
   const space = spacesData.find((space) => space.id === props.id)
+  const spaceStyle = computed(
+    () => getColor({ array: colors, bg: 400, color: 900, hover: 300 })[space?.color ?? "gray"],
+  )
 </script>
 
 <template>
   <SubHeader :label="space?.label ?? 'error'" :color="space?.color" routeName="home" />
-  <div class="item w-3xs">
-    <p>Budget restant :</p>
-    <p class="font-bold">300€</p>
+  <div class="flex justify-between">
+    <div class="item w-3xs">
+      <p>Budget restant :</p>
+      <p class="font-bold">300€</p>
+    </div>
+    <div>
+      <Button
+        icon="pi pi-eye"
+        class="mr-2"
+        :class="[spaceStyle.bg, spaceStyle.color, spaceStyle.hover]"
+      />
+      <Button icon="pi pi-pencil" />
+    </div>
   </div>
   <div class="flex flex-col gap-7 mt-10">
     <BaseSection
@@ -37,5 +54,3 @@
   </div>
   <AddAction route-name="new_paiement" :params="{ space_id: space?.id ?? 'error' }" />
 </template>
-
-<style></style>

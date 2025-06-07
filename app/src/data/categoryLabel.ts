@@ -22,3 +22,5 @@ export const categories: Category[] = [
 ]
 
 export const categoryLabel: CategoryLabel[] = categories.map((category) => category.label)
+
+export const colors: Color[] = ["pink", "green", "yellow", "blue", "orange", "gray"]

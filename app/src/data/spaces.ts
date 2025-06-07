@@ -4,6 +4,7 @@ import { bureauPaiements } from "./paiements/bureauPaiements"
 import { cafePaiements } from "./paiements/cafePaiements"
 import { biblioPaiements } from "./paiements/biblioPaiements"
 import { parcPaiements } from "./paiements/parcPaiements"
+import { personalPaiements } from "./paiements/personalPaiements"
 type SpaceData = {
   paiements: PaiementData[]
 } & SpaceCardProps
@@ -43,5 +44,12 @@ export const spacesData: SpaceData[] = [
     img: "/images/spaces/parc.jpg",
     color: "yellow",
     paiements: parcPaiements,
+  },
+  {
+    id: "6",
+    label: "Espace personnel",
+    img: "/images/spaces/parc.jpg",
+    color: "pink",
+    paiements: personalPaiements,
   },
 ]

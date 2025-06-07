@@ -10,7 +10,9 @@
   import { peoplesData, type People } from "@/data/people"
   import { spacesData } from "@/data/spaces"
   import { Button, Checkbox, DatePicker, InputNumber, InputText, Select } from "primevue"
-  import { computed, onMounted } from "vue"
+  import { computed } from "vue"
+  import { getColor } from "@/services/getColor"
+
   const selectedCategory = defineModel<CategoryLabel>("selectedCategory")
   const selectedAuthor = defineModel<People>("selectedAuthor")
   const selectedDate = defineModel<Date>("selectedDate")
@@ -18,33 +20,19 @@
     default: peoplesData.map(() => false),
   })
 
+  const isNew = false
   const props = defineProps<{ space_id: string }>()
   const space = spacesData.find((space) => space.id === props.space_id)
   const categoryLabel = categoryLabelData.filter((label) => label !== "default")
   const colorStyle = computed(() => {
-    const colorMap: Record<CategoryLabel, { bg: string; color: string; hover: string }> =
-      categories.reduce(
-        (acc, category) => {
-          acc[category.label] = {
-            bg: `bg-${category.color}-50`,
-            color: `text-${category.color}-500`,
-            hover: `hover:bg-${category.color}-100`,
-          }
-          return acc
-        },
-        {} as Record<CategoryLabel, { bg: string; color: string; hover: string }>,
-      )
-    return colorMap[
-      categoryLabelData.some((category) => category === selectedCategory.value) &&
-      selectedCategory.value
-        ? selectedCategory.value
-        : "default"
+    const currentCategory = categories.filter(
+      (category) => selectedCategory.value === category.label,
+    )[0]
+    return getColor({ array: categories.map((category) => category.color) })[
+      (currentCategory && currentCategory.color) ?? "gray"
     ]
   })
   const handleClick = (i: number) => {
-    console.log("lala")
-    console.log(participants.value)
-    console.log(participants.value[i])
     participants.value[i] = !participants.value[i]
   }
 </script>
@@ -87,7 +75,11 @@
         <Checkbox :v-model="participants[i]" binary />
       </PeopleComponent>
     </BaseSection>
-    <Button class="w-64">Créer le paiement</Button>
+    <Button class="w-64" v-if="isNew">Créer le paiement</Button>
+    <div class="flex flex-col gap-3 w-64" v-if="!isNew">
+      <Button>Modifier le paiement</Button>
+      <Button variant="outlined">Supprimer le paiement</Button>
+    </div>
   </div>
 
   <div></div>
