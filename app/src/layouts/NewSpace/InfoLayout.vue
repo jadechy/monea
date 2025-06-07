@@ -4,8 +4,7 @@
   import ChoiceColor from "./ChoiceColor.vue"
   import type { Color } from "../Home/SpaceCard.vue"
   import { ref } from "vue"
-  import { categoryLabel } from "@/data/categoryLabel"
-  const colors: Color[] = ["blue", "yellow", "pink", "green", "orange"]
+  import { categoryLabel, colors } from "@/data/categoryLabel"
   const selectedIndex = ref<number | null>(null)
 
   const handleClick = (i: number) => {

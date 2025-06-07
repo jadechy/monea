@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed } from "vue"
   import type { Color } from "../layouts/Home/SpaceCard.vue"
-  import { getColor } from "@/services/getColor"
+  import { getColors } from "@/services/getColor"
   import { colors } from "@/data/categoryLabel"
   export type TitleComponentProps = {
     label: string
@@ -11,10 +11,10 @@
     color: "gray" as Color,
   })
   const labelStyle = computed(() => {
-    return getColor({ array: colors, color: 600 })[props.color]
+    return getColors({ array: colors, text: 600 })[props.color]
   })
 </script>
 
 <template>
-  <h1 class="font-extrabold text-4xl mb-1.5" :class="labelStyle.color">{{ label }}</h1>
+  <h1 class="font-extrabold text-4xl mb-1.5" :class="labelStyle.text">{{ label }}</h1>
 </template>

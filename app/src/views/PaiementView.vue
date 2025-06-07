@@ -8,6 +8,7 @@
   import PeopleComponent from "@/components/PeopleComponent.vue"
   import { Button } from "primevue"
   import router from "@/router"
+  import { getSpaceColor } from "@/services/getColor"
   const props = defineProps<{ id: string; space_id: string }>()
 
   const space = spacesData.find((space) => space.id === props.space_id)
@@ -50,6 +51,7 @@
     </BaseSection>
     <Button
       class="w-64"
+      :class="[getSpaceColor({ color: space?.color })]"
       icon="pi pi-user"
       @click="router.push({ name: 'edit_paiement', params: { id: id } })"
       >Modifier</Button

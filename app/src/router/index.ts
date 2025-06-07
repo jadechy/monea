@@ -5,6 +5,8 @@ import PaiementView from "@/views/PaiementView.vue"
 import NewSpaceView from "@/views/NewSpaceView.vue"
 import NewPaiementView from "@/views/NewPaiementView.vue"
 import ProfilView from "@/views/ProfilView.vue"
+import BudgetView from "@/views/BudgetView.vue"
+import BudgetCategoryView from "@/views/BudgetCategoryView.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,6 +21,30 @@ const router = createRouter({
       name: "space",
       props: true,
       component: SpaceView,
+    },
+    {
+      path: "/space/:id/edit",
+      name: "edit_space",
+      props: true,
+      component: NewSpaceView,
+    },
+    {
+      path: "/new-space/:type?",
+      name: "new_space",
+      component: NewSpaceView,
+      props: true,
+    },
+    {
+      path: "/space/:space_id/budget",
+      name: "budget_space",
+      component: BudgetView,
+      props: true,
+    },
+    {
+      path: "/space/:space_id/budget/:category_id",
+      name: "category_budget_space",
+      component: BudgetCategoryView,
+      props: true,
     },
     {
       path: "/space/:space_id/paiement/:id",
@@ -38,22 +64,11 @@ const router = createRouter({
       props: true,
       component: NewPaiementView,
     },
-    {
-      path: "/personal-space",
-      name: "personal_space",
-      props: true,
-      component: SpaceView,
-    },
+
     {
       path: "/profil",
       name: "profil",
       component: ProfilView,
-    },
-    {
-      path: "/new-space/:type?",
-      name: "new_space",
-      component: NewSpaceView,
-      props: true,
     },
   ],
 })

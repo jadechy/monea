@@ -6,19 +6,15 @@
   import BaseSection from "@/components/BaseSection.vue"
   import AddAction from "@/components/AddAction.vue"
   import { Button } from "primevue"
-  import { computed } from "vue"
-  import { getColor } from "@/services/getColor"
-  import { colors } from "@/data/categoryLabel"
+  import router from "@/router"
+  import { getSpaceColor } from "@/services/getColor"
   const props = defineProps<{ id: string }>()
   const space = spacesData.find((space) => space.id === props.id)
-  const spaceStyle = computed(
-    () => getColor({ array: colors, bg: 400, color: 900, hover: 300 })[space?.color ?? "gray"],
-  )
 </script>
 
 <template>
   <SubHeader :label="space?.label ?? 'error'" :color="space?.color" routeName="home" />
-  <div class="flex justify-between">
+  <div class="flex flex-col gap-2 sm:flex-row justify-between">
     <div class="item w-3xs">
       <p>Budget restant :</p>
       <p class="font-bold">300€</p>
@@ -26,10 +22,19 @@
     <div>
       <Button
         icon="pi pi-eye"
+        label="Budget"
         class="mr-2"
-        :class="[spaceStyle.bg, spaceStyle.color, spaceStyle.hover]"
+        size="xs"
+        :class="[getSpaceColor({ color: space?.color })]"
+        @click="router.push({ name: 'budget_space', params: { space_id: space?.id } })"
       />
-      <Button icon="pi pi-pencil" />
+      <Button
+        icon="pi pi-pencil"
+        label="Edition"
+        size="xs"
+        :class="[getSpaceColor({ color: space?.color })]"
+        @click="router.push({ name: 'edit_space', params: { id: space?.id } })"
+      />
     </div>
   </div>
   <div class="flex flex-col gap-7 mt-10">

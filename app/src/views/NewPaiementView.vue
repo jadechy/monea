@@ -11,7 +11,7 @@
   import { spacesData } from "@/data/spaces"
   import { Button, Checkbox, DatePicker, InputNumber, InputText, Select } from "primevue"
   import { computed } from "vue"
-  import { getColor } from "@/services/getColor"
+  import { getSpaceColor, getColors } from "@/services/getColor"
 
   const selectedCategory = defineModel<CategoryLabel>("selectedCategory")
   const selectedAuthor = defineModel<People>("selectedAuthor")
@@ -24,14 +24,15 @@
   const props = defineProps<{ space_id: string }>()
   const space = spacesData.find((space) => space.id === props.space_id)
   const categoryLabel = categoryLabelData.filter((label) => label !== "default")
-  const colorStyle = computed(() => {
+  const colorCategoryStyle = computed(() => {
     const currentCategory = categories.filter(
       (category) => selectedCategory.value === category.label,
     )[0]
-    return getColor({ array: categories.map((category) => category.color) })[
+    return getColors({ array: categories.map((category) => category.color) })[
       (currentCategory && currentCategory.color) ?? "gray"
     ]
   })
+
   const handleClick = (i: number) => {
     participants.value[i] = !participants.value[i]
   }
@@ -52,8 +53,8 @@
       :options="categoryLabel"
       placeholder="Choisir une catégorie"
       class="w-full md:w-56"
-      :class="[colorStyle.bg, colorStyle.hover]"
-      :labelClass="['capitalize', colorStyle.color]"
+      :class="[colorCategoryStyle.bg, colorCategoryStyle.hover]"
+      :labelClass="['capitalize', colorCategoryStyle.text]"
     />
     <InputText placeholder="Nom" class="w-full" />
     <div class="flex gap-10 self-start">
@@ -75,10 +76,15 @@
         <Checkbox :v-model="participants[i]" binary />
       </PeopleComponent>
     </BaseSection>
-    <Button class="w-64" v-if="isNew">Créer le paiement</Button>
+
+    <Button class="w-64" v-if="isNew" :class="[getSpaceColor({ color: space?.color })]"
+      >Créer le paiement</Button
+    >
     <div class="flex flex-col gap-3 w-64" v-if="!isNew">
-      <Button>Modifier le paiement</Button>
-      <Button variant="outlined">Supprimer le paiement</Button>
+      <Button :class="[getSpaceColor({ color: space?.color })]">Modifier le paiement</Button>
+      <Button variant="outlined" :class="getSpaceColor({ color: space?.color, outlined: true })"
+        >Supprimer le paiement</Button
+      >
     </div>
   </div>
 

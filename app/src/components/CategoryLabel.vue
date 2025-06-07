@@ -1,7 +1,7 @@
 <template>
   <div
     class="flex items-center gap-5 w-fit rounded-full px-3 py-1.5"
-    :class="[labelStyle.color, labelStyle.bg, add ?? labelStyle.hover]"
+    :class="[labelStyle.text, labelStyle.bg, add ?? labelStyle.hover]"
   >
     <p>
       {{ label !== "default" ? label : "Créer une catégorie" }}
@@ -29,6 +29,6 @@
   )
   const labelStyle = computed(() => {
     const category = categories.find((cat) => cat.label === props.label) ?? categories[0]
-    return getColor({ array: categories.map((category) => category.color) })[category.color]
+    return getColor({ color: category.color })
   })
 </script>
