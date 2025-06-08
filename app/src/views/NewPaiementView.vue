@@ -57,11 +57,11 @@
       :labelClass="['capitalize', colorCategoryStyle.text]"
     />
     <InputText placeholder="Nom" class="w-full" />
-    <div class="flex gap-10 self-start">
+    <div class="flex gap-10 self-start w-1/2">
       <InputNumber placeholder="Prix" class="w-full" />
       <p class="text-4xl font-black">€</p>
     </div>
-    <div class="flex justify-between gap-4">
+    <div class="flex justify-between w-full gap-4">
       <Select
         v-model="selectedAuthor"
         :options="peoplesData.map((p) => p.pseudo)"

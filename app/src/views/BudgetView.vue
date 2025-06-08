@@ -3,6 +3,12 @@
   import SubHeader from "@/components/SubHeader.vue"
   import { categories, type CategoryLabel } from "@/data/categoryLabel"
   import { spacesData } from "@/data/spaces"
+  import ChartCategory from "@/layouts/Budget/ChartCategory.vue"
+  import ChartLayout from "@/layouts/Budget/ChartLayout.vue"
+  import ChartYear from "@/layouts/Budget/ChartYear.vue"
+  import router from "@/router"
+  import { getSpaceColor } from "@/services/getColor"
+  import { Button } from "primevue"
 
   const props = defineProps<{ space_id: string }>()
   const space = spacesData.find((space) => space.id === props.space_id)
@@ -18,41 +24,48 @@
 </script>
 
 <template>
+  <SubHeader :label="space?.label ?? 'error'" :color="space?.color" routeName="home" />
   <div class="flex flex-col gap-10">
-    <SubHeader
-      :label="space?.label ?? 'error'"
-      :color="space?.color"
-      routeName="space"
-      :params="{ id: space?.id ?? 'default' }"
-    />
+    <section class="flex justify-between">
+      <div class="flex gap-5">
+        <div class="item block lg:flex w-fit lg:w-1/4 rounded-lg">
+          <p>Budget restant</p>
+          <p><span class="font-bold">300</span> €</p>
+        </div>
 
-    <section class="flex gap-5">
-      <div class="item block lg:flex w-fit lg:w-full rounded-lg">
-        <p>Budget restant</p>
-        <p><span class="font-bold">300</span> €</p>
+        <div class="item block lg:flex w-fit lg:w-1/4 rounded-lg">
+          <p>Budget initial</p>
+          <p>
+            <span class="font-bold">{{ space?.overallBudget }}</span> €
+          </p>
+        </div>
       </div>
 
-      <div class="item block lg:flex w-fit lg:w-full rounded-lg">
-        <p>Budget initial</p>
-        <p><span class="font-bold">300</span> €</p>
-      </div>
+      <Button
+        icon="pi pi-pencil"
+        label="Prévision des dépenses"
+        size="small"
+        :class="[getSpaceColor({ color: space?.color })]"
+        @click="router.push({ name: 'forecast_budget_space', params: { id: space?.id } })"
+      />
     </section>
     <BaseSection label="Par catégories">
-      <div class="grid gap-6 grid-cols-2 md:grid-cols-3">
+      <div class="grid gap-2 grid-cols-2 md:grid-cols-3">
         <router-link
-          v-for="(category, i) in categories"
+          v-for="(category, i) in categories.filter((category) => category.label !== 'default')"
           :to="{
             name: 'category_budget_space',
             params: { space_id: space?.id, category_id: category.label },
           }"
-          class="flex justify-between rounded-xl px-4 py-4"
+          class="flex justify-between rounded-full px-4 py-3"
           :key="i"
           :class="colorMap[category.label]"
         >
           <p>{{ category.label }}</p>
-          <p>30 €</p>
+          <p>{{ space?.budgetByCategory[category.label] }} €</p>
         </router-link>
       </div>
     </BaseSection>
+    <ChartLayout />
   </div>
 </template>

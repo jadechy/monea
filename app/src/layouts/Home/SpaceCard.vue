@@ -6,7 +6,7 @@
     @click=""
   >
     <div class="bg-gray-200 h-32 mb-6" />
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between" :class="bgStyle.text">
       <p>{{ label }}</p>
       <i class="pi pi-chevron-right"></i>
     </div>
@@ -25,15 +25,16 @@
   }
   const props = defineProps<SpaceCardProps>()
 
-  const colorMap: Record<Color, { default: string; hover: string }> = colors.reduce(
+  const colorMap: Record<Color, { default: string; hover: string; text: string }> = colors.reduce(
     (acc, color) => {
       acc[color] = {
         default: `bg-${color}-50`,
         hover: `hover:bg-${color}-100`,
+        text: `text-${color}-900`,
       }
       return acc
     },
-    {} as Record<Color, { default: string; hover: string }>,
+    {} as Record<Color, { default: string; hover: string; text: string }>,
   )
 
   const bgStyle = computed(() => {

@@ -7,6 +7,7 @@
 
 <template>
   <Button
+    size="large"
     icon="pi pi-plus"
     aria-label="Filter"
     class="fixed bottom-4 right-4"
