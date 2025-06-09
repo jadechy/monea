@@ -11,14 +11,15 @@ export type CategoryLabel =
 type Category = {
   label: CategoryLabel
   color: Color
+  amount?: number
 }
 export const categories: Category[] = [
-  { label: "course", color: "pink" },
-  { label: "restaurant", color: "green" },
-  { label: "abonnement", color: "yellow" },
-  { label: "shopping", color: "blue" },
-  { label: "loisir", color: "orange" },
-  { label: "default", color: "gray" },
+  { label: "course", color: "pink", amount: 100 },
+  { label: "restaurant", color: "green", amount: 30 },
+  { label: "abonnement", color: "yellow", amount: 60 },
+  { label: "shopping", color: "blue", amount: 90 },
+  { label: "loisir", color: "orange", amount: 10 },
+  { label: "default", color: "gray", amount: 0 },
 ]
 
 export const categoryLabel: CategoryLabel[] = categories.map((category) => category.label)

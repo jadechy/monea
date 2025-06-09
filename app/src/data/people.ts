@@ -1,9 +1,12 @@
+import placeholderAvatar from "@/assets/placeholder_people.jpg"
+
 export type People = {
   id: string
   firstname: string
   lastname: string
   email: string
   pseudo: string
+  avatar: string
 }
 
 export const peoplesData: People[] = [
@@ -13,6 +16,7 @@ export const peoplesData: People[] = [
     lastname: "Dupont",
     email: "jean.dupont@example.com",
     pseudo: "jdupont",
+    avatar: placeholderAvatar,
   },
   {
     id: "2",
@@ -20,6 +24,7 @@ export const peoplesData: People[] = [
     lastname: "Durand",
     email: "marie.durand@example.com",
     pseudo: "maried",
+    avatar: placeholderAvatar,
   },
   {
     id: "3",
@@ -27,6 +32,7 @@ export const peoplesData: People[] = [
     lastname: "Martin",
     email: "paul.martin@example.com",
     pseudo: "pmartin",
+    avatar: placeholderAvatar,
   },
   {
     id: "4",
@@ -34,6 +40,7 @@ export const peoplesData: People[] = [
     lastname: "Lemoine",
     email: "sophie.lemoine@example.com",
     pseudo: "soph",
+    avatar: placeholderAvatar,
   },
   {
     id: "5",
@@ -41,5 +48,6 @@ export const peoplesData: People[] = [
     lastname: "Bernard",
     email: "alex.bernard@example.com",
     pseudo: "alexb",
+    avatar: placeholderAvatar,
   },
 ]

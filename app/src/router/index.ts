@@ -7,6 +7,8 @@ import NewPaiementView from "@/views/NewPaiementView.vue"
 import ProfilView from "@/views/ProfilView.vue"
 import BudgetView from "@/views/BudgetView.vue"
 import BudgetCategoryView from "@/views/BudgetCategoryView.vue"
+import BudgetForecast from "@/views/BudgetForecastView.vue"
+import BudgetForecastView from "@/views/BudgetForecastView.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +46,12 @@ const router = createRouter({
       path: "/space/:space_id/budget/:category_id",
       name: "category_budget_space",
       component: BudgetCategoryView,
+      props: true,
+    },
+    {
+      path: "/space/:space_id/budget/forecast",
+      name: "forecast_budget_space",
+      component: BudgetForecastView,
       props: true,
     },
     {

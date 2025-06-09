@@ -1,36 +1,256 @@
-import type { PaiementCardComponentProps } from "@/components/PaiementCardComponent.vue"
-import { peoplesData, type People } from "../people"
+import { findPersonByPseudo, type PaiementData } from "."
 
-export function findPersonByPseudo(pseudo: string): People {
-  const person = peoplesData.find((p) => p.firstname === pseudo)
-  if (!person) throw new Error(`Personne non trouvée pour le pseudo "${pseudo}"`)
-  return person
-}
-export type PaiementData = {
-  paiements: PaiementCardComponentProps[]
-  date: Date
-}
 export const maisonPaiements: PaiementData[] = [
+  {
+    date: new Date(2023, 0, 5),
+    paiements: [
+      {
+        id: "1",
+        label: "Courses alimentaires",
+        categoryLabel: "course",
+        people: findPersonByPseudo("Jean"),
+        price: 50,
+        date: new Date(2025, 5, 6),
+        participants: [findPersonByPseudo("Jean"), findPersonByPseudo("Marie")],
+      },
+      {
+        id: "2",
+        label: "Abonnement Internet",
+        categoryLabel: "abonnement",
+        people: findPersonByPseudo("Marie"),
+        price: 30,
+        date: new Date(2025, 5, 6),
+        participants: [findPersonByPseudo("Marie"), findPersonByPseudo("Jean")],
+      },
+    ],
+  },
+  {
+    date: new Date(2025, 1, 8),
+    paiements: [
+      {
+        id: "3",
+        label: "Produits ménagers",
+        categoryLabel: "course",
+        people: findPersonByPseudo("Paul"),
+        price: 18,
+        date: new Date(2025, 5, 12),
+        participants: [findPersonByPseudo("Paul")],
+      },
+      {
+        id: "4",
+        label: "Streaming vidéo",
+        categoryLabel: "abonnement",
+        people: findPersonByPseudo("Marie"),
+        price: 15,
+        date: new Date(2023, 1, 12),
+        participants: [findPersonByPseudo("Marie")],
+      },
+    ],
+  },
+  {
+    date: new Date(2023, 2, 20),
+    paiements: [
+      {
+        id: "5",
+        label: "Courses alimentaires",
+        categoryLabel: "course",
+        people: findPersonByPseudo("Jean"),
+        price: 45,
+        date: new Date(2023, 2, 20),
+        participants: [findPersonByPseudo("Jean"), findPersonByPseudo("Paul")],
+      },
+      {
+        id: "6",
+        label: "Magasin de bricolage",
+        categoryLabel: "shopping",
+        people: findPersonByPseudo("Paul"),
+        price: 70,
+        date: new Date(2023, 2, 20),
+        participants: [findPersonByPseudo("Paul")],
+      },
+    ],
+  },
+  {
+    date: new Date(2023, 3, 18),
+    paiements: [
+      {
+        id: "7",
+        label: "Abonnement salle de sport",
+        categoryLabel: "abonnement",
+        people: findPersonByPseudo("Jean"),
+        price: 40,
+        date: new Date(2023, 3, 18),
+        participants: [findPersonByPseudo("Jean")],
+      },
+      {
+        id: "8",
+        label: "Courses bio",
+        categoryLabel: "course",
+        people: findPersonByPseudo("Marie"),
+        price: 55,
+        date: new Date(2023, 3, 18),
+        participants: [findPersonByPseudo("Marie"), findPersonByPseudo("Jean")],
+      },
+    ],
+  },
+  {
+    date: new Date(2023, 4, 25),
+    paiements: [
+      {
+        id: "9",
+        label: "Shopping décoration",
+        categoryLabel: "shopping",
+        people: findPersonByPseudo("Paul"),
+        price: 90,
+        date: new Date(2023, 4, 25),
+        participants: [findPersonByPseudo("Paul")],
+      },
+      {
+        id: "10",
+        label: "Abonnement magazine",
+        categoryLabel: "abonnement",
+        people: findPersonByPseudo("Marie"),
+        price: 12,
+        date: new Date(2023, 4, 25),
+        participants: [findPersonByPseudo("Marie")],
+      },
+    ],
+  },
+  {
+    date: new Date(2023, 5, 3),
+    paiements: [
+      {
+        id: "11",
+        label: "Courses alimentaires",
+        categoryLabel: "course",
+        people: findPersonByPseudo("Jean"),
+        price: 47,
+        date: new Date(2023, 5, 3),
+        participants: [findPersonByPseudo("Jean"), findPersonByPseudo("Paul")],
+      },
+      {
+        id: "12",
+        label: "Loisirs familiaux",
+        categoryLabel: "loisir",
+        people: findPersonByPseudo("Paul"),
+        price: 35,
+        date: new Date(2023, 5, 3),
+        participants: [findPersonByPseudo("Paul"), findPersonByPseudo("Jean")],
+      },
+    ],
+  },
+  {
+    date: new Date(2023, 6, 22),
+    paiements: [
+      {
+        id: "13",
+        label: "Courses alimentation",
+        categoryLabel: "course",
+        people: findPersonByPseudo("Marie"),
+        price: 52,
+        date: new Date(2023, 6, 22),
+        participants: [findPersonByPseudo("Marie")],
+      },
+      {
+        id: "14",
+        label: "Shopping vêtements",
+        categoryLabel: "shopping",
+        people: findPersonByPseudo("Jean"),
+        price: 120,
+        date: new Date(2023, 6, 22),
+        participants: [findPersonByPseudo("Jean")],
+      },
+    ],
+  },
   {
     date: new Date(2023, 7, 10),
     paiements: [
       {
-        id: "1",
+        id: "15",
         label: "Courses",
-        coloredLabel: "course",
+        categoryLabel: "course",
         people: findPersonByPseudo("Jean"),
         price: 42.5,
         date: new Date(2023, 7, 10),
         participants: [findPersonByPseudo("Jean"), findPersonByPseudo("Marie")],
       },
       {
-        id: "2",
+        id: "16",
         label: "Nettoyage",
-        coloredLabel: "course",
+        categoryLabel: "course",
         people: findPersonByPseudo("Paul"),
         price: 25,
         date: new Date(2023, 7, 10),
         participants: [findPersonByPseudo("Paul")],
+      },
+    ],
+  },
+  {
+    date: new Date(2023, 8, 15),
+    paiements: [
+      {
+        id: "17",
+        label: "Abonnement musique",
+        categoryLabel: "abonnement",
+        people: findPersonByPseudo("Marie"),
+        price: 10,
+        date: new Date(2023, 8, 15),
+        participants: [findPersonByPseudo("Marie")],
+      },
+      {
+        id: "18",
+        label: "Loisir cinéma",
+        categoryLabel: "loisir",
+        people: findPersonByPseudo("Paul"),
+        price: 20,
+        date: new Date(2023, 8, 15),
+        participants: [findPersonByPseudo("Paul")],
+      },
+    ],
+  },
+  {
+    date: new Date(2023, 9, 30),
+    paiements: [
+      {
+        id: "19",
+        label: "Courses alimentaires",
+        categoryLabel: "course",
+        people: findPersonByPseudo("Jean"),
+        price: 48,
+        date: new Date(2023, 9, 30),
+        participants: [findPersonByPseudo("Jean"), findPersonByPseudo("Marie")],
+      },
+      {
+        id: "20",
+        label: "Shopping électronique",
+        categoryLabel: "shopping",
+        people: findPersonByPseudo("Paul"),
+        price: 200,
+        date: new Date(2023, 9, 30),
+        participants: [findPersonByPseudo("Paul")],
+      },
+    ],
+  },
+  {
+    date: new Date(2023, 11, 10),
+    paiements: [
+      {
+        id: "21",
+        label: "Abonnement TV",
+        categoryLabel: "abonnement",
+        people: findPersonByPseudo("Marie"),
+        price: 25,
+        date: new Date(2023, 11, 10),
+        participants: [findPersonByPseudo("Marie")],
+      },
+      {
+        id: "22",
+        label: "Décoration Noël",
+        categoryLabel: "shopping",
+        people: findPersonByPseudo("Jean"),
+        price: 60,
+        date: new Date(2023, 11, 10),
+        participants: [findPersonByPseudo("Jean"), findPersonByPseudo("Marie")],
       },
     ],
   },

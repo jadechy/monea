@@ -6,10 +6,10 @@
     <div>
       <p class="font-bold mb-2.5">{{ label }}</p>
       <div class="flex items-center gap-2.5">
-        <div v-if="coloredLabel">
-          <ColoredLabelComponent :label="coloredLabel" />
+        <div v-if="categoryLabel">
+          <ColoredLabelComponent :label="categoryLabel" />
         </div>
-        <p>Payé par {{ people.pseudo }}</p>
+        <Chip :label="people.pseudo" :image="people.avatar" />
       </div>
     </div>
     <p>
@@ -23,11 +23,12 @@
   import type { People } from "@/data/people"
   import ColoredLabelComponent from "./CategoryLabel.vue"
   import type { CategoryLabel } from "@/data/categoryLabel"
+  import { Chip } from "primevue"
 
   export type PaiementCardComponentProps = {
     id: string
     label: string
-    coloredLabel?: CategoryLabel
+    categoryLabel?: CategoryLabel
     people: People
     price: number
     date: Date
