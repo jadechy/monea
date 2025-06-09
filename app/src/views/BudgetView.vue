@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import BaseSection from "@/components/BaseSection.vue"
+  import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
   import { categories, type CategoryLabel } from "@/data/categoryLabel"
   import { spacesData } from "@/data/spaces"
@@ -25,18 +26,9 @@
   <SubHeader :label="space?.label ?? 'error'" :color="space?.color" routeName="home" />
   <div class="flex flex-col gap-10">
     <section class="flex justify-between">
-      <div class="flex gap-5">
-        <div class="item block lg:flex w-fit lg:w-1/4 rounded-lg">
-          <p>Budget restant</p>
-          <p><span class="font-bold">300</span> €</p>
-        </div>
-
-        <div class="item block lg:flex w-fit lg:w-1/4 rounded-lg">
-          <p>Budget initial</p>
-          <p>
-            <span class="font-bold">{{ space?.overallBudget }}</span> €
-          </p>
-        </div>
+      <div class="flex gap-5 w-full">
+        <RemainingBudget :amount="300" />
+        <RemainingBudget label="Budget initial" :amount="space?.overallBudget ?? 0" />
       </div>
 
       <Button
