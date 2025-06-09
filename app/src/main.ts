@@ -8,6 +8,7 @@ import type { ButtonTokenSections } from "@primeuix/themes/types/button"
 import type { InputTextTokenSections } from "@primeuix/themes/types/inputtext"
 import "primeicons/primeicons.css"
 import type { SelectTokenSections } from "@primeuix/themes/types/select"
+import type { DatePickerTokenSections } from "@primeuix/themes/types/datepicker"
 
 const buttonRoot: ButtonTokenSections.Root = {
   primary: {

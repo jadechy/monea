@@ -28,7 +28,7 @@
   export type PaiementCardComponentProps = {
     id: string
     label: string
-    categoryLabel?: CategoryLabel | false
+    categoryLabel?: CategoryLabel
     people: People
     price: number
     date: Date

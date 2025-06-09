@@ -10,7 +10,7 @@ export const maisonPaiements: PaiementData[] = [
         categoryLabel: "course",
         people: findPersonByPseudo("Jean"),
         price: 50,
-        date: new Date(2023, 0, 5),
+        date: new Date(2025, 5, 6),
         participants: [findPersonByPseudo("Jean"), findPersonByPseudo("Marie")],
       },
       {
@@ -19,13 +19,13 @@ export const maisonPaiements: PaiementData[] = [
         categoryLabel: "abonnement",
         people: findPersonByPseudo("Marie"),
         price: 30,
-        date: new Date(2023, 0, 5),
+        date: new Date(2025, 5, 6),
         participants: [findPersonByPseudo("Marie"), findPersonByPseudo("Jean")],
       },
     ],
   },
   {
-    date: new Date(2023, 1, 12),
+    date: new Date(2025, 1, 8),
     paiements: [
       {
         id: "3",
@@ -33,7 +33,7 @@ export const maisonPaiements: PaiementData[] = [
         categoryLabel: "course",
         people: findPersonByPseudo("Paul"),
         price: 18,
-        date: new Date(2023, 1, 12),
+        date: new Date(2025, 5, 12),
         participants: [findPersonByPseudo("Paul")],
       },
       {
