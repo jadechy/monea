@@ -64,7 +64,7 @@
           :price="spendCard.price"
           :label="spendCard.label"
           :people="spendCard.people"
-          :categoryLabel="haveCategory && spendCard.categoryLabel"
+          :categoryLabel="haveCategory ? spendCard.categoryLabel : undefined"
           :space_id="props.space_id"
           :date="spendCard.date"
           :participants="spendCard.participants"
