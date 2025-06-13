@@ -65,11 +65,18 @@ class Groupe
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
     private User $creator;
 
+    /**
+     * @var Collection<int, Category>
+     */
+    #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'groupes')]
+    private Collection $categories;
+
     public function __construct()
     {
         $this->expenses = new ArrayCollection();
         $this->members = new ArrayCollection();
         $this->budgets = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): int
@@ -223,6 +230,33 @@ class Groupe
     public function setCreator(User $creator): static
     {
         $this->creator = $creator;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): static
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+            $category->addGroupe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): static
+    {
+        if ($this->categories->removeElement($category)) {
+            $category->removeGroupe($this);
+        }
 
         return $this;
     }

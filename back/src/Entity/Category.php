@@ -30,9 +30,19 @@ class Category
     #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'category')]
     private Collection $expenses;
 
+    /**
+     * @var Collection<int, Groupe>
+     */
+    #[ORM\ManyToMany(targetEntity: Groupe::class, inversedBy: 'categories')]
+    #[ORM\JoinTable(name: 'MON_CATEGORY_GROUPE')]
+    #[ORM\JoinColumn(name: 'CAT_ID', referencedColumnName: 'CAT_ID', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID', nullable: false)]
+    private Collection $groupes;
+
     public function __construct()
     {
         $this->expenses = new ArrayCollection();
+        $this->groupes = new ArrayCollection();
     }
 
     public function getId(): int
@@ -90,6 +100,30 @@ class Category
                 $expense->setCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Groupe>
+     */
+    public function getGroupes(): Collection
+    {
+        return $this->groupes;
+    }
+
+    public function addGroupe(Groupe $groupe): static
+    {
+        if (!$this->groupes->contains($groupe)) {
+            $this->groupes->add($groupe);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupe(Groupe $groupe): static
+    {
+        $this->groupes->removeElement($groupe);
 
         return $this;
     }

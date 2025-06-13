@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250613133856 extends AbstractMigration
+final class Version20250613161137 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -24,6 +24,9 @@ final class Version20250613133856 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE MON_CATEGORY (CAT_ID INT AUTO_INCREMENT NOT NULL, CAT_LABEL VARCHAR(50) NOT NULL, CAT_COLOR VARCHAR(8) NOT NULL, PRIMARY KEY(CAT_ID)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE TABLE MON_CATEGORY_GROUPE (CAT_ID INT NOT NULL, GRP_ID INT NOT NULL, INDEX IDX_C6DA6BCE2E182825 (CAT_ID), INDEX IDX_C6DA6BCE1DAB1036 (GRP_ID), PRIMARY KEY(CAT_ID, GRP_ID)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE MON_EXPENSE (EXP_ID INT AUTO_INCREMENT NOT NULL, EXP_AMOUNT DOUBLE PRECISION NOT NULL, EXP_TITLE VARCHAR(255) NOT NULL, EXP_CREATED_AT DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)', GRP_ID INT NOT NULL, CAT_ID INT NOT NULL, USR_ID INT NOT NULL, INDEX IDX_CAF2C141DAB1036 (GRP_ID), INDEX IDX_CAF2C142E182825 (CAT_ID), INDEX IDX_CAF2C14C4DC529D (USR_ID), PRIMARY KEY(EXP_ID)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
@@ -48,6 +51,12 @@ final class Version20250613133856 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE MON_BUDGET ADD CONSTRAINT FK_52A7F06F1DAB1036 FOREIGN KEY (GRP_ID) REFERENCES MON_GROUPE (GRP_ID)
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE MON_CATEGORY_GROUPE ADD CONSTRAINT FK_C6DA6BCE2E182825 FOREIGN KEY (CAT_ID) REFERENCES MON_CATEGORY (CAT_ID)
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE MON_CATEGORY_GROUPE ADD CONSTRAINT FK_C6DA6BCE1DAB1036 FOREIGN KEY (GRP_ID) REFERENCES MON_GROUPE (GRP_ID)
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE MON_EXPENSE ADD CONSTRAINT FK_CAF2C141DAB1036 FOREIGN KEY (GRP_ID) REFERENCES MON_GROUPE (GRP_ID)
@@ -84,6 +93,12 @@ final class Version20250613133856 extends AbstractMigration
             ALTER TABLE MON_BUDGET DROP FOREIGN KEY FK_52A7F06F1DAB1036
         SQL);
         $this->addSql(<<<'SQL'
+            ALTER TABLE MON_CATEGORY_GROUPE DROP FOREIGN KEY FK_C6DA6BCE2E182825
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE MON_CATEGORY_GROUPE DROP FOREIGN KEY FK_C6DA6BCE1DAB1036
+        SQL);
+        $this->addSql(<<<'SQL'
             ALTER TABLE MON_EXPENSE DROP FOREIGN KEY FK_CAF2C141DAB1036
         SQL);
         $this->addSql(<<<'SQL'
@@ -112,6 +127,9 @@ final class Version20250613133856 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE MON_CATEGORY
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP TABLE MON_CATEGORY_GROUPE
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE MON_EXPENSE
