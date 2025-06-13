@@ -10,7 +10,10 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Link;
 use App\Entity\User;
 use App\Entity\Groupe;
-use App\State\MemberProvider;
+use App\State\Member\MemberProvider;
+use App\State\Member\MemberPostProcessor;
+use App\State\Member\MemberDeleteProcessor;
+use App\State\Member\MemberPatchProcessor;
 
 #[ApiResource(
     operations: [

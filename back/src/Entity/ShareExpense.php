@@ -11,15 +11,15 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'MON_SHARE_EXPENSE')]
 class ShareExpense
 {
-    #[ORM\Id]
-
     #[ORM\Column(name: 'SHR_PERCENTAGE')]
     private int $percentage;
 
+    #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'sharedExpenses')]
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
     private ?User $contributor = null;
 
+    #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'sharedExpenses')]
     #[ORM\JoinColumn(name: 'EXP_ID', referencedColumnName: 'EXP_ID', nullable: false)]
     private ?Expense $expense = null;

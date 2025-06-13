@@ -1,6 +1,6 @@
 <?php
 
-namespace App\State;
+namespace App\State\Member;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
@@ -14,7 +14,7 @@ class MemberProvider implements ProviderInterface
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): ?Member
     {
         return $this->em->getRepository(Member::class)->findOneBy([
-            'user' => $uriVariables['userId'],
+            'individual' => $uriVariables['userId'],
             'groupe' => $uriVariables['groupeId'],
         ]);
     }
