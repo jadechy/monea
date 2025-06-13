@@ -16,6 +16,19 @@ class ExpenseRepository extends ServiceEntityRepository
         parent::__construct($registry, Expense::class);
     }
 
+    public function findExpensesByGroupAndMonth(int $groupeId, int $month)
+    {
+        return $this->createQueryBuilder('e')
+            ->join('e.groupe', 'g')
+            ->join('g.budgets', 'b')
+            ->where('g.id = :groupeId')
+            ->andWhere('b.month = :month')
+            ->setParameter('groupeId', $groupeId)
+            ->setParameter('month', $month)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Expense[] Returns an array of Expense objects
     //     */
