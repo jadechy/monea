@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Link;
 use App\Entity\User;
 use App\Entity\Groupe;
 use App\State\Member\MemberProvider;
+use App\State\Member\MemberEntityProvider;
 use App\State\Member\MemberPostProcessor;
 use App\State\Member\MemberDeleteProcessor;
 use App\State\Member\MemberPatchProcessor;
@@ -31,7 +32,8 @@ use App\State\Member\MemberPatchProcessor;
                 'userId' => new Link(fromClass: User::class, identifiers: ['id']),
                 'groupeId' => new Link(fromClass: Groupe::class, identifiers: ['id']),
             ],
-            processor: MemberPostProcessor::class
+            processor: MemberPostProcessor::class,
+            provider: MemberProvider::class
         ),
         new Delete(
             uriTemplate: '/members/user/{userId}/groupe/{groupeId}',
@@ -39,7 +41,8 @@ use App\State\Member\MemberPatchProcessor;
                 'userId' => new Link(fromClass: User::class, identifiers: ['id']),
                 'groupeId' => new Link(fromClass: Groupe::class, identifiers: ['id']),
             ],
-            processor: MemberDeleteProcessor::class
+            processor: MemberDeleteProcessor::class,
+            provider: MemberEntityProvider::class
         ),
         new Patch(
             uriTemplate: '/members/user/{userId}/groupe/{groupeId}',
@@ -47,13 +50,16 @@ use App\State\Member\MemberPatchProcessor;
                 'userId' => new Link(fromClass: User::class, identifiers: ['id']),
                 'groupeId' => new Link(fromClass: Groupe::class, identifiers: ['id']),
             ],
-            processor: MemberPatchProcessor::class
+            processor: MemberPatchProcessor::class,
+            provider: MemberProvider::class
         )
     ]
 )]
 class MemberResource
 {
-    public int $userId;
-    public int $groupeId;
-    public ?string $role = null;
+    public function __construct(
+        public int $userId,
+        public int $groupeId,
+        public ?string $role = null,
+    ) {}
 }

@@ -2,29 +2,32 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\MemberRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource]
 #[ORM\Entity(repositoryClass: MemberRepository::class)]
 #[ORM\Table(name: 'MON_MEMBER')]
 class Member
 {   
     #[ORM\Column(length: 255, name: 'MBR_ROLE')]
+    #[Groups(['groupe:read', 'member:read', 'user:read'])]
     private ?string $role = null;
 
     #[ORM\Column(name: 'MBR_ADD_ON')]
+    #[Groups(['member:read'])]
     private ?\DateTimeImmutable $addOn = null;
 
     #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'members')]
     #[ORM\JoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID', nullable: false)]
+    #[Groups(['groupe:read', 'member:read', 'user:read'])]
     private Groupe $groupe;
 
     #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'members')]
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
+    #[Groups(['groupe:read', 'member:read', 'user:read'])]
     private User $individual;
 
     public function getRole(): ?string
