@@ -39,4 +39,11 @@ RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} >
 # Installation de Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer 
 
-WORKDIR /var/www/symfony
+WORKDIR /var/www/html
+
+# Copier composer.json et composer.lock (pour optimiser le cache Docker)
+COPY composer.json composer.lock ./
+
+# Installer les dépendances au démarrage pour éviter les problèmes de volume
+# Combiné avec php-fpm pour que le conteneur démarre correctement
+CMD ["sh", "-c", "composer install && php-fpm"]

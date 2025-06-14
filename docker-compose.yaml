@@ -14,22 +14,23 @@ services:
 
   backend:
     build:
-      context: ./back/.docker/php
+      context: ./back
       dockerfile: Dockerfile
     volumes:
       - ./back:/var/www/html
+      - vendor-data:/var/www/html/vendor
     depends_on:
       - db
     networks:
       - monea
   nginx:
     build:
-      context: ./back/.docker/nginx
+      context: ./nginx
       dockerfile: Dockerfile
     ports:
       - "8000:80"
     volumes:
-      - ./back:/var/www/symfony
+      - ./back:/var/www/html
     depends_on:
       - backend
     networks:
@@ -40,9 +41,8 @@ services:
     platform: linux/x86_64
     command: --default-authentication-plugin=mysql_native_password
     restart: always
-    environment:
-      MYSQL_DATABASE: symfony
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    env_file:
+      - ./back/.env.local
     volumes:
       - db-data:/var/lib/mysql
     ports:
@@ -55,9 +55,8 @@ services:
     restart: always
     ports:
       - "8081:80"
-    environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    env_file:
+      - ./back/.env.local
     depends_on:
       - db
     networks:
@@ -65,6 +64,7 @@ services:
 
 volumes:
   db-data:
+  vendor-data:
 
 networks:
   monea:
