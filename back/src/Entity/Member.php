@@ -6,7 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\MemberRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ApiResource]
+// #[ApiResource]
 #[ORM\Entity(repositoryClass: MemberRepository::class)]
 #[ORM\Table(name: 'MON_MEMBER')]
 class Member
