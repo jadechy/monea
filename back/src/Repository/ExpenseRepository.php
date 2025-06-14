@@ -16,15 +16,18 @@ class ExpenseRepository extends ServiceEntityRepository
         parent::__construct($registry, Expense::class);
     }
 
-    public function findExpensesByGroupAndMonth(int $groupeId, int $month)
+    public function findExpensesByGroupeAndDate(int $groupeId, \DateTimeInterface $date)
     {
+        $start = (clone $date)->modify('first day of this month')->setTime(0,0,0);
+        $end = (clone $date)->modify('last day of this month')->setTime(23,59,59);
+
         return $this->createQueryBuilder('e')
-            ->join('e.groupe', 'g')
-            ->join('g.budgets', 'b')
+            ->leftJoin('e.groupe', 'g')
             ->where('g.id = :groupeId')
-            ->andWhere('b.month = :month')
+            ->andWhere('e.spentAt BETWEEN :start AND :end')
             ->setParameter('groupeId', $groupeId)
-            ->setParameter('month', $month)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
             ->getQuery()
             ->getResult();
     }

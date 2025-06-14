@@ -16,6 +16,18 @@ class BudgetRepository extends ServiceEntityRepository
         parent::__construct($registry, Budget::class);
     }
 
+    public function findBudgetByCategoryAndDate($categoryId, $date)
+    {
+        return $this->createQueryBuilder('b')
+            ->leftJoin('b.category', 'c')
+            ->where('c.id = :catId')
+            ->andWhere('b.monthStart = :date')
+            ->setParameter('catId', $categoryId)
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return Budget[] Returns an array of Budget objects
     //     */

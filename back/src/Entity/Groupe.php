@@ -11,17 +11,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ApiResource]
-// TO-DO: A tester. BUT: Récuperer une liste de dépenses pour un groupe sur un mois (?)
-// #[ApiResource(
-//     uriTemplate: '/groupes/{id}/expenses',
-//     uriVariables: [
-//         'id' => new Link(
-//             fromClass: Expense::class,
-//             fromProperty: 'expenses'
-//         )
-//     ],
-//     operations: [new Get()]
-// )]
 #[ORM\Entity(repositoryClass: GroupeRepository::class)]
 #[ORM\Table(name: 'MON_GROUPE')]
 class Groupe

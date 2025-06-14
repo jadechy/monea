@@ -14,17 +14,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource]
-// TO DO: A tester. BUT: Récuperer une liste de groupe pour un utilisateur
-// #[ApiResource(
-//     uriTemplate: '/users/{id}/groupe',
-//     uriVariables: [
-//         'id' => new Link(
-//             fromClass: Groupe::class,
-//             fromProperty: 'groupes'
-//         )
-//     ],
-//     operations: [new Get()]
-// )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'MON_USER')]
 #[UniqueEntity(fields: ['email'], message: "Cet email est déjà utilisé.")]
@@ -313,7 +302,7 @@ class User
         return $this->picture;
     }
 
-    public function setPicture(string $picture): static
+    public function setPicture(?string $picture): static
     {
         $this->picture = $picture;
 
@@ -325,7 +314,7 @@ class User
         return $this->resetToken;
     }
 
-    public function setResetToken(string $resetToken): static
+    public function setResetToken(?string $resetToken): static
     {
         $this->resetToken = $resetToken;
 
