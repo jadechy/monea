@@ -1,5 +1,5 @@
 import { fetchJson, postJson } from "@/lib/api"
-import { GroupSchema } from "@/types/group"
+import { GroupSchema, GroupDTOSchema } from "@/types/group"
 import { type CreateUserInputType, type UserType } from "@/types/user"
 
 export const createGroup = async (input: CreateUserInputType) => {
@@ -21,7 +21,7 @@ export const fetchAllGroup = async () => {
 export const fetchGroup = async (id: string) => {
   try {
     return await fetchJson({
-      url: `users/${id}`,
+      url: `groupes/${id}`,
       schema: GroupSchema,
     })
   } catch (error) {
@@ -34,7 +34,7 @@ export const fetchGroupByUser = async (userId: UserType["id"]) => {
   try {
     return await fetchJson({
       url: `groupes/${userId}/list`,
-      schema: GroupSchema.array(),
+      schema: GroupDTOSchema.array(),
     })
   } catch (error) {
     console.error("Erreur lors du fetch de l'utilisateur :", error)

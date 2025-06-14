@@ -61,7 +61,7 @@
           :key="member.id"
           :user="member"
         >
-          <p>{{ expense.amount / expense.members.length }} €</p>
+          <p>{{ expense.amount / expense.participants.length }} €</p>
         </PeopleComponent>
       </div>
     </BaseSection>
