@@ -23,7 +23,8 @@
 </script>
 
 <template>
-  <SubHeader :label="space?.label ?? 'error'" :color="space?.color" routeName="home" />
+  <SubHeader label="Budget" :color="space?.color" routeName="home" />
+
   <div class="flex flex-col gap-10">
     <section class="flex justify-between">
       <div class="flex gap-5 w-full">
