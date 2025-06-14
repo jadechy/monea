@@ -2,7 +2,6 @@
   import AddAction from "@/components/AddAction.vue"
   import type { RouteProps } from "@/components/BackComponent.vue"
   import BaseSection from "@/components/BaseSection.vue"
-  import PaiementCardComponent from "@/components/ExpenseCardComponent.vue"
   import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
   import type { TitleComponentProps } from "@/components/TitleComponent.vue"
@@ -13,6 +12,7 @@
   import { Button } from "primevue"
   import type { AmountType } from "@/types/budget"
   import type { ExpenseDateType } from "@/types/expense"
+  import ExpenseCardComponent from "@/components/ExpenseCardComponent.vue"
   interface Props {
     space_id: string
     haveCategory?: boolean
@@ -60,12 +60,12 @@
       :key="index"
     >
       <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <PaiementCardComponent v-for="expense in expenses" :key="expense.id" :expense="expense" />
+        <ExpenseCardComponent v-for="expense in expenses" :key="expense.id" :expense="expense" />
       </div>
     </BaseSection>
   </div>
   <AddAction
-    route-name="new_paiement"
+    route-name="new_expense"
     :class="[getSpaceColor({ color: space?.color })]"
     :params="{ space_id: space?.id ?? 'error' }"
   />

@@ -20,11 +20,11 @@
 
   const date = ref<Date | null>(null)
   const allPaiements: ExpenseCardComponentProps[] =
-    space?.paiements.flatMap((arr) => arr.paiements) ?? []
+    space?.expenses.flatMap((arr) => arr.expenses) ?? []
   const currentPaiements = computed(() => {
-    return allPaiements.filter((paiement) => {
+    return allPaiements.filter((expense) => {
       if (!date.value || date.value === null) return []
-      const paiementDate = new Date(paiement.date)
+      const paiementDate = new Date(expense.date)
       return paiementDate.toString() === date.value.toString()
     })
   })
@@ -172,9 +172,9 @@
           <RemainingBudget :amount="30" label="Budget restant à date" />
         </div>
         <div class="grid grid-cols-2 gap-3">
-          <div v-for="paiement in currentPaiements" :key="paiement.id" class="item hover">
-            <CategoryLabel :label="paiement.categoryLabel" />
-            <p>{{ paiement.label }}</p>
+          <div v-for="expense in currentPaiements" :key="expense.id" class="item hover">
+            <CategoryLabel :label="expense.categoryLabel" />
+            <p>{{ expense.label }}</p>
           </div>
         </div>
       </BaseSection> -->

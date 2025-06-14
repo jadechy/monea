@@ -3,7 +3,6 @@ import { UserSchema } from "./user"
 import { GroupSchema } from "./group"
 import { CategorySchema } from "./category"
 import { RecurringExpenseSchema } from "./recurring_expense"
-import { MemberSchema } from "./member"
 export const ExpenseSchema = z.object({
   id: z.number(),
   amount: z.number().nullable(),
@@ -17,6 +16,12 @@ export const ExpenseSchema = z.object({
   members: z.array(UserSchema),
 })
 
+export const FetchNewExpenseSchema = GroupSchema.extend({
+  categories: z.array(CategorySchema),
+  members: z.array(UserSchema),
+})
+
 export const ExpenseDateSchema = z.record(z.string().datetime(), z.array(ExpenseSchema))
 export type ExpenseType = z.infer<typeof ExpenseSchema>
 export type ExpenseDateType = z.infer<typeof ExpenseDateSchema>
+export type FetchNewExpenseType = z.infer<typeof FetchNewExpenseSchema>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { categories } from "@/data/categoryLabel"
-  import AllPaiementsLayout from "@/layouts/AllPaiementsLayout.vue"
+  import AllPaiementsLayout from "@/layouts/AllExpensesLayout.vue"
   import { fetchBudgetGroupRemaining } from "@/services/budgetService"
   import { getCurrentMonth } from "@/services/getCurrentMonth"
   import type { AmountType } from "@/types/budget"
