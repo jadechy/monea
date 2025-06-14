@@ -12,6 +12,7 @@
   import { Button, Checkbox, DatePicker, InputNumber, InputText, Select } from "primevue"
   import { computed } from "vue"
   import { getSpaceColor, getColors } from "@/services/getColor"
+  import { z } from "zod"
 
   const selectedCategory = defineModel<CategoryLabel>("selectedCategory")
   const selectedAuthor = defineModel<People>("selectedAuthor")
@@ -32,9 +33,18 @@
       (currentCategory && currentCategory.color) ?? "gray"
     ]
   })
+  const newPaiementSchema = z.object({
+    label: z.string(),
+    amount: z.number(),
+    author: z.number(),
+    participants: z.number().array(),
+    date: z.date(),
+    category: z.number().optional(),
+  })
 
   const handleClick = (i: number) => {
     participants.value[i] = !participants.value[i]
+    const postData = {}
   }
 </script>
 

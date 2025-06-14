@@ -11,7 +11,7 @@
   } from "@/data/categoryLabel"
   import { spacesData } from "@/data/spaces"
   import Day from "@/layouts/BudgetForecast/Day.vue"
-  import { formatDateToDayMonth } from "@/services/date"
+  import { formatDateToDayMonth } from "@/lib/date"
   import { getColors } from "@/services/getColor"
   import { DatePicker, Select } from "primevue"
   import { computed, ref } from "vue"

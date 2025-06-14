@@ -8,7 +8,7 @@
   import type { TitleComponentProps } from "@/components/TitleComponent.vue"
   import { spacesData } from "@/data/spaces"
   import router from "@/router"
-  import { formatDateToDayMonth } from "@/services/date"
+  import { formatDateToDayMonth } from "@/lib/date"
   import { getSpaceColor } from "@/services/getColor"
   import { Button } from "primevue"
 

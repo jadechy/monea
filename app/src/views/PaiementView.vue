@@ -3,7 +3,7 @@
   import { computed } from "vue"
   import { spacesData } from "@/data/spaces"
   import ColoredLabelComponent from "@/components/CategoryLabel.vue"
-  import { formatDateToDayMonth } from "@/services/date"
+  import { formatDateToDayMonth } from "@/lib/date"
   import BaseSection from "@/components/BaseSection.vue"
   import PeopleComponent from "@/components/PeopleComponent.vue"
   import { Button, Chip } from "primevue"
