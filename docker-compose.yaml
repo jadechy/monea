@@ -7,22 +7,33 @@ services:
       - "5173:5173"
     volumes:
       - ./app:/app
-    command: npm run dev
     depends_on:
       - backend
     networks:
-      - symfony_app
+      - monea
 
   backend:
     build:
-      context: ./back
+      context: ./back/.docker/php
       dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
     volumes:
       - ./back:/var/www/html
     depends_on:
       - db
+    networks:
+      - monea
+  nginx:
+    build:
+      context: ./back/.docker/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - ./back:/var/www/symfony
+    depends_on:
+      - backend
+    networks:
+      - monea
 
   db:
     image: mysql:8.0
@@ -31,13 +42,13 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: symfony
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - db-data:/var/lib/mysql
     ports:
       - "3307:3306"
     networks:
-      - symfony_app
+      - monea
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -50,10 +61,10 @@ services:
     depends_on:
       - db
     networks:
-      - symfony_app
+      - monea
 
 volumes:
   db-data:
-  
+
 networks:
-    symfony_app:
+  monea:
