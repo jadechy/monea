@@ -35,16 +35,16 @@ class GroupeDTO
     public string $type;
 
     #[Groups(['groupe:read'])]
-    public bool $isActive;
+    public string $picture;
+
+    #[Groups(['groupe:read'])]
+    public string $color;
 
     #[Groups(['groupe:read'])]
     public array $expenses;
 
     #[Groups(['groupe:read'])]
     public array $members;
-
-    #[Groups(['groupe:read'])]
-    public array $budgets;
 
     #[Groups(['groupe:read'])]
     public int $creator;
@@ -58,7 +58,8 @@ class GroupeDTO
         $this->name = $groupe->getName();
         $this->createdAt = $groupe->getCreatedAt();
         $this->type = $groupe->getType();
-        $this->isActive = $groupe->isActive();
+        $this->picture = $groupe->getPicture();
+        $this->color = $groupe->getColor();
 
         foreach ($groupe->getExpenses() as $expense){
             $this->expenses[] = [
@@ -77,22 +78,13 @@ class GroupeDTO
             ];
         }
 
-        foreach ($groupe->getBudgets() as $budget){
-            $this->budgets[] = [
-                'budgetId' => $budgets?->getId(),
-                'month' => $budgets?->getMonth(),
-                'amount' => $budgets?->getAmount(),
-                'creator' => $budgets?->getCreator()->getId(),
-            ];
-        }
-
         $this->creator = $groupe->getCreator()->getId();
 
         foreach ($groupe->getCategories() as $category){
             $this->categories[] = [
-                'categoryId' => $categories?->getId(),
-                'label' => $categories?->getLabel(),
-                'color' => $categories?->getColor(),
+                'categoryId' => $category?->getId(),
+                'label' => $category?->getLabel(),
+                'color' => $category?->getColor(),
             ];
         }
     }
