@@ -13,4 +13,12 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+
+  server: {
+    host: '0.0.0.0', // Permet l'accès depuis l'extérieur du conteneur
+    port: 5173,
+    watch: {
+      usePolling: true // Nécessaire pour le hot reload avec les volumes Docker
+    }
+  }
 })
