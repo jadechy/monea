@@ -13,6 +13,10 @@ npm install
 cd ..
 cd back
 composer install
+docker exec -it monea-backend-1 /bin/sh
+php bin/console d:d:c
+php bin/console d:m:m
+php bin/console d:f:l
 
 ## Go to
 
