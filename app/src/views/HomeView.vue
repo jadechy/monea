@@ -4,9 +4,9 @@
   import AddAction from "@/components/AddAction.vue"
   import { ref, onMounted } from "vue"
   import { fetchAllUser } from "@/services/userService"
-  import type { UserSchema } from "@/schemas/user"
+  import type { UserType } from "@/schemas/user"
 
-  const users = ref<UserSchema[]>([])
+  const users = ref<UserType[]>([])
   const error = ref<string | null>(null)
 
   const loadUsers = async () => {
