@@ -3,19 +3,19 @@
   import Chart from "primevue/chart"
   import { categories, type CategoryLabel } from "@/data/categoryLabel"
   import { colors } from "@/main"
-  import { biblioPaiements } from "@/data/paiements/biblioPaiements"
-  import type { PaiementData } from "@/data/paiements"
-  import type { PaiementCardComponentProps } from "@/components/PaiementCardComponent.vue"
+  import { biblioPaiements } from "@/data/expenses/biblioPaiements"
+  import type { PaiementData } from "@/data/expenses"
+  import type { ExpenseCardComponentProps } from "@/components/ExpenseCardComponent.vue"
   const getCategoryPaiement = (array: PaiementData[], categoryLabel: CategoryLabel) => {
     return array.map((month, i) =>
-      month.paiements.filter((paiement) => paiement.categoryLabel === categoryLabel),
+      month.expenses.filter((expense) => expense.categoryLabel === categoryLabel),
     )
   }
 
-  const getPaiementSome = (array: PaiementCardComponentProps[][]) => {
+  const getPaiementSome = (array: ExpenseCardComponentProps[][]) => {
     return array.map((month, i) => {
       let amount = 0
-      month.map((paiement) => (amount += paiement.price))
+      month.map((expense) => (amount += expense.price))
       return amount
     })
   }

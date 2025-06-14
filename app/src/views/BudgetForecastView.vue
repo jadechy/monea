@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import BaseSection from "@/components/BaseSection.vue"
-  import type { PaiementCardComponentProps } from "@/components/PaiementCardComponent.vue"
-  import PaiementCardComponent from "@/components/PaiementCardComponent.vue"
+  import type { ExpenseCardComponentProps } from "@/components/ExpenseCardComponent.vue"
+  import PaiementCardComponent from "@/components/ExpenseCardComponent.vue"
   import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
   import {
@@ -19,12 +19,12 @@
   const space = spacesData.find((space) => space.id === props.space_id)
 
   const date = ref<Date | null>(null)
-  const allPaiements: PaiementCardComponentProps[] =
-    space?.paiements.flatMap((arr) => arr.paiements) ?? []
+  const allPaiements: ExpenseCardComponentProps[] =
+    space?.expenses.flatMap((arr) => arr.expenses) ?? []
   const currentPaiements = computed(() => {
-    return allPaiements.filter((paiement) => {
+    return allPaiements.filter((expense) => {
       if (!date.value || date.value === null) return []
-      const paiementDate = new Date(paiement.date)
+      const paiementDate = new Date(expense.date)
       return paiementDate.toString() === date.value.toString()
     })
   })
@@ -172,9 +172,9 @@
           <RemainingBudget :amount="30" label="Budget restant à date" />
         </div>
         <div class="grid grid-cols-2 gap-3">
-          <div v-for="paiement in currentPaiements" :key="paiement.id" class="item hover">
-            <CategoryLabel :label="paiement.categoryLabel" />
-            <p>{{ paiement.label }}</p>
+          <div v-for="expense in currentPaiements" :key="expense.id" class="item hover">
+            <CategoryLabel :label="expense.categoryLabel" />
+            <p>{{ expense.label }}</p>
           </div>
         </div>
       </BaseSection> -->

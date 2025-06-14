@@ -13,5 +13,15 @@ export const ExpenseSchema = z.object({
   creator: UserSchema,
   recurringExpense: RecurringExpenseSchema.nullable(),
   spentAt: z.string().datetime().nullable(),
+  members: z.array(UserSchema),
 })
+
+export const FetchNewExpenseSchema = GroupSchema.extend({
+  categories: z.array(CategorySchema),
+  members: z.array(UserSchema),
+})
+
+export const ExpenseDateSchema = z.record(z.string().datetime(), z.array(ExpenseSchema))
 export type ExpenseType = z.infer<typeof ExpenseSchema>
+export type ExpenseDateType = z.infer<typeof ExpenseDateSchema>
+export type FetchNewExpenseType = z.infer<typeof FetchNewExpenseSchema>

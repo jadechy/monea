@@ -21,7 +21,7 @@
 
   const props = withDefaults(
     defineProps<{
-      label?: CategoryLabel
+      label?: string
       edit?: boolean
       add?: boolean
     }>(),
