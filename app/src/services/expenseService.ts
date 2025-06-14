@@ -1,4 +1,5 @@
 import { fetchJson, postJson } from "@/lib/api"
+import { ExpenseSchema, FetchNewExpenseSchema } from "@/types/expense"
 import { UserSchema, type CreateUserInputType } from "@/types/user"
 
 export const createUser = async (input: CreateUserInputType) => {
@@ -17,11 +18,22 @@ export const fetchAllUser = async () => {
     return null
   }
 }
-export const fetchUser = async (id: string) => {
+export const fetchExpense = async (id: string) => {
   try {
     return await fetchJson({
-      url: `users/${id}`,
-      schema: UserSchema,
+      url: `expenses/${id}`,
+      schema: ExpenseSchema,
+    })
+  } catch (error) {
+    console.error("Erreur lors du fetch de l'utilisateur :", error)
+    return null
+  }
+}
+export const fetchNewExpense = async (id: string) => {
+  try {
+    return await fetchJson({
+      url: `expenses/new/${id}`,
+      schema: FetchNewExpenseSchema,
     })
   } catch (error) {
     console.error("Erreur lors du fetch de l'utilisateur :", error)

@@ -1,14 +1,21 @@
-import type { SpaceCardProps } from "@/layouts/Home/SpaceCard.vue"
-import { bureauPaiements } from "./paiements/bureauPaiements"
-import { cafePaiements } from "./paiements/cafePaiements"
-import { biblioPaiements } from "./paiements/biblioPaiements"
-import { parcPaiements } from "./paiements/parcPaiements"
-import { personalPaiements } from "./paiements/personalPaiements"
-import type { PaiementData } from "./paiements"
-import { maisonPaiements } from "./paiements/maisonPaiements"
+import { bureauPaiements } from "./expenses/bureauPaiements"
+import { cafePaiements } from "./expenses/cafePaiements"
+import { biblioPaiements } from "./expenses/biblioPaiements"
+import { parcPaiements } from "./expenses/parcPaiements"
+import { personalPaiements } from "./expenses/personalPaiements"
+import type { PaiementData } from "./expenses"
+import { maisonPaiements } from "./expenses/maisonPaiements"
 import type { CategoryLabel } from "./categoryLabel"
+import type { ColorType } from "@/types/color"
+type SpaceCardProps = {
+  id: string
+  label: string
+  img: string
+  color: ColorType
+}
+
 type SpaceData = {
-  paiements: PaiementData[]
+  expenses: PaiementData[]
   overallBudget: number
   budgetByCategory: Record<CategoryLabel, number>
 } & SpaceCardProps
@@ -19,7 +26,7 @@ export const spacesData: SpaceData[] = [
     label: "Maison",
     img: "/images/spaces/maison.jpg",
     color: "blue",
-    paiements: maisonPaiements,
+    expenses: maisonPaiements,
     overallBudget: 200,
     budgetByCategory: {
       course: 20,
@@ -35,7 +42,7 @@ export const spacesData: SpaceData[] = [
     label: "Bureau",
     img: "/images/spaces/bureau.jpg",
     color: "green",
-    paiements: bureauPaiements,
+    expenses: bureauPaiements,
     overallBudget: 200,
     budgetByCategory: {
       course: 20,
@@ -51,7 +58,7 @@ export const spacesData: SpaceData[] = [
     label: "Café",
     img: "/images/spaces/cafe.jpg",
     color: "pink",
-    paiements: cafePaiements,
+    expenses: cafePaiements,
     overallBudget: 200,
     budgetByCategory: {
       course: 20,
@@ -67,7 +74,7 @@ export const spacesData: SpaceData[] = [
     label: "Bibliothèque",
     img: "/images/spaces/bibliotheque.jpg",
     color: "blue",
-    paiements: biblioPaiements,
+    expenses: biblioPaiements,
     overallBudget: 200,
     budgetByCategory: {
       course: 20,
@@ -83,7 +90,7 @@ export const spacesData: SpaceData[] = [
     label: "Parc",
     img: "/images/spaces/parc.jpg",
     color: "yellow",
-    paiements: parcPaiements,
+    expenses: parcPaiements,
     overallBudget: 200,
     budgetByCategory: {
       course: 20,
@@ -99,7 +106,7 @@ export const spacesData: SpaceData[] = [
     label: "Espace personnel",
     img: "/images/spaces/parc.jpg",
     color: "pink",
-    paiements: personalPaiements,
+    expenses: personalPaiements,
     overallBudget: 200,
     budgetByCategory: {
       course: 20,

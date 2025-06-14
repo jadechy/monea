@@ -1,4 +1,5 @@
 import type { Color } from "@/layouts/Home/SpaceCard.vue"
+import type { ColorType } from "@/types/color"
 
 export type CategoryLabel =
   | "course"
@@ -24,4 +25,4 @@ export const categories: Category[] = [
 
 export const categoryLabel: CategoryLabel[] = categories.map((category) => category.label)
 
-export const colors: Color[] = ["pink", "green", "yellow", "blue", "orange", "gray"]
+export const colors: ColorType[] = ["pink", "green", "yellow", "blue", "orange", "gray", "red"]

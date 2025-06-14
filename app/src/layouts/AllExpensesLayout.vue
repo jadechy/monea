@@ -2,7 +2,6 @@
   import AddAction from "@/components/AddAction.vue"
   import type { RouteProps } from "@/components/BackComponent.vue"
   import BaseSection from "@/components/BaseSection.vue"
-  import PaiementCardComponent from "@/components/PaiementCardComponent.vue"
   import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
   import type { TitleComponentProps } from "@/components/TitleComponent.vue"
@@ -11,12 +10,16 @@
   import { formatDateToDayMonth } from "@/lib/date"
   import { getSpaceColor } from "@/services/getColor"
   import { Button } from "primevue"
-
-  type Props = {
+  import type { AmountType } from "@/types/budget"
+  import type { ExpenseDateType } from "@/types/expense"
+  import ExpenseCardComponent from "@/components/ExpenseCardComponent.vue"
+  interface Props {
     space_id: string
     haveCategory?: boolean
     actionButton?: boolean
     subHeader: TitleComponentProps & RouteProps
+    amount?: AmountType
+    expensesDate?: ExpenseDateType
   }
 
   const props = defineProps<Props>()
@@ -32,7 +35,7 @@
   />
   <div class="flex flex-col gap-10">
     <div class="flex flex-col gap-2 sm:flex-row justify-between items-center">
-      <RemainingBudget :amount="30" />
+      <RemainingBudget v-if="amount" :amount="amount" />
       <div v-if="actionButton">
         <Button
           icon="pi pi-eye"
@@ -52,28 +55,17 @@
       </div>
     </div>
     <BaseSection
-      :label="formatDateToDayMonth(data.date)"
-      v-for="(data, index) in space?.paiements"
+      v-for="([date, expenses], index) in Object.entries(expensesDate ?? {})"
+      :label="formatDateToDayMonth(new Date(date))"
       :key="index"
     >
       <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <PaiementCardComponent
-          v-for="spendCard in data.paiements"
-          :key="spendCard.id"
-          :id="spendCard.id"
-          :price="spendCard.price"
-          :label="spendCard.label"
-          :people="spendCard.people"
-          :categoryLabel="haveCategory ? spendCard.categoryLabel : undefined"
-          :space_id="props.space_id"
-          :date="spendCard.date"
-          :participants="spendCard.participants"
-        />
+        <ExpenseCardComponent v-for="expense in expenses" :key="expense.id" :expense="expense" />
       </div>
     </BaseSection>
   </div>
   <AddAction
-    route-name="new_paiement"
+    route-name="new_expense"
     :class="[getSpaceColor({ color: space?.color })]"
     :params="{ space_id: space?.id ?? 'error' }"
   />

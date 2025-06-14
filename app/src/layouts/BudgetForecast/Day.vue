@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  import type { PaiementCardComponentProps } from "@/components/PaiementCardComponent.vue"
+  import type { ExpenseCardComponentProps } from "@/components/ExpenseCardComponent.vue"
   import { getColor } from "@/services/getColor"
   import type { DatePickerDateSlotOptions } from "primevue"
   import type { Color } from "../Home/SpaceCard.vue"
   const props = defineProps<{
     date: DatePickerDateSlotOptions
-    allPaiements: PaiementCardComponentProps[]
+    allPaiements: ExpenseCardComponentProps[]
     color: Color
   }>()
   const havePaiement = props.allPaiements.some((specialDay) => {
