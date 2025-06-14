@@ -9,8 +9,12 @@ use App\Repository\GroupeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['groupe:read']],
+    denormalizationContext: ['groups' => ['groupe:write']]
+)]
 #[ORM\Entity(repositoryClass: GroupeRepository::class)]
 #[ORM\Table(name: 'MON_GROUPE')]
 class Groupe
@@ -18,43 +22,53 @@ class Groupe
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'GRP_ID')]
+    #[Groups(['groupe:read'])]
     private int $id;
 
     #[ORM\Column(length: 255, name: 'GRP_NAME')]
+    #[Groups(['groupe:read', 'groupe:write'])]
     private ?string $name = null;
 
     #[ORM\Column(name: 'GRP_CREATED_AT')]
+    #[Groups(['groupe:read', 'groupe:write'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(length: 255, name: 'GRP_TYPE')]
+    #[Groups(['groupe:read', 'groupe:write'])]
     private ?string $type = null;
 
     /**
      * @var Collection<int, Expense>
      */
     #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'groupe')]
+    #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $expenses;
 
     /**
      * @var Collection<int, Member>
      */
     #[ORM\OneToMany(targetEntity: Member::class, mappedBy: 'groupe')]
+    #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $members;
 
     #[ORM\ManyToOne(inversedBy: 'groupes')]
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
+    #[Groups(['groupe:read', 'groupe:write'])]
     private User $creator;
 
     /**
      * @var Collection<int, Category>
      */
     #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'groupe')]
+    #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $categories;
 
     #[ORM\Column(length: 255, name: 'GRP_PICTURE')]
+    #[Groups(['groupe:read', 'groupe:write'])]
     private ?string $picture = null;
 
     #[ORM\Column(length: 255, name: 'GRP_COLOR')]
+    #[Groups(['groupe:read', 'groupe:write'])]
     private ?string $color = null;
 
     public function __construct()

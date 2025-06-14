@@ -8,21 +8,25 @@ use App\Entity\Member;
 use App\Entity\User;
 use App\Entity\Groupe;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\UserRepository;
+use App\Repository\GroupeRepository;
+use App\Repository\MemberRepository;
+use App\ApiResource\MemberResource;
 
 class MemberPostProcessor implements ProcessorInterface
 {
-    public function __construct(private EntityManagerInterface $em) {}
+    public function __construct(private EntityManagerInterface $em, private UserRepository $userRepository, private GroupeRepository $groupeRepository, private MemberRepository $memberRepository) {}
 
-    public function process($data, Operation $operation, array $uriVariables = [], array $context = []): Member
+    public function process($data, Operation $operation, array $uriVariables = [], array $context = []): MemberResource
     {
-        $user = $this->em->getRepository(User::class)->find($uriVariables['userId']);
-        $groupe = $this->em->getRepository(Groupe::class)->find($uriVariables['groupeId']);
+        $user = $this->userRepository->find($uriVariables['userId']);
+        $groupe = $this->groupeRepository->find($uriVariables['groupeId']);
 
         if (!$user || !$groupe) {
             throw new \RuntimeException('User or Groupe not found');
         }
 
-        $existing = $this->em->getRepository(Member::class)->findOneBy([
+        $existing = $this->memberRepository->findOneBy([
             'individual' => $user,
             'groupe' => $groupe
         ]);
@@ -40,6 +44,10 @@ class MemberPostProcessor implements ProcessorInterface
         $this->em->persist($member);
         $this->em->flush();
 
-        return $member;
+        return new MemberResource(
+            userId: $user->getId(),
+            groupeId: $groupe->getId(),
+            role: $member->getRole(),
+        );
     }
 }

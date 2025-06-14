@@ -12,8 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']]
+)]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'MON_USER')]
 #[UniqueEntity(fields: ['email'], message: "Cet email est déjà utilisé.")]
@@ -23,6 +27,7 @@ class User
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'USR_ID')]
+    #[Groups(['user:read'])]
     private int $id;
 
     #[ORM\Column(length: 50, name: 'USR_USERNAME', unique: true)]
@@ -33,42 +38,52 @@ class User
         minMessage: "Le nom d'utilisateur doit comporter au moins {{ limit }} caractères.",
         maxMessage: "Le nom d'utilisateur ne peut pas dépasser {{ limit }} caractères."
     )]
+    #[Groups(['user:read', 'user:write'])]
     private string $username;
 
     #[ORM\Column(length: 50, name: 'USR_NAME')]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 50, name: 'USR_LASTNAME')]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 255, name: 'USR_EMAIL')]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, name: 'USR_PASSWORD')]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $password = null;
 
     #[ORM\Column(type: 'json', name: 'USR_ROLE')]
+    #[Groups(['user:read', 'user:write'])]
     private array $role = [];
 
     #[ORM\Column(name: 'USR_CREATED_AT')]
+    #[Groups(['user:read', 'user:write'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     /**
      * @var Collection<int, Expense>
      */
     #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'creator')]
+    #[Groups(['user:read', 'user:write'])]
     private Collection $expenses;
 
     /**
      * @var Collection<int, Member>
      */
     #[ORM\OneToMany(targetEntity: Member::class, mappedBy: 'individual')]
+    #[Groups(['user:read', 'user:write'])]
     private Collection $members;
 
     /**
      * @var Collection<int, Groupe>
      */
     #[ORM\OneToMany(targetEntity: Groupe::class, mappedBy: 'creator')]
+    #[Groups(['user:read', 'user:write'])]
     private Collection $groupes;
 
     /**
@@ -78,12 +93,15 @@ class User
     #[ORM\JoinTable(name: 'MON_SHARE_EXPENSE')]
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'EXP_ID', referencedColumnName: 'EXP_ID', nullable: false)]
+    #[Groups(['user:read', 'user:write'])]
     private Collection $shareExpenses;
 
     #[ORM\Column(length: 255, name: 'USR_PICTURE')]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $picture = null;
 
     #[ORM\Column(length: 255, name: 'USR_RESET_TOKEN')]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $resetToken = null;
 
     public function __construct()
