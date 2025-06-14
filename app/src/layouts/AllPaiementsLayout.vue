@@ -12,15 +12,14 @@
   import { getSpaceColor } from "@/services/getColor"
   import { Button } from "primevue"
   import type { AmountType } from "@/types/budget"
-  import type { ExpenseType } from "@/types/expense"
-  import type { CategoryType } from "@/types/category"
+  import type { ExpenseDateType } from "@/types/expense"
   interface Props {
     space_id: string
     haveCategory?: boolean
     actionButton?: boolean
     subHeader: TitleComponentProps & RouteProps
     amount?: AmountType
-    expenses?: ExpenseType[]
+    expensesDate?: ExpenseDateType
   }
 
   const props = defineProps<Props>()
@@ -56,22 +55,12 @@
       </div>
     </div>
     <BaseSection
-      :label="formatDateToDayMonth(data.date)"
-      v-for="(data, index) in space?.paiements"
+      v-for="([date, expenses], index) in Object.entries(expensesDate ?? {})"
+      :label="formatDateToDayMonth(new Date(date))"
       :key="index"
     >
       <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <PaiementCardComponent
-          v-for="expense in expenses"
-          :key="expense.id"
-          :id="expense.id"
-          :amount="expense.amount"
-          :title="expense.title"
-          :creator="expense.creator"
-          :category="haveCategory ? expense.category : ({} as CategoryType)"
-          :space_id="props.space_id"
-          :spent-at="expense.spentAt"
-        />
+        <PaiementCardComponent v-for="expense in expenses" :key="expense.id" :expense="expense" />
       </div>
     </BaseSection>
   </div>

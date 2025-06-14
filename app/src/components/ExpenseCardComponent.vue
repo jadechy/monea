@@ -1,19 +1,19 @@
 <template>
   <router-link
-    :to="{ name: 'paiement', params: { id: id, space_id: space_id } }"
+    :to="{ name: 'paiement', params: { id: expense.id, space_id: expense.groupe.id } }"
     class="flex shadow px-4 py-3 justify-between w-full rounded-3xl hover:bg-gray-50"
   >
     <div>
       <p class="font-bold mb-2.5">{{ expense.title }}</p>
       <div class="flex items-center gap-2.5">
-        <div v-if="category">
-          <ColoredLabelComponent v-if="category.label" :label="category.label" />
+        <div v-if="expense.category">
+          <ColoredLabelComponent v-if="expense.category.label" :label="expense.category.label" />
         </div>
-        <Chip :label="creator.username" :image="creator.picture ?? placeholder" />
+        <Chip :label="expense.creator.username" :image="expense.creator.picture ?? placeholder" />
       </div>
     </div>
     <p>
-      <span class="font-bold">{{ amount }}</span
+      <span class="font-bold">{{ expense.amount }}</span
       >€
     </p>
   </router-link>
@@ -26,7 +26,10 @@
   import type { ExpenseType } from "@/types/expense"
 
   export interface ExpenseCardComponentProps {
-    expense: Pick<ExpenseType, "id" | "title" | "category" | "creator" | "amount" | "spentAt">
+    expense: Pick<
+      ExpenseType,
+      "id" | "title" | "category" | "creator" | "amount" | "spentAt" | "groupe"
+    >
   }
-  defineProps<ExpenseCardComponentProps & { space_id: string }>()
+  defineProps<ExpenseCardComponentProps>()
 </script>

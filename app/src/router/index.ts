@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router"
 import HomeView from "../views/HomeView.vue"
 import SpaceView from "@/views/SpaceView.vue"
-import PaiementView from "@/views/PaiementView.vue"
+import PaiementView from "@/views/ExpenseView.vue"
 import NewSpaceView from "@/views/NewSpaceView.vue"
 import NewPaiementView from "@/views/NewPaiementView.vue"
 import ProfilView from "@/views/ProfilView.vue"
