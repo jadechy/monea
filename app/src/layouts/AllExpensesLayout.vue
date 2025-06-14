@@ -5,7 +5,6 @@
   import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
   import type { TitleComponentProps } from "@/components/TitleComponent.vue"
-  import { spacesData } from "@/data/spaces"
   import router from "@/router"
   import { formatDateToDayMonth } from "@/lib/date"
   import { getSpaceColor } from "@/services/getColor"
@@ -13,8 +12,9 @@
   import type { AmountType } from "@/types/budget"
   import type { ExpenseDateType } from "@/types/expense"
   import ExpenseCardComponent from "@/components/ExpenseCardComponent.vue"
+  import type { GroupType } from "@/types/group"
   interface Props {
-    space_id: string
+    group: GroupType
     haveCategory?: boolean
     actionButton?: boolean
     subHeader: TitleComponentProps & RouteProps
@@ -23,7 +23,6 @@
   }
 
   const props = defineProps<Props>()
-  const space = spacesData.find((space) => space.id === props.space_id)
 </script>
 
 <template>
@@ -42,15 +41,15 @@
           label="Budget"
           class="mr-2"
           size="small"
-          :class="[getSpaceColor({ color: space?.color })]"
-          @click="router.push({ name: 'budget_space', params: { space_id: space?.id } })"
+          :class="[getSpaceColor({ color: group?.color })]"
+          @click="router.push({ name: 'budget_space', params: { space_id: group?.id } })"
         />
         <Button
           icon="pi pi-pencil"
           label="Edition"
           size="small"
-          :class="[getSpaceColor({ color: space?.color })]"
-          @click="router.push({ name: 'edit_space', params: { id: space?.id } })"
+          :class="[getSpaceColor({ color: group?.color })]"
+          @click="router.push({ name: 'edit_space', params: { id: group?.id } })"
         />
       </div>
     </div>
@@ -66,7 +65,7 @@
   </div>
   <AddAction
     route-name="new_expense"
-    :class="[getSpaceColor({ color: space?.color })]"
-    :params="{ space_id: space?.id ?? 'error' }"
+    :class="[getSpaceColor({ color: group?.color })]"
+    :params="{ space_id: String(group?.id) ?? 'error' }"
   />
 </template>

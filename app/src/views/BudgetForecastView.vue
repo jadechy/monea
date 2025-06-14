@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
   import BaseSection from "@/components/BaseSection.vue"
   import type { ExpenseCardComponentProps } from "@/components/ExpenseCardComponent.vue"
   import PaiementCardComponent from "@/components/ExpenseCardComponent.vue"
@@ -9,14 +9,12 @@
     categoryLabel as categoryLabelData,
     type CategoryLabel,
   } from "@/data/categoryLabel"
-  import { spacesData } from "@/data/spaces"
   import Day from "@/layouts/BudgetForecast/Day.vue"
   import { formatDateToDayMonth } from "@/lib/date"
   import { getColors } from "@/services/getColor"
   import { DatePicker, Select } from "primevue"
   import { computed, ref } from "vue"
   const props = defineProps<{ space_id: string }>()
-  const space = spacesData.find((space) => space.id === props.space_id)
 
   const date = ref<Date | null>(null)
   const allPaiements: ExpenseCardComponentProps[] =
@@ -178,7 +176,9 @@
           </div>
         </div>
       </BaseSection> -->
-      </div>
+<!-- </div>
     </BaseSection>
   </div>
-</template>
+</template> -->
+-->
+<template></template>
