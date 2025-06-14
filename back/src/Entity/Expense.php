@@ -35,19 +35,27 @@ class Expense
     #[ORM\JoinColumn(name: 'CAT_ID', referencedColumnName: 'CAT_ID', nullable: false)]
     private ?Category $category = null;
 
-    /**
-     * @var Collection<int, ShareExpense>
-     */
-    #[ORM\OneToMany(targetEntity: ShareExpense::class, mappedBy: 'expense')]
-    private Collection $sharedExpenses;
-
     #[ORM\ManyToOne(inversedBy: 'expenses')]
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
     private User $creator;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'shareExpenses')]
+    private Collection $participants;
+
+    #[ORM\ManyToOne(inversedBy: 'expenses')]
+    #[ORM\JoinColumn(name: 'REC_ID', referencedColumnName: 'REC_ID')]
+    private ?RecurringExpense $recurringExpense = null;
+
+    #[ORM\Column(name: 'EXP_SPENT_AT')]
+    private ?\DateTimeImmutable $spentAt = null;
+
     public function __construct()
     {
         $this->sharedExpenses = new ArrayCollection();
+        $this->participants = new ArrayCollection();
     }
 
     public function getId(): int
@@ -115,36 +123,6 @@ class Expense
         return $this;
     }
 
-    /**
-     * @return Collection<int, ShareExpense>
-     */
-    public function getSharedExpenses(): Collection
-    {
-        return $this->sharedExpenses;
-    }
-
-    public function addSharedExpense(ShareExpense $sharedExpense): static
-    {
-        if (!$this->sharedExpenses->contains($sharedExpense)) {
-            $this->sharedExpenses->add($sharedExpense);
-            $sharedExpense->setExpense($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSharedExpense(ShareExpense $sharedExpense): static
-    {
-        if ($this->sharedExpenses->removeElement($sharedExpense)) {
-            // set the owning side to null (unless already changed)
-            if ($sharedExpense->getExpense() === $this) {
-                $sharedExpense->setExpense(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getCreator(): User
     {
         return $this->creator;
@@ -153,6 +131,57 @@ class Expense
     public function setCreator(User $creator): static
     {
         $this->creator = $creator;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function addParticipant(User $participant): static
+    {
+        if (!$this->participants->contains($participant)) {
+            $this->participants->add($participant);
+            $participant->addShareExpense($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipant(User $participant): static
+    {
+        if ($this->participants->removeElement($participant)) {
+            $participant->removeShareExpense($this);
+        }
+
+        return $this;
+    }
+
+    public function getRecurringExpense(): ?RecurringExpense
+    {
+        return $this->recurringExpense;
+    }
+
+    public function setRecurringExpense(?RecurringExpense $recurringExpense): static
+    {
+        $this->recurringExpense = $recurringExpense;
+
+        return $this;
+    }
+
+    public function getSpentAt(): ?\DateTimeImmutable
+    {
+        return $this->spentAt;
+    }
+
+    public function setSpentAt(\DateTimeImmutable $spentAt): static
+    {
+        $this->spentAt = $spentAt;
 
         return $this;
     }

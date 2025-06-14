@@ -16,35 +16,19 @@ class Budget
     #[ORM\Column(name: 'BGT_ID')]
     private int $id;
 
-    #[ORM\Column(name: 'BGT_MONTH')]
-    private int $month;
-
     #[ORM\Column(name: 'BGT_AMOUNT')]
     private ?float $amount = null;
 
-    #[ORM\ManyToOne(inversedBy: 'budget')]
-    #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
-    private User $creator;
+    #[ORM\Column(name: 'BGT_MONTH_START')]
+    private \DateTimeImmutable $monthStart;
 
     #[ORM\ManyToOne(inversedBy: 'budgets')]
-    #[ORM\JoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID', nullable: false)]
-    private Groupe $groupe;
+    #[ORM\JoinColumn(name: 'CAT_ID', referencedColumnName: 'CAT_ID', nullable: false)]
+    private Category $category;
 
     public function getId(): int
     {
         return $this->id;
-    }
-
-    public function getMonth(): int
-    {
-        return $this->month;
-    }
-
-    public function setMonth(int $month): static
-    {
-        $this->month = $month;
-
-        return $this;
     }
 
     public function getAmount(): ?float
@@ -59,26 +43,26 @@ class Budget
         return $this;
     }
 
-    public function getCreator(): User
+    public function getMonthStart(): \DateTimeImmutable
     {
-        return $this->creator;
+        return $this->monthStart;
     }
 
-    public function setCreator(User $creator): static
+    public function setMonthStart(\DateTimeImmutable $monthStart): static
     {
-        $this->creator = $creator;
+        $this->monthStart = $monthStart;
 
         return $this;
     }
 
-    public function getGroupe(): Groupe
+    public function getCategory(): Category
     {
-        return $this->groupe;
+        return $this->category;
     }
 
-    public function setGroupe(Groupe $groupe): static
+    public function setCategory(Category $category): static
     {
-        $this->groupe = $groupe;
+        $this->category = $category;
 
         return $this;
     }

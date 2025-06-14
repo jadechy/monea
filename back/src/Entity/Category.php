@@ -30,19 +30,20 @@ class Category
     #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'category')]
     private Collection $expenses;
 
+    #[ORM\ManyToOne(inversedBy: 'categories')]
+    #[ORM\JoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID')]
+    private Groupe $groupe;
+
     /**
-     * @var Collection<int, Groupe>
+     * @var Collection<int, Budget>
      */
-    #[ORM\ManyToMany(targetEntity: Groupe::class, inversedBy: 'categories')]
-    #[ORM\JoinTable(name: 'MON_CATEGORY_GROUPE')]
-    #[ORM\JoinColumn(name: 'CAT_ID', referencedColumnName: 'CAT_ID', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID', nullable: false)]
-    private Collection $groupes;
+    #[ORM\OneToMany(targetEntity: Budget::class, mappedBy: 'category')]
+    private Collection $budgets;
 
     public function __construct()
     {
         $this->expenses = new ArrayCollection();
-        $this->groupes = new ArrayCollection();
+        $this->budgets = new ArrayCollection();
     }
 
     public function getId(): int
@@ -104,26 +105,44 @@ class Category
         return $this;
     }
 
-    /**
-     * @return Collection<int, Groupe>
-     */
-    public function getGroupes(): Collection
+    public function getGroupe(): Groupe
     {
-        return $this->groupes;
+        return $this->groupe;
     }
 
-    public function addGroupe(Groupe $groupe): static
+    public function setGroupe(Groupe $groupe): static
     {
-        if (!$this->groupes->contains($groupe)) {
-            $this->groupes->add($groupe);
+        $this->groupe = $groupe;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Budget>
+     */
+    public function getBudgets(): Collection
+    {
+        return $this->budgets;
+    }
+
+    public function addBudget(Budget $budget): static
+    {
+        if (!$this->budgets->contains($budget)) {
+            $this->budgets->add($budget);
+            $budget->setCategory($this);
         }
 
         return $this;
     }
 
-    public function removeGroupe(Groupe $groupe): static
+    public function removeBudget(Budget $budget): static
     {
-        $this->groupes->removeElement($groupe);
+        if ($this->budgets->removeElement($budget)) {
+            // set the owning side to null (unless already changed)
+            if ($budget->getCategory() === $this) {
+                $budget->setCategory(null);
+            }
+        }
 
         return $this;
     }

@@ -40,9 +40,6 @@ class Groupe
     #[ORM\Column(length: 255, name: 'GRP_TYPE')]
     private ?string $type = null;
 
-    #[ORM\Column(name: 'GRP_IS_ACTIVE')]
-    private ?bool $isActive = null;
-
     /**
      * @var Collection<int, Expense>
      */
@@ -55,12 +52,6 @@ class Groupe
     #[ORM\OneToMany(targetEntity: Member::class, mappedBy: 'groupe')]
     private Collection $members;
 
-    /**
-     * @var Collection<int, Budget>
-     */
-    #[ORM\OneToMany(targetEntity: Budget::class, mappedBy: 'groupe')]
-    private Collection $budgets;
-
     #[ORM\ManyToOne(inversedBy: 'groupes')]
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
     private User $creator;
@@ -68,14 +59,19 @@ class Groupe
     /**
      * @var Collection<int, Category>
      */
-    #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'groupes')]
+    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'groupe')]
     private Collection $categories;
+
+    #[ORM\Column(length: 255, name: 'GRP_PICTURE')]
+    private ?string $picture = null;
+
+    #[ORM\Column(length: 255, name: 'GRP_COLOR')]
+    private ?string $color = null;
 
     public function __construct()
     {
         $this->expenses = new ArrayCollection();
         $this->members = new ArrayCollection();
-        $this->budgets = new ArrayCollection();
         $this->categories = new ArrayCollection();
     }
 
@@ -116,18 +112,6 @@ class Groupe
     public function setType(string $type): static
     {
         $this->type = $type;
-
-        return $this;
-    }
-
-    public function isActive(): ?bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): static
-    {
-        $this->isActive = $isActive;
 
         return $this;
     }
@@ -192,36 +176,6 @@ class Groupe
         return $this;
     }
 
-    /**
-     * @return Collection<int, Budget>
-     */
-    public function getBudgets(): Collection
-    {
-        return $this->budgets;
-    }
-
-    public function addBudget(Budget $budget): static
-    {
-        if (!$this->budgets->contains($budget)) {
-            $this->budgets->add($budget);
-            $budget->setGroupe($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBudget(Budget $budget): static
-    {
-        if ($this->budgets->removeElement($budget)) {
-            // set the owning side to null (unless already changed)
-            if ($budget->getGroupe() === $this) {
-                $budget->setGroupe(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getCreator(): User
     {
         return $this->creator;
@@ -246,7 +200,7 @@ class Groupe
     {
         if (!$this->categories->contains($category)) {
             $this->categories->add($category);
-            $category->addGroupe($this);
+            $category->setGroupe($this);
         }
 
         return $this;
@@ -255,8 +209,35 @@ class Groupe
     public function removeCategory(Category $category): static
     {
         if ($this->categories->removeElement($category)) {
-            $category->removeGroupe($this);
+            // set the owning side to null (unless already changed)
+            if ($category->getGroupe() === $this) {
+                $category->setGroupe(null);
+            }
         }
+
+        return $this;
+    }
+
+    public function getPicture(): ?string
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(string $picture): static
+    {
+        $this->picture = $picture;
+
+        return $this;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(string $color): static
+    {
+        $this->color = $color;
 
         return $this;
     }

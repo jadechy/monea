@@ -65,22 +65,10 @@ class User
     private ?\DateTimeImmutable $createdAt = null;
 
     /**
-     * @var Collection<int, ShareExpense>
-     */
-    #[ORM\OneToMany(targetEntity: ShareExpense::class, mappedBy: 'contributor')]
-    private Collection $sharedExpenses;
-
-    /**
      * @var Collection<int, Expense>
      */
     #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'creator')]
     private Collection $expenses;
-
-    /**
-     * @var Collection<int, Budget>
-     */
-    #[ORM\OneToMany(targetEntity: Budget::class, mappedBy: 'creator')]
-    private Collection $budget;
 
     /**
      * @var Collection<int, Member>
@@ -94,14 +82,27 @@ class User
     #[ORM\OneToMany(targetEntity: Groupe::class, mappedBy: 'creator')]
     private Collection $groupes;
 
+    /**
+     * @var Collection<int, Expense>
+     */
+    #[ORM\ManyToMany(targetEntity: Expense::class, inversedBy: 'participants')]
+    #[ORM\JoinTable(name: 'MON_SHARE_EXPENSE')]
+    #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'EXP_ID', referencedColumnName: 'EXP_ID', nullable: false)]
+    private Collection $shareExpenses;
+
+    #[ORM\Column(length: 255, name: 'USR_PICTURE')]
+    private ?string $picture = null;
+
+    #[ORM\Column(length: 255, name: 'USR_RESET_TOKEN')]
+    private ?string $resetToken = null;
+
     public function __construct()
     {
-        $this->sharedExpenses = new ArrayCollection();
         $this->expenses = new ArrayCollection();
-        $this->groupe = new ArrayCollection();
-        $this->budget = new ArrayCollection();
         $this->members = new ArrayCollection();
         $this->groupes = new ArrayCollection();
+        $this->shareExpenses = new ArrayCollection();
     }
 
     public function getId(): int
@@ -194,36 +195,6 @@ class User
     }
 
     /**
-     * @return Collection<int, ShareExpense>
-     */
-    public function getSharedExpenses(): Collection
-    {
-        return $this->sharedExpenses;
-    }
-
-    public function addSharedExpense(ShareExpense $sharedExpense): static
-    {
-        if (!$this->sharedExpenses->contains($sharedExpense)) {
-            $this->sharedExpenses->add($sharedExpense);
-            $sharedExpense->setContributor($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSharedExpense(ShareExpense $sharedExpense): static
-    {
-        if ($this->sharedExpenses->removeElement($sharedExpense)) {
-            // set the owning side to null (unless already changed)
-            if ($sharedExpense->getContributor() === $this) {
-                $sharedExpense->setContributor(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Expense>
      */
     public function getExpenses(): Collection
@@ -247,37 +218,6 @@ class User
             // set the owning side to null (unless already changed)
             if ($expense->getCreator() === $this) {
                 $expense->setCreator(null);
-            }
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * @return Collection<int, Budget>
-     */
-    public function getBudget(): Collection
-    {
-        return $this->budget;
-    }
-
-    public function addBudget(Budget $budget): static
-    {
-        if (!$this->budget->contains($budget)) {
-            $this->budget->add($budget);
-            $budget->setCreator($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBudget(Budget $budget): static
-    {
-        if ($this->budget->removeElement($budget)) {
-            // set the owning side to null (unless already changed)
-            if ($budget->getCreator() === $this) {
-                $budget->setCreator(null);
             }
         }
 
@@ -340,6 +280,54 @@ class User
                 $groupe->setCreator(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Expense>
+     */
+    public function getShareExpenses(): Collection
+    {
+        return $this->shareExpenses;
+    }
+
+    public function addShareExpense(Expense $shareExpense): static
+    {
+        if (!$this->shareExpenses->contains($shareExpense)) {
+            $this->shareExpenses->add($shareExpense);
+        }
+
+        return $this;
+    }
+
+    public function removeShareExpense(Expense $shareExpense): static
+    {
+        $this->shareExpenses->removeElement($shareExpense);
+
+        return $this;
+    }
+
+    public function getPicture(): ?string
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(string $picture): static
+    {
+        $this->picture = $picture;
+
+        return $this;
+    }
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(string $resetToken): static
+    {
+        $this->resetToken = $resetToken;
 
         return $this;
     }
