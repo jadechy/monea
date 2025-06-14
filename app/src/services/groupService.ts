@@ -1,7 +1,8 @@
 import { fetchJson, postJson } from "@/lib/api"
-import { UserSchema, type CreateUserInputType } from "@/types/user"
+import { GroupSchema } from "@/types/group"
+import { UserSchema, type CreateUserInputType, type UserType } from "@/types/user"
 
-export const createUser = async (input: CreateUserInputType) => {
+export const createGroup = async (input: CreateUserInputType) => {
   try {
     return await postJson({ url: "users", body: input, responseSchema: UserSchema })
   } catch (error) {
@@ -9,7 +10,7 @@ export const createUser = async (input: CreateUserInputType) => {
     return null
   }
 }
-export const fetchAllUser = async () => {
+export const fetchAllGroup = async () => {
   try {
     return await fetchJson({ url: "users", schema: UserSchema.array() })
   } catch (error) {
@@ -17,11 +18,22 @@ export const fetchAllUser = async () => {
     return null
   }
 }
-export const fetchUser = async (id: string) => {
+export const fetchGroup = async (id: string) => {
   try {
     return await fetchJson({
       url: `users/${id}`,
       schema: UserSchema,
+    })
+  } catch (error) {
+    console.error("Erreur lors du fetch de l'utilisateur :", error)
+    return null
+  }
+}
+export const fetchGroupByUser = async (userId: UserType["id"]) => {
+  try {
+    return await fetchJson({
+      url: `groupes/${userId}/list`,
+      schema: GroupSchema.array(),
     })
   } catch (error) {
     console.error("Erreur lors du fetch de l'utilisateur :", error)

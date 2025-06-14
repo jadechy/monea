@@ -1,4 +1,4 @@
-import type { Color } from "@/layouts/Home/SpaceCard.vue"
+import type { ColorType } from "@/types/color"
 type ColorObject = { bg: string; text: string; hover: string; selected: string }
 type ColorMap = Record<string, ColorObject>
 
@@ -34,7 +34,7 @@ export const getColor = ({
   hover = 200,
   selected = 50,
 }: {
-  color: Color
+  color: ColorType
   bg?: number
   text?: number
   hover?: number
@@ -50,7 +50,7 @@ export const getSpaceColor = ({
   color = "gray",
   outlined,
 }: {
-  color?: Color
+  color?: ColorType
   outlined?: boolean
 }) =>
   outlined

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import BaseSection from "@/components/BaseSection.vue"
-  import type { PaiementCardComponentProps } from "@/components/PaiementCardComponent.vue"
-  import PaiementCardComponent from "@/components/PaiementCardComponent.vue"
+  import type { ExpenseCardComponentProps } from "@/components/ExpenseCardComponent.vue"
+  import PaiementCardComponent from "@/components/ExpenseCardComponent.vue"
   import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
   import {
@@ -19,7 +19,7 @@
   const space = spacesData.find((space) => space.id === props.space_id)
 
   const date = ref<Date | null>(null)
-  const allPaiements: PaiementCardComponentProps[] =
+  const allPaiements: ExpenseCardComponentProps[] =
     space?.paiements.flatMap((arr) => arr.paiements) ?? []
   const currentPaiements = computed(() => {
     return allPaiements.filter((paiement) => {

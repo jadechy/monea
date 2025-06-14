@@ -1,4 +1,4 @@
-import type { PaiementCardComponentProps } from "@/components/PaiementCardComponent.vue"
+import type { ExpenseCardComponentProps } from "@/components/ExpenseCardComponent.vue"
 import { peoplesData, type People } from "../people"
 
 export function findPersonByPseudo(pseudo: string): People {
@@ -7,6 +7,6 @@ export function findPersonByPseudo(pseudo: string): People {
   return person
 }
 export type PaiementData = {
-  paiements: PaiementCardComponentProps[]
+  paiements: ExpenseCardComponentProps[]
   date: Date
 }

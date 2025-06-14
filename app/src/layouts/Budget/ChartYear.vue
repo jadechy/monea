@@ -5,14 +5,14 @@
   import { colors } from "@/main"
   import { biblioPaiements } from "@/data/paiements/biblioPaiements"
   import type { PaiementData } from "@/data/paiements"
-  import type { PaiementCardComponentProps } from "@/components/PaiementCardComponent.vue"
+  import type { ExpenseCardComponentProps } from "@/components/ExpenseCardComponent.vue"
   const getCategoryPaiement = (array: PaiementData[], categoryLabel: CategoryLabel) => {
     return array.map((month, i) =>
       month.paiements.filter((paiement) => paiement.categoryLabel === categoryLabel),
     )
   }
 
-  const getPaiementSome = (array: PaiementCardComponentProps[][]) => {
+  const getPaiementSome = (array: ExpenseCardComponentProps[][]) => {
     return array.map((month, i) => {
       let amount = 0
       month.map((paiement) => (amount += paiement.price))

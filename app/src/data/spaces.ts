@@ -1,4 +1,3 @@
-import type { SpaceCardProps } from "@/layouts/Home/SpaceCard.vue"
 import { bureauPaiements } from "./paiements/bureauPaiements"
 import { cafePaiements } from "./paiements/cafePaiements"
 import { biblioPaiements } from "./paiements/biblioPaiements"
@@ -7,6 +6,14 @@ import { personalPaiements } from "./paiements/personalPaiements"
 import type { PaiementData } from "./paiements"
 import { maisonPaiements } from "./paiements/maisonPaiements"
 import type { CategoryLabel } from "./categoryLabel"
+import type { ColorType } from "@/types/color"
+type SpaceCardProps = {
+  id: string
+  label: string
+  img: string
+  color: ColorType
+}
+
 type SpaceData = {
   paiements: PaiementData[]
   overallBudget: number

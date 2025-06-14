@@ -3,9 +3,10 @@
   import type { Color } from "../layouts/Home/SpaceCard.vue"
   import { getColors } from "@/services/getColor"
   import { colors } from "@/data/categoryLabel"
-  export type TitleComponentProps = {
+  import type { ColorType } from "@/types/color"
+  export interface TitleComponentProps {
     label: string
-    color?: Color
+    color?: ColorType
   }
   const props = withDefaults(defineProps<TitleComponentProps>(), {
     color: "gray" as Color,
