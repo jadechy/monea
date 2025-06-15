@@ -12,14 +12,14 @@ use App\Controller\BudgetController;
 
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/budgets/{groupeId}/{monthStart}',
+        uriTemplate: '/budget/{groupeId}/{monthStart}',
         controller: BudgetController::class . '::getBudget',
         read: false,
         name: 'budget_get_total',
         normalizationContext: ['groups' => ['budget:read']]
     ),
     new Get(
-        uriTemplate: '/budgets/{groupeId}/{monthStart}/remaining',
+        uriTemplate: '/budget/{groupeId}/{monthStart}/remaining',
         controller: BudgetController::class . '::getRemainingBudget',
         read: false,
         name: 'budget_get_remaining',
