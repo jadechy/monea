@@ -25,6 +25,21 @@ use App\Controller\BudgetController;
         name: 'budget_get_remaining',
         normalizationContext: ['groups' => ['budget:read']]
     ),
+    new Get(
+        uriTemplate: '/budget/{catId}/{monthStart}/remaining/category',
+        controller: BudgetController::class . '::getRemainingBudgetByCategoryAndMonth',
+        uriVariables: [
+            'categoryId' => new Link(fromClass: null, fromProperty: 'categoryId'),
+            'monthStart' => new Link(fromClass: null, fromProperty: 'monthStart'),
+        ],
+        read: false,
+        name: 'budget_get_remaining_by_category',
+        requirements: [
+            'categoryId' => '\d+',
+            'monthStart' => '\d{4}-\d{2}-\d{2}'
+        ],
+        normalizationContext: ['groups' => ['budget:read']]
+    ),
 ])]
 class BudgetCalcDTO
 {

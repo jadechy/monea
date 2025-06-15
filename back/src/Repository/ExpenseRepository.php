@@ -32,6 +32,22 @@ class ExpenseRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findExpensesByCategoryAndDate(int $catId, \DateTimeInterface $date)
+    {
+        $start = (clone $date)->modify('first day of this month')->setTime(0,0,0);
+        $end = (clone $date)->modify('last day of this month')->setTime(23,59,59);
+
+        return $this->createQueryBuilder('e')
+            ->leftJoin('e.category', 'c')
+            ->where('c.id = :categoryId')
+            ->andWhere('e.spentAt BETWEEN :start AND :end')
+            ->setParameter('categoryId', $catId)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Expense[] Returns an array of Expense objects
     //     */

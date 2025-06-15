@@ -108,4 +108,21 @@ class BudgetController
 
         return new JsonResponse(null, 404);
     }
+
+    public function getRemainingBudgetByCategoryAndMonth(string $categoryId, string $monthStart)
+    {
+        $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
+
+        $category = $this->categoryRepository->find($categoryId);
+        $budget = $this->budgetRepository->findBy(['category' => $category, 'monthStart' => $date]);
+
+        $totalBudget = $budget->getAmount();
+
+        $expenses = $this->expenseRepository->findExpensesByCategoryAndDate($categoryId, $monthStart);
+        $totalExpenses = array_sum(array_map(fn($e) => $e->getAmount(), $expenses));
+
+        $amount = $totalBudget - $totalExpenses;
+
+        return new BudgetCalcDTO($amount);
+    }
 }
