@@ -2,11 +2,12 @@
 
 namespace App\Controller;
 
-use App\DTO\BudgetDTO;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+use App\DTO\BudgetCalcDTO;
+use App\DTO\BudgetDTO;
 use App\Entity\Budget;
 use App\Entity\Groupe;
 use App\Repository\BudgetRepository;
@@ -37,17 +38,17 @@ class BudgetController
         return $total;
     }
 
-    public function getBudget(string $groupeId, $monthStart): BudgetDTO
+    public function getBudget(string $groupeId, $monthStart): BudgetCalcDTO
     {
         $groupe = $this->groupeRepository->find($groupeId);
 
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
         $amount = $this->computeTotalBudgetForGroup($groupe, $date);
 
-        return new BudgetDTO($amount);
+        return new BudgetCalcDTO($amount);
     }
 
-    public function getRemainingBudget(string $groupeId, $monthStart): BudgetDTO
+    public function getRemainingBudget(string $groupeId, $monthStart): BudgetCalcDTO
     {
         $groupe = $this->groupeRepository->find($groupeId);
 
@@ -59,6 +60,24 @@ class BudgetController
 
         $amount = $budgetAmount - $totalExpenses;
 
-        return new BudgetDTO($amount);
+        return new BudgetCalcDTO($amount);
+    }
+
+    public function getBudgetByGroupe(string $groupeId, string $monthStart)
+    {
+        $groupe = $this->groupeRepository->find($groupeId);
+        $categories = $this->categoryRepository->findBy(['groupe' => $groupe]);
+
+        $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
+
+        $budgets = [];
+        foreach ($categories as $category) {
+            $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($category->getId(), $monthStart);
+            if($budgetCategory){
+                $budgets[] = new BudgetDTO($budgetCategory);
+            }
+        }
+
+        return $budgets;
     }
 }

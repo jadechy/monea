@@ -9,30 +9,39 @@ use ApiPlatform\Metadata\Link;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\BudgetController;
+use App\Entity\Budget;
 
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/budgets/{groupeId}/{monthStart}',
-        controller: BudgetController::class . '::getBudget',
+        uriTemplate: '/budgets/{groupeId}/{monthStart}/category',
+        controller: BudgetController::class . '::getBudgetByGroupe',
         read: false,
-        name: 'budget_get_total',
-        normalizationContext: ['groups' => ['budget:read']]
-    ),
-    new Get(
-        uriTemplate: '/budgets/{groupeId}/{monthStart}/remaining',
-        controller: BudgetController::class . '::getRemainingBudget',
-        read: false,
-        name: 'budget_get_remaining',
+        name: 'budget_get_category',
         normalizationContext: ['groups' => ['budget:read']]
     ),
 ])]
 class BudgetDTO
 {
     #[Groups(['budget:read'])]
+    public int $id;
+
+    #[Groups(['budget:read'])]
     public float $amount;
 
-    public function __construct(float $amount)
+    #[Groups(['budget:read'])]
+    public array $category;
+
+    public function __construct(Budget $budget)
     {
-        $this->amount = $amount;
+        $category = $budget->getCategory();
+
+        $this->id = $budget->getId();
+        $this->amount = $budget->getAmount();
+
+        $this->category = [
+            'categoryId' => $category->getId(),
+            'label' => $category->getLabel(),
+            'color' => $category->getColor()
+        ];
     }
 }
