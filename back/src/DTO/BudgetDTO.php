@@ -13,10 +13,21 @@ use App\Entity\Budget;
 
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/budgets/{groupeId}/{monthStart}/category',
+        uriTemplate: '/budgets/{groupeId}/{monthStart}/list',
         controller: BudgetController::class . '::getBudgetByGroupe',
         read: false,
-        name: 'budget_get_category',
+        name: 'budget_list',
+        normalizationContext: ['groups' => ['budget:read']]
+    ),
+    new Get(
+        uriTemplate: '/budgets/{categoryId}/category',
+        controller: BudgetController::class . '::getBudgetByCategory',
+        uriVariables: [
+            'categoryId' => new Link(fromClass: null, fromProperty: 'categoryId')
+        ],
+        read: false,
+        name: 'budget_category',
+        requirements: ['categoryId' => '\d+'],
         normalizationContext: ['groups' => ['budget:read']]
     ),
 ])]

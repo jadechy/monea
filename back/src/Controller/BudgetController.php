@@ -80,4 +80,13 @@ class BudgetController
 
         return $budgets;
     }
+
+    public function getBudgetByCategory(string $categoryId)
+    {
+        $budgetsData = $this->budgetRepository->findBudgetByCategory($categoryId);
+
+        $budgets = array_map(fn($budget) => new BudgetDTO($budget), $budgetsData);
+
+        return $budgets;
+    }
 }
