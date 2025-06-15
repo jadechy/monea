@@ -5,6 +5,8 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
 
 use App\DTO\BudgetCalcDTO;
 use App\DTO\BudgetDTO;
@@ -88,5 +90,22 @@ class BudgetController
         $budgets = array_map(fn($budget) => new BudgetDTO($budget), $budgetsData);
 
         return $budgets;
+    }
+
+    public function getBudgetByCategoryAndMonth(string $categoryId, string $monthStart, SerializerInterface $serializer)
+    {
+        $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
+
+        $budgetData = $this->budgetRepository->findBudgetByCategoryAndDate($categoryId, $date);
+       
+        if ($budgetData) {
+            $budgetDTO = new BudgetDTO($budgetData);
+
+            $json = $serializer->serialize($budgetDTO, 'json', ['groups' => ['budget:read']]);
+
+            return new JsonResponse($json, 200, [], true);
+        }
+
+        return new JsonResponse(null, 404);
     }
 }

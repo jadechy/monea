@@ -30,6 +30,21 @@ use App\Entity\Budget;
         requirements: ['categoryId' => '\d+'],
         normalizationContext: ['groups' => ['budget:read']]
     ),
+    new Get(
+        uriTemplate: '/budgets/{categoryId}/{monthStart}/category',
+        controller: BudgetController::class . '::getBudgetByCategoryAndMonth',
+        uriVariables: [
+            'categoryId' => new Link(fromClass: null, fromProperty: 'categoryId'),
+            'monthStart' => new Link(fromClass: null, fromProperty: 'monthStart'),
+        ],
+        read: false,
+        name: 'budget_category_month',
+        requirements: [
+            'categoryId' => '\d+',
+            'monthStart' => '\d{4}-\d{2}-\d{2}'
+        ],
+        normalizationContext: ['groups' => ['budget:read']],
+    ),
 ])]
 class BudgetDTO
 {
