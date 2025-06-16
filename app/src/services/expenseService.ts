@@ -1,11 +1,63 @@
 import { fetchJson } from "@/lib/api"
-import { ExpenseSchema, FetchNewExpenseSchema } from "@/types/expense"
+import type { BudgetType } from "@/types/budget"
+import { ExpenseDateSchema, ExpenseSchema, FetchNewExpenseSchema } from "@/types/expense"
+import type { GroupType } from "@/types/group"
 
 export const fetchExpense = async (id: string) => {
   try {
     return await fetchJson({
       url: `expenses/${id}`,
       schema: ExpenseSchema,
+    })
+  } catch (error) {
+    console.error("Erreur lors du fetch de l'utilisateur :", error)
+    return null
+  }
+}
+export const fetchAllExpenseByGroup = async (group_id: GroupType["id"]) => {
+  try {
+    return await fetchJson({
+      url: `expenses/groupe/${group_id}/list`,
+      schema: ExpenseDateSchema,
+    })
+  } catch (error) {
+    console.error("Erreur lors du fetch de l'utilisateur :", error)
+    return null
+  }
+}
+export const fetchAllExpenseByGroupAndMonth = async (
+  group_id: GroupType["id"],
+  month: BudgetType["monthStart"],
+) => {
+  try {
+    return await fetchJson({
+      url: `expenses/groupe/${group_id}/${month}/list`,
+      schema: ExpenseDateSchema,
+    })
+  } catch (error) {
+    console.error("Erreur lors du fetch de l'utilisateur :", error)
+    return null
+  }
+}
+export const fetchAllExpenseByCategory = async (group_id: GroupType["id"]) => {
+  try {
+    return await fetchJson({
+      url: `expenses/groupe/${group_id}/list`,
+      schema: ExpenseDateSchema,
+    })
+  } catch (error) {
+    console.error("Erreur lors du fetch de l'utilisateur :", error)
+    return null
+  }
+}
+export const fetchAllExpenseByCategoryAndMonth = async (
+  group_id: GroupType["id"],
+  month: BudgetType["monthStart"],
+) => {
+  try {
+    return await fetchJson({
+      url: `expenses/groupe/${group_id}/${month}/list`,
+      schema: ExpenseDateSchema,
     })
   } catch (error) {
     console.error("Erreur lors du fetch de l'utilisateur :", error)

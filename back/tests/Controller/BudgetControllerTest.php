@@ -40,6 +40,39 @@ class BudgetControllerTest extends WebTestCase
         $this->assertIsNumeric($responseData['amount']);
     }
 
+    public function testFetchBudgetCategoryRemainingSuccess()
+    {
+        $client = static::createClient();
+
+        $categoryId = 1;
+        $month = '2025-06-01';
+
+        $client->request('GET', "/api/budget/{$categoryId}/{$month}/remaining/category");
+
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertArrayHasKey('amount', $responseData);
+        $this->assertIsNumeric($responseData['amount']);
+    }
+    public function testFetchBudgetCategorySuccess()
+    {
+        $client = static::createClient();
+
+        $categoryId = 1;
+        $month = '2025-06-01';
+
+        $client->request('GET', "/api/budgets/{$categoryId}/{$month}/category");
+
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertArrayHasKey('amount', $responseData);
+        $this->assertIsNumeric($responseData['amount']);
+    }
+
     // public function testFetchBudgetGroupRemainingNotFound()
     // {
     //     $client = static::createClient();
