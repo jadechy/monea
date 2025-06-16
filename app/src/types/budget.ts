@@ -13,3 +13,11 @@ export const AmountSchema = z.object({
   amount: AmountValueSchema,
 })
 export type AmountType = BudgetType["amount"]
+
+export const BudgetByCategorySchema = z.object({
+  id: z.number(),
+  amount: BudgetSchema.shape.amount,
+  monthStart: BudgetSchema.shape.monthStart,
+  category: CategorySchema,
+})
+export type BudgetByCategoryType = z.infer<typeof BudgetByCategorySchema>

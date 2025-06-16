@@ -9,6 +9,7 @@ import type { InputTextTokenSections } from "@primeuix/themes/types/inputtext"
 import "primeicons/primeicons.css"
 import type { SelectTokenSections } from "@primeuix/themes/types/select"
 import type { DatePickerTokenSections } from "@primeuix/themes/types/datepicker"
+import { createPinia } from "pinia"
 
 const buttonRoot: ButtonTokenSections.Root = {
   primary: {
@@ -162,8 +163,10 @@ const MyPreset = definePreset(Aura, {
   },
 })
 
+const pinia = createPinia()
 const app = createApp(App)
 
+app.use(pinia)
 app.use(router)
 app.use(PrimeVue, {
   theme: {

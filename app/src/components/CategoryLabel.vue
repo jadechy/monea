@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
   import { categories, type CategoryLabel } from "@/data/categoryLabel"
-  import { getColor } from "@/services/getColor"
+  import { getColor } from "@/lib/getColor"
   import { computed } from "vue"
 
   const props = withDefaults(

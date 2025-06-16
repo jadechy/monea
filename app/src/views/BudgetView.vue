@@ -4,9 +4,12 @@
   import SubHeader from "@/components/SubHeader.vue"
   import { categories, type CategoryLabel } from "@/data/categoryLabel"
   import ChartLayout from "@/layouts/Budget/ChartLayout.vue"
+  import { truncateToTenth } from "@/lib/number"
   import router from "@/router"
-  import { getSpaceColor } from "@/services/getColor"
+  import { fetchAllBudgetCategoriesByGroup } from "@/services/budgetService"
+  import { getSpaceColor } from "@/lib/getColor"
   import { fetchGroup } from "@/services/groupService"
+  import type { BudgetByCategoryType } from "@/types/budget"
   import type { ErrorType } from "@/types/error"
   import type { GroupType } from "@/types/group"
   import { Button } from "primevue"
@@ -14,14 +17,17 @@
 
   const props = defineProps<{ space_id: string }>()
   const group = ref<GroupType>()
+  const budgetCategories = ref<BudgetByCategoryType[]>([])
   const error = ref<ErrorType>(null)
 
   onMounted(async () => {
     const resultGroup = await fetchGroup(props.space_id)
-    if (resultGroup === null) {
+    const resultBudgetCategories = await fetchAllBudgetCategoriesByGroup(Number(props.space_id))
+    if (resultGroup === null || resultBudgetCategories === null) {
       error.value = "Erreur lors du chargement des utilisateurs"
     } else {
       group.value = resultGroup
+      budgetCategories.value = resultBudgetCategories
     }
   })
   const colorMap: Record<CategoryLabel, string> = {
@@ -35,7 +41,7 @@
 </script>
 
 <template>
-  <SubHeader label="Budget" :color="group?.color" routeName="home" />
+  <SubHeader label="Budget du mois" :color="group?.color" routeName="home" />
 
   <div class="flex flex-col gap-10" v-if="group">
     <section class="flex justify-between">
@@ -52,20 +58,22 @@
         @click="router.push({ name: 'forecast_budget_space', params: { id: group?.id } })"
       />
     </section>
-    <BaseSection label="Par catégories">
+    <BaseSection label="Budget du mois par catégories" v-if="budgetCategories.length > 0">
       <div class="grid gap-2 grid-cols-2 md:grid-cols-3">
         <router-link
-          v-for="(category, i) in categories.filter((category) => category.label !== 'default')"
+          v-for="(budget, i) in budgetCategories.filter(
+            (budget) => budget.category.label !== 'default',
+          )"
           :to="{
             name: 'category_budget_space',
-            params: { space_id: group?.id, category_id: category.label },
+            params: { space_id: group?.id, category_id: budget.category.label },
           }"
           class="flex justify-between rounded-full px-4 py-3"
           :key="i"
-          :class="colorMap[category.label]"
+          :class="`bg-${budget.category.color}-50 hover:bg-${budget.category.color}-100 text-${budget.category.color}-800`"
         >
-          <p>{{ category.label }}</p>
-          <!-- <p>{{ group?.budgetByCategory[category.label] }} €</p> -->
+          <p>{{ budget.category.label }}</p>
+          <p>{{ truncateToTenth(budget.amount) }} €</p>
         </router-link>
       </div>
     </BaseSection>

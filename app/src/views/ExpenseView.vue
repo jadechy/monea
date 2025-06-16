@@ -7,7 +7,7 @@
   import PeopleComponent from "@/components/PeopleComponent.vue"
   import { Button, Chip } from "primevue"
   import router from "@/router"
-  import { getSpaceColor } from "@/services/getColor"
+  import { getSpaceColor } from "@/lib/getColor"
   import type { ExpenseType } from "@/types/expense"
   import type { ErrorType } from "@/types/error"
   import { fetchExpense } from "@/services/expenseService"

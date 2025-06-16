@@ -7,13 +7,13 @@
   import type { TitleComponentProps } from "@/components/TitleComponent.vue"
   import router from "@/router"
   import { formatDateToDayMonth } from "@/lib/date"
-  import { getSpaceColor } from "@/services/getColor"
+  import { getSpaceColor } from "@/lib/getColor"
   import { Button } from "primevue"
   import type { ExpenseDateType } from "@/types/expense"
   import ExpenseCardComponent from "@/components/ExpenseCardComponent.vue"
   import type { GroupType } from "@/types/group"
   interface Props {
-    group: GroupType
+    group?: GroupType
     haveCategory?: boolean
     actionButton?: boolean
     subHeader: TitleComponentProps & RouteProps
@@ -31,7 +31,7 @@
     :params="subHeader.params"
   />
   <div class="flex flex-col gap-10">
-    <div class="flex flex-col gap-2 sm:flex-row justify-between items-center">
+    <div class="flex flex-col gap-2 sm:flex-row justify-between items-center" v-if="group">
       <RemainingBudget :space_id="group.id" />
       <div v-if="actionButton">
         <Button
