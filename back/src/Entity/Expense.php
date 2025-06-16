@@ -54,7 +54,6 @@ class Expense
 
     public function __construct()
     {
-        $this->sharedExpenses = new ArrayCollection();
         $this->participants = new ArrayCollection();
     }
 
