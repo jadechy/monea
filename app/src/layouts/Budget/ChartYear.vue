@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
   import { ref } from "vue"
   import Chart from "primevue/chart"
   import { categories, type CategoryLabel } from "@/data/categoryLabel"
@@ -61,4 +61,5 @@
 
 <template>
   <Chart type="line" :data="chartData" :options="chartOptions" class="w-full" />
-</template>
+</template> -->
+<template></template>

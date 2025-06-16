@@ -5,25 +5,22 @@
   import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
   import type { TitleComponentProps } from "@/components/TitleComponent.vue"
-  import { spacesData } from "@/data/spaces"
   import router from "@/router"
   import { formatDateToDayMonth } from "@/lib/date"
   import { getSpaceColor } from "@/services/getColor"
   import { Button } from "primevue"
-  import type { AmountType } from "@/types/budget"
   import type { ExpenseDateType } from "@/types/expense"
   import ExpenseCardComponent from "@/components/ExpenseCardComponent.vue"
+  import type { GroupType } from "@/types/group"
   interface Props {
-    space_id: string
+    group: GroupType
     haveCategory?: boolean
     actionButton?: boolean
     subHeader: TitleComponentProps & RouteProps
-    amount?: AmountType
     expensesDate?: ExpenseDateType
   }
 
   const props = defineProps<Props>()
-  const space = spacesData.find((space) => space.id === props.space_id)
 </script>
 
 <template>
@@ -35,27 +32,28 @@
   />
   <div class="flex flex-col gap-10">
     <div class="flex flex-col gap-2 sm:flex-row justify-between items-center">
-      <RemainingBudget v-if="amount" :amount="amount" />
+      <RemainingBudget :space_id="group.id" />
       <div v-if="actionButton">
         <Button
           icon="pi pi-eye"
           label="Budget"
           class="mr-2"
           size="small"
-          :class="[getSpaceColor({ color: space?.color })]"
-          @click="router.push({ name: 'budget_space', params: { space_id: space?.id } })"
+          :class="[getSpaceColor({ color: group?.color })]"
+          @click="router.push({ name: 'budget_space', params: { space_id: group?.id } })"
         />
         <Button
           icon="pi pi-pencil"
           label="Edition"
           size="small"
-          :class="[getSpaceColor({ color: space?.color })]"
-          @click="router.push({ name: 'edit_space', params: { id: space?.id } })"
+          :class="[getSpaceColor({ color: group?.color })]"
+          @click="router.push({ name: 'edit_space', params: { id: group?.id } })"
         />
       </div>
     </div>
     <BaseSection
-      v-for="([date, expenses], index) in Object.entries(expensesDate ?? {})"
+      v-if="expensesDate"
+      v-for="([date, expenses], index) in Object.entries(expensesDate)"
       :label="formatDateToDayMonth(new Date(date))"
       :key="index"
     >
@@ -63,10 +61,11 @@
         <ExpenseCardComponent v-for="expense in expenses" :key="expense.id" :expense="expense" />
       </div>
     </BaseSection>
+    <p v-else>Créer votre première dépense !</p>
   </div>
   <AddAction
     route-name="new_expense"
-    :class="[getSpaceColor({ color: space?.color })]"
-    :params="{ space_id: space?.id ?? 'error' }"
+    :class="[getSpaceColor({ color: group?.color })]"
+    :params="{ space_id: String(group?.id) ?? 'error' }"
   />
 </template>
