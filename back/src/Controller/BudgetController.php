@@ -114,11 +114,11 @@ class BudgetController
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
 
         $category = $this->categoryRepository->find($categoryId);
-        $budget = $this->budgetRepository->findBy(['category' => $category, 'monthStart' => $date]);
+        $budget = $this->budgetRepository->findOneBy(['category' => $category, 'monthStart' => $date]);
 
         $totalBudget = $budget->getAmount();
 
-        $expenses = $this->expenseRepository->findExpensesByCategoryAndDate($categoryId, $monthStart);
+        $expenses = $this->expenseRepository->findExpensesByCategoryAndDate($categoryId, $date);
         $totalExpenses = array_sum(array_map(fn($e) => $e->getAmount(), $expenses));
 
         $amount = $totalBudget - $totalExpenses;
