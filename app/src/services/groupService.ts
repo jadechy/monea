@@ -1,4 +1,5 @@
 import { fetchJson, postJson } from "@/lib/api"
+import { CategorySchema } from "@/types/category"
 import { GroupSchema, GroupDTOSchema } from "@/types/group"
 import { type CreateUserInputType, type UserType } from "@/types/user"
 

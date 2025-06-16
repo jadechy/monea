@@ -26,7 +26,7 @@
 <template>
   <AllPaiementsLayout
     v-if="group"
-    :amount="amount"
+    :amount="amount ?? 0"
     :group="group"
     :subHeader="{
       label: group?.name ?? 'error',

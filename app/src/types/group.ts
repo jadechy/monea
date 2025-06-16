@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { UserSchema } from "./user"
 import { ColorSchema } from "./color"
-import { DateSchema, DateTimeSchema } from "./date"
+import { DateSchema } from "./date"
 
 export const GroupSchema = z.object({
   id: z.number(),
@@ -17,6 +17,7 @@ export const GroupDTOSchema = z.object({
   name: z.string().max(255),
   createdAt: DateSchema,
   type: z.string().max(255),
+  // type : z.enum([])
   creator: UserSchema.shape.id,
   picture: z.string().max(255).nullable(),
   color: ColorSchema,

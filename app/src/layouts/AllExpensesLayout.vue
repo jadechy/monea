@@ -18,7 +18,7 @@
     haveCategory?: boolean
     actionButton?: boolean
     subHeader: TitleComponentProps & RouteProps
-    amount?: AmountType
+    amount: AmountType
     expensesDate?: ExpenseDateType
   }
 
@@ -34,7 +34,7 @@
   />
   <div class="flex flex-col gap-10">
     <div class="flex flex-col gap-2 sm:flex-row justify-between items-center">
-      <RemainingBudget v-if="amount" :amount="amount" />
+      <RemainingBudget v-if="amount !== undefined" :amount="amount" />
       <div v-if="actionButton">
         <Button
           icon="pi pi-eye"
@@ -54,7 +54,8 @@
       </div>
     </div>
     <BaseSection
-      v-for="([date, expenses], index) in Object.entries(expensesDate ?? {})"
+      v-if="expensesDate"
+      v-for="([date, expenses], index) in Object.entries(expensesDate)"
       :label="formatDateToDayMonth(new Date(date))"
       :key="index"
     >
@@ -62,6 +63,7 @@
         <ExpenseCardComponent v-for="expense in expenses" :key="expense.id" :expense="expense" />
       </div>
     </BaseSection>
+    <p v-else>Créer votre première dépense !</p>
   </div>
   <AddAction
     route-name="new_expense"
