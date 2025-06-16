@@ -26,8 +26,8 @@ use App\Entity\Expense;
         normalizationContext: ['groups' => ['expense:read']]
     ),
     new Get(
-        uriTemplate: '/expenses/groupe/{groupeId}/{monthStart}/list',
-        controller: ExpenseController::class . '::getAllExpenseByGroupAndDate',
+        uriTemplate: '/expenses/groupe/{groupeId}/mois/{monthStart}/list',
+        controller: ExpenseController::class . '::getAllExpenseByGroupAndMonth',
         uriVariables: [
             'groupeId' => new Link(fromClass: null, fromProperty: 'groupeId'),
             'monthStart' => new Link(fromClass: null, fromProperty: 'monthStart'),
@@ -37,6 +37,36 @@ use App\Entity\Expense;
         requirements: [
             'groupeId' => '\d+',
             'monthStart' => '\d{4}-\d{2}-\d{2}'
+        ],
+        normalizationContext: ['groups' => ['expense:read']]
+    ),
+    new Get(
+        uriTemplate: '/expenses/groupe/{groupeId}/week/{day}/list',
+        controller: ExpenseController::class . '::getAllExpenseByGroupAndDay',
+        uriVariables: [
+            'groupeId' => new Link(fromClass: null, fromProperty: 'groupeId'),
+            'day' => new Link(fromClass: null, fromProperty: 'day'),
+        ],
+        read: false,
+        name: 'expenses_groupe_week',
+        requirements: [
+            'groupeId' => '\d+',
+            'day' => '\d{4}-\d{2}-\d{2}'
+        ],
+        normalizationContext: ['groups' => ['expense:read']]
+    ),
+    new Get(
+        uriTemplate: '/expenses/groupe/{groupeId}/day/{day}/list',
+        controller: ExpenseController::class . '::getAllExpenseByGroupAndDay',
+        uriVariables: [
+            'groupeId' => new Link(fromClass: null, fromProperty: 'groupeId'),
+            'day' => new Link(fromClass: null, fromProperty: 'day'),
+        ],
+        read: false,
+        name: 'expenses_groupe_day',
+        requirements: [
+            'groupeId' => '\d+',
+            'day' => '\d{4}-\d{2}-\d{2}'
         ],
         normalizationContext: ['groups' => ['expense:read']]
     ),
