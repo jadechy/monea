@@ -9,30 +9,69 @@ use ApiPlatform\Metadata\Link;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\BudgetController;
+use App\Entity\Budget;
 
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/budgets/{groupeId}/{monthStart}',
-        controller: BudgetController::class . '::getBudget',
+        uriTemplate: '/budgets/{groupeId}/{monthStart}/list',
+        controller: BudgetController::class . '::getBudgetByGroupe',
         read: false,
-        name: 'budget_get_total',
+        name: 'budget_list',
         normalizationContext: ['groups' => ['budget:read']]
     ),
     new Get(
-        uriTemplate: '/budgets/{groupeId}/{monthStart}/remaining',
-        controller: BudgetController::class . '::getRemainingBudget',
+        uriTemplate: '/budgets/{categoryId}/category',
+        controller: BudgetController::class . '::getBudgetByCategory',
+        uriVariables: [
+            'categoryId' => new Link(fromClass: null, fromProperty: 'categoryId')
+        ],
         read: false,
-        name: 'budget_get_remaining',
+        name: 'budget_category',
+        requirements: ['categoryId' => '\d+'],
         normalizationContext: ['groups' => ['budget:read']]
+    ),
+    new Get(
+        uriTemplate: '/budgets/{categoryId}/{monthStart}/category',
+        controller: BudgetController::class . '::getBudgetByCategoryAndMonth',
+        uriVariables: [
+            'categoryId' => new Link(fromClass: null, fromProperty: 'categoryId'),
+            'monthStart' => new Link(fromClass: null, fromProperty: 'monthStart'),
+        ],
+        read: false,
+        name: 'budget_category_month',
+        requirements: [
+            'categoryId' => '\d+',
+            'monthStart' => '\d{4}-\d{2}-\d{2}'
+        ],
+        normalizationContext: ['groups' => ['budget:read']],
     ),
 ])]
 class BudgetDTO
 {
     #[Groups(['budget:read'])]
+    public int $id;
+
+    #[Groups(['budget:read'])]
     public float $amount;
 
-    public function __construct(float $amount)
+    #[Groups(['budget:read'])]
+    public string $monthStart;
+
+    #[Groups(['budget:read'])]
+    public array $category;
+
+    public function __construct(Budget $budget)
     {
-        $this->amount = $amount;
+        $category = $budget->getCategory();
+
+        $this->id = $budget->getId();
+        $this->amount = $budget->getAmount();
+        $this->monthStart = $budget->getMonthStart()->format('Y-m-d');
+
+        $this->category = [
+            'categoryId' => $category->getId(),
+            'label' => $category->getLabel(),
+            'color' => $category->getColor()
+        ];
     }
 }
