@@ -13,14 +13,59 @@ use App\Entity\Expense;
 
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/expenses/{groupeId}',
+        uriTemplate: '/expenses/groupe/{groupeId}/list',
         controller: ExpenseController::class . '::getAllExpenseByGroup',
         uriVariables: [
             'groupeId' => new Link(fromClass: null, fromProperty: 'groupeId')
         ],
         read: false,
         name: 'expenses_groupe',
-        requirements: ['groupeId' => '\d+'],
+        requirements: [
+            'groupeId' => '\d+'
+        ],
+        normalizationContext: ['groups' => ['expense:read']]
+    ),
+    new Get(
+        uriTemplate: '/expenses/groupe/{groupeId}/{monthStart}/list',
+        controller: ExpenseController::class . '::getAllExpenseByGroupAndDate',
+        uriVariables: [
+            'groupeId' => new Link(fromClass: null, fromProperty: 'groupeId'),
+            'monthStart' => new Link(fromClass: null, fromProperty: 'monthStart'),
+        ],
+        read: false,
+        name: 'expenses_groupe_month',
+        requirements: [
+            'groupeId' => '\d+',
+            'monthStart' => '\d{4}-\d{2}-\d{2}'
+        ],
+        normalizationContext: ['groups' => ['expense:read']]
+    ),
+    new Get(
+        uriTemplate: '/expenses/category/{categoryId}/list',
+        controller: ExpenseController::class . '::getAllExpensesByCategory',
+        uriVariables: [
+            'categoryId' => new Link(fromClass: null, fromProperty: 'categoryId')
+        ],
+        read: false,
+        name: 'expenses_category',
+        requirements: [
+            'categoryId' => '\d+'
+        ],
+        normalizationContext: ['groups' => ['expense:read']]
+    ),
+    new Get(
+        uriTemplate: '/expenses/category/{categoryId}/{monthStart}/list',
+        controller: ExpenseController::class . '::getAllExpensesByCategoryAndMonth',
+        uriVariables: [
+            'categoryId' => new Link(fromClass: null, fromProperty: 'categoryId'),
+            'monthStart' => new Link(fromClass: null, fromProperty: 'monthStart'),
+        ],
+        read: false,
+        name: 'expenses_category_month',
+        requirements: [
+            'categoryId' => '\d+',
+            'monthStart' => '\d{4}-\d{2}-\d{2}'
+        ],
         normalizationContext: ['groups' => ['expense:read']]
     )
 ])]
@@ -36,10 +81,10 @@ class ExpenseDTO
     public string $title;
 
     #[Groups(['expense:read'])]
-    public \DateTimeImmutable $createdAt;
+    public string $createdAt;
 
     #[Groups(['expense:read'])]
-    public \DateTimeImmutable $spentAt;
+    public string $spentAt;
 
     #[Groups(['expense:read'])]
     public int $groupe;
@@ -61,8 +106,8 @@ class ExpenseDTO
         $this->id = $expense->getId();
         $this->amount = $expense->getAmount();
         $this->title = $expense->getTitle();
-        $this->createdAt = $expense->getCreatedAt();
-        $this->spentAt = $expense->getSpentAt();
+        $this->createdAt = $expense->getCreatedAt()->format('Y-m-d');
+        $this->spentAt = $expense->getSpentAt()->format('Y-m-d');
 
         $this->category = $expense->getCategory()?->getId();
         $this->groupe = $expense->getGroupe()?->getId();
