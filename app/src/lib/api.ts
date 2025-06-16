@@ -36,6 +36,7 @@ export async function fetchJson<T>({
   if (!res.ok) throw new Error(`Erreur API (${res.status})`)
 
   const json = await res.json()
+  console.log(json)
   const parsed = schema.safeParse(json)
   if (!parsed.success) {
     console.error("Erreur de validation Zod", parsed.error)

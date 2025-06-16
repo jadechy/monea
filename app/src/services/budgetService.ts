@@ -4,7 +4,7 @@ import { AmountSchema, BudgetByCategorySchema, type BudgetType } from "@/types/b
 import type { CategoryType } from "@/types/category"
 import { type GroupType } from "@/types/group"
 
-export const fetchBudgetGroupRemaining = async (
+export const fetchBudgetGroupDateRemaining = async (
   group_id: GroupType["id"],
   month: BudgetType["monthStart"],
 ) => {
@@ -39,7 +39,7 @@ export const fetchBudgetGroup = async (
 export const fetchAllBudgetCategoriesByGroup = async (category_id: CategoryType["id"]) => {
   try {
     return await fetchJson({
-      url: `${category_id}/category`,
+      url: `budgets/${category_id}/category`,
       schema: BudgetByCategorySchema.array(),
     })
   } catch (error) {

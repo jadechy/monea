@@ -2,7 +2,7 @@
   import { categories } from "@/data/categoryLabel"
   import AllPaiementsLayout from "@/layouts/AllExpensesLayout.vue"
   import { getCurrentMonth } from "@/lib/date"
-  import { fetchBudgetGroupRemaining } from "@/services/budgetService"
+  import { fetchBudgetGroupDateRemaining } from "@/services/budgetService"
   import type { AmountType } from "@/types/budget"
   import type { ErrorType } from "@/types/error"
   import { onMounted, ref } from "vue"

@@ -3,19 +3,12 @@
   import { onMounted, ref } from "vue"
   import type { GroupType } from "@/types/group"
   import { fetchGroupByUser } from "@/services/groupService"
+  import { useGroupStore } from "@/stores/groupStore"
 
-  const groups = ref<GroupType[]>([])
-  const error = ref<string | null>(null)
+  const groupStore = useGroupStore()
+  const groups = groupStore.getGroups()
 
-  onMounted(async () => {
-    const result = await fetchGroupByUser(11)
-    if (result === null) {
-      error.value = "Erreur lors du chargement des utilisateurs"
-      groups.value = []
-    } else {
-      groups.value = result
-    }
-  })
+  const group = groupStore.getGroupById(3)
 </script>
 
 <template>

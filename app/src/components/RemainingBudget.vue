@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { getCurrentMonth } from "@/lib/date"
   import { truncateToTenth } from "@/lib/number"
-  import { fetchBudgetGroup, fetchBudgetGroupRemaining } from "@/services/budgetService"
+  import { fetchBudgetGroup, fetchBudgetGroupDateRemaining } from "@/services/budgetService"
   import type { AmountType } from "@/types/budget"
   import type { ErrorType } from "@/types/error"
   import { onMounted, ref } from "vue"
@@ -11,7 +11,7 @@
   onMounted(async () => {
     const resultBudget = props.initialBudget
       ? await fetchBudgetGroup(Number(props.space_id), getCurrentMonth())
-      : await fetchBudgetGroupRemaining(Number(props.space_id), getCurrentMonth())
+      : await fetchBudgetGroupDateRemaining(Number(props.space_id), getCurrentMonth())
 
     if (resultBudget === null) {
       error.value = "Erreur lors du chargement des utilisateurs"
