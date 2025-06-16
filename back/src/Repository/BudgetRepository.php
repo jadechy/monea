@@ -28,6 +28,16 @@ class BudgetRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function findBudgetByCategory($categoryId)
+    {
+        return $this->createQueryBuilder('b')
+            ->leftJoin('b.category', 'c')
+            ->where('c.id = :categoryId')
+            ->setParameter('categoryId', $categoryId)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Budget[] Returns an array of Budget objects
     //     */
