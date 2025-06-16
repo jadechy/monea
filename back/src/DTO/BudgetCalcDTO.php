@@ -26,7 +26,7 @@ use App\Controller\BudgetController;
         normalizationContext: ['groups' => ['budget:read']]
     ),
     new Get(
-        uriTemplate: '/budget/{catId}/{monthStart}/remaining/category',
+        uriTemplate: '/budget/{categoryId}/{monthStart}/remaining/category',
         controller: BudgetController::class . '::getRemainingBudgetByCategoryAndMonth',
         uriVariables: [
             'categoryId' => new Link(fromClass: null, fromProperty: 'categoryId'),
