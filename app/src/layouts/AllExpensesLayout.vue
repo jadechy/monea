@@ -9,7 +9,6 @@
   import { formatDateToDayMonth } from "@/lib/date"
   import { getSpaceColor } from "@/services/getColor"
   import { Button } from "primevue"
-  import type { AmountType } from "@/types/budget"
   import type { ExpenseDateType } from "@/types/expense"
   import ExpenseCardComponent from "@/components/ExpenseCardComponent.vue"
   import type { GroupType } from "@/types/group"
@@ -18,7 +17,6 @@
     haveCategory?: boolean
     actionButton?: boolean
     subHeader: TitleComponentProps & RouteProps
-    amount: AmountType
     expensesDate?: ExpenseDateType
   }
 
@@ -34,7 +32,7 @@
   />
   <div class="flex flex-col gap-10">
     <div class="flex flex-col gap-2 sm:flex-row justify-between items-center">
-      <RemainingBudget v-if="amount !== undefined" :amount="amount" />
+      <RemainingBudget :space_id="group.id" />
       <div v-if="actionButton">
         <Button
           icon="pi pi-eye"
