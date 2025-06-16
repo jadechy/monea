@@ -16,6 +16,7 @@
   const selectedCategory = defineModel<CategoryType["label"]>("selectedCategory")
   const selectedAuthor = defineModel<UserType>("selectedAuthor")
   const selectedDate = defineModel<Date>("selectedDate")
+  const members = ref<boolean[]>([])
 
   const isNew = false
   const props = defineProps<{ space_id: string }>()
@@ -29,6 +30,7 @@
       error.value = "Erreur lors du chargement des utilisateurs"
     } else {
       group.value = resultGroup
+      members.value = group.value.members.map(() => false)
     }
   })
   const colorCategoryStyle = computed(() => {
@@ -42,12 +44,9 @@
   const categoryLabel: string[] = (group.value?.categories ?? [])
     .filter((category) => category.label !== "default" && category.label !== null)
     .map((category) => category.label!)
-  const participants = defineModel<boolean[]>({
-    default: group.value?.members.map(() => false),
-  })
 
   const handleClick = (i: number) => {
-    participants.value[i] = !participants.value[i]
+    members.value[i] = !members.value[i]
     const postData = {}
   }
 </script>
@@ -87,7 +86,7 @@
     </div>
     <BaseSection label="Participants" class="w-full">
       <PeopleComponent v-for="(member, i) in group?.members" :key="member.id" :user="member">
-        <Checkbox :v-model="participants[i]" binary />
+        <Checkbox :v-model="members[i]" binary />
       </PeopleComponent>
     </BaseSection>
 

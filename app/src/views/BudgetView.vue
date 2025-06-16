@@ -3,15 +3,27 @@
   import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
   import { categories, type CategoryLabel } from "@/data/categoryLabel"
-  import { spacesData } from "@/data/spaces"
   import ChartLayout from "@/layouts/Budget/ChartLayout.vue"
   import router from "@/router"
   import { getSpaceColor } from "@/services/getColor"
+  import { fetchGroup } from "@/services/groupService"
+  import type { ErrorType } from "@/types/error"
+  import type { GroupType } from "@/types/group"
   import { Button } from "primevue"
+  import { onMounted, ref } from "vue"
 
   const props = defineProps<{ space_id: string }>()
-  const space = spacesData.find((space) => space.id === props.space_id)
+  const group = ref<GroupType>()
+  const error = ref<ErrorType>(null)
 
+  onMounted(async () => {
+    const resultGroup = await fetchGroup(props.space_id)
+    if (resultGroup === null) {
+      error.value = "Erreur lors du chargement des utilisateurs"
+    } else {
+      group.value = resultGroup
+    }
+  })
   const colorMap: Record<CategoryLabel, string> = {
     abonnement: `bg-yellow-50 hover:bg-yellow-100 text-yellow-800`,
     course: `bg-pink-50 hover:bg-pink-100 text-pink-800`,
@@ -23,21 +35,21 @@
 </script>
 
 <template>
-  <SubHeader label="Budget" :color="space?.color" routeName="home" />
+  <SubHeader label="Budget" :color="group?.color" routeName="home" />
 
-  <div class="flex flex-col gap-10">
+  <div class="flex flex-col gap-10" v-if="group">
     <section class="flex justify-between">
       <div class="flex gap-5 w-full">
-        <RemainingBudget :amount="300" />
-        <RemainingBudget label="Budget initial" :amount="space?.overallBudget ?? 0" />
+        <RemainingBudget :space_id="group.id" />
+        <RemainingBudget :space_id="group.id" label="Budget initial" initialBudget />
       </div>
 
       <Button
         icon="pi pi-pencil"
         label="Prévision des dépenses"
         size="small"
-        :class="[getSpaceColor({ color: space?.color })]"
-        @click="router.push({ name: 'forecast_budget_space', params: { id: space?.id } })"
+        :class="[getSpaceColor({ color: group?.color })]"
+        @click="router.push({ name: 'forecast_budget_space', params: { id: group?.id } })"
       />
     </section>
     <BaseSection label="Par catégories">
@@ -46,14 +58,14 @@
           v-for="(category, i) in categories.filter((category) => category.label !== 'default')"
           :to="{
             name: 'category_budget_space',
-            params: { space_id: space?.id, category_id: category.label },
+            params: { space_id: group?.id, category_id: category.label },
           }"
           class="flex justify-between rounded-full px-4 py-3"
           :key="i"
           :class="colorMap[category.label]"
         >
           <p>{{ category.label }}</p>
-          <p>{{ space?.budgetByCategory[category.label] }} €</p>
+          <!-- <p>{{ group?.budgetByCategory[category.label] }} €</p> -->
         </router-link>
       </div>
     </BaseSection>

@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { CategorySchema } from "./category"
-export const AmountValueSchema = z.number().nullable()
+export const AmountValueSchema = z.number()
 
 export const BudgetSchema = z.object({
   id: z.number(),
