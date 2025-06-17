@@ -26,8 +26,7 @@ export const useGroupStore = defineStore("group", {
     async getGroupById(group_id: number) {
       if (!this.isLoaded) await this.fetchGroups(1)
       this.groups.map((group) => console.log(group.id, group_id))
-      const findGroup = this.groups.find((group) => group.id === group_id)
-      console.log(findGroup)
+      const findGroup = this.groups.find((group) => group.id === Number(group_id))
       if (!findGroup) return
       return findGroup
     },

@@ -7,9 +7,9 @@
   const groupStore = useGroupStore()
   const groups = ref<GroupType[]>([])
 
-  onMounted(() => {
-    groupStore.getGroups()
-    groups.value = groupStore.groups
+  onMounted(async () => {
+    const resultGroups = await groupStore.getGroups()
+    groups.value = resultGroups
   })
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <router-link
-    :to="{ name: 'expense', params: { id: expense.id, space_id: expense.groupe.id } }"
+    :to="{ name: 'expense', params: { id: expense.id, space_id: expense.groupe } }"
     class="flex shadow px-4 py-3 justify-between w-full rounded-3xl hover:bg-gray-50"
   >
     <div>

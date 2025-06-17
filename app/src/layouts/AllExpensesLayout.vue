@@ -13,14 +13,14 @@
   import ExpenseCardComponent from "@/components/ExpenseCardComponent.vue"
   import type { GroupType } from "@/types/group"
   interface Props {
-    group?: GroupType
+    group: GroupType
     haveCategory?: boolean
     actionButton?: boolean
     subHeader: TitleComponentProps & RouteProps
     expensesDate?: ExpenseDateType
   }
 
-  const props = defineProps<Props>()
+  defineProps<Props>()
 </script>
 
 <template>
@@ -30,8 +30,8 @@
     :routeName="subHeader.routeName"
     :params="subHeader.params"
   />
-  <div class="flex flex-col gap-10">
-    <div class="flex flex-col gap-2 sm:flex-row justify-between items-center" v-if="group">
+  <div class="flex flex-col gap-10" v-if="group">
+    <div class="flex flex-col gap-2 sm:flex-row justify-between items-center">
       <RemainingBudget :space_id="group.id" />
       <div v-if="actionButton">
         <Button
@@ -40,14 +40,14 @@
           class="mr-2"
           size="small"
           :class="[getSpaceColor({ color: group?.color })]"
-          @click="router.push({ name: 'budget_space', params: { space_id: group?.id } })"
+          @click="router.push({ name: 'budget_space', params: { space_id: group.id } })"
         />
         <Button
           icon="pi pi-pencil"
           label="Edition"
           size="small"
           :class="[getSpaceColor({ color: group?.color })]"
-          @click="router.push({ name: 'edit_space', params: { id: group?.id } })"
+          @click="router.push({ name: 'edit_space', params: { id: group.id } })"
         />
       </div>
     </div>
@@ -64,8 +64,9 @@
     <p v-else>Créer votre première dépense !</p>
   </div>
   <AddAction
+    v-if="group"
     route-name="new_expense"
-    :class="[getSpaceColor({ color: group?.color })]"
-    :params="{ space_id: String(group?.id) ?? 'error' }"
+    :class="[getSpaceColor({ color: group.color })]"
+    :params="{ space_id: String(group.id) }"
   />
 </template>

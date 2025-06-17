@@ -5,6 +5,6 @@ export const CategorySchema = z.object({
   id: z.number(),
   label: z.string().max(50).nullable(),
   color: z.enum(["pink", "red", "yellow", "orange", "blue", "purple"]),
-  groupe: GroupSchema,
+  // groupe: GroupSchema,
 })
 export type CategoryType = z.infer<typeof CategorySchema>
