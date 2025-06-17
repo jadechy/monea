@@ -40,7 +40,7 @@ class ExpenseController extends AbstractController
             $expenses[$date][] = new ExpenseDTO($expense);
         }
 
-        krsort($expenses); // Trie par date descendante
+        krsort($expenses); 
 
         return $expenses;
     }
@@ -60,11 +60,46 @@ class ExpenseController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
-    public function getAllExpenseByGroupAndDate($groupeId, $monthStart)
+    public function getAllExpenseByGroupAndMonth($groupeId, $monthStart)
     {
-        $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
+        $date = new \DateTimeImmutable($monthStart);
+        $start = (clone $date)->modify('first day of this month')->setTime(0,0,0);
+        $end = (clone $date)->modify('last day of this month')->setTime(23,59,59);
 
-        $expensesData = $this->expenseRepository->findExpensesByGroupeAndDate($groupeId, $date);
+        $expensesData = $this->expenseRepository->findExpensesByGroupeBetweenDates($groupeId, $start, $end);
+
+        $expenses = $this->createExpenseArray($expensesData);
+
+        $json = $this->serializer->serialize($expenses, 'json', [
+            'groups' => ['expense:read'],
+        ]);
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    public function getAllExpenseByGroupAndDay($groupeId, $day)
+    {
+        $date = (new \DateTimeImmutable($day))->setTime(0, 0);
+
+        $expensesData = $this->expenseRepository->findExpensesByGroupeAndDay($groupeId, $date);
+
+        $expenses = $this->createExpenseArray($expensesData);
+
+        $json = $this->serializer->serialize($expenses, 'json', [
+            'groups' => ['expense:read'],
+        ]);
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    public function getAllExpenseByGroupAndWeek($groupeId, $day)
+    {
+        $date = new \DateTimeImmutable($day);
+
+        $monday = $date->modify('monday this week')->setTime(0, 0, 0);
+        $sunday = $date->modify('sunday this week')->setTime(23, 59, 59);
+
+        $expensesData = $this->expenseRepository->findExpensesByGroupeBetweenDates($groupeId, $monday, $sunday);
 
         $expenses = $this->createExpenseArray($expensesData);
 

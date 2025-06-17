@@ -60,7 +60,10 @@ class BudgetController extends AbstractController
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
         $budgetAmount = $this->computeTotalBudgetForGroup($groupe, $date);
 
-        $expenses = $this->expenseRepository->findExpensesByGroupeAndDate($groupeId, $date);
+        $start = (clone $date)->modify('first day of this month')->setTime(0,0,0);
+        $end = (clone $date)->modify('last day of this month')->setTime(23,59,59);
+
+        $expenses = $this->expenseRepository->findExpensesByGroupeBetweenDates($groupeId, $start, $end);
         $totalExpenses = array_sum(array_map(fn($e) => $e->getAmount(), $expenses));
 
         $amount = $budgetAmount - $totalExpenses;
