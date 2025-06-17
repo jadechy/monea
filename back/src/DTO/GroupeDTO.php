@@ -15,8 +15,14 @@ use App\Entity\Groupe;
     new Get(
         uriTemplate: '/groupes/{userId}/list',
         controller: GroupeController::class . '::getAllGroupesByUser',
+        uriVariables: [
+            'userId' => new Link(fromClass: null, fromProperty: 'userId')
+        ],
         read: false,
         name: 'groupes_user',
+        requirements: [
+            'userId' => '\d+'
+        ],
         normalizationContext: ['groups' => ['groupe:read']]
     ),
 ])]
@@ -29,7 +35,7 @@ class GroupeDTO
     public string $name;
 
     #[Groups(['groupe:read'])]
-    public \DateTimeImmutable $createdAt;
+    public string $createdAt;
 
     #[Groups(['groupe:read'])]
     public string $type;
@@ -56,7 +62,7 @@ class GroupeDTO
     {
         $this->id = $groupe->getId();
         $this->name = $groupe->getName();
-        $this->createdAt = $groupe->getCreatedAt();
+        $this->createdAt = $groupe->getCreatedAt()->format('Y-m-d');
         $this->type = $groupe->getType();
         $this->picture = $groupe->getPicture();
         $this->color = $groupe->getColor();
@@ -66,7 +72,7 @@ class GroupeDTO
                 'expenseId' => $expense?->getId(),
                 'amount' => $expense?->getAmount(),
                 'title' => $expense?->getTitle(),
-                'createdAt' => $expense?->getCreatedAt(),
+                'createdAt' => $expense?->getCreatedAt()->format('Y-m-d'),
             ];
         }
         

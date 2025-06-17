@@ -16,11 +16,8 @@ class ExpenseRepository extends ServiceEntityRepository
         parent::__construct($registry, Expense::class);
     }
 
-    public function findExpensesByGroupeAndDate(int $groupeId, \DateTimeInterface $date)
+    public function findExpensesByGroupeBetweenDates(int $groupeId, \DateTimeInterface $start, \DateTimeInterface $end)
     {
-        $start = (clone $date)->modify('first day of this month')->setTime(0,0,0);
-        $end = (clone $date)->modify('last day of this month')->setTime(23,59,59);
-
         return $this->createQueryBuilder('e')
             ->leftJoin('e.groupe', 'g')
             ->where('g.id = :groupeId')
@@ -28,6 +25,22 @@ class ExpenseRepository extends ServiceEntityRepository
             ->setParameter('groupeId', $groupeId)
             ->setParameter('start', $start)
             ->setParameter('end', $end)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findExpensesByGroupeAndDay(int $groupeId, \DateTimeInterface $day)
+    {
+        $startOfDay = (clone $day)->setTime(0, 0, 0);
+        $endOfDay = (clone $day)->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('e')
+            ->leftJoin('e.groupe', 'g')
+            ->where('g.id = :groupeId')
+            ->andWhere('e.spentAt BETWEEN :start AND :end')
+            ->setParameter('groupeId', $groupeId)
+            ->setParameter('start', $startOfDay)
+            ->setParameter('end', $endOfDay)
             ->getQuery()
             ->getResult();
     }

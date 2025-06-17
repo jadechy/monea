@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -18,7 +19,7 @@ use App\Repository\CategoryRepository;
 use App\Repository\ExpenseRepository;
 
 #[AsController]
-class BudgetController
+class BudgetController extends AbstractController
 {
 
     public function __construct(private BudgetRepository $budgetRepository, private GroupeRepository $groupeRepository, private ExpenseRepository $expenseRepository, private CategoryRepository $categoryRepository)
@@ -40,29 +41,36 @@ class BudgetController
         return $total;
     }
 
-    public function getBudget(string $groupeId, $monthStart): BudgetCalcDTO
+    public function getBudget(string $groupeId, $monthStart)
     {
         $groupe = $this->groupeRepository->find($groupeId);
 
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
         $amount = $this->computeTotalBudgetForGroup($groupe, $date);
 
-        return new BudgetCalcDTO($amount);
+        return $this->json([
+            'amount' => $amount
+        ]);
     }
 
-    public function getRemainingBudget(string $groupeId, $monthStart): BudgetCalcDTO
+    public function getRemainingBudget(string $groupeId, $monthStart)
     {
         $groupe = $this->groupeRepository->find($groupeId);
 
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
         $budgetAmount = $this->computeTotalBudgetForGroup($groupe, $date);
 
-        $expenses = $this->expenseRepository->findExpensesByGroupeAndDate($groupeId, $date);
+        $start = (clone $date)->modify('first day of this month')->setTime(0,0,0);
+        $end = (clone $date)->modify('last day of this month')->setTime(23,59,59);
+
+        $expenses = $this->expenseRepository->findExpensesByGroupeBetweenDates($groupeId, $start, $end);
         $totalExpenses = array_sum(array_map(fn($e) => $e->getAmount(), $expenses));
 
         $amount = $budgetAmount - $totalExpenses;
 
-        return new BudgetCalcDTO($amount);
+        return $this->json([
+            'amount' => $amount
+        ]);
     }
 
     public function getBudgetByGroupe(string $groupeId, string $monthStart)
@@ -92,7 +100,7 @@ class BudgetController
         return $budgets;
     }
 
-    public function getBudgetByCategoryAndMonth(string $categoryId, string $monthStart, SerializerInterface $serializer)
+    public function getBudgetByCategoryAndMonth(string $categoryId, string $monthStart, SerializerInterface $serializer): JsonResponse
     {
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
 
@@ -109,7 +117,7 @@ class BudgetController
         return new JsonResponse(null, 404);
     }
 
-    public function getRemainingBudgetByCategoryAndMonth(string $categoryId, string $monthStart)
+    public function getRemainingBudgetByCategoryAndMonth(string $categoryId, string $monthStart, SerializerInterface $serializer): JsonResponse
     {
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
 
@@ -123,6 +131,8 @@ class BudgetController
 
         $amount = $totalBudget - $totalExpenses;
 
-        return new BudgetCalcDTO($amount);
+        return $this->json([
+            'amount' => $amount
+        ]);
     }
 }

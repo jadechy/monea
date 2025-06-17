@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Table(name: 'MON_USER')]
 #[UniqueEntity(fields: ['email'], message: "Cet email est déjà utilisé.")]
 #[UniqueEntity(fields: ['username'], message: "Ce pseudonyme est déjà utilisé.")]
-class User 
+class User
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -100,7 +100,7 @@ class User
     #[Groups(['user:read', 'user:write'])]
     private ?string $picture = null;
 
-    #[ORM\Column(length: 255, name: 'USR_RESET_TOKEN')]
+    #[ORM\Column(length: 255, name: 'USR_RESET_TOKEN', nullable: true)]
     #[Groups(['user:read', 'user:write'])]
     private ?string $resetToken = null;
 
