@@ -34,7 +34,7 @@
   const chartOptions = ref({
     plugins: {
       legend: {
-        position: "right",
+        position: "bottom",
         labels: {
           color: tailwindcolors.gray[900],
         },
@@ -44,5 +44,10 @@
 </script>
 
 <template>
-  <Chart type="pie" :data="chartData" :options="chartOptions" class="w-full md:w-[30rem]" />
+  <Chart
+    type="pie"
+    :data="chartData"
+    :options="chartOptions"
+    class="w-[40rem] flex justify-center"
+  />
 </template>

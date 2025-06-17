@@ -12,7 +12,7 @@
   import type { ErrorType } from "@/types/error"
   import { fetchExpense } from "@/services/expenseService"
   import placeholder from "@/assets/placeholder_people.jpg"
-  const props = defineProps<{ id: string }>()
+  const props = defineProps<{ id: ExpenseType["id"] }>()
   const expense = ref<ExpenseType>()
   const error = ref<ErrorType>(null)
   onMounted(async () => {
@@ -21,6 +21,7 @@
       error.value = "Erreur lors du chargement des utilisateurs"
     } else {
       expense.value = result
+      console.log(result)
     }
   })
 </script>

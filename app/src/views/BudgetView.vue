@@ -2,19 +2,17 @@
   import BaseSection from "@/components/BaseSection.vue"
   import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
-  import { categories, type CategoryLabel } from "@/data/categoryLabel"
   import ChartLayout from "@/layouts/Budget/ChartLayout.vue"
   import { truncateToTenth } from "@/lib/number"
   import router from "@/router"
   import { getSpaceColor } from "@/lib/getColor"
-  import { fetchGroup } from "@/services/groupService"
   import type { BudgetByCategoryType } from "@/types/budget"
   import type { ErrorType } from "@/types/error"
   import type { GroupType } from "@/types/group"
   import { Button } from "primevue"
   import { onMounted, ref } from "vue"
   import { useGroupStore } from "@/stores/groupStore"
-  import { formatDateForApi, getCurrentMonthDate, getCurrentMonthString } from "@/lib/date"
+  import { formatDateForApi, getCurrentMonthDate } from "@/lib/date"
   import { fetchAllBudgetCategoriesByGroup } from "@/services/budgetService"
 
   const props = defineProps<{ space_id: GroupType["id"] }>()
@@ -77,6 +75,6 @@
         </router-link>
       </div>
     </BaseSection>
-    <ChartLayout :budgets="budgetCategories" />
+    <ChartLayout :budgets="budgetCategories" :group_id="space_id" />
   </div>
 </template>

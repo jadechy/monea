@@ -57,7 +57,7 @@
       :label="formatDateToDayMonth(new Date(date))"
       :key="index"
     >
-      <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div class="grid gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         <ExpenseCardComponent v-for="expense in expenses" :key="expense.id" :expense="expense" />
       </div>
     </BaseSection>

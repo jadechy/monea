@@ -8,8 +8,9 @@
   import type { BudgetByCategoryType } from "@/types/budget"
   import { formatDateForApi, getCurrentMonthDate } from "@/lib/date"
   import ChartCategoryBalance from "./ChartCategoryBalance.vue"
-  import ChartLinearEvolition from "./ChartLinearEvolition.vue"
-  const props = defineProps<{ budgets: BudgetByCategoryType[] }>()
+  import ChartLinearEvolution from "./ChartLinearEvolution.vue"
+  import type { GroupType } from "@/types/group"
+  const props = defineProps<{ budgets: BudgetByCategoryType[]; group_id: GroupType["id"] }>()
 </script>
 
 <template>
@@ -19,8 +20,8 @@
       <Tab value="1">Initial / Réalité</Tab>
       <Tab value="2">Evolution des dépenses</Tab>
     </TabList>
-    <TabPanels>
-      <TabPanel value="0" class="flex justify-center">
+    <TabPanels class="full">
+      <TabPanel value="0" class="flex justify-center h-64 w-full">
         <ChartCategory
           :budgets="
             budgets.filter(
@@ -29,11 +30,11 @@
           "
         />
       </TabPanel>
-      <TabPanel value="1">
+      <TabPanel value="1" class="flex justify-center h-64 w-full">
         <ChartCategoryBalance :budgets="budgets" />
       </TabPanel>
-      <TabPanel value="2">
-        <ChartLinearEvolition />
+      <TabPanel value="2" class="flex justify-center h-64 w-full">
+        <ChartLinearEvolution :group_id="group_id" />
       </TabPanel>
     </TabPanels>
   </Tabs>

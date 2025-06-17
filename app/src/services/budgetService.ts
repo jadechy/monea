@@ -1,7 +1,6 @@
 import { fetchJson } from "@/lib/api"
 import { formatDateForApi } from "@/lib/date"
 import { AmountSchema, BudgetByCategorySchema, type BudgetType } from "@/types/budget"
-import type { CategoryType } from "@/types/category"
 import { type GroupType } from "@/types/group"
 
 export const fetchBudgetGroupDateRemaining = async (
@@ -34,10 +33,10 @@ export const fetchBudgetGroup = async (
   }
 }
 
-export const fetchAllBudgetCategoriesByGroup = async (budget_id: GroupType["id"], month: Date) => {
+export const fetchAllBudgetCategoriesByGroup = async (group_id: GroupType["id"], month: Date) => {
   try {
     return await fetchJson({
-      url: `budgets/${budget_id}/${formatDateForApi(month)}/list`,
+      url: `budgets/${group_id}/${formatDateForApi(month)}/list`,
       schema: BudgetByCategorySchema.array(),
     })
   } catch (error) {
