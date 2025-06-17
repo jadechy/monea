@@ -1,14 +1,16 @@
 <script setup lang="ts">
   import SpaceCard from "@/layouts/Home/SpaceCard.vue"
-  import { onMounted, ref } from "vue"
-  import type { GroupType } from "@/types/group"
-  import { fetchGroupByUser } from "@/services/groupService"
   import { useGroupStore } from "@/stores/groupStore"
+  import type { GroupType } from "@/types/group"
+  import { onMounted, ref } from "vue"
 
   const groupStore = useGroupStore()
-  const groups = groupStore.getGroups()
+  const groups = ref<GroupType[]>([])
 
-  const group = groupStore.getGroupById(3)
+  onMounted(() => {
+    groupStore.getGroups()
+    groups.value = groupStore.groups
+  })
 </script>
 
 <template>

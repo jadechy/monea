@@ -1,19 +1,15 @@
 <script setup lang="ts">
   import AllPaiementsLayout from "@/layouts/AllExpensesLayout.vue"
-  import { fetchGroup } from "@/services/groupService"
-  import type { ErrorType } from "@/types/error"
+  import { useGroupStore } from "@/stores/groupStore"
   import type { GroupType } from "@/types/group"
   import { onMounted, ref } from "vue"
   const props = defineProps<{ id: string }>()
+  const groupStore = useGroupStore()
   const group = ref<GroupType>()
-  const error = ref<ErrorType>(null)
+
   onMounted(async () => {
-    const resultGroup = await fetchGroup(props.id)
-    if (resultGroup === null) {
-      error.value = "Erreur lors du chargement des utilisateurs"
-    } else {
-      group.value = resultGroup
-    }
+    const groupResult = await groupStore.getGroupById(Number(props.id))
+    group.value = groupResult
   })
 </script>
 

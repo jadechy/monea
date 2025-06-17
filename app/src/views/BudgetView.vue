@@ -14,14 +14,16 @@
   import type { GroupType } from "@/types/group"
   import { Button } from "primevue"
   import { onMounted, ref } from "vue"
+  import { useGroupStore } from "@/stores/groupStore"
 
   const props = defineProps<{ space_id: string }>()
+  const groupStore = useGroupStore()
   const group = ref<GroupType>()
   const budgetCategories = ref<BudgetByCategoryType[]>([])
   const error = ref<ErrorType>(null)
 
   onMounted(async () => {
-    const resultGroup = await fetchGroup(props.space_id)
+    const resultGroup = await groupStore.getGroupById(Number(props.space_id))
     const resultBudgetCategories = await fetchAllBudgetCategoriesByGroup(Number(props.space_id))
     if (resultGroup === null || resultBudgetCategories === null) {
       error.value = "Erreur lors du chargement des utilisateurs"
