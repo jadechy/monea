@@ -9,8 +9,6 @@ export const fetchBudgetGroupDateRemaining = async (
   month: BudgetType["monthStart"],
 ) => {
   try {
-    console.log(group_id)
-    console.log(month)
     return await fetchJson({
       url: `budget/${group_id}/${formatDateForApi(new Date(month))}/remaining`,
       schema: AmountSchema,
@@ -36,10 +34,10 @@ export const fetchBudgetGroup = async (
   }
 }
 
-export const fetchAllBudgetCategoriesByGroup = async (category_id: CategoryType["id"]) => {
+export const fetchAllBudgetCategoriesByGroup = async (budget_id: GroupType["id"], month: Date) => {
   try {
     return await fetchJson({
-      url: `budgets/${category_id}/category`,
+      url: `budgets/${budget_id}/${formatDateForApi(month)}/list`,
       schema: BudgetByCategorySchema.array(),
     })
   } catch (error) {

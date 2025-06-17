@@ -6,7 +6,6 @@
   import ChartLayout from "@/layouts/Budget/ChartLayout.vue"
   import { truncateToTenth } from "@/lib/number"
   import router from "@/router"
-  import { fetchAllBudgetCategoriesByGroup } from "@/services/budgetService"
   import { getSpaceColor } from "@/lib/getColor"
   import { fetchGroup } from "@/services/groupService"
   import type { BudgetByCategoryType } from "@/types/budget"
@@ -15,16 +14,21 @@
   import { Button } from "primevue"
   import { onMounted, ref } from "vue"
   import { useGroupStore } from "@/stores/groupStore"
+  import { formatDateForApi, getCurrentMonthDate, getCurrentMonthString } from "@/lib/date"
+  import { fetchAllBudgetCategoriesByGroup } from "@/services/budgetService"
 
-  const props = defineProps<{ space_id: string }>()
+  const props = defineProps<{ space_id: GroupType["id"] }>()
   const groupStore = useGroupStore()
   const group = ref<GroupType>()
   const budgetCategories = ref<BudgetByCategoryType[]>([])
   const error = ref<ErrorType>(null)
 
   onMounted(async () => {
-    const resultGroup = await groupStore.getGroupById(Number(props.space_id))
-    const resultBudgetCategories = await fetchAllBudgetCategoriesByGroup(Number(props.space_id))
+    const resultGroup = await groupStore.getGroupById(props.space_id)
+    const resultBudgetCategories = await fetchAllBudgetCategoriesByGroup(
+      props.space_id,
+      getCurrentMonthDate(),
+    )
     if (resultGroup === null || resultBudgetCategories === null) {
       error.value = "Erreur lors du chargement des utilisateurs"
     } else {
@@ -32,14 +36,6 @@
       budgetCategories.value = resultBudgetCategories
     }
   })
-  const colorMap: Record<CategoryLabel, string> = {
-    abonnement: `bg-yellow-50 hover:bg-yellow-100 text-yellow-800`,
-    course: `bg-pink-50 hover:bg-pink-100 text-pink-800`,
-    restaurant: ` bg-green-50 hover:bg-green-100 text-green-800`,
-    shopping: `bg-blue-50 hover:bg-blue-100 text-blue-800`,
-    loisir: `bg-orange-50 hover:bg-orange-100 text-orange-800`,
-    default: `bg-gray-50 hover:bg-gray-100 text-gray-800`,
-  }
 </script>
 
 <template>
@@ -64,7 +60,9 @@
       <div class="grid gap-2 grid-cols-2 md:grid-cols-3">
         <router-link
           v-for="(budget, i) in budgetCategories.filter(
-            (budget) => budget.category.label !== 'default',
+            (budget) =>
+              budget.category.label !== 'default' &&
+              budget.monthStart === formatDateForApi(getCurrentMonthDate()),
           )"
           :to="{
             name: 'category_budget_space',
@@ -79,6 +77,6 @@
         </router-link>
       </div>
     </BaseSection>
-    <ChartLayout />
+    <ChartLayout :budgets="budgetCategories" />
   </div>
 </template>

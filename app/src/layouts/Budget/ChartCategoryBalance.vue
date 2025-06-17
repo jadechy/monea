@@ -17,16 +17,37 @@
     return color
   }
   const props = defineProps<{ budgets: BudgetByCategoryType[] }>()
+  const groupedByCategory = props.budgets.reduce(
+    (acc, budget) => {
+      const id = budget.category.categoryId
+      if (!acc[id]) {
+        acc[id] = {
+          label: budget.category.label || "Sans nom",
+          color: budget.category.color,
+          total: 0,
+        }
+      }
+      acc[id].total += budget.amount
+      return acc
+    },
+    {} as Record<number, { label: string; color: string; total: number }>,
+  )
+
   const chartData = ref({
     labels: props.budgets.map((budget) => budget.category.label),
     datasets: [
       {
-        data: props.budgets.map((budget) => budget.amount),
-        backgroundColor: props.budgets.map((budget) =>
-          getTailwindBgColor(`${budget.category.color}-400`),
+        label: "Object",
+        data: Object.values(groupedByCategory).map((cat) => cat.total),
+        backgroundColor: Object.values(groupedByCategory).map((cat) =>
+          getTailwindBgColor(`${cat.color}-400`),
         ),
-        hoverBackgroundColor: props.budgets.map((budget) =>
-          getTailwindBgColor(`${budget.category.color}-600`),
+      },
+      {
+        label: "Réel",
+        data: Object.values(groupedByCategory).map(() => 100),
+        backgroundColor: Object.values(groupedByCategory).map((cat) =>
+          getTailwindBgColor(`${cat.color}-200`),
         ),
       },
     ],
@@ -44,5 +65,5 @@
 </script>
 
 <template>
-  <Chart type="pie" :data="chartData" :options="chartOptions" class="w-full md:w-[30rem]" />
+  <Chart type="bar" :data="chartData" :options="chartOptions" class="w-full md:w-[30rem]" />
 </template>

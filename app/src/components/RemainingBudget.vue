@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { getCurrentMonth } from "@/lib/date"
+  import { getCurrentMonthString } from "@/lib/date"
   import { truncateToTenth } from "@/lib/number"
   import { fetchBudgetGroup, fetchBudgetGroupDateRemaining } from "@/services/budgetService"
   import type { AmountType } from "@/types/budget"
@@ -10,8 +10,8 @@
   const budget = ref<AmountType>()
   onMounted(async () => {
     const resultBudget = props.initialBudget
-      ? await fetchBudgetGroup(Number(props.space_id), getCurrentMonth())
-      : await fetchBudgetGroupDateRemaining(Number(props.space_id), getCurrentMonth())
+      ? await fetchBudgetGroup(Number(props.space_id), getCurrentMonthString())
+      : await fetchBudgetGroupDateRemaining(Number(props.space_id), getCurrentMonthString())
 
     if (resultBudget === null) {
       error.value = "Erreur lors du chargement des utilisateurs"
