@@ -22,7 +22,7 @@ use App\Repository\ExpenseRepository;
 class BudgetController extends AbstractController
 {
 
-    public function __construct(private BudgetRepository $budgetRepository, private GroupeRepository $groupeRepository, private ExpenseRepository $expenseRepository, private CategoryRepository $categoryRepository)
+    public function __construct(private BudgetRepository $budgetRepository, private GroupeRepository $groupeRepository, private ExpenseRepository $expenseRepository, private CategoryRepository $categoryRepository, private SerializerInterface $serializer)
     {
     }
 
@@ -88,7 +88,9 @@ class BudgetController extends AbstractController
             }
         }
 
-        return $budgets;
+        $json = $this->serializer->serialize($budgets, 'json', ['groups' => ['budget:read']]);
+
+        return new JsonResponse($json, 200, [], true);
     }
 
     public function getBudgetByCategory(string $categoryId)
@@ -97,10 +99,12 @@ class BudgetController extends AbstractController
 
         $budgets = array_map(fn($budget) => new BudgetDTO($budget), $budgetsData);
 
-        return $budgets;
+        $json = $this->serializer->serialize($budgets, 'json', ['groups' => ['budget:read']]);
+
+        return new JsonResponse($json, 200, [], true);
     }
 
-    public function getBudgetByCategoryAndMonth(string $categoryId, string $monthStart, SerializerInterface $serializer): JsonResponse
+    public function getBudgetByCategoryAndMonth(string $categoryId, string $monthStart): JsonResponse
     {
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
 
@@ -109,15 +113,15 @@ class BudgetController extends AbstractController
         if ($budgetData) {
             $budgetDTO = new BudgetDTO($budgetData);
 
-            $json = $serializer->serialize($budgetDTO, 'json', ['groups' => ['budget:read']]);
+            $json = $this->serializer->serialize($budgetDTO, 'json', ['groups' => ['budget:read']]);
 
             return new JsonResponse($json, 200, [], true);
         }
 
-        return new JsonResponse(null, 404);
+        return new JsonResponse(null, 200);
     }
 
-    public function getRemainingBudgetByCategoryAndMonth(string $categoryId, string $monthStart, SerializerInterface $serializer): JsonResponse
+    public function getRemainingBudgetByCategoryAndMonth(string $categoryId, string $monthStart): JsonResponse
     {
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
 
