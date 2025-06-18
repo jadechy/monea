@@ -13,6 +13,13 @@ use App\Entity\Expense;
 
 #[ApiResource(operations: [
     new Get(
+        uriTemplate: '/expenses/{id}',
+        controller: ExpenseController::class . '::getExpenseById',
+        read: false,
+        name: 'expense_id',
+        normalizationContext: ['groups' => ['expense:read']]
+    ),
+    new Get(
         uriTemplate: '/expenses/groupe/{groupeId}/list',
         controller: ExpenseController::class . '::getAllExpenseByGroup',
         uriVariables: [
