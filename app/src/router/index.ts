@@ -8,6 +8,7 @@ import BudgetCategoryView from "@/views/BudgetCategoryView.vue"
 import BudgetForecastView from "@/views/BudgetForecastView.vue"
 import ExpenseView from "@/views/ExpenseView.vue"
 import NewExpenseView from "@/views/NewExpenseView.vue"
+import LoginView from "@/views/LoginView.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -76,6 +77,12 @@ const router = createRouter({
       path: "/profil",
       name: "profil",
       component: ProfilView,
+    },
+
+    {
+      path: "/login",
+      name: "login",
+      component: LoginView,
     },
   ],
 })

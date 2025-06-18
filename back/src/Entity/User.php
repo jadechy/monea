@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Table(name: 'MON_USER')]
 #[UniqueEntity(fields: ['email'], message: "Cet email est déjà utilisé.")]
 #[UniqueEntity(fields: ['username'], message: "Ce pseudonyme est déjà utilisé.")]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -55,11 +55,13 @@ class User
 
     #[ORM\Column(length: 255, name: 'USR_PASSWORD')]
     #[Groups(['user:read', 'user:write'])]
-    private ?string $password = null;
+    private string $password;
 
-    #[ORM\Column(type: 'json', name: 'USR_ROLE')]
+    private ?string $plainPassword = null;
+
+    #[ORM\Column(type: 'json', name: 'USR_ROLES')]
     #[Groups(['user:read', 'user:write'])]
-    private array $role = [];
+    private array $roles = [];
 
     #[ORM\Column(name: 'USR_CREATED_AT')]
     #[Groups(['user:read', 'user:write'])]
@@ -165,7 +167,7 @@ class User
         return $this;
     }
 
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -177,17 +179,49 @@ class User
         return $this;
     }
 
-    public function getRole(): array
+    public function setPlainPassword(string $plainPassword): void
     {
-        return $this->role;
+        $this->plainPassword = $plainPassword;
     }
 
-    public function setRole(array $role): static
+    public function getPlainPassword(): ?string
     {
-        $this->role = $role;
+        return $this->plainPassword;
+    }
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
 
         return $this;
     }
+
+    /**
+     * The public representation of the user (e.g. a username, an email address, etc.)
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        if (empty($this->email)) {
+            throw new \LogicException('User identifier cannot be empty.');
+        }
+
+        return $this->email;
+    }
+
+    /**
+    * @see UserInterface
+    */
+    public function eraseCredentials(): void {}
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
