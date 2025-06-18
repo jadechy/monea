@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
 use App\DTO\BudgetCalcDTO;
+use App\DTO\CategoryCalcDTO;
 use App\DTO\BudgetDTO;
 use App\Entity\Budget;
 use App\Entity\Groupe;
@@ -119,6 +120,50 @@ class BudgetController extends AbstractController
         $json = $this->serializer->serialize($budgets, 'json', ['groups' => ['budget:read']]);
 
         return new JsonResponse($json, 200, [], true);
+    }
+
+    public function getRemainingBudgetByGroupAndYear(string $groupeId, int $year)
+    {
+
+        $budgetsData = $this->budgetRepository->findBudgetByGroupAndYear($groupeId, $year);
+
+        $expensesData = $this->expenseRepository->findExpensesByGroupAndYear($groupeId, $year);
+
+        $expensesByMonth = [];
+        $expensesByMonthCategory = [];
+
+        foreach ($expensesData as $expense) {
+            $month = $expense['month'];
+            $amount = $expense['totalAmount'];
+
+            $expensesByMonth[$month] = ($expensesByMonth[$month] ?? 0) + $amount;
+
+            $expensesByMonthCategory[$month][] = new CategoryCalcDTO(
+                $expense['categoryId'],
+                $expense['categoryLabel'],
+                $expense['categoryColor'],
+                $amount
+            );
+        }
+
+        $result = [];
+
+        foreach ($budgetsData as $budget) {
+            $month = $budget['month'];
+            $budgetAmount = $budget['totalAmount'];
+            $expenseAmount = $expensesByMonth[$month] ?? 0;
+            $remaining = round($budgetAmount - $expenseAmount, 2);
+
+            $categories = $expensesByMonthCategory[$month] ?? [];
+
+            $result[$month] = [
+                'remaining' => $remaining,
+                'categories' => $categories,
+            ];
+        }
+
+        return $this->json($result, 200, [], ['json_encode_options' => JSON_PRETTY_PRINT]);
+
     }
 
     public function getBudgetByCategory(string $categoryId)

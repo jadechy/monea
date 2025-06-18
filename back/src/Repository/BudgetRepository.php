@@ -38,6 +38,31 @@ class BudgetRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findBudgetByGroupAndYear($groupeId, $year)
+    {
+        $startDate = new \DateTimeImmutable("$year-01-01");
+        $endDate = $startDate->modify('+1 year');
+
+        $qb = $this->createQueryBuilder('b');
+
+        $qb->select(
+            "SUBSTRING(b.monthStart, 1, 7) AS month", // 'YYYY-MM' extrait de la date
+            "SUM(b.amount) AS totalAmount"
+        )
+        ->leftJoin('b.category', 'c')
+        ->leftJoin('c.groupe', 'g')
+        ->where('g.id = :groupeId')
+        ->andWhere('b.monthStart >= :startDate')
+        ->andWhere('b.monthStart < :endDate')
+        ->groupBy('month')
+        ->orderBy('month', 'ASC')
+        ->setParameter('groupeId', $groupeId)
+        ->setParameter('startDate', $startDate)
+        ->setParameter('endDate', $endDate);
+
+        return $qb->getQuery()->getResult();
+    }
+
     //    /**
     //     * @return Budget[] Returns an array of Budget objects
     //     */
