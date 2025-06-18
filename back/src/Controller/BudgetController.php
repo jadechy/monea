@@ -82,10 +82,38 @@ class BudgetController extends AbstractController
 
         $budgets = [];
         foreach ($categories as $category) {
-            $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($category->getId(), $monthStart);
+            $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($category->getId(), $date);
             if($budgetCategory){
                 $budgets[] = new BudgetDTO($budgetCategory);
             }
+        }
+
+        $json = $this->serializer->serialize($budgets, 'json', ['groups' => ['budget:read']]);
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    public function getRemainingBudgetList(string $groupeId, string $monthStart)
+    {
+        $groupe = $this->groupeRepository->find($groupeId);
+        $categories = $this->categoryRepository->findBy(['groupe' => $groupe]);
+
+        $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
+
+        $budgets = [];
+        foreach ($categories as $category) {
+            $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($category->getId(), $date);
+
+            $categoryId = $category->getId();
+            $expenses = $this->expenseRepository->findExpensesByCategoryAndDate($categoryId, $date);
+            $totalExpenses = array_sum(array_map(fn($e) => $e->getAmount(), $expenses));
+
+            if($budgetCategory){
+                $amount = $budgetCategory->getAmount() - $totalExpenses;
+
+                $budgets[] = new BudgetDTO($budgetCategory, $amount);
+            }
+            
         }
 
         $json = $this->serializer->serialize($budgets, 'json', ['groups' => ['budget:read']]);

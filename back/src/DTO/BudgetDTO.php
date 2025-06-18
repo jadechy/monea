@@ -20,6 +20,13 @@ use App\Entity\Budget;
         normalizationContext: ['groups' => ['budget:read']]
     ),
     new Get(
+        uriTemplate: '/budgets/{groupeId}/{monthStart}/remaining/list',
+        controller: BudgetController::class . '::getRemainingBudgetList',
+        read: false,
+        name: 'budget_remaining_list',
+        normalizationContext: ['groups' => ['budget:read']]
+    ),
+    new Get(
         uriTemplate: '/budgets/{categoryId}/category',
         controller: BudgetController::class . '::getBudgetByCategory',
         uriVariables: [
@@ -60,12 +67,17 @@ class BudgetDTO
     #[Groups(['budget:read'])]
     public array $category;
 
-    public function __construct(Budget $budget)
+    public function __construct(Budget $budget, float $amountCalc = null)
     {
         $category = $budget->getCategory();
 
         $this->id = $budget->getId();
-        $this->amount = $budget->getAmount();
+        if($amountCalc){
+            $this->amount = $amountCalc;
+        }else{
+            $this->amount = $budget->getAmount();
+        }
+        
         $this->monthStart = $budget->getMonthStart()->format('Y-m-d');
 
         $this->category = [
