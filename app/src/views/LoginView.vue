@@ -1,24 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { login } from "@/services/authService"
-import type { ErrorType } from '@/types/error'
-// import type { ErrorType } from "@/types/error"
+  import { ref } from "vue"
+  import type { ErrorType } from "@/types/error"
+  import router from "@/router"
+  import { useAuthStore } from "@/stores/authStore"
 
-const username = ref('')
-const password = ref('')
-const error = ref<ErrorType>(null)
-
-const submitLogin = async() => {
-  // error.value = null
-  const data = await login(username.value, password.value)
-  console.log(data)
-  // if (data === null) {
-  //   error.value = "Erreur lors de la connexion. Veuillez vérifier vos identifiants."
-  //   return
-  // }
-  // localStorage.setItem('jwt_token', data.token)
-  // router.push('/dashboard')
-}
+  const username = ref("")
+  const password = ref("")
+  const error = ref<ErrorType>(null)
+  const auth = useAuthStore()
+  const submitLogin = async () => {
+    auth.login({ username: username.value, password: password.value })
+    router.push("/")
+  }
 </script>
 
 <template>

@@ -12,17 +12,14 @@ export const GroupSchema = z.object({
   picture: z.string().max(255).nullable(),
   color: ColorSchema,
 })
-export const GroupDTOSchema = z.object({
-  id: z.number(),
-  name: z.string().max(255),
-  createdAt: DateSchema,
-  type: z.string().max(255),
-  creator: UserSchema.shape.id,
-  picture: z.string().max(255).nullable(),
-  color: ColorSchema,
+
+export const NewGroupSchema = z.object({
+  name: GroupSchema.shape.name,
+  type: GroupSchema.shape.type,
+  color: GroupSchema.shape.color,
 })
 export type GroupType = z.infer<typeof GroupSchema>
-export type GroupDTOType = z.infer<typeof GroupDTOSchema>
+export type NewGroupType = z.infer<typeof NewGroupSchema>
 
 export type FindGroup = {
   id: GroupType["id"]

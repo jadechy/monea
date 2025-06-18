@@ -4,8 +4,7 @@
   import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
   import Day from "@/layouts/BudgetForecast/Day.vue"
-  import { formatDateForApi, formatDateToDayMonth } from "@/lib/date"
-  import { getColor, getColors } from "@/lib/getColor"
+  import { formatDateForApi, formatDateToDayMonth } from "@/utils/date"
   import { fetchBudgetGroupDateRemaining } from "@/services/budgetService"
   import { fetchCategoryByGroup } from "@/services/categoryService"
   import { fetchAllExpenseByGroup } from "@/services/expenseService"
@@ -16,15 +15,15 @@
   import type { ExpenseDateType } from "@/types/expense"
   import type { GroupType } from "@/types/group"
   import { DatePicker, Select } from "primevue"
-  import { computed, onMounted, ref } from "vue"
+  import { onMounted, ref } from "vue"
   const props = defineProps<{ space_id: GroupType["id"] }>()
-  const group = ref<GroupType>()
 
   const currentDate = ref<Date | null>(null)
   const expenses = ref<ExpenseDateType>()
   const amountRemaining = ref<AmountType[]>([])
   const error = ref<ErrorType>(null)
   const groupStore = useGroupStore()
+  const group = groupStore.getGroupById(props.space_id)
   const categories = ref<CategoryType[]>([])
   const selectedCategory = defineModel<CategoryType>("selectedCategory")
 
@@ -57,9 +56,6 @@
   ]
 
   onMounted(async () => {
-    const groupResult = await groupStore.getGroupById(props.space_id)
-    group.value = groupResult
-
     const resultExpenses = await fetchAllExpenseByGroup(props.space_id)
     const resultCategories = await fetchCategoryByGroup(props.space_id)
     const resultAmountRemaing = []
@@ -102,7 +98,7 @@
 </script>
 
 <template>
-  <SubHeader label="Budgets" color="gray" routeName="home" />
+  <SubHeader label="Budgets" :color="group?.color" routeName="home" />
   <div class="flex flex-col gap-10">
     <BaseSection label="Budget mois par mois">
       <template #header>

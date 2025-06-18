@@ -1,5 +1,5 @@
 import { fetchJson } from "@/lib/api"
-import { formatDateForApi } from "@/lib/date"
+import { formatDateForApi } from "@/utils/date"
 import { AmountSchema, BudgetByCategorySchema, type BudgetType } from "@/types/budget"
 import { type GroupType } from "@/types/group"
 

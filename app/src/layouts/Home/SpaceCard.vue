@@ -1,6 +1,6 @@
 <template>
   <router-link
-    :to="{ name: 'space', params: { id: group.id } }"
+    :to="{ name: 'space', params: { space_id: group.id } }"
     :class="[bgStyle.default, bgStyle.hover]"
     class="p-2.5 rounded-2xl transition-all text-gray-700"
     @click=""

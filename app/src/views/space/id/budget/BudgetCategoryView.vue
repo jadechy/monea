@@ -11,21 +11,19 @@
 
   const props = defineProps<{ space_id: GroupType["id"]; category_id: CategoryType["id"] }>()
   const groupStore = useGroupStore()
-  const group = ref<GroupType>()
+  const group = groupStore.getGroupById(props.space_id)
   const category = ref<CategoryType>()
   const error = ref<ErrorType>(null)
   const expenses = ref<ExpenseDateType>()
 
   onMounted(async () => {
     const resultCategory = await fetchCategory(props.category_id)
-    const groupResult = await groupStore.getGroupById(props.space_id)
     const resultExpenses = await fetchAllExpenseByCategory(props.category_id)
 
     if (resultCategory === null || resultExpenses === null) {
       error.value = "Erreur lors du chargement des utilisateurs"
     } else {
       category.value = resultCategory
-      group.value = groupResult
       expenses.value = resultExpenses
     }
   })

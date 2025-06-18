@@ -5,7 +5,7 @@
   import { peoplesData } from "@/data/people"
   import { Button, Checkbox, DatePicker, InputNumber, InputText, Select } from "primevue"
   import { computed, onMounted, ref } from "vue"
-  import { getSpaceColor, getColors } from "@/lib/getColor"
+  import { getSpaceColor, getColors } from "@/utils/getColor"
   import type { ErrorType } from "@/types/error"
   import type { FetchNewExpenseType } from "@/types/expense"
   import { fetchNewExpense } from "@/services/expenseService"

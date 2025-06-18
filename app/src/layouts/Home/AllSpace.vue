@@ -1,16 +1,10 @@
 <script setup lang="ts">
   import SpaceCard from "@/layouts/Home/SpaceCard.vue"
   import { useGroupStore } from "@/stores/groupStore"
-  import type { GroupType } from "@/types/group"
-  import { onMounted, ref } from "vue"
+  import { storeToRefs } from "pinia"
 
   const groupStore = useGroupStore()
-  const groups = ref<GroupType[]>([])
-
-  onMounted(async () => {
-    const resultGroups = await groupStore.getGroups()
-    groups.value = resultGroups
-  })
+  const { groups } = storeToRefs(groupStore)
 </script>
 
 <template>

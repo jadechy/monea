@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { onMounted, ref, watchEffect } from "vue"
   import Chart from "primevue/chart"
-  import { formatDateToDayMonth, getCurrentMonthDate, getCurrentMonthDays } from "@/lib/date"
+  import { formatDateToDayMonth, getCurrentMonthDate, getCurrentMonthDays } from "@/utils/date"
   import { fetchCategoryByGroup } from "@/services/categoryService"
   import { fetchAllExpenseByGroup, fetchAllExpenseByGroupAndMonth } from "@/services/expenseService"
   import type { CategoryType } from "@/types/category"
