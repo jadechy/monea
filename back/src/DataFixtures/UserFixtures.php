@@ -28,12 +28,11 @@ class UserFixtures extends Fixture
             $user->setEmail($faker->unique()->safeEmail);
 
             // Mot de passe commun "password123" hashé
-            // $hashedPassword = $this->passwordHasher->hashPassword($user, 'password123');
-            $user->setPassword("password123");
+            $user->setPlainPassword('password123');
 
             // Role alterné entre ROLE_USER et ROLE_ADMIN
-            $role = $i % 3 === 0 ? ['ROLE_ADMIN'] : ['ROLE_USER'];
-            $user->setRole($role);
+            $roles = $i % 3 === 0 ? ['ROLE_ADMIN'] : ['ROLE_USER'];
+            $user->setRoles($roles);
 
             $user->setCreatedAt(new \DateTimeImmutable('-' . $faker->numberBetween(0, 365) . ' days'));
 
