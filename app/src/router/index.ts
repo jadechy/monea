@@ -31,7 +31,7 @@ const router = createRouter({
       component: NewSpaceView,
     },
     {
-      path: "/new-space/:type?",
+      path: "/new-space",
       name: "new_space",
       component: NewSpaceView,
       props: true,

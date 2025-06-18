@@ -8,7 +8,7 @@ export const GroupSchema = z.object({
   name: z.string().max(255),
   createdAt: z.string(),
   type: z.string().max(255),
-  creator: z.string(),
+  creator: UserSchema.shape.id,
   picture: z.string().max(255).nullable(),
   color: ColorSchema,
 })
@@ -17,7 +17,6 @@ export const GroupDTOSchema = z.object({
   name: z.string().max(255),
   createdAt: DateSchema,
   type: z.string().max(255),
-  // type : z.enum([])
   creator: UserSchema.shape.id,
   picture: z.string().max(255).nullable(),
   color: ColorSchema,

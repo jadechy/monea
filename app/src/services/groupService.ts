@@ -35,7 +35,7 @@ export const fetchGroupByUser = async (userId: UserType["id"]) => {
   try {
     return await fetchJson({
       url: `groupes/${userId}/list`,
-      schema: GroupDTOSchema.array(),
+      schema: GroupSchema.array(),
     })
   } catch (error) {
     console.error("Erreur lors du fetch de l'utilisateur :", error)

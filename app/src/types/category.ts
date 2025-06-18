@@ -1,10 +1,15 @@
 import { z } from "zod"
-import { GroupSchema } from "./group"
+import { ColorSchema } from "./color"
 
 export const CategorySchema = z.object({
   id: z.number(),
   label: z.string().max(50).nullable(),
-  color: z.enum(["pink", "red", "yellow", "orange", "blue", "purple"]),
-  groupe: GroupSchema,
+  color: ColorSchema,
+})
+
+const NewCategorySchema = z.object({
+  label: CategorySchema.shape.label,
+  color: CategorySchema.shape.color,
 })
 export type CategoryType = z.infer<typeof CategorySchema>
+export type NewCategoryType = z.infer<typeof NewCategorySchema>

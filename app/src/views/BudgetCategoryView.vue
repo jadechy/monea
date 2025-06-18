@@ -1,36 +1,46 @@
 <script setup lang="ts">
-  import { categories } from "@/data/categoryLabel"
   import AllPaiementsLayout from "@/layouts/AllExpensesLayout.vue"
-  import { fetchBudgetGroupRemaining } from "@/services/budgetService"
-  import { getCurrentMonth } from "@/services/getCurrentMonth"
-  import type { AmountType } from "@/types/budget"
+  import { fetchCategory } from "@/services/categoryService"
+  import { fetchAllExpenseByCategory } from "@/services/expenseService"
+  import { useGroupStore } from "@/stores/groupStore"
+  import type { CategoryType } from "@/types/category"
   import type { ErrorType } from "@/types/error"
+  import type { ExpenseDateType } from "@/types/expense"
+  import type { GroupType } from "@/types/group"
   import { onMounted, ref } from "vue"
 
-  const props = defineProps<{ space_id: string; category_id: string }>()
-
-  const category = categories.find((category) => category.label === props.category_id)
-  const amount = ref<AmountType>()
+  const props = defineProps<{ space_id: GroupType["id"]; category_id: CategoryType["id"] }>()
+  const groupStore = useGroupStore()
+  const group = ref<GroupType>()
+  const category = ref<CategoryType>()
   const error = ref<ErrorType>(null)
+  const expenses = ref<ExpenseDateType>()
+
   onMounted(async () => {
-    const result = await fetchBudgetGroupRemaining(Number(props.space_id), getCurrentMonth)
-    if (result === null) {
+    const resultCategory = await fetchCategory(props.category_id)
+    const groupResult = await groupStore.getGroupById(props.space_id)
+    const resultExpenses = await fetchAllExpenseByCategory(props.category_id)
+
+    if (resultCategory === null || resultExpenses === null) {
       error.value = "Erreur lors du chargement des utilisateurs"
     } else {
-      amount.value = result.amount
+      category.value = resultCategory
+      group.value = groupResult
+      expenses.value = resultExpenses
     }
   })
 </script>
 
 <template>
   <AllPaiementsLayout
-    :amount="amount"
-    :space_id="space_id"
+    v-if="group"
+    :group="group"
     :subHeader="{
       label: category?.label ?? 'error',
       routeName: 'budget_space',
       params: { space_id: space_id },
       color: category?.color,
     }"
+    :expensesDate="expenses"
   />
 </template>

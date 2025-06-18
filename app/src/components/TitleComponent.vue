@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed } from "vue"
   import type { Color } from "../layouts/Home/SpaceCard.vue"
-  import { getColors } from "@/services/getColor"
+  import { getColors } from "@/lib/getColor"
   import { colors } from "@/data/categoryLabel"
   import type { ColorType } from "@/types/color"
   export interface TitleComponentProps {

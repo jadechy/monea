@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  export type RouteProps = { routeName: string; params?: Record<string, string> }
+  export type RouteProps = { routeName: string; params?: Record<string, any> }
   defineProps<RouteProps>()
 </script>
 

@@ -1,106 +1,104 @@
-<!-- <script setup lang="ts">
+<script setup lang="ts">
   import BaseSection from "@/components/BaseSection.vue"
-  import type { ExpenseCardComponentProps } from "@/components/ExpenseCardComponent.vue"
   import PaiementCardComponent from "@/components/ExpenseCardComponent.vue"
   import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
-  import {
-    categories,
-    categoryLabel as categoryLabelData,
-    type CategoryLabel,
-  } from "@/data/categoryLabel"
   import Day from "@/layouts/BudgetForecast/Day.vue"
-  import { formatDateToDayMonth } from "@/lib/date"
-  import { getColors } from "@/services/getColor"
+  import { formatDateForApi, formatDateToDayMonth } from "@/lib/date"
+  import { getColor, getColors } from "@/lib/getColor"
+  import { fetchBudgetGroupDateRemaining } from "@/services/budgetService"
+  import { fetchCategoryByGroup } from "@/services/categoryService"
+  import { fetchAllExpenseByGroup } from "@/services/expenseService"
+  import { useGroupStore } from "@/stores/groupStore"
+  import type { AmountType } from "@/types/budget"
+  import type { CategoryType } from "@/types/category"
+  import type { ErrorType } from "@/types/error"
+  import type { ExpenseDateType } from "@/types/expense"
+  import type { GroupType } from "@/types/group"
   import { DatePicker, Select } from "primevue"
-  import { computed, ref } from "vue"
-  const props = defineProps<{ space_id: string }>()
+  import { computed, onMounted, ref } from "vue"
+  const props = defineProps<{ space_id: GroupType["id"] }>()
+  const group = ref<GroupType>()
 
-  const date = ref<Date | null>(null)
-  const allPaiements: ExpenseCardComponentProps[] =
-    space?.expenses.flatMap((arr) => arr.expenses) ?? []
-  const currentPaiements = computed(() => {
-    return allPaiements.filter((expense) => {
-      if (!date.value || date.value === null) return []
-      const paiementDate = new Date(expense.date)
-      return paiementDate.toString() === date.value.toString()
-    })
-  })
+  const currentDate = ref<Date | null>(null)
+  const expenses = ref<ExpenseDateType>()
+  const amountRemaining = ref<AmountType[]>([])
+  const error = ref<ErrorType>(null)
+  const groupStore = useGroupStore()
+  const categories = ref<CategoryType[]>([])
+  const selectedCategory = defineModel<CategoryType>("selectedCategory")
 
-  const selectedCity = ref(null)
+  const months = ref<
+    {
+      label: string
+      amount: number
+      // categories: {
+      //   id: CategoryType["id"]
+      //   color: CategoryType["color"]
+      //   label: CategoryType["label"]
+      //   amount: number
+      // }[]
+    }[]
+  >([])
 
-  const cities = [
-    { name: "Paris", code: "PAR" },
-    { name: "Lyon", code: "LYN" },
-    { name: "Marseille", code: "MRS" },
-    { name: "Toulouse", code: "TLS" },
-    { name: "Nice", code: "NCE" },
+  const monthLabels = [
+    "Janvier",
+    "Février",
+    "Mars",
+    "Avril",
+    "Mai",
+    "Juin",
+    "Juillet",
+    "Août",
+    "Septembre",
+    "Octobre",
+    "Novembre",
+    "Décembre",
   ]
-  type Month = {
-    label: string
-    amount: number
-  }
-  const months: Month[] = [
-    {
-      label: "Janvier",
-      amount: 300,
-    },
-    {
-      label: "Février",
-      amount: 300,
-    },
-    {
-      label: "Mars",
-      amount: 300,
-    },
-    {
-      label: "Avril",
-      amount: 300,
-    },
-    {
-      label: "Mai",
-      amount: 300,
-    },
-    {
-      label: "Juin",
-      amount: 300,
-    },
-    {
-      label: "Juillet",
-      amount: 300,
-    },
 
-    {
-      label: "Août",
-      amount: 300,
-    },
-    {
-      label: "Septembre",
-      amount: 300,
-    },
-    {
-      label: "Octobre",
-      amount: 300,
-    },
-    {
-      label: "Novembre",
-      amount: 300,
-    },
-    {
-      label: "Décembre",
-      amount: 300,
-    },
-  ]
-  const categoryLabel = categoryLabelData.filter((label) => label !== "default")
-  const colorCategoryStyle = computed(() => {
-    const currentCategory = categories.filter(
-      (category) => selectedCategory.value === category.label,
-    )[0]
-    return getColors({ array: categories.map((category) => category.color) })[
-      (currentCategory && currentCategory.color) ?? "gray"
-    ]
+  onMounted(async () => {
+    const groupResult = await groupStore.getGroupById(props.space_id)
+    group.value = groupResult
+
+    const resultExpenses = await fetchAllExpenseByGroup(props.space_id)
+    const resultCategories = await fetchCategoryByGroup(props.space_id)
+    const resultAmountRemaing = []
+    const monthsData: { label: string; amount: number }[] = []
+
+    for (let i = 1; i <= 12; i++) {
+      const paddedMonth = i.toString().padStart(2, "0")
+      const result = await fetchBudgetGroupDateRemaining(props.space_id, `2025-${paddedMonth}-01`)
+      resultAmountRemaing.push(result?.amount ?? 0)
+
+      const monthExpenses = Object.values(resultExpenses || {})
+        .flat()
+        .filter((expense) => {
+          const date = new Date(expense.spentAt)
+          return date.getMonth() === i - 1
+        })
+      const total = monthExpenses.reduce((sum, e) => sum + e.amount, 0)
+
+      monthsData.push({
+        label: monthLabels[i - 1],
+        amount: total,
+      })
+    }
+
+    if (
+      resultExpenses === null ||
+      resultAmountRemaing.some((amount) => amount === null || amount === undefined) ||
+      resultCategories === null
+    ) {
+      error.value = "Erreur lors du chargement des utilisateurs"
+    } else {
+      expenses.value = resultExpenses
+      amountRemaining.value = resultAmountRemaing
+      months.value = monthsData
+      categories.value = resultCategories
+      console.log(currentDate.value)
+      console.log(expenses.value)
+    }
   })
-  const selectedCategory = defineModel<CategoryLabel>("selectedCategory")
 </script>
 
 <template>
@@ -112,24 +110,26 @@
           editable
           showClear
           v-model="selectedCategory"
-          :options="categoryLabel"
+          :options="categories"
+          optionLabel="label"
           placeholder="Choisir une catégorie"
           class="ml-auto md:w-56"
-          :class="[colorCategoryStyle.bg, colorCategoryStyle.hover]"
-          :labelClass="['capitalize', colorCategoryStyle.text]"
+          :class="[`bg-${selectedCategory?.color}-100`, `hover:bg-${selectedCategory?.color}-50`]"
+          :labelClass="['capitalize', `text-${selectedCategory?.color}-800`]"
         />
       </template>
-      <section class="grid gap-6 grid-cols-3 lg:grid-cols-6 mt-1">
+      <section class="grid gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mt-1">
         <div v-for="month in months" :key="month.label" class="item">
           <p>{{ month.label }}</p>
           <p>{{ month.amount }}€</p>
         </div>
       </section>
     </BaseSection>
-    <BaseSection label="Les dépenses passés et futurs">
+    <BaseSection label="Les dépenses passés et futurs" v-if="group">
       <div class="flex flex-col gap-10">
         <DatePicker
-          v-model="date"
+          v-if="expenses"
+          v-model="currentDate"
           inline
           panel-class="border-none shadow rounded-xl "
           class="w-full"
@@ -137,48 +137,31 @@
           <template #date="slotProps">
             <Day
               :date="slotProps.date"
-              :allPaiements="allPaiements"
-              :color="space?.color ?? 'gray'"
+              :expensesInDay="expenses['2025-05-05']"
+              :color="group?.color ?? 'gray'"
             />
           </template>
         </DatePicker>
-        <div class="flex flex-col gap-2 sm:flex-row justify-between items-center" v-if="date">
-          <RemainingBudget label="Budget restant à date" :amount="30" />
+        <div
+          class="flex flex-col gap-2 sm:flex-row justify-between items-center"
+          v-if="currentDate"
+        >
+          <RemainingBudget label="Budget restant à date" :space_id="group.id" />
         </div>
-        <BaseSection :label="formatDateToDayMonth(date)" v-if="date">
+
+        <BaseSection
+          :label="formatDateToDayMonth(currentDate)"
+          v-if="currentDate && expenses && expenses[formatDateForApi(currentDate)]"
+        >
           <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             <PaiementCardComponent
-              v-for="spendCard in currentPaiements"
-              :key="spendCard.id"
-              :id="spendCard.id"
-              :price="spendCard.price"
-              :label="spendCard.label"
-              :people="spendCard.people"
-              :categoryLabel="spendCard.categoryLabel"
-              :space_id="props.space_id"
-              :date="spendCard.date"
-              :participants="spendCard.participants"
+              v-for="expense in expenses[formatDateForApi(currentDate)]"
+              :key="expense.id"
+              :expense="expense"
             />
           </div>
         </BaseSection>
-        <!-- <BaseSection :label="formatDateToDayMonth(date)" v-if="date" class="mt-10">
-        <div>
-          <div class="item block w-fit rounded-lg">
-            <p>Budget restant à date</p>
-            <p><span class="font-bold">300</span> €</p>
-          </div>
-          <RemainingBudget :amount="30" label="Budget restant à date" />
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div v-for="expense in currentPaiements" :key="expense.id" class="item hover">
-            <CategoryLabel :label="expense.categoryLabel" />
-            <p>{{ expense.label }}</p>
-          </div>
-        </div>
-      </BaseSection> -->
-<!-- </div>
+      </div>
     </BaseSection>
   </div>
-</template> -->
--->
-<template></template>
+</template>
