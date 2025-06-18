@@ -6,4 +6,10 @@ export const CategorySchema = z.object({
   label: z.string().max(50).nullable(),
   color: ColorSchema,
 })
+
+const NewCategorySchema = z.object({
+  label: CategorySchema.shape.label,
+  color: CategorySchema.shape.color,
+})
 export type CategoryType = z.infer<typeof CategorySchema>
+export type NewCategoryType = z.infer<typeof NewCategorySchema>

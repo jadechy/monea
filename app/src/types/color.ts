@@ -6,10 +6,12 @@ export const ColorSchema = z.enum([
   "yellow",
   "orange",
   "blue",
-  "purple",
   "green",
   "gray",
   "cyan",
-  "brown",
+  "indigo",
+  "violet",
+  "fuchsia",
+  "teal",
 ])
 export type ColorType = z.infer<typeof ColorSchema>
