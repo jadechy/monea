@@ -6,10 +6,9 @@
 
   const username = ref("")
   const password = ref("")
-  const error = ref<ErrorType>(null)
   const auth = useAuthStore()
   const submitLogin = async () => {
-    auth.login({ username: username.value, password: password.value })
+    await auth.login({ username: username.value, password: password.value })
     router.push("/")
   }
 </script>

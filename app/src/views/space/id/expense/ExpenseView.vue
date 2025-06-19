@@ -21,7 +21,6 @@
       error.value = "Erreur lors du chargement des utilisateurs"
     } else {
       expense.value = result
-      console.log(result)
     }
   })
 </script>

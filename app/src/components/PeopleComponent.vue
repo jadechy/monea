@@ -11,7 +11,7 @@
   import type { UserType } from "@/types/user"
 
   interface Props {
-    user: UserType
+    userId: UserType["id"]
   }
   defineProps<Props>()
 </script>

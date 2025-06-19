@@ -28,7 +28,7 @@ export const useAuthStore = defineStore("auth", () => {
   const error = ref<string | null>(null)
 
   // Computed
-  const isAuthenticated = computed(() => !!token.value && !!user.value)
+  const isAuthenticated = computed(() => !!token.value)
   const userInitials = computed(() => {
     if (!user.value) return ""
     return user.value.name
@@ -49,7 +49,7 @@ export const useAuthStore = defineStore("auth", () => {
       const savedToken = localStorage.getItem(TOKEN_KEY)
       const savedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY)
       const savedUser = localStorage.getItem(USER_KEY)
-
+      console.log(savedToken)
       if (savedToken) {
         token.value = savedToken
       }

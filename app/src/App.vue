@@ -2,7 +2,13 @@
   import { RouterView } from "vue-router"
   import Header from "./components/Header.vue"
   import { useGroupStore } from "./stores/groupStore"
+  import { useAuthStore } from "./stores/authStore"
+  import { onBeforeMount } from "vue"
+  const auth = useAuthStore()
   const groupStore = useGroupStore()
+  onBeforeMount(() => {
+    auth.initAuth()
+  })
 </script>
 
 <template>

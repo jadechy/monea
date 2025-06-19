@@ -1,4 +1,4 @@
-import { fetchGroupByUser } from "@/services/groupService"
+import { fetchGroupByUser, type FetchGroupByUserType } from "@/services/groupService"
 import type { GroupType } from "@/types/group"
 import type { UserType } from "@/types/user"
 import { defineStore } from "pinia"
@@ -6,7 +6,7 @@ import { computed, readonly, ref } from "vue"
 
 export const useGroupStore = defineStore("group", () => {
   const user_id: UserType["id"] = 1
-  const groups = ref<GroupType[]>([])
+  const groups = ref<FetchGroupByUserType[]>([])
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -38,13 +38,14 @@ export const useGroupStore = defineStore("group", () => {
   }
 
   const safeGroups = computed(() => {
+    console.log(hasInitialized)
     autoInit()
     return groups.value
   })
 
-  const getGroupById = (group_id: number): GroupType | null => {
+  const getGroupById = (group_id: number): FetchGroupByUserType | null => {
     autoInit()
-    return groups.value.find((group) => group.id === Number(group_id)) || null
+    return groups.value.find((g) => g.id === Number(group_id)) || null
   }
   return {
     groups: safeGroups,

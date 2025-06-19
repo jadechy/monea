@@ -11,5 +11,12 @@ const NewCategorySchema = z.object({
   label: CategorySchema.shape.label,
   color: CategorySchema.shape.color,
 })
+
+export const CategoryInGroupSchema = z.object({
+  categoryId: CategorySchema.shape.id,
+  label: CategorySchema.shape.label,
+  color: CategorySchema.shape.color,
+})
 export type CategoryType = z.infer<typeof CategorySchema>
 export type NewCategoryType = z.infer<typeof NewCategorySchema>
+export type CategoryInGroupType = z.infer<typeof CategoryInGroupSchema>

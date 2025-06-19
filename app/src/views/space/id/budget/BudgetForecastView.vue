@@ -91,8 +91,6 @@
       amountRemaining.value = resultAmountRemaing
       months.value = monthsData
       categories.value = resultCategories
-      console.log(currentDate.value)
-      console.log(expenses.value)
     }
   })
 </script>

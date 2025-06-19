@@ -7,13 +7,11 @@
   import type { GroupType } from "@/types/group"
   import { onMounted, ref } from "vue"
   const props = defineProps<{ space_id: GroupType["id"] }>()
-  console.log("lala")
   const groupStore = useGroupStore()
 
   const group = groupStore.getGroupById(props.space_id)
   const expenses = ref<ExpenseDateType>()
   const error = ref<ErrorType>(null)
-  console.log(group)
   onMounted(async () => {
     const resultExpenses = await fetchAllExpenseByGroup(props.space_id)
     if (resultExpenses === null) {

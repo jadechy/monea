@@ -3,15 +3,11 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
-use App\DTO\BudgetCalcDTO;
 use App\DTO\BudgetDTO;
-use App\Entity\Budget;
 use App\Entity\Groupe;
 use App\Repository\BudgetRepository;
 use App\Repository\GroupeRepository;
@@ -22,9 +18,7 @@ use App\Repository\ExpenseRepository;
 class BudgetController extends AbstractController
 {
 
-    public function __construct(private BudgetRepository $budgetRepository, private GroupeRepository $groupeRepository, private ExpenseRepository $expenseRepository, private CategoryRepository $categoryRepository, private SerializerInterface $serializer)
-    {
-    }
+    public function __construct(private BudgetRepository $budgetRepository, private GroupeRepository $groupeRepository, private ExpenseRepository $expenseRepository, private CategoryRepository $categoryRepository, private SerializerInterface $serializer) {}
 
     private function computeTotalBudgetForGroup(Groupe $groupe, \DateTimeInterface $monthStart): float
     {
@@ -60,8 +54,8 @@ class BudgetController extends AbstractController
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
         $budgetAmount = $this->computeTotalBudgetForGroup($groupe, $date);
 
-        $start = (clone $date)->modify('first day of this month')->setTime(0,0,0);
-        $end = (clone $date)->modify('last day of this month')->setTime(23,59,59);
+        $start = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
+        $end = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
 
         $expenses = $this->expenseRepository->findExpensesByGroupeBetweenDates($groupeId, $start, $end);
         $totalExpenses = array_sum(array_map(fn($e) => $e->getAmount(), $expenses));
@@ -83,7 +77,7 @@ class BudgetController extends AbstractController
         $budgets = [];
         foreach ($categories as $category) {
             $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($category->getId(), $monthStart);
-            if($budgetCategory){
+            if ($budgetCategory) {
                 $budgets[] = new BudgetDTO($budgetCategory);
             }
         }
@@ -109,7 +103,7 @@ class BudgetController extends AbstractController
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
 
         $budgetData = $this->budgetRepository->findBudgetByCategoryAndDate($categoryId, $date);
-       
+
         if ($budgetData) {
             $budgetDTO = new BudgetDTO($budgetData);
 

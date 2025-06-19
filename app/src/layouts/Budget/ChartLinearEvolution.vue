@@ -84,7 +84,6 @@
     categories.value.forEach((cat) => {
       cumulativeByCategory[cat.id] = new Array(labels.length).fill(0)
     })
-    console.log(categories.value)
     labels.forEach((label, index) => {
       const [day, month] = label.split("/")
       const year = "2025"
@@ -104,7 +103,6 @@
 
       categories.value.forEach((cat) => {
         if (!dayExpenses.some((e) => e.category === cat.id)) {
-          console.log(cumulativeByCategory)
           cumulativeByCategory[cat.id][index] =
             index > 0 ? cumulativeByCategory[cat.id][index - 1] : 0
         }
