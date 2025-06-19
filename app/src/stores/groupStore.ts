@@ -1,57 +1,91 @@
 import { fetchGroupByUser, type FetchGroupByUserType } from "@/services/groupService"
+import type { ErrorType } from "@/types/error"
 import type { GroupType } from "@/types/group"
-import type { UserType } from "@/types/user"
 import { defineStore } from "pinia"
-import { computed, readonly, ref } from "vue"
+import { computed, ref } from "vue"
 
-export const useGroupStore = defineStore("group", () => {
-  const user_id: UserType["id"] = 1
+export const useGroupsStore = defineStore("groups", () => {
+  // State
   const groups = ref<FetchGroupByUserType[]>([])
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
+  const loading = ref(false)
+  const error = ref<ErrorType>(null)
+  const lastFetch = ref<number | null>(null)
 
-  let hasInitialized = false
+  // Getters
+  const groupsCount = computed(() => groups.value.length)
+  const groupById = ({ id }: { id: GroupType["id"] }) => {
+    return groups.value.find((group) => group.id === Number(id))
+  }
 
-  const fetchGroups = async () => {
-    if (hasInitialized || isLoading.value) return
+  async function fetchGroups({ force = false }: { force?: boolean }) {
+    const now = Date.now()
+    if (!force && lastFetch.value && now - lastFetch.value < 5 * 60 * 1000) {
+      return groups.value
+    }
 
-    isLoading.value = true
+    loading.value = true
     error.value = null
 
     try {
-      const res = await fetchGroupByUser(user_id)
-      if (res !== null) {
-        groups.value = res
-        hasInitialized = true
+      const res = await fetchGroupByUser(1)
+      if (res === null) {
+        return (error.value = "Erreur lors du chargement des utilisateurs")
       }
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : "Erreur lors du chargement"
+      groups.value = res
+      return res
+    } catch (err: any) {
+      error.value = err.message
+      console.error("Erreur lors de la récupération des groupes:", err)
+      throw err
     } finally {
-      isLoading.value = false
+      loading.value = false
     }
   }
 
-  const autoInit = () => {
-    if (!hasInitialized || !isLoading.value) {
-      fetchGroups()
+  function addGroup(group: FetchGroupByUserType) {
+    groups.value.push(group)
+  }
+
+  function updateGroup({
+    id,
+    updatedGroup,
+  }: {
+    id: FetchGroupByUserType["id"]
+    updatedGroup: FetchGroupByUserType
+  }) {
+    const index = groups.value.findIndex((g) => g.id === id)
+    if (index !== -1) {
+      groups.value[index] = { ...groups.value[index], ...updatedGroup }
     }
   }
 
-  const safeGroups = computed(() => {
-    console.log(hasInitialized)
-    autoInit()
-    return groups.value
-  })
-
-  const getGroupById = (group_id: number): FetchGroupByUserType | null => {
-    autoInit()
-    return groups.value.find((g) => g.id === Number(group_id)) || null
+  function removeGroup({ id }: { id: GroupType["id"] }) {
+    const index = groups.value.findIndex((g) => g.id === id)
+    if (index !== -1) {
+      groups.value.splice(index, 1)
+    }
   }
+
+  function clearGroups() {
+    groups.value = []
+    lastFetch.value = null
+  }
+
   return {
-    groups: safeGroups,
-    isLoading: readonly(isLoading),
-    error: readonly(error),
-    getGroupById,
-    refresh: fetchGroups,
+    // State
+    groups,
+    loading,
+    error,
+
+    // Getters
+    groupsCount,
+    groupById,
+
+    // Actions
+    fetchGroups,
+    addGroup,
+    updateGroup,
+    removeGroup,
+    clearGroups,
   }
 })

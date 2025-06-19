@@ -1,31 +1,24 @@
 <script setup lang="ts">
-  import BaseSection from "@/components/BaseSection.vue"
-  import PeopleComponent from "@/components/PeopleComponent.vue"
   import SubHeader from "@/components/SubHeader.vue"
   import { peoplesData } from "@/data/people"
   import { Button, Checkbox, DatePicker, InputNumber, InputText, Select } from "primevue"
-  import { computed, onMounted, ref } from "vue"
-  import { getSpaceColor, getColors } from "@/utils/getColor"
+  import { getSpaceColor } from "@/utils/getColor"
   import type { ErrorType } from "@/types/error"
-  import type { FetchNewExpenseType } from "@/types/expense"
-  import { fetchNewExpense } from "@/services/expenseService"
-  import type { ColorType } from "@/types/color"
   import type { CategoryType } from "@/types/category"
   import type { UserType } from "@/types/user"
-  import { useGroupStore } from "@/stores/groupStore"
   import type { GroupType } from "@/types/group"
   import { useAuthStore } from "@/stores/authStore"
-  const props = defineProps<{ space_id: GroupType["id"] }>()
+  import { computed, ref } from "vue"
+  import { useGroups } from "@/composables/useGroups"
+  const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
 
   const selectedCategory = defineModel<CategoryType>("selectedCategory")
   const selectedAuthor = defineModel<UserType>("selectedAuthor")
   const selectedDate = defineModel<Date>("selectedDate")
   const auth = useAuthStore()
-  console.log(auth.token)
   const members = ref<boolean[]>([])
-  const groupStore = useGroupStore()
-  const group = groupStore.getGroupById(props.space_id)
-
+  const { groupById } = useGroups()
+  const group = computed(() => groupById({ id: space_id }))
   console.log(group)
 
   const isNew = false
@@ -47,7 +40,7 @@
   }
 </script>
 
-<template>
+<template v-if="group">
   <SubHeader
     label="Nouveau expense"
     :color="group?.color"
@@ -64,8 +57,8 @@
       optionLabel="label"
       placeholder="Choisir une catégorie"
       class="w-full md:w-56"
-      :class="[`bg-${selectedCategory?.color}-100`, `hover:bg-${selectedCategory?.color}-50`]"
-      :labelClass="['capitalize', `text-${selectedCategory?.color}-800`]"
+      :class="[`bg-${selectedCategory?.color}-700`, `hover:bg-${selectedCategory?.color}-600`]"
+      :labelClass="['capitalize', `text-white`]"
     />
     <InputText placeholder="Nom" class="w-full" />
     <div class="flex gap-10 self-start w-1/2">

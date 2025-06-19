@@ -8,22 +8,23 @@
   import { fetchBudgetGroupDateRemaining } from "@/services/budgetService"
   import { fetchCategoryByGroup } from "@/services/categoryService"
   import { fetchAllExpenseByGroup } from "@/services/expenseService"
-  import { useGroupStore } from "@/stores/groupStore"
   import type { AmountType } from "@/types/budget"
   import type { CategoryType } from "@/types/category"
   import type { ErrorType } from "@/types/error"
   import type { ExpenseDateType } from "@/types/expense"
   import type { GroupType } from "@/types/group"
   import { DatePicker, Select } from "primevue"
-  import { onMounted, ref } from "vue"
-  const props = defineProps<{ space_id: GroupType["id"] }>()
+  import { computed, onMounted, ref } from "vue"
+  import { useGroups } from "@/composables/useGroups"
+  const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
 
   const currentDate = ref<Date | null>(null)
   const expenses = ref<ExpenseDateType>()
   const amountRemaining = ref<AmountType[]>([])
   const error = ref<ErrorType>(null)
-  const groupStore = useGroupStore()
-  const group = groupStore.getGroupById(props.space_id)
+  const { groupById } = useGroups()
+  const group = computed(() => groupById({ id: space_id }))
+
   const categories = ref<CategoryType[]>([])
   const selectedCategory = defineModel<CategoryType>("selectedCategory")
 
@@ -56,14 +57,14 @@
   ]
 
   onMounted(async () => {
-    const resultExpenses = await fetchAllExpenseByGroup(props.space_id)
-    const resultCategories = await fetchCategoryByGroup(props.space_id)
+    const resultExpenses = await fetchAllExpenseByGroup(space_id)
+    const resultCategories = await fetchCategoryByGroup(space_id)
     const resultAmountRemaing = []
     const monthsData: { label: string; amount: number }[] = []
 
     for (let i = 1; i <= 12; i++) {
       const paddedMonth = i.toString().padStart(2, "0")
-      const result = await fetchBudgetGroupDateRemaining(props.space_id, `2025-${paddedMonth}-01`)
+      const result = await fetchBudgetGroupDateRemaining(space_id, `2025-${paddedMonth}-01`)
       resultAmountRemaing.push(result?.amount ?? 0)
 
       const monthExpenses = Object.values(resultExpenses || {})

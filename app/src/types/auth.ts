@@ -3,7 +3,7 @@ import type { CreateUserInputType, UserType } from "./user"
 export const TokenSchema = z.string()
 export const LoginResponseSchema = z.object({
   token: TokenSchema,
-  refreshToken: TokenSchema,
+  refreshToken: TokenSchema.optional(),
 })
 
 export type LoginResponseType = z.infer<typeof LoginResponseSchema>

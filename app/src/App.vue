@@ -1,11 +1,14 @@
 <script setup lang="ts">
   import { RouterView } from "vue-router"
   import Header from "./components/Header.vue"
-  import { useGroupStore } from "./stores/groupStore"
   import { useAuthStore } from "./stores/authStore"
   import { onBeforeMount } from "vue"
+  import { useGroups } from "./composables/useGroups"
+  import { storeToRefs } from "pinia"
   const auth = useAuthStore()
-  const groupStore = useGroupStore()
+  const groupsStore = useGroups()
+  const { loading } = storeToRefs(groupsStore)
+
   onBeforeMount(() => {
     auth.initAuth()
   })
@@ -14,11 +17,8 @@
 <template>
   <Header />
   <main class="lg:px-10 px-5">
-    <div v-if="groupStore.isLoading" class="p-4">Chargement...</div>
+    <div v-if="loading" class="p-4">Chargement...</div>
 
-    <div v-else-if="groupStore.error" class="p-4 text-red-600">
-      {{ groupStore.error }}
-    </div>
     <RouterView />
   </main>
 </template>

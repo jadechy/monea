@@ -10,19 +10,20 @@
   import type { ErrorType } from "@/types/error"
   import type { GroupType } from "@/types/group"
   import { Button } from "primevue"
-  import { onMounted, ref } from "vue"
-  import { useGroupStore } from "@/stores/groupStore"
+  import { computed, onMounted, ref } from "vue"
   import { formatDateForApi, getCurrentMonthDate } from "@/utils/date"
   import { fetchAllBudgetCategoriesByGroup } from "@/services/budgetService"
-  const props = defineProps<{ space_id: GroupType["id"] }>()
-  const groupStore = useGroupStore()
-  const group = groupStore.getGroupById(props.space_id)
+  import { useGroups } from "@/composables/useGroups"
+  const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
+  const { groupById } = useGroups()
+  const group = computed(() => groupById({ id: space_id }))
+
   const budgetCategories = ref<BudgetByCategoryType[]>([])
   const error = ref<ErrorType>(null)
 
   onMounted(async () => {
     const resultBudgetCategories = await fetchAllBudgetCategoriesByGroup(
-      props.space_id,
+      space_id,
       getCurrentMonthDate(),
     )
     if (resultBudgetCategories === null) {
