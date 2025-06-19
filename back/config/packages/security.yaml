@@ -30,7 +30,9 @@ security:
       stateless: true
       provider: app_user_provider
       jwt: ~
-
+      refresh_jwt:
+        check_path: /api/token/refresh
+      entry_point: jwt
     main:
       lazy: true
       provider: app_user_provider
@@ -45,7 +47,8 @@ security:
   # Note: Only the *first* access control that matches will be used
   access_control:
     - { path: ^/api/login, roles: PUBLIC_ACCESS }
-    - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+    - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
+    # - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
   security:
