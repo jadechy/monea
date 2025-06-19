@@ -1,4 +1,4 @@
-import { fetchJson, postJson } from "@/lib/api"
+import { fetchJson, postJson } from "@/utils/api"
 import { CategoryInGroupSchema } from "@/types/category"
 import { GroupSchema } from "@/types/group"
 import { MemberInGroupSchema } from "@/types/member"

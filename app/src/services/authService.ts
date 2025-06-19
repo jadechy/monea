@@ -1,4 +1,4 @@
-import { postJson } from "@/lib/api"
+import { postJson } from "@/utils/api"
 import { LoginResponseSchema, type LoginRequestType } from "@/types/auth"
 
 export const loginAuth = async ({ username, password }: LoginRequestType) => {

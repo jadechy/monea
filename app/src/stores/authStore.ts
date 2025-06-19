@@ -49,7 +49,6 @@ export const useAuthStore = defineStore("auth", () => {
       const savedToken = localStorage.getItem(TOKEN_KEY)
       const savedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY)
       const savedUser = localStorage.getItem(USER_KEY)
-      console.log(savedToken)
       if (savedToken) {
         token.value = savedToken
       }
@@ -156,7 +155,7 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     try {
-      const response = await fetch("/api/auth/refresh", {
+      const response = await fetch("/api/token/refresh", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
