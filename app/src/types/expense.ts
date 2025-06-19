@@ -1,28 +1,74 @@
 import { z } from "zod"
 import { UserSchema } from "./user"
 import { GroupSchema } from "./group"
-import { CategorySchema } from "./category"
+import { CategoryInGroupSchema, CategorySchema } from "./category"
 import { RecurringExpenseSchema } from "./recurring_expense"
 import { DateSchema } from "./date"
+
+// Schéma principal d'une dépense
 export const ExpenseSchema = z.object({
-  id: z.number(),
-  amount: z.number(),
-  title: z.string().max(255),
+  id: z.number({
+    required_error: "Identifiant requis",
+    invalid_type_error: "L'identifiant doit être un nombre",
+  }),
+  amount: z
+    .number({
+      required_error: "Le montant est requis",
+      invalid_type_error: "Le montant doit être un nombre",
+    })
+    .positive("Le montant doit être positif"),
+  title: z
+    .string({
+      required_error: "Le titre est requis",
+      invalid_type_error: "Le titre doit être une chaîne de caractères",
+    })
+    .min(3, "Le titre doit contenir au moins 3 caractères")
+    .max(255, "Le titre doit contenir au maximum 255 caractères"),
   createdAt: DateSchema,
   groupe: GroupSchema.shape.id,
   category: CategorySchema.shape.id,
   creator: UserSchema.shape.id,
   recurringExpense: RecurringExpenseSchema.nullable(),
   spentAt: DateSchema,
-  participants: z.array(UserSchema).optional(),
+  participants: z
+    .array(UserSchema, {
+      invalid_type_error: "Les participants doivent être une liste d'utilisateurs",
+    })
+    .optional(),
 })
 
+// Schéma pour les données retournées lors de la création d'une nouvelle dépense
 export const FetchNewExpenseSchema = GroupSchema.extend({
-  categories: z.array(CategorySchema),
-  members: z.array(UserSchema),
+  categories: z.array(CategorySchema, {
+    required_error: "Les catégories sont requises",
+    invalid_type_error: "Les catégories doivent être une liste",
+  }),
+  members: z.array(UserSchema, {
+    required_error: "Les membres sont requis",
+    invalid_type_error: "Les membres doivent être une liste",
+  }),
 })
 
-export const ExpenseDateSchema = z.record(DateSchema, z.array(ExpenseSchema))
+// Schéma d'une nouvelle dépense à soumettre
+export const NewExpenseSchema = z.object({
+  category: CategoryInGroupSchema,
+  title: ExpenseSchema.shape.title,
+  amount: ExpenseSchema.shape.amount,
+  spendAt: z.date({
+    required_error: "La date est requise",
+    invalid_type_error: "La date est invalide",
+  }),
+})
+
+// Schéma d'un enregistrement de dépenses par date
+export const ExpenseDateSchema = z.record(
+  DateSchema,
+  z.array(ExpenseSchema, {
+    invalid_type_error: "Les dépenses doivent être une liste",
+  }),
+)
+
+// Types dérivés
 export type ExpenseType = z.infer<typeof ExpenseSchema>
 export type ExpenseDateType = z.infer<typeof ExpenseDateSchema>
 export type FetchNewExpenseType = z.infer<typeof FetchNewExpenseSchema>

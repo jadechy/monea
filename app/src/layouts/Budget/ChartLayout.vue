@@ -10,7 +10,7 @@
   import ChartCategoryBalance from "./ChartCategoryBalance.vue"
   import ChartLinearEvolution from "./ChartLinearEvolution.vue"
   import type { GroupType } from "@/types/group"
-  const props = defineProps<{ budgets: BudgetByCategoryType[]; group_id: GroupType["id"] }>()
+  defineProps<{ budgets: BudgetByCategoryType[]; group_id: GroupType["id"] }>()
 </script>
 
 <template>
