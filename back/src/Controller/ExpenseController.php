@@ -42,6 +42,19 @@ class ExpenseController extends AbstractController
         return $expenses;
     }
 
+    public function getExpenseById($id)
+    {
+        $expense = $this->expenseRepository->find($id);
+
+        $expenseDTO = new ExpenseDTO($expense);
+
+        $json = $this->serializer->serialize($expenseDTO, 'json', [
+            'groups' => ['expense:read'],
+        ]);
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
     public function getAllExpenseByGroup($groupeId)
     {
         $groupe = $this->groupeRepository->find($groupeId);

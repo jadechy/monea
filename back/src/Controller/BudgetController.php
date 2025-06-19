@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
 use App\DTO\BudgetDTO;
+use App\DTO\CategoryCalcDTO;
 use App\Entity\Groupe;
 use App\Repository\BudgetRepository;
 use App\Repository\GroupeRepository;
@@ -76,7 +77,7 @@ class BudgetController extends AbstractController
 
         $budgets = [];
         foreach ($categories as $category) {
-            $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($category->getId(), $monthStart);
+            $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($category->getId(), $date);
             if ($budgetCategory) {
                 $budgets[] = new BudgetDTO($budgetCategory);
             }
@@ -85,6 +86,76 @@ class BudgetController extends AbstractController
         $json = $this->serializer->serialize($budgets, 'json', ['groups' => ['budget:read']]);
 
         return new JsonResponse($json, 200, [], true);
+    }
+
+    public function getRemainingBudgetList(string $groupeId, string $monthStart)
+    {
+        $groupe = $this->groupeRepository->find($groupeId);
+        $categories = $this->categoryRepository->findBy(['groupe' => $groupe]);
+
+        $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
+
+        $budgets = [];
+        foreach ($categories as $category) {
+            $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($category->getId(), $date);
+
+            $categoryId = $category->getId();
+            $expenses = $this->expenseRepository->findExpensesByCategoryAndDate($categoryId, $date);
+            $totalExpenses = array_sum(array_map(fn($e) => $e->getAmount(), $expenses));
+
+            if ($budgetCategory) {
+                $amount = $budgetCategory->getAmount() - $totalExpenses;
+
+                $budgets[] = new BudgetDTO($budgetCategory, $amount);
+            }
+        }
+
+        $json = $this->serializer->serialize($budgets, 'json', ['groups' => ['budget:read']]);
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    public function getRemainingBudgetByGroupAndYear(string $groupeId, int $year)
+    {
+
+        $budgetsData = $this->budgetRepository->findBudgetByGroupAndYear($groupeId, $year);
+
+        $expensesData = $this->expenseRepository->findExpensesByGroupAndYear($groupeId, $year);
+
+        $expensesByMonth = [];
+        $expensesByMonthCategory = [];
+
+        foreach ($expensesData as $expense) {
+            $month = $expense['month'];
+            $amount = $expense['totalAmount'];
+
+            $expensesByMonth[$month] = ($expensesByMonth[$month] ?? 0) + $amount;
+
+            $expensesByMonthCategory[$month][] = new CategoryCalcDTO(
+                $expense['categoryId'],
+                $expense['categoryLabel'],
+                $expense['categoryColor'],
+                $amount
+            );
+        }
+
+        $result = [];
+
+        foreach ($budgetsData as $budget) {
+            $month = $budget['month'];
+            $budgetAmount = $budget['totalAmount'];
+            $expenseAmount = $expensesByMonth[$month] ?? 0;
+            $remaining = round($budgetAmount - $expenseAmount, 2);
+
+            $categories = $expensesByMonthCategory[$month] ?? [];
+
+            $result[$month] = [
+                'remaining' => $remaining,
+                'categories' => $categories,
+            ];
+        }
+
+        return $this->json($result, 200, [], ['json_encode_options' => JSON_PRETTY_PRINT]);
     }
 
     public function getBudgetByCategory(string $categoryId)

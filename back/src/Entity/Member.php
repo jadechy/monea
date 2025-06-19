@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: MemberRepository::class)]
 #[ORM\Table(name: 'MON_MEMBER')]
 class Member
-{   
+{
     #[ORM\Column(length: 255, name: 'MBR_ROLE')]
     #[Groups(['groupe:read', 'member:read', 'user:read'])]
     private ?string $role = null;

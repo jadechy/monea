@@ -40,6 +40,13 @@ use App\Controller\BudgetController;
         ],
         normalizationContext: ['groups' => ['budget:read']]
     ),
+    new Get(
+        uriTemplate: '/budget/{groupeId}/{year}/year/remaining',
+        controller: BudgetController::class . '::getRemainingBudgetByGroupAndYear',
+        read: false,
+        name: 'budget_get_remaining_by_groupe_and_year',
+        normalizationContext: ['groups' => ['budget:read']]
+    ),
 ])]
 class BudgetCalcDTO
 {
