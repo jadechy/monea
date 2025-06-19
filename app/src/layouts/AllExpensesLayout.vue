@@ -6,8 +6,8 @@
   import SubHeader from "@/components/SubHeader.vue"
   import type { TitleComponentProps } from "@/components/TitleComponent.vue"
   import router from "@/router"
-  import { formatDateToDayMonth } from "@/lib/date"
-  import { getSpaceColor } from "@/lib/getColor"
+  import { formatDateToDayMonth } from "@/utils/date"
+  import { getSpaceColor } from "@/utils/getColor"
   import { Button } from "primevue"
   import type { ExpenseDateType } from "@/types/expense"
   import ExpenseCardComponent from "@/components/ExpenseCardComponent.vue"
@@ -47,7 +47,7 @@
           label="Edition"
           size="small"
           :class="[getSpaceColor({ color: group?.color })]"
-          @click="router.push({ name: 'edit_space', params: { id: group.id } })"
+          @click="router.push({ name: 'edit_space', params: { space_id: group.id } })"
         />
       </div>
     </div>

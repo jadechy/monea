@@ -1,21 +1,42 @@
 <script setup lang="ts">
+  import SubHeader from "@/components/SubHeader.vue"
+  import { Form } from "@primevue/forms"
   import ColoredLabelComponent from "@/components/CategoryLabel.vue"
-  import { Button, InputNumber, InputText } from "primevue"
-  import ChoiceColor from "./ChoiceColor.vue"
+  import { Button, InputNumber, InputText, Message } from "primevue"
   import { ref } from "vue"
   import { defaultCategories } from "@/data/defaultCategories"
   import { ColorSchema } from "@/types/color"
   import BaseSection from "@/components/BaseSection.vue"
+  import { useForm } from "@primevue/forms/useform"
+  import { zodResolver } from "@primevue/forms/resolvers/zod"
+  import { NewGroupSchema, type NewGroupType } from "@/types/group"
   const selectedIndex = ref<number | null>(null)
-
+  const form = useForm({
+    initialValues: {
+      name: "",
+      color: "gray",
+      type: "",
+    } as NewGroupType,
+    resolver: zodResolver(NewGroupSchema),
+  })
   const handleClick = (i: number) => {
     selectedIndex.value = selectedIndex.value === i ? null : i
   }
+  const onFormSubmit = form.handleSubmit((data) => {
+    console.log("SUBMITTED:")
+  })
+
+  defineProps<{}>()
 </script>
 
 <template>
-  <div class="flex flex-col gap-10">
-    <InputText placeholder="Nom du space" class="w-full lg:w-3/4" />
+  <SubHeader label="Nouveau space" color="gray" routeName="home" />
+  <Form v-slot="$form" @submit="onFormSubmit()" class="flex flex-col gap-10">
+    <InputText placeholder="Nom du space" class="w-full lg:w-3/4" name="name" fluid />
+    <Message v-if="$form.username?.invalid" severity="error" size="small" variant="simple">{{
+      $form.username.error.message
+    }}</Message>
+
     <BaseSection label="Ajouter un membre">
       <div class="flex flex-col w-full lg:w-3/4">
         <InputText placeholder="Pseudo/mail" class="w-full" />
@@ -48,8 +69,8 @@
       </div>
     </BaseSection>
 
-    <Button class="w-64 self-center">Créer le space</Button>
-  </div>
+    <Button type="submit" class="w-64 self-center" label="Créer le space" />
+  </Form>
 </template>
 
 <style></style>

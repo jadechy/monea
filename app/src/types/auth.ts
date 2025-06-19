@@ -1,5 +1,14 @@
 import { z } from "zod"
-
-export const loginResponseSchema = z.object({
-  token: z.string(),
+import type { CreateUserInputType, UserType } from "./user"
+export const TokenSchema = z.string()
+export const LoginResponseSchema = z.object({
+  token: TokenSchema,
+  refreshToken: TokenSchema.optional(),
 })
+
+export type LoginResponseType = z.infer<typeof LoginResponseSchema>
+export type TokenType = z.infer<typeof TokenSchema>
+export type LoginRequestType = {
+  username: UserType["username"]
+  password: CreateUserInputType["password"]
+}

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { onMounted, ref, watchEffect } from "vue"
   import Chart from "primevue/chart"
-  import { formatDateToDayMonth, getCurrentMonthDate, getCurrentMonthDays } from "@/lib/date"
+  import { formatDateToDayMonth, getCurrentMonthDate, getCurrentMonthDays } from "@/utils/date"
   import { fetchCategoryByGroup } from "@/services/categoryService"
   import { fetchAllExpenseByGroup, fetchAllExpenseByGroupAndMonth } from "@/services/expenseService"
   import type { CategoryType } from "@/types/category"
@@ -84,7 +84,6 @@
     categories.value.forEach((cat) => {
       cumulativeByCategory[cat.id] = new Array(labels.length).fill(0)
     })
-    console.log(categories.value)
     labels.forEach((label, index) => {
       const [day, month] = label.split("/")
       const year = "2025"
@@ -104,7 +103,6 @@
 
       categories.value.forEach((cat) => {
         if (!dayExpenses.some((e) => e.category === cat.id)) {
-          console.log(cumulativeByCategory)
           cumulativeByCategory[cat.id][index] =
             index > 0 ? cumulativeByCategory[cat.id][index - 1] : 0
         }

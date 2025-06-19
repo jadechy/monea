@@ -1,34 +1,91 @@
-import { fetchGroupByUser } from "@/services/groupService"
+import { fetchGroupByUser, type FetchGroupByUserType } from "@/services/groupService"
+import type { ErrorType } from "@/types/error"
 import type { GroupType } from "@/types/group"
-import type { UserType } from "@/types/user"
 import { defineStore } from "pinia"
+import { computed, ref } from "vue"
 
-export const useGroupStore = defineStore("group", {
-  state: () => ({
-    groups: [] as GroupType[],
-    isLoaded: false,
-  }),
+export const useGroupsStore = defineStore("groups", () => {
+  // State
+  const groups = ref<FetchGroupByUserType[]>([])
+  const loading = ref(false)
+  const error = ref<ErrorType>(null)
+  const lastFetch = ref<number | null>(null)
 
-  actions: {
-    async fetchGroups(user_id: UserType["id"]) {
-      if (this.isLoaded) return
-      const res = await fetchGroupByUser(user_id)
-      if (res === null) return
-      this.groups = res
-      this.isLoaded = true
-    },
+  // Getters
+  const groupsCount = computed(() => groups.value.length)
+  const groupById = ({ id }: { id: GroupType["id"] }) => {
+    return groups.value.find((group) => group.id === Number(id))
+  }
 
-    async getGroups() {
-      if (!this.isLoaded) await this.fetchGroups(1)
-      return this.groups
-    },
+  async function fetchGroups({ force = false }: { force?: boolean }) {
+    const now = Date.now()
+    if (!force && lastFetch.value && now - lastFetch.value < 5 * 60 * 1000) {
+      return groups.value
+    }
 
-    async getGroupById(group_id: number) {
-      if (!this.isLoaded) await this.fetchGroups(1)
-      this.groups.map((group) => console.log(group.id, group_id))
-      const findGroup = this.groups.find((group) => group.id === Number(group_id))
-      if (!findGroup) return
-      return findGroup
-    },
-  },
+    loading.value = true
+    error.value = null
+
+    try {
+      const res = await fetchGroupByUser(1)
+      if (res === null) {
+        return (error.value = "Erreur lors du chargement des utilisateurs")
+      }
+      groups.value = res
+      return res
+    } catch (err: any) {
+      error.value = err.message
+      console.error("Erreur lors de la récupération des groupes:", err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  function addGroup(group: FetchGroupByUserType) {
+    groups.value.push(group)
+  }
+
+  function updateGroup({
+    id,
+    updatedGroup,
+  }: {
+    id: FetchGroupByUserType["id"]
+    updatedGroup: FetchGroupByUserType
+  }) {
+    const index = groups.value.findIndex((g) => g.id === id)
+    if (index !== -1) {
+      groups.value[index] = { ...groups.value[index], ...updatedGroup }
+    }
+  }
+
+  function removeGroup({ id }: { id: GroupType["id"] }) {
+    const index = groups.value.findIndex((g) => g.id === id)
+    if (index !== -1) {
+      groups.value.splice(index, 1)
+    }
+  }
+
+  function clearGroups() {
+    groups.value = []
+    lastFetch.value = null
+  }
+
+  return {
+    // State
+    groups,
+    loading,
+    error,
+
+    // Getters
+    groupsCount,
+    groupById,
+
+    // Actions
+    fetchGroups,
+    addGroup,
+    updateGroup,
+    removeGroup,
+    clearGroups,
+  }
 })

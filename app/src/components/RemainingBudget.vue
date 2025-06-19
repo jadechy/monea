@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import { getCurrentMonthString } from "@/lib/date"
-  import { truncateToTenth } from "@/lib/number"
+  import { getCurrentMonthString } from "@/utils/date"
+  import { truncateToTenth } from "@/utils/number"
   import { fetchBudgetGroup, fetchBudgetGroupDateRemaining } from "@/services/budgetService"
   import type { AmountType } from "@/types/budget"
   import type { ErrorType } from "@/types/error"

@@ -78,11 +78,12 @@ const MyPreset = definePreset(Aura, {
     },
   },
 })
-
-const pinia = createPinia()
 const app = createApp(App)
-
+const pinia = createPinia()
 app.use(pinia)
+// const authStore = useAuthStore()
+// authStore.initAuth()
+
 app.use(router)
 app.use(PrimeVue, {
   theme: {

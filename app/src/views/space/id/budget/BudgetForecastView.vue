@@ -4,12 +4,10 @@
   import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
   import Day from "@/layouts/BudgetForecast/Day.vue"
-  import { formatDateForApi, formatDateToDayMonth } from "@/lib/date"
-  import { getColor, getColors } from "@/lib/getColor"
+  import { formatDateForApi, formatDateToDayMonth } from "@/utils/date"
   import { fetchBudgetGroupDateRemaining } from "@/services/budgetService"
   import { fetchCategoryByGroup } from "@/services/categoryService"
   import { fetchAllExpenseByGroup } from "@/services/expenseService"
-  import { useGroupStore } from "@/stores/groupStore"
   import type { AmountType } from "@/types/budget"
   import type { CategoryType } from "@/types/category"
   import type { ErrorType } from "@/types/error"
@@ -17,14 +15,16 @@
   import type { GroupType } from "@/types/group"
   import { DatePicker, Select } from "primevue"
   import { computed, onMounted, ref } from "vue"
-  const props = defineProps<{ space_id: GroupType["id"] }>()
-  const group = ref<GroupType>()
+  import { useGroups } from "@/composables/useGroups"
+  const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
 
   const currentDate = ref<Date | null>(null)
   const expenses = ref<ExpenseDateType>()
   const amountRemaining = ref<AmountType[]>([])
   const error = ref<ErrorType>(null)
-  const groupStore = useGroupStore()
+  const { groupById } = useGroups()
+  const group = computed(() => groupById({ id: space_id }))
+
   const categories = ref<CategoryType[]>([])
   const selectedCategory = defineModel<CategoryType>("selectedCategory")
 
@@ -57,17 +57,14 @@
   ]
 
   onMounted(async () => {
-    const groupResult = await groupStore.getGroupById(props.space_id)
-    group.value = groupResult
-
-    const resultExpenses = await fetchAllExpenseByGroup(props.space_id)
-    const resultCategories = await fetchCategoryByGroup(props.space_id)
+    const resultExpenses = await fetchAllExpenseByGroup(space_id)
+    const resultCategories = await fetchCategoryByGroup(space_id)
     const resultAmountRemaing = []
     const monthsData: { label: string; amount: number }[] = []
 
     for (let i = 1; i <= 12; i++) {
       const paddedMonth = i.toString().padStart(2, "0")
-      const result = await fetchBudgetGroupDateRemaining(props.space_id, `2025-${paddedMonth}-01`)
+      const result = await fetchBudgetGroupDateRemaining(space_id, `2025-${paddedMonth}-01`)
       resultAmountRemaing.push(result?.amount ?? 0)
 
       const monthExpenses = Object.values(resultExpenses || {})
@@ -95,14 +92,12 @@
       amountRemaining.value = resultAmountRemaing
       months.value = monthsData
       categories.value = resultCategories
-      console.log(currentDate.value)
-      console.log(expenses.value)
     }
   })
 </script>
 
 <template>
-  <SubHeader label="Budgets" color="gray" routeName="home" />
+  <SubHeader label="Budgets" :color="group?.color" routeName="home" />
   <div class="flex flex-col gap-10">
     <BaseSection label="Budget mois par mois">
       <template #header>

@@ -1,7 +1,9 @@
-import { fetchJson, postJson } from "@/lib/api"
-import { CategorySchema } from "@/types/category"
-import { GroupSchema, GroupDTOSchema } from "@/types/group"
+import { fetchJson, postJson } from "@/utils/api"
+import { CategoryInGroupSchema } from "@/types/category"
+import { GroupSchema } from "@/types/group"
+import { MemberInGroupSchema } from "@/types/member"
 import { type CreateUserInputType, type UserType } from "@/types/user"
+import { z } from "zod"
 
 export const createGroup = async (input: CreateUserInputType) => {
   try {
@@ -30,12 +32,17 @@ export const fetchGroup = async (id: string) => {
     return null
   }
 }
+export const FetchGroupByUserSchema = GroupSchema.extend({
+  members: MemberInGroupSchema.array().optional(),
+  categories: CategoryInGroupSchema.array().optional(),
+})
+export type FetchGroupByUserType = z.infer<typeof FetchGroupByUserSchema>
 
 export const fetchGroupByUser = async (userId: UserType["id"]) => {
   try {
     return await fetchJson({
       url: `groupes/${userId}/list`,
-      schema: GroupSchema.array(),
+      schema: FetchGroupByUserSchema.array(),
     })
   } catch (error) {
     console.error("Erreur lors du fetch de l'utilisateur :", error)

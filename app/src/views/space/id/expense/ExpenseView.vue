@@ -2,12 +2,12 @@
   import SubHeader from "@/components/SubHeader.vue"
   import { onMounted, ref } from "vue"
   import ColoredLabelComponent from "@/components/CategoryLabel.vue"
-  import { formatDateToDayMonth } from "@/lib/date"
+  import { formatDateToDayMonth } from "@/utils/date"
   import BaseSection from "@/components/BaseSection.vue"
   import PeopleComponent from "@/components/PeopleComponent.vue"
   import { Button, Chip } from "primevue"
   import router from "@/router"
-  import { getSpaceColor } from "@/lib/getColor"
+  import { getSpaceColor } from "@/utils/getColor"
   import type { ExpenseType } from "@/types/expense"
   import type { ErrorType } from "@/types/error"
   import { fetchExpense } from "@/services/expenseService"
@@ -21,7 +21,6 @@
       error.value = "Erreur lors du chargement des utilisateurs"
     } else {
       expense.value = result
-      console.log(result)
     }
   })
 </script>

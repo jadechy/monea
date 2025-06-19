@@ -3,34 +3,32 @@
   import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
   import ChartLayout from "@/layouts/Budget/ChartLayout.vue"
-  import { truncateToTenth } from "@/lib/number"
+  import { truncateToTenth } from "@/utils/number"
   import router from "@/router"
-  import { getSpaceColor } from "@/lib/getColor"
+  import { getSpaceColor } from "@/utils/getColor"
   import type { BudgetByCategoryType } from "@/types/budget"
   import type { ErrorType } from "@/types/error"
   import type { GroupType } from "@/types/group"
   import { Button } from "primevue"
-  import { onMounted, ref } from "vue"
-  import { useGroupStore } from "@/stores/groupStore"
-  import { formatDateForApi, getCurrentMonthDate } from "@/lib/date"
+  import { computed, onMounted, ref } from "vue"
+  import { formatDateForApi, getCurrentMonthDate } from "@/utils/date"
   import { fetchAllBudgetCategoriesByGroup } from "@/services/budgetService"
+  import { useGroups } from "@/composables/useGroups"
+  const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
+  const { groupById } = useGroups()
+  const group = computed(() => groupById({ id: space_id }))
 
-  const props = defineProps<{ space_id: GroupType["id"] }>()
-  const groupStore = useGroupStore()
-  const group = ref<GroupType>()
   const budgetCategories = ref<BudgetByCategoryType[]>([])
   const error = ref<ErrorType>(null)
 
   onMounted(async () => {
-    const resultGroup = await groupStore.getGroupById(props.space_id)
     const resultBudgetCategories = await fetchAllBudgetCategoriesByGroup(
-      props.space_id,
+      space_id,
       getCurrentMonthDate(),
     )
-    if (resultGroup === null || resultBudgetCategories === null) {
+    if (resultBudgetCategories === null) {
       error.value = "Erreur lors du chargement des utilisateurs"
     } else {
-      group.value = resultGroup
       budgetCategories.value = resultBudgetCategories
     }
   })
