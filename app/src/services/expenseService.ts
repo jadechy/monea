@@ -1,5 +1,5 @@
-import { fetchJson } from "@/lib/api"
-import { formatDateForApi } from "@/lib/date"
+import { fetchJson } from "@/utils/api"
+import { formatDateForApi } from "@/utils/date"
 import type { BudgetType } from "@/types/budget"
 import {
   ExpenseDateSchema,

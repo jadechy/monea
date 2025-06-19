@@ -3,8 +3,6 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -12,13 +10,12 @@ use App\DTO\ExpenseDTO;
 use App\Repository\GroupeRepository;
 use App\Repository\ExpenseRepository;
 use App\Repository\CategoryRepository;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
 class ExpenseController extends AbstractController
 {
-    public function __construct(private GroupeRepository $groupeRepository, private ExpenseRepository $expenseRepository, private CategoryRepository $categoryRepository,private SerializerInterface $serializer)
-    {
-    }
+    public function __construct(private GroupeRepository $groupeRepository, private ExpenseRepository $expenseRepository, private CategoryRepository $categoryRepository, private SerializerInterface $serializer) {}
 
     /**
      * Regroupe les dépenses par date (Y-m-d), trie par date descendante.
@@ -40,7 +37,7 @@ class ExpenseController extends AbstractController
             $expenses[$date][] = new ExpenseDTO($expense);
         }
 
-        krsort($expenses); 
+        krsort($expenses);
 
         return $expenses;
     }
@@ -76,8 +73,8 @@ class ExpenseController extends AbstractController
     public function getAllExpenseByGroupAndMonth($groupeId, $monthStart)
     {
         $date = new \DateTimeImmutable($monthStart);
-        $start = (clone $date)->modify('first day of this month')->setTime(0,0,0);
-        $end = (clone $date)->modify('last day of this month')->setTime(23,59,59);
+        $start = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
+        $end = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
 
         $expensesData = $this->expenseRepository->findExpensesByGroupeBetweenDates($groupeId, $start, $end);
 

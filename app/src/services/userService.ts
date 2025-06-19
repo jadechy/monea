@@ -1,4 +1,4 @@
-import { fetchJson, postJson } from "@/lib/api"
+import { fetchJson, postJson } from "@/utils/api"
 import { UserSchema, type CreateUserInputType } from "@/types/user"
 
 export const createUser = async (input: CreateUserInputType) => {

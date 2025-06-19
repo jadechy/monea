@@ -1,12 +1,12 @@
-import { postJson } from "@/lib/api"
-import {loginResponseSchema } from "@/types/auth"
+import { postJson } from "@/utils/api"
+import { LoginResponseSchema, type LoginRequestType } from "@/types/auth"
 
-export const login = async (username: string, password: string) => {
+export const loginAuth = async ({ username, password }: LoginRequestType) => {
   try {
     return await postJson({
       url: "login",
       body: { username, password },
-      responseSchema: loginResponseSchema,
+      responseSchema: LoginResponseSchema,
     })
   } catch (error) {
     console.error("Erreur lors du post de l'utilisateur :", error)

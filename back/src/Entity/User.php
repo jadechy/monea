@@ -3,12 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Link;
-use ApiPlatform\Metadata\Get;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -105,6 +104,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, name: 'USR_RESET_TOKEN', nullable: true)]
     #[Groups(['user:read', 'user:write'])]
     private ?string $resetToken = null;
+
 
     public function __construct()
     {
@@ -219,8 +219,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-    * @see UserInterface
-    */
+     * @see UserInterface
+     */
     public function eraseCredentials(): void {}
 
     public function getCreatedAt(): ?\DateTimeImmutable
