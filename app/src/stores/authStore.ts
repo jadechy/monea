@@ -20,14 +20,12 @@ export interface AuthResponse {
 }
 
 export const useAuthStore = defineStore("auth", () => {
-  // État
   const token = ref<string | null>(null)
   const refreshToken = ref<string | null>(null)
   const user = ref<UserType | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
-  // Computed
   const isAuthenticated = computed(() => !!token.value)
   const userInitials = computed(() => {
     if (!user.value) return ""
@@ -38,12 +36,10 @@ export const useAuthStore = defineStore("auth", () => {
       .toUpperCase()
   })
 
-  // Clés localStorage
   const TOKEN_KEY = "auth_token"
   const REFRESH_TOKEN_KEY = "auth_refresh_token"
   const USER_KEY = "auth_user"
 
-  // Initialisation depuis localStorage
   const initAuth = () => {
     try {
       const savedToken = localStorage.getItem(TOKEN_KEY)
@@ -64,7 +60,6 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  // Sauvegarder dans localStorage
   const saveToStorage = () => {
     if (token.value) {
       localStorage.setItem(TOKEN_KEY, token.value)
@@ -77,14 +72,12 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  // Nettoyer localStorage
   const clearStorage = () => {
     localStorage.removeItem(TOKEN_KEY)
     localStorage.removeItem(REFRESH_TOKEN_KEY)
     localStorage.removeItem(USER_KEY)
   }
 
-  // Nettoyer l'état
   const clearAuth = () => {
     token.value = null
     refreshToken.value = null
@@ -93,7 +86,6 @@ export const useAuthStore = defineStore("auth", () => {
     clearStorage()
   }
 
-  // Connexion
   const login = async ({ username, password }: LoginRequestType) => {
     isLoading.value = true
     error.value = null
@@ -106,14 +98,11 @@ export const useAuthStore = defineStore("auth", () => {
 
       if (res === null) throw new Error(`Identifiant de connexion incorecte`)
 
-      // Mettre à jour l'état
       token.value = res.token
-      // user.value = data.user
       if (res.refreshToken) {
         refreshToken.value = res.refreshToken
       }
 
-      // Sauvegarder
       saveToStorage()
 
       return { success: true, res: res.token }
@@ -125,12 +114,10 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  // Déconnexion
   const logout = async () => {
     isLoading.value = true
 
     try {
-      // Appel API pour invalider le token côté serveur (optionnel)
       if (token.value) {
         await fetch("/api/auth/logout", {
           method: "POST",
@@ -148,7 +135,6 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  // Rafraîchir le token
   const refreshAuthToken = async () => {
     if (!refreshToken.value) {
       throw new Error("Pas de refresh token disponible")
@@ -160,7 +146,7 @@ export const useAuthStore = defineStore("auth", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ refreshToken: refreshToken.value }),
+        body: JSON.stringify({ refresh_token: refreshToken.value }),
       })
 
       if (!response.ok) {
@@ -185,7 +171,6 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  // Mettre à jour les informations utilisateur
   const updateUser = (userData: Partial<UserType>) => {
     if (user.value) {
       user.value = { ...user.value, ...userData }
@@ -193,7 +178,6 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  // Inscription (optionnel)
   const register = async (userData: LoginRequestType & { name: string }) => {
     isLoading.value = true
     error.value = null
@@ -231,17 +215,14 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   return {
-    // État (readonly pour éviter les mutations directes)
     token: readonly(token),
     user: readonly(user),
     isLoading: readonly(isLoading),
     error: readonly(error),
 
-    // Computed
     isAuthenticated,
     userInitials,
 
-    // Actions
     initAuth,
     login,
     logout,
@@ -249,7 +230,6 @@ export const useAuthStore = defineStore("auth", () => {
     refreshAuthToken,
     updateUser,
 
-    // Utilitaires
     clearAuth,
   }
 })

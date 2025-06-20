@@ -18,7 +18,6 @@
   const selectedCategory = defineModel<CategoryType>("selectedCategory")
   const selectedAuthor = defineModel<UserType>("selectedAuthor")
   const selectedDate = defineModel<Date>("selectedDate")
-  const auth = useAuthStore()
   const members = ref<boolean[]>([])
   const { groupById } = useGroups()
   const group = computed(() => groupById({ id: space_id }))
