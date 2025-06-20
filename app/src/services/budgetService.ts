@@ -1,7 +1,14 @@
 import { fetchJson } from "@/utils/api"
 import { formatDateForApi } from "@/utils/date"
-import { AmountSchema, BudgetByCategorySchema, type BudgetType } from "@/types/budget"
+import {
+  AmountSchema,
+  AmountValueSchema,
+  BudgetByCategorySchema,
+  type BudgetType,
+} from "@/types/budget"
 import { type GroupType } from "@/types/group"
+import { z } from "zod"
+import { CategorySchema } from "@/types/category"
 
 export const fetchBudgetGroupDateRemaining = async (
   group_id: GroupType["id"],
@@ -41,6 +48,42 @@ export const fetchAllBudgetCategoriesByGroup = async (group_id: GroupType["id"],
     })
   } catch (error) {
     console.error("Erreur lors du fetch des utilisateurs :", error)
+    return null
+  }
+}
+const fetchBudgetRemainingInMonthValueSchema = z.object({
+  remaining: AmountValueSchema,
+  categories: CategorySchema.extend({ remaining: AmountValueSchema }).array(),
+})
+const fetchBudgetRemainingInMonthSchema = z.record(
+  z.string(),
+  fetchBudgetRemainingInMonthValueSchema,
+)
+export type FetchBudgetRemainingInMonthValueType = z.infer<
+  typeof fetchBudgetRemainingInMonthValueSchema
+>
+
+export type FetchBudgetRemainingInMonthType = z.infer<typeof fetchBudgetRemainingInMonthSchema>
+
+export const fetchBudgetRemainingInMonth = async (group_id: GroupType["id"], year: number) => {
+  try {
+    return await fetchJson({
+      url: `budget/${group_id}/${year}/year/remaining/list`,
+      schema: fetchBudgetRemainingInMonthSchema,
+    })
+  } catch (error) {
+    console.error("Erreur lors du fetch de l'utilisateur :", error)
+    return null
+  }
+}
+export const fetchBudgetRemainingInDay = async (group_id: GroupType["id"], month: string) => {
+  try {
+    return await fetchJson({
+      url: `budget/${group_id}/${month}/month/remaining/list`,
+      schema: fetchBudgetRemainingInMonthSchema,
+    })
+  } catch (error) {
+    console.error("Erreur lors du fetch de l'utilisateur :", error)
     return null
   }
 }

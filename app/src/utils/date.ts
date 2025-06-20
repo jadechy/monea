@@ -16,11 +16,12 @@ export const getCurrentMonthString = () => {
 
   return firstDayOfMonth.toISOString()
 }
+export const firstDayOfMonth = (date: Date) => {
+  return new Date(Date.UTC(date.getFullYear(), date.getMonth(), 1))
+}
 export const getCurrentMonthDate = () => {
   const now = new Date()
-  const firstDayOfMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1))
-
-  return firstDayOfMonth
+  return firstDayOfMonth(now)
 }
 
 const getDaysInterval = (start: Date, end: Date): Date[] => {

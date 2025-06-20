@@ -117,37 +117,74 @@ class BudgetController extends AbstractController
 
     public function getRemainingBudgetByGroupAndYear(string $groupeId, int $year)
     {
-
         $budgetsData = $this->budgetRepository->findBudgetByGroupAndYear($groupeId, $year);
-
         $expensesData = $this->expenseRepository->findExpensesByGroupAndYear($groupeId, $year);
 
+        $months = [];
         $expensesByMonth = [];
         $expensesByMonthCategory = [];
+        $categoryMeta = [];
 
         foreach ($expensesData as $expense) {
             $month = $expense['month'];
+            $categoryId = $expense['categoryId'];
             $amount = $expense['totalAmount'];
+
+            $months[$month] = true;
 
             $expensesByMonth[$month] = ($expensesByMonth[$month] ?? 0) + $amount;
 
-            $expensesByMonthCategory[$month][] = new CategoryCalcDTO(
-                $expense['categoryId'],
-                $expense['categoryLabel'],
-                $expense['categoryColor'],
-                $amount
-            );
+            $expensesByMonthCategory[$month][$categoryId] = ($expensesByMonthCategory[$month][$categoryId] ?? 0) + $amount;
+
+            $categoryMeta[$categoryId] = [
+                'label' => $expense['categoryLabel'],
+                'color' => $expense['categoryColor'],
+            ];
         }
 
-        $result = [];
+        $budgetsByMonthCategory = [];
+        $budgetsByMonth = [];
 
         foreach ($budgetsData as $budget) {
             $month = $budget['month'];
-            $budgetAmount = $budget['totalAmount'];
+            $categoryId = $budget['categoryId'] ?? null;
+            $amount = $budget['totalAmount'];
+
+            $months[$month] = true;
+
+            $budgetsByMonth[$month] = ($budgetsByMonth[$month] ?? 0) + $amount;
+
+            if ($categoryId !== null) {
+                $budgetsByMonthCategory[$month][$categoryId] = $amount;
+            }
+        }
+        if (empty($months)) {
+            for ($m = 1; $m <= 12; $m++) {
+                $monthKey = sprintf('%04d-%02d', $year, $m);
+                $months[$monthKey] = true;
+            }
+        }
+        $result = [];
+        foreach (array_keys($months) as $month) {
+            $budgetAmount = $budgetsByMonth[$month] ?? 0;
             $expenseAmount = $expensesByMonth[$month] ?? 0;
             $remaining = round($budgetAmount - $expenseAmount, 2);
 
-            $categories = $expensesByMonthCategory[$month] ?? [];
+            $categories = [];
+
+            if (!empty($expensesByMonthCategory[$month])) {
+                foreach ($expensesByMonthCategory[$month] as $categoryId => $totalSpent) {
+                    $categoryBudget = $budgetsByMonthCategory[$month][$categoryId] ?? 0;
+                    $remainingByCategory = round($categoryBudget - $totalSpent, 2);
+
+                    $categories[] = [
+                        'id' => $categoryId,
+                        'label' => $categoryMeta[$categoryId]['label'],
+                        'color' => $categoryMeta[$categoryId]['color'],
+                        'remaining' => $remainingByCategory,
+                    ];
+                }
+            }
 
             $result[$month] = [
                 'remaining' => $remaining,
@@ -157,6 +194,97 @@ class BudgetController extends AbstractController
 
         return $this->json($result, 200, [], ['json_encode_options' => JSON_PRETTY_PRINT]);
     }
+    public function getRemainingBudgetByGroupAndMonth(string $groupeId, string $month)
+    {
+        $budgetsData = $this->budgetRepository->findBudgetByGroupAndMonth($groupeId, $month);
+        $expensesData = $this->expenseRepository->findExpensesByGroupAndMonth($groupeId, $month);
+
+        foreach ($expensesData as &$row) {
+            $date = $row['spendAt'];
+            if ($date instanceof \DateTimeInterface) {
+                $row['spendAt'] = $date->format('Y-m-d');
+            } else {
+                $row['spendAt'] = (new \DateTimeImmutable($date))->format('Y-m-d');
+            }
+        }
+        unset($row);
+
+        $days = [];
+        $expensesByDay = [];
+        $expensesByDayCategory = [];
+        $categoryMeta = [];
+        foreach ($expensesData as $expense) {
+            $day = $expense['spendAt'];
+            $categoryId = $expense['categoryId'];
+            $amount = $expense['totalAmount'];
+
+            $days[$day] = true;
+
+            $expensesByDay[$day] = ($expensesByDay[$day] ?? 0) + $amount;
+            $expensesByDayCategory[$day][$categoryId] = ($expensesByDayCategory[$day][$categoryId] ?? 0) + $amount;
+
+            $categoryMeta[$categoryId] = [
+                'label' => $expense['categoryLabel'],
+                'color' => $expense['categoryColor'],
+            ];
+        }
+
+        $budgetsByDay = [];
+        $budgetsByDayCategory = [];
+        foreach ($budgetsData as $budget) {
+            $day = $budget['spendAt'];
+            $categoryId = $budget['categoryId'] ?? null;
+            $amount = $budget['totalAmount'];
+
+            $days[$day] = true;
+
+            $budgetsByDay[$day] = ($budgetsByDay[$day] ?? 0) + $amount;
+
+            if ($categoryId !== null) {
+                $budgetsByDayCategory[$day][$categoryId] = $amount;
+            }
+        }
+        if (empty($days)) {
+            $start = new \DateTimeImmutable($month);
+            $daysInMonth = (int) $start->format('t');
+            for ($d = 1; $d <= $daysInMonth; $d++) {
+                $dayDate = $start->modify('+' . ($d - 1) . ' days');
+                $days[$dayDate->format('Y-m-d')] = true;
+            }
+        }
+
+        $result = [];
+        foreach (array_keys($days) as $day) {
+            $budgetAmount = $budgetsByDay[$day] ?? 0;
+            $expenseAmount = $expensesByDay[$day] ?? 0;
+            $remaining = round($budgetAmount - $expenseAmount, 2);
+
+            $categories = [];
+
+            if (!empty($expensesByDayCategory[$day])) {
+                foreach ($expensesByDayCategory[$day] as $categoryId => $totalSpent) {
+                    $categoryBudget = $budgetsByDayCategory[$day][$categoryId] ?? 0;
+                    $remainingByCategory = round($categoryBudget - $totalSpent, 2);
+
+                    $categories[] = [
+                        'id' => $categoryId,
+                        'label' => $categoryMeta[$categoryId]['label'],
+                        'color' => $categoryMeta[$categoryId]['color'],
+                        'remaining' => $remainingByCategory,
+                    ];
+                }
+            }
+
+            $result[$day] = [
+                'remaining' => $remaining,
+                'categories' => $categories,
+            ];
+        }
+
+        return $this->json($result, 200, [], ['json_encode_options' => JSON_PRETTY_PRINT]);
+    }
+
+
 
     public function getBudgetByCategory(string $categoryId)
     {

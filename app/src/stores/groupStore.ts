@@ -27,7 +27,7 @@ export const useGroupsStore = defineStore("groups", () => {
     error.value = null
 
     try {
-      const res = await fetchGroupByUser(1)
+      const res = await fetchGroupByUser(21)
       if (res === null) {
         return (error.value = "Erreur lors du chargement des utilisateurs")
       }
