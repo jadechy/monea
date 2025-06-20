@@ -5,7 +5,11 @@
   import SubHeader from "@/components/SubHeader.vue"
   import Day from "@/layouts/BudgetForecast/Day.vue"
   import { formatDateForApi, formatDateToDayMonth } from "@/utils/date"
-  import { fetchBudgetGroupDateRemaining } from "@/services/budgetService"
+  import {
+    fetchBudgetGroupDateRemaining,
+    fetchBudgetRemainingInMonth,
+    type FetchBudgetRemainingInMonthType,
+  } from "@/services/budgetService"
   import { fetchCategoryByGroup } from "@/services/categoryService"
   import { fetchAllExpenseByGroup } from "@/services/expenseService"
   import type { AmountType } from "@/types/budget"
@@ -20,27 +24,15 @@
 
   const currentDate = ref<Date | null>(null)
   const expenses = ref<ExpenseDateType>()
-  const amountRemaining = ref<AmountType[]>([])
   const error = ref<ErrorType>(null)
   const { groupById } = useGroups()
   const group = computed(() => groupById({ id: space_id }))
 
   const categories = ref<CategoryType[]>([])
   const selectedCategory = defineModel<CategoryType>("selectedCategory")
-
-  const months = ref<
-    {
-      label: string
-      amount: number
-      // categories: {
-      //   id: CategoryType["id"]
-      //   color: CategoryType["color"]
-      //   label: CategoryType["label"]
-      //   amount: number
-      // }[]
-    }[]
-  >([])
-
+  type MonthsType = FetchBudgetRemainingInMonthType
+  const monthNumber = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+  const year = ref<MonthsType>({})
   const monthLabels = [
     "Janvier",
     "Février",
@@ -57,48 +49,34 @@
   ]
 
   onMounted(async () => {
-    const resultExpenses = await fetchAllExpenseByGroup(space_id)
     const resultCategories = await fetchCategoryByGroup(space_id)
-    const resultAmountRemaing = []
-    const monthsData: { label: string; amount: number }[] = []
 
-    for (let i = 1; i <= 12; i++) {
-      const paddedMonth = i.toString().padStart(2, "0")
-      const result = await fetchBudgetGroupDateRemaining(space_id, `2025-${paddedMonth}-01`)
-      resultAmountRemaing.push(result?.amount ?? 0)
+    const resultBudgetInMonth = await fetchBudgetRemainingInMonth(space_id, "2025")
 
-      const monthExpenses = Object.values(resultExpenses || {})
-        .flat()
-        .filter((expense) => {
-          const date = new Date(expense.spentAt)
-          return date.getMonth() === i - 1
-        })
-      const total = monthExpenses.reduce((sum, e) => sum + e.amount, 0)
-
-      monthsData.push({
-        label: monthLabels[i - 1],
-        amount: total,
+    if (resultBudgetInMonth === null || resultCategories === null) {
+      return (error.value = "Erreur lors du chargement des utilisateurs")
+    }
+    monthNumber.map((number) => {
+      const currentResult =
+        resultBudgetInMonth[`2025-${number}`] !== undefined
+          ? resultBudgetInMonth[`2025-${number}`]
+          : {
+              remaining: 0,
+              categories: [],
+            }
+      console.log(currentResult)
+      return (year.value[`2025-${number}`] = {
+        remaining: currentResult.remaining,
+        categories: currentResult.categories,
       })
-    }
-
-    if (
-      resultExpenses === null ||
-      resultAmountRemaing.some((amount) => amount === null || amount === undefined) ||
-      resultCategories === null
-    ) {
-      error.value = "Erreur lors du chargement des utilisateurs"
-    } else {
-      expenses.value = resultExpenses
-      amountRemaining.value = resultAmountRemaing
-      months.value = monthsData
-      categories.value = resultCategories
-    }
+    })
+    categories.value = resultCategories
   })
 </script>
 
 <template>
   <SubHeader label="Budgets" :color="group?.color" routeName="home" />
-  <div class="flex flex-col gap-10">
+  <div class="flex flex-col gap-10" v-if="year">
     <BaseSection label="Budget mois par mois">
       <template #header>
         <Select
@@ -114,9 +92,18 @@
         />
       </template>
       <section class="grid gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mt-1">
-        <div v-for="month in months" :key="month.label" class="item">
-          <p>{{ month.label }}</p>
-          <p>{{ month.amount }}€</p>
+        <div v-for="([month, value], i) in Object.entries(year)" :key="i" class="item">
+          <p>{{ month }}</p>
+          {{ selectedCategory }}
+          {{ value }}
+          <p>
+            {{
+              selectedCategory
+                ? (value.categories.filter((category) => category.id === selectedCategory?.id)[0]
+                    ?.amount ?? 0)
+                : value.remaining
+            }}€
+          </p>
         </div>
       </section>
     </BaseSection>

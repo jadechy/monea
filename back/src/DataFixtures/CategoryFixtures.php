@@ -13,12 +13,9 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        $faker = Factory::create('fr_FR'); // Faker en français pour des labels réalistes
-
-        // Quelques couleurs pour les catégories
+        $faker = Factory::create('fr_FR');
         $colors = ['red', 'blue', 'green', 'orange', 'purple', 'yellow', 'teal', 'pink', 'brown', 'cyan'];
 
-        // Récupération des groupes en référence
         $groupes = [
             $this->getReference('groupe_0', Groupe::class),
             $this->getReference('groupe_1', Groupe::class),
