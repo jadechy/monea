@@ -6,8 +6,8 @@
     <div>
       <p class="font-bold mb-2.5">{{ expense.title }}</p>
       <div class="flex items-center gap-2.5">
-        <div v-if="expense.category">
-          <ColoredLabelComponent v-if="expense.category.label" :label="expense.category.label" />
+        <div>
+          <ColoredLabelComponent :category="expense.category" />
         </div>
         <Chip :label="expense.creator.username" :image="expense.creator.picture ?? placeholder" />
       </div>
@@ -24,7 +24,6 @@
   import ColoredLabelComponent from "./CategoryLabel.vue"
   import { Chip } from "primevue"
   import type { ExpenseType } from "@/types/expense"
-
   export interface ExpenseCardComponentProps {
     expense: Pick<
       ExpenseType,

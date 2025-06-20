@@ -26,13 +26,13 @@ use App\Entity\Category;
 ])]
 class CategoryDTO
 {
-    #[Groups(['category:read'])]
+    #[Groups(['category:read', 'expense:read'])]
     public int $id;
 
-    #[Groups(['category:read'])]
+    #[Groups(['category:read', 'expense:read'])]
     public string $label;
 
-    #[Groups(['category:read'])]
+    #[Groups(['category:read', 'expense:read'])]
     public string $color;
 
     public function __construct(Category $category)

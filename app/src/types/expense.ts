@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { UserSchema } from "./user"
 import { GroupSchema } from "./group"
-import { CategoryInGroupSchema, CategorySchema } from "./category"
+import { CategoryInOtherSchema, CategorySchema } from "./category"
 import { RecurringExpenseSchema } from "./recurring_expense"
 import { DateSchema } from "./date"
 
@@ -26,8 +26,12 @@ export const ExpenseSchema = z.object({
     .max(255, "Le titre doit contenir au maximum 255 caractères"),
   createdAt: DateSchema,
   groupe: GroupSchema.shape.id,
-  category: CategorySchema.shape.id,
-  creator: UserSchema.shape.id,
+  category: CategoryInOtherSchema,
+  creator: z.object({
+    userId: UserSchema.shape.id,
+    username: UserSchema.shape.username,
+    picture: UserSchema.shape.picture,
+  }),
   recurringExpense: RecurringExpenseSchema.nullable(),
   spentAt: DateSchema,
   participants: z
@@ -51,7 +55,7 @@ export const FetchNewExpenseSchema = GroupSchema.extend({
 
 // Schéma d'une nouvelle dépense à soumettre
 export const NewExpenseSchema = z.object({
-  category: CategoryInGroupSchema,
+  category: CategoryInOtherSchema,
   title: ExpenseSchema.shape.title,
   amount: ExpenseSchema.shape.amount,
   spendAt: z.date({

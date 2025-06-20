@@ -10,6 +10,7 @@ use App\DTO\ExpenseDTO;
 use App\Repository\GroupeRepository;
 use App\Repository\ExpenseRepository;
 use App\Repository\CategoryRepository;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
@@ -42,17 +43,27 @@ class ExpenseController extends AbstractController
         return $expenses;
     }
 
-    public function getExpenseById($id)
+
+    public function getExpenseById($id): JsonResponse
     {
         $expense = $this->expenseRepository->find($id);
-
+        if (!$expense) {
+            return new JsonResponse(
+                ['message' => 'Dépense non trouvée.'],
+                Response::HTTP_NOT_FOUND
+            );
+        }
         $expenseDTO = new ExpenseDTO($expense);
-
         $json = $this->serializer->serialize($expenseDTO, 'json', [
             'groups' => ['expense:read'],
         ]);
 
-        return new JsonResponse($json, 200, [], true);
+        return new JsonResponse(
+            $json,
+            Response::HTTP_OK,
+            [],
+            true
+        );
     }
 
     public function getAllExpenseByGroup($groupeId)

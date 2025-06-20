@@ -1,5 +1,5 @@
 import { fetchJson, postJson } from "@/utils/api"
-import { CategoryInGroupSchema } from "@/types/category"
+import { CategoryInOtherSchema } from "@/types/category"
 import { GroupSchema } from "@/types/group"
 import { MemberInGroupSchema } from "@/types/member"
 import { type CreateUserInputType, type UserType } from "@/types/user"
@@ -34,7 +34,7 @@ export const fetchGroup = async (id: string) => {
 }
 export const FetchGroupByUserSchema = GroupSchema.extend({
   members: MemberInGroupSchema.array().optional(),
-  categories: CategoryInGroupSchema.array().optional(),
+  categories: CategoryInOtherSchema.array().optional(),
 })
 export type FetchGroupByUserType = z.infer<typeof FetchGroupByUserSchema>
 
