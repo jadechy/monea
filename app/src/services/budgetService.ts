@@ -51,13 +51,17 @@ export const fetchAllBudgetCategoriesByGroup = async (group_id: GroupType["id"],
     return null
   }
 }
+const fetchBudgetRemainingInMonthValueSchema = z.object({
+  remaining: AmountValueSchema,
+  categories: CategorySchema.extend({ remaining: AmountValueSchema }).array(),
+})
 const fetchBudgetRemainingInMonthSchema = z.record(
   z.string(),
-  z.object({
-    remaining: AmountValueSchema,
-    categories: CategorySchema.extend({ amount: AmountValueSchema }).array(),
-  }),
+  fetchBudgetRemainingInMonthValueSchema,
 )
+export type FetchBudgetRemainingInMonthValueType = z.infer<
+  typeof fetchBudgetRemainingInMonthValueSchema
+>
 
 export type FetchBudgetRemainingInMonthType = z.infer<typeof fetchBudgetRemainingInMonthSchema>
 

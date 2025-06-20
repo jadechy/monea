@@ -117,37 +117,69 @@ class BudgetController extends AbstractController
 
     public function getRemainingBudgetByGroupAndYear(string $groupeId, int $year)
     {
-
         $budgetsData = $this->budgetRepository->findBudgetByGroupAndYear($groupeId, $year);
-
         $expensesData = $this->expenseRepository->findExpensesByGroupAndYear($groupeId, $year);
 
+        $months = [];
         $expensesByMonth = [];
         $expensesByMonthCategory = [];
+        $categoryMeta = [];
 
         foreach ($expensesData as $expense) {
             $month = $expense['month'];
+            $categoryId = $expense['categoryId'];
             $amount = $expense['totalAmount'];
+
+            $months[$month] = true;
 
             $expensesByMonth[$month] = ($expensesByMonth[$month] ?? 0) + $amount;
 
-            $expensesByMonthCategory[$month][] = new CategoryCalcDTO(
-                $expense['categoryId'],
-                $expense['categoryLabel'],
-                $expense['categoryColor'],
-                $amount
-            );
+            $expensesByMonthCategory[$month][$categoryId] = ($expensesByMonthCategory[$month][$categoryId] ?? 0) + $amount;
+
+            $categoryMeta[$categoryId] = [
+                'label' => $expense['categoryLabel'],
+                'color' => $expense['categoryColor'],
+            ];
         }
 
-        $result = [];
+        $budgetsByMonthCategory = [];
+        $budgetsByMonth = [];
 
         foreach ($budgetsData as $budget) {
             $month = $budget['month'];
-            $budgetAmount = $budget['totalAmount'];
+            $categoryId = $budget['categoryId'] ?? null;
+            $amount = $budget['totalAmount'];
+
+            $months[$month] = true;
+
+            $budgetsByMonth[$month] = ($budgetsByMonth[$month] ?? 0) + $amount;
+
+            if ($categoryId !== null) {
+                $budgetsByMonthCategory[$month][$categoryId] = $amount;
+            }
+        }
+
+        $result = [];
+        foreach (array_keys($months) as $month) {
+            $budgetAmount = $budgetsByMonth[$month] ?? 0;
             $expenseAmount = $expensesByMonth[$month] ?? 0;
             $remaining = round($budgetAmount - $expenseAmount, 2);
 
-            $categories = $expensesByMonthCategory[$month] ?? [];
+            $categories = [];
+
+            if (!empty($expensesByMonthCategory[$month])) {
+                foreach ($expensesByMonthCategory[$month] as $categoryId => $totalSpent) {
+                    $categoryBudget = $budgetsByMonthCategory[$month][$categoryId] ?? 0;
+                    $remainingByCategory = round($categoryBudget - $totalSpent, 2);
+
+                    $categories[] = [
+                        'id' => $categoryId,
+                        'label' => $categoryMeta[$categoryId]['label'],
+                        'color' => $categoryMeta[$categoryId]['color'],
+                        'remaining' => $remainingByCategory,
+                    ];
+                }
+            }
 
             $result[$month] = [
                 'remaining' => $remaining,
@@ -157,6 +189,7 @@ class BudgetController extends AbstractController
 
         return $this->json($result, 200, [], ['json_encode_options' => JSON_PRETTY_PRINT]);
     }
+
 
     public function getBudgetByCategory(string $categoryId)
     {

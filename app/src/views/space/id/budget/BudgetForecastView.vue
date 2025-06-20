@@ -6,13 +6,11 @@
   import Day from "@/layouts/BudgetForecast/Day.vue"
   import { formatDateForApi, formatDateToDayMonth } from "@/utils/date"
   import {
-    fetchBudgetGroupDateRemaining,
     fetchBudgetRemainingInMonth,
     type FetchBudgetRemainingInMonthType,
+    type FetchBudgetRemainingInMonthValueType,
   } from "@/services/budgetService"
   import { fetchCategoryByGroup } from "@/services/categoryService"
-  import { fetchAllExpenseByGroup } from "@/services/expenseService"
-  import type { AmountType } from "@/types/budget"
   import type { CategoryType } from "@/types/category"
   import type { ErrorType } from "@/types/error"
   import type { ExpenseDateType } from "@/types/expense"
@@ -64,7 +62,6 @@
               remaining: 0,
               categories: [],
             }
-      console.log(currentResult)
       return (year.value[`2025-${number}`] = {
         remaining: currentResult.remaining,
         categories: currentResult.categories,
@@ -72,12 +69,27 @@
     })
     categories.value = resultCategories
   })
+
+  const getRemaining = (value: FetchBudgetRemainingInMonthValueType) => {
+    if (selectedCategory.value) {
+      const cat = value.categories.find((c) => c.id === selectedCategory.value?.id)
+      return cat?.remaining ?? 0
+    }
+    return value.remaining
+  }
+
+  const getRemainingClass = (value: FetchBudgetRemainingInMonthValueType) => {
+    const remaining = getRemaining(value)
+    if (remaining === 0) return "text-dark-700"
+    if (remaining > 0) return "text-green-700"
+    return "text-red-700"
+  }
 </script>
 
 <template>
   <SubHeader label="Budgets" :color="group?.color" routeName="home" />
   <div class="flex flex-col gap-10" v-if="year">
-    <BaseSection label="Budget mois par mois">
+    <BaseSection label="Budget restant mois par mois">
       <template #header>
         <Select
           editable
@@ -94,16 +106,8 @@
       <section class="grid gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mt-1">
         <div v-for="([month, value], i) in Object.entries(year)" :key="i" class="item">
           <p>{{ month }}</p>
-          {{ selectedCategory }}
-          {{ value }}
-          <p>
-            {{
-              selectedCategory
-                ? (value.categories.filter((category) => category.id === selectedCategory?.id)[0]
-                    ?.amount ?? 0)
-                : value.remaining
-            }}€
-          </p>
+
+          <p :class="getRemainingClass(value)">{{ getRemaining(value) }}€</p>
         </div>
       </section>
     </BaseSection>
