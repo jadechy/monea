@@ -161,7 +161,7 @@ class ExpenseDTO
             $this->participants[] = [
                 'userId' => $participant?->getId(),
                 'username' => $participant?->getUsername(),
-                'name' => $participant?->getName()
+                'picture' => $participant?->getPicture()
             ];
         }
     }

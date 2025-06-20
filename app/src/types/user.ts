@@ -22,5 +22,12 @@ export const CreateUserInput = z.object({
   password: z.string(),
 })
 
+export const UserInOtherSchema = z.object({
+  userId: UserSchema.shape.id,
+  username: UserSchema.shape.username,
+  picture: UserSchema.shape.picture,
+})
+
+export type UserInOtherType = z.infer<typeof UserInOtherSchema>
 export type CreateUserInputType = z.infer<typeof CreateUserInput>
 export type UserType = z.infer<typeof UserSchema>

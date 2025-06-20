@@ -19,7 +19,6 @@ class ExpenseFixtures extends Fixture implements DependentFixtureInterface
 
         $userRefs = ['user_0', 'user_1', 'user_2'];
 
-        // Charger tous les groupes et leurs catégories
         $groupes = [];
         for ($i = 0; $i < 3; $i++) {
             /** @var Groupe $groupe */
@@ -27,7 +26,6 @@ class ExpenseFixtures extends Fixture implements DependentFixtureInterface
             $groupes[] = $groupe;
         }
 
-        // Préparer les catégories groupées par groupe
         $categoriesParGroupe = [];
         for ($i = 0; $i < 20; $i++) {
             /** @var Category $cat */
@@ -44,11 +42,9 @@ class ExpenseFixtures extends Fixture implements DependentFixtureInterface
             $expense->setSpentAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 months', 'now')));
             $expense->setCreatedAt(new \DateTimeImmutable());
 
-            // Choisir un groupe
             $groupe = $faker->randomElement($groupes);
             $expense->setGroupe($groupe);
 
-            // Choisir une catégorie associée à ce groupe
             $groupeId = $groupe->getId();
             $categories = $categoriesParGroupe[$groupeId] ?? [];
 
@@ -56,12 +52,28 @@ class ExpenseFixtures extends Fixture implements DependentFixtureInterface
                 $expense->setCategory($faker->randomElement($categories));
             }
 
-            // Créateur
             $expense->setCreator($this->getReference($faker->randomElement($userRefs), User::class));
+
+            $participants = [];
+            $numParticipants = $faker->numberBetween(1, 3);
+
+            while (count($participants) < $numParticipants) {
+                $userRef = $faker->randomElement($userRefs);
+                if (!in_array($userRef, $participants)) {
+                    $participants[] = $userRef;
+                }
+            }
+
+            foreach ($participants as $userRef) {
+                /** @var User $user */
+                $user = $this->getReference($userRef, User::class);
+                $expense->addParticipant($user);
+            }
 
             $manager->persist($expense);
             $this->addReference('expense_' . $i, $expense);
         }
+
 
         $manager->flush();
     }

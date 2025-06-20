@@ -12,7 +12,7 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        $colors = ['red', 'blue', 'green', 'orange', 'purple', 'yellow', 'teal', 'pink', 'cyan'];
+        $colors = ['red', 'blue', 'green', 'orange', 'violet', 'yellow', 'teal', 'pink', 'cyan'];
 
         $groupes = [
             $this->getReference('groupe_0', Groupe::class),

@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { UserSchema } from "./user"
+import { UserInOtherSchema, UserSchema } from "./user"
 import { GroupSchema } from "./group"
 import { CategoryInOtherSchema, CategorySchema } from "./category"
 import { RecurringExpenseSchema } from "./recurring_expense"
@@ -27,15 +27,11 @@ export const ExpenseSchema = z.object({
   createdAt: DateSchema,
   groupe: GroupSchema.shape.id,
   category: CategoryInOtherSchema,
-  creator: z.object({
-    userId: UserSchema.shape.id,
-    username: UserSchema.shape.username,
-    picture: UserSchema.shape.picture,
-  }),
+  creator: UserInOtherSchema,
   recurringExpense: RecurringExpenseSchema.nullable(),
   spentAt: DateSchema,
   participants: z
-    .array(UserSchema, {
+    .array(UserInOtherSchema, {
       invalid_type_error: "Les participants doivent être une liste d'utilisateurs",
     })
     .optional(),
