@@ -194,6 +194,96 @@ class BudgetController extends AbstractController
 
         return $this->json($result, 200, [], ['json_encode_options' => JSON_PRETTY_PRINT]);
     }
+    public function getRemainingBudgetByGroupAndMonth(string $groupeId, string $month)
+    {
+        $budgetsData = $this->budgetRepository->findBudgetByGroupAndMonth($groupeId, $month);
+        $expensesData = $this->expenseRepository->findExpensesByGroupAndMonth($groupeId, $month);
+
+        foreach ($expensesData as &$row) {
+            $date = $row['spendAt'];
+            if ($date instanceof \DateTimeInterface) {
+                $row['spendAt'] = $date->format('Y-m-d');
+            } else {
+                $row['spendAt'] = (new \DateTimeImmutable($date))->format('Y-m-d');
+            }
+        }
+        unset($row);
+
+        $days = [];
+        $expensesByDay = [];
+        $expensesByDayCategory = [];
+        $categoryMeta = [];
+        foreach ($expensesData as $expense) {
+            $day = $expense['spendAt'];
+            $categoryId = $expense['categoryId'];
+            $amount = $expense['totalAmount'];
+
+            $days[$day] = true;
+
+            $expensesByDay[$day] = ($expensesByDay[$day] ?? 0) + $amount;
+            $expensesByDayCategory[$day][$categoryId] = ($expensesByDayCategory[$day][$categoryId] ?? 0) + $amount;
+
+            $categoryMeta[$categoryId] = [
+                'label' => $expense['categoryLabel'],
+                'color' => $expense['categoryColor'],
+            ];
+        }
+
+        $budgetsByDay = [];
+        $budgetsByDayCategory = [];
+        foreach ($budgetsData as $budget) {
+            $day = $budget['spendAt'];
+            $categoryId = $budget['categoryId'] ?? null;
+            $amount = $budget['totalAmount'];
+
+            $days[$day] = true;
+
+            $budgetsByDay[$day] = ($budgetsByDay[$day] ?? 0) + $amount;
+
+            if ($categoryId !== null) {
+                $budgetsByDayCategory[$day][$categoryId] = $amount;
+            }
+        }
+        if (empty($days)) {
+            $start = new \DateTimeImmutable($month);
+            $daysInMonth = (int) $start->format('t');
+            for ($d = 1; $d <= $daysInMonth; $d++) {
+                $dayDate = $start->modify('+' . ($d - 1) . ' days');
+                $days[$dayDate->format('Y-m-d')] = true;
+            }
+        }
+
+        $result = [];
+        foreach (array_keys($days) as $day) {
+            $budgetAmount = $budgetsByDay[$day] ?? 0;
+            $expenseAmount = $expensesByDay[$day] ?? 0;
+            $remaining = round($budgetAmount - $expenseAmount, 2);
+
+            $categories = [];
+
+            if (!empty($expensesByDayCategory[$day])) {
+                foreach ($expensesByDayCategory[$day] as $categoryId => $totalSpent) {
+                    $categoryBudget = $budgetsByDayCategory[$day][$categoryId] ?? 0;
+                    $remainingByCategory = round($categoryBudget - $totalSpent, 2);
+
+                    $categories[] = [
+                        'id' => $categoryId,
+                        'label' => $categoryMeta[$categoryId]['label'],
+                        'color' => $categoryMeta[$categoryId]['color'],
+                        'remaining' => $remainingByCategory,
+                    ];
+                }
+            }
+
+            $result[$day] = [
+                'remaining' => $remaining,
+                'categories' => $categories,
+            ];
+        }
+
+        return $this->json($result, 200, [], ['json_encode_options' => JSON_PRETTY_PRINT]);
+    }
+
 
 
     public function getBudgetByCategory(string $categoryId)

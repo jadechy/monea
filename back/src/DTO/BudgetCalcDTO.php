@@ -41,10 +41,17 @@ use App\Controller\BudgetController;
         normalizationContext: ['groups' => ['budget:read']]
     ),
     new Get(
-        uriTemplate: '/budget/{groupeId}/{year}/year/remaining',
+        uriTemplate: '/budget/{groupeId}/{year}/year/remaining/list',
         controller: BudgetController::class . '::getRemainingBudgetByGroupAndYear',
         read: false,
         name: 'budget_get_remaining_by_groupe_and_year',
+        normalizationContext: ['groups' => ['budget:read']]
+    ),
+    new Get(
+        uriTemplate: '/budget/{groupeId}/{month}/month/remaining/list',
+        controller: BudgetController::class . '::getRemainingBudgetByGroupAndMonth',
+        read: false,
+        name: 'budget_get_remaining_by_groupe_and_month',
         normalizationContext: ['groups' => ['budget:read']]
     ),
 ])]

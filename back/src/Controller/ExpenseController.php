@@ -77,13 +77,14 @@ class ExpenseController extends AbstractController
         $end = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
 
         $expensesData = $this->expenseRepository->findExpensesByGroupeBetweenDates($groupeId, $start, $end);
-
         $expenses = $this->createExpenseArray($expensesData);
 
         $json = $this->serializer->serialize($expenses, 'json', [
             'groups' => ['expense:read'],
         ]);
-
+        if ($json === '[]') {
+            $json = '{}';
+        }
         return new JsonResponse($json, 200, [], true);
     }
 

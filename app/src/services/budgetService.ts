@@ -68,7 +68,18 @@ export type FetchBudgetRemainingInMonthType = z.infer<typeof fetchBudgetRemainin
 export const fetchBudgetRemainingInMonth = async (group_id: GroupType["id"], year: number) => {
   try {
     return await fetchJson({
-      url: `budget/${group_id}/${year}/year/remaining`,
+      url: `budget/${group_id}/${year}/year/remaining/list`,
+      schema: fetchBudgetRemainingInMonthSchema,
+    })
+  } catch (error) {
+    console.error("Erreur lors du fetch de l'utilisateur :", error)
+    return null
+  }
+}
+export const fetchBudgetRemainingInDay = async (group_id: GroupType["id"], month: string) => {
+  try {
+    return await fetchJson({
+      url: `budget/${group_id}/${month}/month/remaining/list`,
       schema: fetchBudgetRemainingInMonthSchema,
     })
   } catch (error) {
