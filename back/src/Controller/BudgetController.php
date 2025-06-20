@@ -158,7 +158,12 @@ class BudgetController extends AbstractController
                 $budgetsByMonthCategory[$month][$categoryId] = $amount;
             }
         }
-
+        if (empty($months)) {
+            for ($m = 1; $m <= 12; $m++) {
+                $monthKey = sprintf('%04d-%02d', $year, $m);
+                $months[$monthKey] = true;
+            }
+        }
         $result = [];
         foreach (array_keys($months) as $month) {
             $budgetAmount = $budgetsByMonth[$month] ?? 0;

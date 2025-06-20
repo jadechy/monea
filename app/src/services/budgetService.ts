@@ -65,7 +65,7 @@ export type FetchBudgetRemainingInMonthValueType = z.infer<
 
 export type FetchBudgetRemainingInMonthType = z.infer<typeof fetchBudgetRemainingInMonthSchema>
 
-export const fetchBudgetRemainingInMonth = async (group_id: GroupType["id"], year: string) => {
+export const fetchBudgetRemainingInMonth = async (group_id: GroupType["id"], year: number) => {
   try {
     return await fetchJson({
       url: `budget/${group_id}/${year}/year/remaining`,
