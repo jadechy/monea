@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import SubHeader from "@/components/SubHeader.vue"
-  import { onMounted, ref } from "vue"
+  import { computed, onMounted, ref } from "vue"
   import ColoredLabelComponent from "@/components/CategoryLabel.vue"
   import { formatDateToDayMonth } from "@/utils/date"
   import BaseSection from "@/components/BaseSection.vue"
@@ -12,7 +12,13 @@
   import type { ErrorType } from "@/types/error"
   import { fetchExpense } from "@/services/expenseService"
   import placeholder from "@/assets/placeholder_people.jpg"
-  const props = defineProps<{ id: ExpenseType["id"] }>()
+  import { useGroups } from "@/composables/useGroups"
+  import type { GroupType } from "@/types/group"
+  const props = defineProps<{ id: ExpenseType["id"]; space_id: GroupType["id"] }>()
+  const groupsStore = useGroups()
+  const { groupById } = groupsStore
+  const group = computed(() => groupById({ id: props.space_id }))
+
   const expense = ref<ExpenseType>()
   const error = ref<ErrorType>(null)
   onMounted(async () => {
@@ -27,39 +33,42 @@
 
 <template>
   <SubHeader
+    v-if="group"
     :label="expense?.title ?? 'error'"
-    :color="expense?.groupe?.color"
+    :color="group.color"
     routeName="space"
-    :params="{ id: String(expense?.groupe.id) }"
+    :params="{ id: group.id }"
   />
-  <div class="flex flex-col items-center gap-10" v-if="expense">
-    <div class="w-full">
-      <div class="flex justify-between items-center w-full">
-        <ColoredLabelComponent v-if="expense.category?.label" :label="expense.category?.label" />
-        <Button
-          icon="pi pi-pencil"
-          label="Edition"
-          size="small"
-          :class="[getSpaceColor({ color: expense.groupe?.color })]"
-          @click="router.push({ name: 'edit_paiement', params: { id: expense.id } })"
-        />
-      </div>
+  <div class="flex flex-col items-center gap-10" v-if="expense && group">
+    <div class="flex flex-col md:flex-row gap-2 justify-between w-full">
+      <div class="flex flex-col gap-2">
+        <div class="flex gap-3 items-end">
+          <p class="font-bold text-4xl">{{ expense.amount }} €</p>
+          <p v-if="expense.spentAt">
+            <i class="pi pi-calendar mr-1"></i>{{ formatDateToDayMonth(new Date(expense.spentAt)) }}
+          </p>
+        </div>
 
-      <div class="flex items-center gap-6 mt-3">
-        <Chip :label="expense.creator.username" :image="expense.creator.picture ?? placeholder" />
-        <p v-if="expense.spentAt">
-          <i class="pi pi-calendar mr-1"></i>{{ formatDateToDayMonth(new Date(expense.spentAt)) }}
-        </p>
+        <div class="flex items-center gap-3">
+          <ColoredLabelComponent :category="expense.category" />
+          <Chip :label="expense.creator.username" :image="expense.creator.picture ?? placeholder" />
+        </div>
       </div>
+      <Button
+        icon="pi pi-pencil"
+        label="Edition"
+        size="small"
+        :class="[getSpaceColor({ color: group.color })]"
+        class="h-fit w-fit"
+        @click="router.push({ name: 'edit_paiement', params: { id: expense.id } })"
+      />
     </div>
-
-    <BaseSection label="Participants" class="w-full">
+    <BaseSection label="Participants" class="w-full" v-if="expense.participants">
       <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <PeopleComponent
-          v-if="expense.amount"
-          v-for="member in expense.members"
-          :key="member.id"
-          :user="member"
+          v-for="participant in expense.participants"
+          :key="participant.userId"
+          :user="participant"
         >
           <p>{{ expense.amount / expense.participants.length }} €</p>
         </PeopleComponent>

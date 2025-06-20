@@ -7,14 +7,12 @@ use App\Entity\Groupe;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Faker\Factory;
 
 class CategoryFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        $faker = Factory::create('fr_FR');
-        $colors = ['red', 'blue', 'green', 'orange', 'purple', 'yellow', 'teal', 'pink', 'brown', 'cyan'];
+        $colors = ['red', 'blue', 'green', 'orange', 'violet', 'yellow', 'teal', 'pink', 'cyan'];
 
         $groupes = [
             $this->getReference('groupe_0', Groupe::class),

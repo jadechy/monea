@@ -24,7 +24,7 @@ export const NewCategorySchema = z.object({
 })
 
 // Schéma d'une catégorie liée à un groupe
-export const CategoryInGroupSchema = z.object({
+export const CategoryInOtherSchema = z.object({
   categoryId: CategorySchema.shape.id,
   label: CategorySchema.shape.label,
   color: CategorySchema.shape.color,
@@ -33,4 +33,4 @@ export const CategoryInGroupSchema = z.object({
 // Types dérivés
 export type CategoryType = z.infer<typeof CategorySchema>
 export type NewCategoryType = z.infer<typeof NewCategorySchema>
-export type CategoryInGroupType = z.infer<typeof CategoryInGroupSchema>
+export type CategoryInOtherType = z.infer<typeof CategoryInOtherSchema>

@@ -4,9 +4,7 @@ namespace App\DTO;
 
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Link;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\ExpenseController;
 use App\Entity\Expense;
@@ -127,10 +125,10 @@ class ExpenseDTO
     public int $groupe;
 
     #[Groups(['expense:read'])]
-    public int $category;
+    public array $category;
 
     #[Groups(['expense:read'])]
-    public int $creator;
+    public array $creator;
 
     #[Groups(['expense:read'])]
     public array $participants;
@@ -146,16 +144,24 @@ class ExpenseDTO
         $this->createdAt = $expense->getCreatedAt()->format('Y-m-d');
         $this->spentAt = $expense->getSpentAt()->format('Y-m-d');
 
-        $this->category = $expense->getCategory()?->getId();
+        $this->category = [
+            'categoryId' => $expense->getCategory()->getId(),
+            'label' => $expense->getCategory()->getLabel(),
+            'color' => $expense->getCategory()->getColor()
+        ];
         $this->groupe = $expense->getGroupe()?->getId();
-        $this->creator = $expense->getCreator()?->getId();
+        $this->creator = [
+            'userId' => $expense->getCreator()->getId(),
+            'username' => $expense->getCreator()->getUsername(),
+            'picture' => $expense->getCreator()->getPicture()
+        ];
         $this->recurringExpense = $expense->getRecurringExpense()?->getId();
 
-        foreach ($expense->getParticipants() as $participant){
+        foreach ($expense->getParticipants() as $participant) {
             $this->participants[] = [
                 'userId' => $participant?->getId(),
                 'username' => $participant?->getUsername(),
-                'name' => $participant?->getName()
+                'picture' => $participant?->getPicture()
             ];
         }
     }
