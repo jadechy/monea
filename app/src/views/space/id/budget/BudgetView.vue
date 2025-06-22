@@ -2,7 +2,6 @@
   import BaseSection from "@/components/BaseSection.vue"
   import RemainingBudget from "@/components/RemainingBudget.vue"
   import SubHeader from "@/components/SubHeader.vue"
-  import ChartLayout from "@/layouts/Budget/ChartLayout.vue"
   import { truncateToTenth } from "@/utils/number"
   import router from "@/router"
   import { getSpaceColor } from "@/utils/getColor"
@@ -14,6 +13,7 @@
   import { formatDateForApi, getCurrentMonthDate } from "@/utils/date"
   import { fetchAllBudgetCategoriesByGroup } from "@/services/budgetService"
   import { useGroups } from "@/composables/useGroups"
+  import ChartLayout from "@/components/Budget/ChartLayout.vue"
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
   const { groupById } = useGroups()
   const group = computed(() => groupById({ id: space_id }))

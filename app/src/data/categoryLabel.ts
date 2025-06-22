@@ -1,4 +1,4 @@
-import type { Color } from "@/layouts/Home/SpaceCard.vue"
+import type { Color } from "@/components/Space/SpaceCard.vue"
 import type { ColorType } from "@/types/color"
 
 export type CategoryLabel =

@@ -15,8 +15,7 @@
 </script>
 
 <template>
-  <h1 class="font-bold text-center text-7xl mt-30">Monéa</h1>
-  <h2 class="text-center text-4xl mt-2 mb-14">Inscription</h2>
+  <h2 class="text-center text-4xl mb-14">Inscription</h2>
   <Form
     v-slot="$form"
     @submit="submitRegister"
