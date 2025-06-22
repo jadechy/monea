@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { useGroups } from "@/composables/useGroups"
-  import AllPaiementsLayout from "@/layouts/AllExpensesLayout.vue"
+  import AllPaiementsLayout from "@/components/AllExpensesLayout.vue"
   import { fetchAllExpenseByGroup } from "@/services/expenseService"
   import type { ErrorType } from "@/types/error"
   import type { ExpenseDateType } from "@/types/expense"
