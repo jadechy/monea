@@ -86,18 +86,18 @@ export const useAuthStore = defineStore("auth", () => {
     clearStorage()
   }
 
-  const login = async ({ username, password }: LoginRequestType) => {
+  const login = async ({ username: pseudonym, password }: LoginRequestType) => {
     isLoading.value = true
     error.value = null
 
     try {
       const res = await loginAuth({
-        username: username,
+        username: pseudonym,
         password: password,
       })
 
       if (res === null) throw new Error(`Identifiant de connexion incorecte`)
-
+      console.log(res)
       token.value = res.token
       if (res.refreshToken) {
         refreshToken.value = res.refreshToken
@@ -178,41 +178,41 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  const register = async (userData: LoginRequestType & { name: string }) => {
-    isLoading.value = true
-    error.value = null
+  // const register = async (userData: LoginRequestType & { name: string }) => {
+  //   isLoading.value = true
+  //   error.value = null
 
-    try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      })
+  //   try {
+  //     const response = await fetch("/api/auth/register", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(userData),
+  //     })
 
-      if (!response.ok) {
-        throw new Error("Erreur lors de l'inscription")
-      }
+  //     if (!response.ok) {
+  //       throw new Error("Erreur lors de l'inscription")
+  //     }
 
-      const data: AuthResponse = await response.json()
+  //     const data: AuthResponse = await response.json()
 
-      token.value = data.token
-      user.value = data.user
-      if (data.refreshToken) {
-        refreshToken.value = data.refreshToken
-      }
+  //     token.value = data.token
+  //     user.value = data.user
+  //     if (data.refreshToken) {
+  //       refreshToken.value = data.refreshToken
+  //     }
 
-      saveToStorage()
+  //     saveToStorage()
 
-      return { success: true, data }
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : "Erreur d'inscription"
-      return { success: false, error: error.value }
-    } finally {
-      isLoading.value = false
-    }
-  }
+  //     return { success: true, data }
+  //   } catch (err) {
+  //     error.value = err instanceof Error ? err.message : "Erreur d'inscription"
+  //     return { success: false, error: error.value }
+  //   } finally {
+  //     isLoading.value = false
+  //   }
+  // }
 
   return {
     token: readonly(token),
@@ -226,7 +226,7 @@ export const useAuthStore = defineStore("auth", () => {
     initAuth,
     login,
     logout,
-    register,
+    // register,
     refreshAuthToken,
     updateUser,
 

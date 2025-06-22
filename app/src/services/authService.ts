@@ -1,11 +1,11 @@
 import { postJson } from "@/utils/api"
 import { LoginResponseSchema, type LoginRequestType } from "@/types/auth"
 
-export const loginAuth = async ({ username, password }: LoginRequestType) => {
+export const loginAuth = async ({ username: pseudonym, password }: LoginRequestType) => {
   try {
     return await postJson({
       url: "login",
-      body: { username, password },
+      body: { username: pseudonym, password },
       responseSchema: LoginResponseSchema,
     })
   } catch (error) {
