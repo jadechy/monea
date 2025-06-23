@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import router from "@/router"
-  import type { RouteProps } from "./BackComponent.vue"
+  import type { RouteProps } from "./Header/BackComponent.vue"
   import { Button } from "primevue"
   defineProps<RouteProps>()
 </script>

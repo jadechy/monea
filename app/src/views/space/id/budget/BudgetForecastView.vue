@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import SubHeader from "@/components/SubHeader.vue"
+  import SubHeader from "@/components/Header/SubHeader.vue"
   import type { GroupType } from "@/types/group"
   import { computed } from "vue"
   import { useGroups } from "@/composables/useGroups"

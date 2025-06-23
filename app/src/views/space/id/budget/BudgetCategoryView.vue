@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { useGroups } from "@/composables/useGroups"
-  import AllPaiementsLayout from "@/components/AllExpensesLayout.vue"
+  import AllPaiementsLayout from "@/components/Display/AllExpensesDisplay.vue"
   import { fetchCategory } from "@/services/categoryService"
   import { fetchAllExpenseByCategory } from "@/services/expenseService"
   import type { CategoryType } from "@/types/category"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import BaseSection from "@/components/BaseSection.vue"
   import RemainingBudget from "@/components/RemainingBudget.vue"
-  import SubHeader from "@/components/SubHeader.vue"
+  import SubHeader from "@/components/Header/SubHeader.vue"
   import { truncateToTenth } from "@/utils/number"
   import router from "@/router"
   import { getSpaceColor } from "@/utils/getColor"

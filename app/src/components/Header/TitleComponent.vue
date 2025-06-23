@@ -3,7 +3,7 @@
   import { getColors } from "@/utils/getColor"
   import { colors } from "@/data/categoryLabel"
   import type { ColorType } from "@/types/color"
-  import type { Color } from "./Space/SpaceCard.vue"
+  import type { Color } from "../Space/SpaceCard.vue"
   export interface TitleComponentProps {
     label: string
     color?: ColorType

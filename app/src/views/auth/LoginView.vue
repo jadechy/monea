@@ -5,6 +5,7 @@
   import { Form, type FormSubmitEvent } from "@primevue/forms"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
   import { LoginRequestSchema } from "@/types/auth"
+  import FormInput from "@/components/FormInput.vue"
 
   const auth = useAuthStore()
   const submitLogin = async (form: FormSubmitEvent) => {
@@ -21,7 +22,9 @@
     :resolver="zodResolver(LoginRequestSchema)"
     class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
   >
-    <InputText name="pseudonym" placeholder="Pseudonyme" class="w-full" />
+    {{ $form }}
+    <!-- <FormInput name="pseudonym" :form-state="$form" placeholder="Pseudonyme" /> -->
+    <!-- <InputText name="pseudonym" placeholder="Pseudonyme" class="w-full" /> -->
     <div class="w-full">
       <Password placeholder="Mot de passe" fluid name="password" class="w-full" toggleMask />
       <RouterLink

@@ -23,7 +23,7 @@
     class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
   >
     <InputText name="lastname" placeholder="Nom" fluid />
-    <InputText name="firstname" placeholder="Prénom" fluid />
+    <InputText name="name" placeholder="Prénom" fluid />
     <DatePicker
       name="birthday"
       dateFormat="dd/mm/yy"

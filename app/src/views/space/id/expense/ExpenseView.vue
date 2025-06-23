@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import SubHeader from "@/components/SubHeader.vue"
+  import SubHeader from "@/components/Header/SubHeader.vue"
   import { computed, onMounted, ref } from "vue"
   import ColoredLabelComponent from "@/components/CategoryLabel.vue"
   import { formatDateToDayMonth } from "@/utils/date"

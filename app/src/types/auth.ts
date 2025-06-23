@@ -7,7 +7,8 @@ export const RegisterRequestSchema = z.object({
   birthday: UserSchema.shape.birthday,
   username: UserSchema.shape.username,
   picture: UserSchema.shape.picture,
-  password: z.string(),
+  password: UserSchema.shape.password,
+  confirmPassword: UserSchema.shape.password,
 })
 export type RegisterRequestType = z.infer<typeof RegisterRequestSchema>
 

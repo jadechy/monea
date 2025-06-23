@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import AllExpensesLayout from "@/components/AllExpensesLayout.vue"
+  import AllExpensesLayout from "@/components/Display/AllExpensesDisplay.vue"
   import { useGroups } from "@/composables/useGroups"
   import { fetchAllExpenseByGroup } from "@/services/expenseService"
   import type { ErrorType } from "@/types/error"
