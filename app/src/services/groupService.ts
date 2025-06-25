@@ -2,10 +2,10 @@ import { fetchJson, postJson } from "@/utils/api"
 import { CategoryInOtherSchema } from "@/types/category"
 import { GroupSchema } from "@/types/group"
 import { MemberInGroupSchema } from "@/types/member"
-import { type CreateUserInputType, type UserType } from "@/types/user"
+import { type UserType } from "@/types/user"
 import { z } from "zod"
 
-export const createGroup = async (input: CreateUserInputType) => {
+export const createGroup = async (input: any) => {
   try {
     return await postJson({ url: "users", body: input, responseSchema: GroupSchema })
   } catch (error) {

@@ -3,6 +3,7 @@ import type { ErrorType } from "@/types/error"
 import type { GroupType } from "@/types/group"
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"
+import { useAuthStore } from "./authStore"
 
 export const useGroupsStore = defineStore("groups", () => {
   // State
@@ -17,7 +18,10 @@ export const useGroupsStore = defineStore("groups", () => {
     return groups.value.find((group) => group.id === Number(id))
   }
 
-  async function fetchGroups({ force = false }: { force?: boolean }) {
+  async function fetchGroups({ force = false, idUser }: { force?: boolean; idUser?: boolean }) {
+    const { user } = useAuthStore()
+
+    if (!user) return
     const now = Date.now()
     if (!force && lastFetch.value && now - lastFetch.value < 5 * 60 * 1000) {
       return groups.value
@@ -27,7 +31,7 @@ export const useGroupsStore = defineStore("groups", () => {
     error.value = null
 
     try {
-      const res = await fetchGroupByUser(1)
+      const res = await fetchGroupByUser(user?.id)
       if (res === null) {
         return (error.value = "Erreur lors du chargement des utilisateurs")
       }

@@ -24,13 +24,22 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Post(
             uriTemplate: '/register',
             controller: UserController::class  . '::register',
-            name: 'user_ register',
+            name: 'user_register',
             input: UserRegisterDTO::class,
             deserialize: true,
             read: false,
             denormalizationContext: ['groups' => ['user:write']],
         ),
         new Get(),
+        new Get(
+            uriTemplate: '/me',
+            controller: UserController::class  . '::me',
+            name: 'me',
+            read: false,        // IMPORTANT: empêche la lecture automatique
+            write: false,       // IMPORTANT: empêche l'écriture automatique
+            deserialize: false, // IMPORTANT: empêche la désérialisation automatique
+            normalizationContext: ['groups' => ['user:me']],
+        ),
         new Patch(),
         new Delete(),
     ],
@@ -46,7 +55,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'USR_ID')]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:me'])]
     private int $id;
 
     #[ORM\Column(length: 50, name: 'USR_USERNAME', unique: true)]
@@ -57,19 +66,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         minMessage: "Le nom d'utilisateur doit comporter au moins {{ limit }} caractères.",
         maxMessage: "Le nom d'utilisateur ne peut pas dépasser {{ limit }} caractères."
     )]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
     private string $username;
 
     #[ORM\Column(length: 50, name: 'USR_NAME')]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 50, name: 'USR_LASTNAME')]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 255, name: 'USR_EMAIL')]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, name: 'USR_PASSWORD')]
@@ -79,7 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $plainPassword = null;
 
     #[ORM\Column(type: 'json', name: 'USR_ROLES')]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
     private array $roles = [];
 
     #[ORM\Column(name: 'USR_CREATED_AT')]
@@ -118,7 +127,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $shareExpenses;
 
     #[ORM\Column(length: 255, name: 'USR_PICTURE', nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
     private ?string $picture = null;
 
     #[ORM\Column(length: 255, name: 'USR_RESET_TOKEN', nullable: true)]

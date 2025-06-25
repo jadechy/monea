@@ -1,6 +1,7 @@
-import { postJson } from "@/utils/api"
+import { fetchJson, postJson } from "@/utils/api"
 import {
   LoginResponseSchema,
+  MeSchema,
   RegisterResponseSchema,
   type LoginRequestType,
   type RegisterRequestType,
@@ -34,6 +35,18 @@ export const registerAuth = async ({
     })
   } catch (error) {
     console.error("Erreur lors du post de l'utilisateur :", error)
+    return null
+  }
+}
+
+export const me = async () => {
+  try {
+    return await fetchJson({
+      url: `me`,
+      schema: MeSchema,
+    })
+  } catch (error) {
+    console.error("Erreur lors du fetch de l'utilisateur :", error)
     return null
   }
 }

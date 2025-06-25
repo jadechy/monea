@@ -1,5 +1,7 @@
 import { z } from "zod"
 import { UserSchema } from "./user"
+// ** Register **
+/// Request
 export const RegisterRequestSchema = z.object({
   email: UserSchema.shape.email,
   name: UserSchema.shape.name,
@@ -15,9 +17,16 @@ export const RegisterRequestSchema = z.object({
   confirmPassword: UserSchema.shape.password,
 })
 export type RegisterRequestType = z.infer<typeof RegisterRequestSchema>
+
+/// Response
 export const RegisterResponseSchema = z.object({ message: z.string() })
 export type RegisterResponseType = z.infer<typeof RegisterResponseSchema>
+
 export const TokenSchema = z.string()
+export type TokenType = z.infer<typeof TokenSchema>
+
+// ** Login **
+/// Request
 export const LoginRequestSchema = z.object({
   username: UserSchema.shape.username,
   password: UserSchema.shape.password,
@@ -25,11 +34,23 @@ export const LoginRequestSchema = z.object({
 
 export type LoginRequestType = z.infer<typeof LoginRequestSchema>
 
-export type TokenType = z.infer<typeof TokenSchema>
-
+/// Response
 export const LoginResponseSchema = z.object({
   token: TokenSchema,
   refreshToken: TokenSchema.optional(),
 })
 
 export type LoginResponseType = z.infer<typeof LoginResponseSchema>
+
+// ** Me **
+export const MeSchema = z.object({
+  id: UserSchema.shape.id,
+  email: UserSchema.shape.email,
+  name: UserSchema.shape.name,
+  lastname: UserSchema.shape.lastname,
+  // birthday: UserSchema.shape.birthday,
+  username: UserSchema.shape.username,
+  picture: UserSchema.shape.picture,
+  roles: UserSchema.shape.role,
+})
+export type MeType = z.infer<typeof MeSchema>

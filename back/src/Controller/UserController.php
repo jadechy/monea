@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
 class UserController extends AbstractController
@@ -22,7 +23,7 @@ class UserController extends AbstractController
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private EntityManagerInterface $em,
-        private UserPasswordHasherInterface $passwordHasher,
+        private UserPasswordHasherInterface $passwordHasher
 
 
     ) {}
@@ -54,5 +55,17 @@ class UserController extends AbstractController
         $this->em->flush();
 
         return $this->json(['message' => 'Utilisateur créé avec succès'], 201);
+    }
+
+    public function me(): User
+    {
+        // dd($this);
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+
+        return $user;
     }
 }

@@ -1,8 +1,9 @@
 // stores/authStore.ts
-import { loginAuth } from "@/services/authService"
-import type { LoginRequestType } from "@/types/auth"
+import { loginAuth, me } from "@/services/authService"
+import type { LoginRequestType, MeType } from "@/types/auth"
 import { defineStore } from "pinia"
 import { ref, computed, readonly } from "vue"
+import { useGroupsStore } from "./groupStore"
 
 // Types (adaptez selon vos besoins)
 export interface UserType {
@@ -22,7 +23,7 @@ export interface AuthResponse {
 export const useAuthStore = defineStore("auth", () => {
   const token = ref<string | null>(null)
   const refreshToken = ref<string | null>(null)
-  const user = ref<UserType | null>(null)
+  const user = ref<MeType | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -97,13 +98,20 @@ export const useAuthStore = defineStore("auth", () => {
       })
 
       if (res === null) throw new Error(`Identifiant de connexion incorecte`)
-      console.log(res)
       token.value = res.token
       if (res.refreshToken) {
         refreshToken.value = res.refreshToken
       }
+      const resMe = await me()
+      if (resMe === null) throw new Error(`Identifiant de connexion incorecte`)
+
+      if (resMe) {
+        user.value = resMe
+      }
 
       saveToStorage()
+      const store = useGroupsStore()
+      await store.fetchGroups({ force: true })
 
       return { success: true, res: res.token }
     } catch (err) {
@@ -159,10 +167,6 @@ export const useAuthStore = defineStore("auth", () => {
       if (data.refreshToken) {
         refreshToken.value = data.refreshToken
       }
-      if (data.user) {
-        user.value = data.user
-      }
-
       saveToStorage()
       return data.token
     } catch (err) {
