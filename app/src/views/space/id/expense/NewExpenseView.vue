@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import SubHeader from "@/components/SubHeader.vue"
+  import SubHeader from "@/components/Header/SubHeader.vue"
   import { peoplesData } from "@/data/people"
   import { Button, DatePicker, InputNumber, InputText, Message, Select } from "primevue"
   import { getSpaceColor } from "@/utils/getColor"

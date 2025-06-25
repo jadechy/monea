@@ -16,7 +16,7 @@ export async function postJson<T extends z.ZodTypeAny>({
 
   async function makeRequest(token: string | null) {
     const headers: HeadersInit = {
-      "Content-Type": "application/json",
+      "Content-Type": "application/ld+json",
       ...options?.headers,
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     }

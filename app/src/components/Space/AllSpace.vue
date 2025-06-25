@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { useGroups } from "@/composables/useGroups"
-  import SpaceCard from "@/layouts/Home/SpaceCard.vue"
   import { storeToRefs } from "pinia"
+  import SpaceCard from "./SpaceCard.vue"
 
   const groupsStore = useGroups()
   const { groups, loading } = storeToRefs(groupsStore)

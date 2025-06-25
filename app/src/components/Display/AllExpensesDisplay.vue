@@ -1,10 +1,10 @@
 <script setup lang="ts">
   import AddAction from "@/components/AddAction.vue"
-  import type { RouteProps } from "@/components/BackComponent.vue"
+  import type { RouteProps } from "@/components/Header/BackComponent.vue"
   import BaseSection from "@/components/BaseSection.vue"
   import RemainingBudget from "@/components/RemainingBudget.vue"
-  import SubHeader from "@/components/SubHeader.vue"
-  import type { TitleComponentProps } from "@/components/TitleComponent.vue"
+  import SubHeader from "@/components/Header/SubHeader.vue"
+  import type { TitleComponentProps } from "@/components/Header/TitleComponent.vue"
   import router from "@/router"
   import { formatDateToDayMonth } from "@/utils/date"
   import { getSpaceColor } from "@/utils/getColor"

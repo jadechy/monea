@@ -1,6 +1,6 @@
 <script setup lang="ts">
+  import AllExpensesLayout from "@/components/Display/AllExpensesDisplay.vue"
   import { useGroups } from "@/composables/useGroups"
-  import AllPaiementsLayout from "@/layouts/AllExpensesLayout.vue"
   import { fetchAllExpenseByGroup } from "@/services/expenseService"
   import type { ErrorType } from "@/types/error"
   import type { ExpenseDateType } from "@/types/expense"
@@ -25,7 +25,7 @@
 </script>
 
 <template>
-  <AllPaiementsLayout
+  <AllExpensesLayout
     v-if="group"
     :group="group"
     :subHeader="{

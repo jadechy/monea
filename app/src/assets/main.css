@@ -21,4 +21,7 @@
       }
     }
   }
+  .input {
+    @apply w-full space-y-1;
+  }
 }

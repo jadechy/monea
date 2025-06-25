@@ -1,15 +1,15 @@
 <script setup lang="ts">
-  import SubHeader from "@/components/SubHeader.vue"
   import { Form } from "@primevue/forms"
   import ColoredLabelComponent from "@/components/CategoryLabel.vue"
   import { Button, InputNumber, InputText, Message } from "primevue"
   import { ref } from "vue"
-  import { defaultCategories } from "@/data/defaultCategories"
   import { ColorSchema } from "@/types/color"
   import BaseSection from "@/components/BaseSection.vue"
   import { useForm } from "@primevue/forms/useform"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
   import { NewGroupSchema, type NewGroupType } from "@/types/group"
+  import { defaultCategories } from "@/data/defaultCategories"
+  import SubHeader from "@/components/Header/SubHeader.vue"
   const selectedIndex = ref<number | null>(null)
   const form = useForm({
     initialValues: {

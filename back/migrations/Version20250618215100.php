@@ -22,7 +22,7 @@ final class Version20250618215100 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
 
         $this->addSql(<<<'SQL'
-            ALTER TABLE MON_USER CHANGE USR_PICTURE USR_PICTURE VARCHAR(255) NOT NULL
+            ALTER TABLE MON_USER CHANGE USR_PICTURE USR_PICTURE VARCHAR(255) NULL
         SQL);
     }
 

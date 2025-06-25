@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  import SubHeader from "@/components/SubHeader.vue"
+  import SubHeader from "@/components/Header/SubHeader.vue"
   import type { GroupType } from "@/types/group"
   import { computed } from "vue"
   import { useGroups } from "@/composables/useGroups"
-  import Year from "@/components/BudgetForecast/Year.vue"
-  import Month from "@/components/BudgetForecast/Month.vue"
+  import Year from "@/components/Budget/BudgetForecast/Year.vue"
+  import Month from "@/components/Budget/BudgetForecast/Month.vue"
 
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
   const { groupById } = useGroups()
