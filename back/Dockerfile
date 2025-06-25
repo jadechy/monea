@@ -41,9 +41,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /var/www/html
 
-# Copier composer.json et composer.lock (pour optimiser le cache Docker)
-COPY composer.json composer.lock ./
-
-# Installer les dépendances au démarrage pour éviter les problèmes de volume
-# Combiné avec php-fpm pour que le conteneur démarre correctement
-CMD ["sh", "-c", "composer install && php-fpm"]
+COPY . .  
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]

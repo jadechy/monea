@@ -7,7 +7,11 @@ export const RegisterRequestSchema = z.object({
   birthday: UserSchema.shape.birthday,
   username: UserSchema.shape.username,
   picture: UserSchema.shape.picture,
-  password: UserSchema.shape.password,
+  password: UserSchema.shape.password
+    .min(8, { message: "Le mot de passe doit contenir au moins 8 caractères" })
+    .regex(/[A-Z]/, { message: "Le mot de passe doit contenir au moins une majuscule" })
+    .regex(/[a-z]/, { message: "Le mot de passe doit contenir au moins une minuscule" })
+    .regex(/[0-9]/, { message: "Le mot de passe doit contenir au moins un chiffre" }),
   confirmPassword: UserSchema.shape.password,
 })
 export type RegisterRequestType = z.infer<typeof RegisterRequestSchema>

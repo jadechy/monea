@@ -50,11 +50,7 @@ export const UserSchema = z.object({
   password: z
     .string({
       message: "Le mot de passe est requis",
-    })
-    .min(8, { message: "Le mot de passe doit contenir au moins 8 caractères" })
-    .regex(/[A-Z]/, { message: "Le mot de passe doit contenir au moins une majuscule" })
-    .regex(/[a-z]/, { message: "Le mot de passe doit contenir au moins une minuscule" })
-    .regex(/[0-9]/, { message: "Le mot de passe doit contenir au moins un chiffre" }),
+    }),
 
   role: z
     .array(z.string(), {
