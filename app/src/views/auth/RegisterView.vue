@@ -1,17 +1,26 @@
 <script setup lang="ts">
   import router from "@/router"
-  import { useAuthStore } from "@/stores/authStore"
   import { Button, DatePicker, Divider, Message, Password } from "primevue"
   import { Form, type FormSubmitEvent } from "@primevue/forms"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
-  import { RegisterRequestSchema } from "@/types/auth"
+  import { RegisterRequestSchema, type RegisterRequestType } from "@/types/auth"
   import FormInput from "@/components/Input/FormInput.vue"
   import WrapperInput from "@/components/Input/WrapperInput.vue"
+  import { registerAuth } from "@/services/authService"
 
-  const auth = useAuthStore()
   const submitRegister = async (form: FormSubmitEvent) => {
-    if (form.states.password.value !== form.states.confirmPassword) return
-    // appelé route création user
+    if (!form.valid) return
+
+    const data = Object.entries(form.states).reduce((acc, [key, state]) => {
+      const k = key as keyof RegisterRequestType
+      acc[k] = state.value
+      return acc
+    }, {} as RegisterRequestType)
+
+    if (data.password !== data.confirmPassword) return
+
+    await registerAuth(data)
+    router.push({ name: "confirm" })
   }
 </script>
 

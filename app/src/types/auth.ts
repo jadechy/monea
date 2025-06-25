@@ -15,7 +15,8 @@ export const RegisterRequestSchema = z.object({
   confirmPassword: UserSchema.shape.password,
 })
 export type RegisterRequestType = z.infer<typeof RegisterRequestSchema>
-
+export const RegisterResponseSchema = z.object({ message: z.string() })
+export type RegisterResponseType = z.infer<typeof RegisterResponseSchema>
 export const TokenSchema = z.string()
 export const LoginRequestSchema = z.object({
   username: UserSchema.shape.username,

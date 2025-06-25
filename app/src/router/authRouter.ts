@@ -1,3 +1,4 @@
+import ConfirmView from "@/views/auth/ConfirmView.vue"
 import ForgotView from "@/views/auth/ForgotView.vue"
 import IndexAuth from "@/views/auth/IndexAuth.vue"
 import LoginView from "@/views/auth/LoginView.vue"
@@ -17,6 +18,11 @@ export default [
         path: "register",
         name: "register",
         component: RegisterView,
+      },
+      {
+        path: "confirm",
+        name: "confirm",
+        component: ConfirmView,
       },
       {
         path: "forgot",
