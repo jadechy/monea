@@ -10,37 +10,37 @@ const isAdult = (date: Date) => {
 }
 export const UserSchema = z.object({
   id: z.number({
-    required_error: "L'identifiant est requis",
+    message: "L'identifiant est requis",
     invalid_type_error: "L'identifiant doit être un nombre",
   }),
   username: z
     .string({
-      required_error: "Le nom d'utilisateur est requis",
+      message: "Le nom d'utilisateur est requis",
     })
     .min(3, { message: "Le nom d'utilisateur doit contenir au moins 3 caractères" })
     .max(50, { message: "Le nom d'utilisateur ne doit pas dépasser 50 caractères" }),
 
   name: z
     .string({
-      required_error: "Le prénom est requis",
+      message: "Le prénom est requis",
     })
-    .min(1, { message: "Le prénom ne peut pas être vide" }),
+    .min(3, { message: "Le prénom ne peut pas être vide" }),
 
   lastname: z
     .string({
-      required_error: "Le nom est requis",
+      message: "Le nom est requis",
     })
-    .min(1, { message: "Le nom ne peut pas être vide" }),
+    .min(3, { message: "Le nom doit être supérieur à 3 caractères" }),
 
   email: z
     .string({
-      required_error: "L'adresse email est requise",
+      message: "L'adresse email est requise",
     })
     .email({ message: "L'adresse email n'est pas valide" }),
 
   birthday: z
     .date({
-      required_error: "La date de naissance est requise",
+      message: "La date de naissance est requise",
       invalid_type_error: "La date de naissance doit être une date valide",
     })
     .refine(isAdult, {
@@ -49,7 +49,7 @@ export const UserSchema = z.object({
 
   password: z
     .string({
-      required_error: "Le mot de passe est requis",
+      message: "Le mot de passe est requis",
     })
     .min(8, { message: "Le mot de passe doit contenir au moins 8 caractères" })
     .regex(/[A-Z]/, { message: "Le mot de passe doit contenir au moins une majuscule" })

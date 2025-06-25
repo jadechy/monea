@@ -1,16 +1,17 @@
 <script setup lang="ts">
   import router from "@/router"
   import { useAuthStore } from "@/stores/authStore"
-  import { Button, DatePicker, InputText, Password } from "primevue"
+  import { Button, DatePicker, Divider, Message, Password } from "primevue"
   import { Form, type FormSubmitEvent } from "@primevue/forms"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
   import { RegisterRequestSchema } from "@/types/auth"
+  import FormInput from "@/components/Input/FormInput.vue"
+  import WrapperInput from "@/components/Input/WrapperInput.vue"
 
   const auth = useAuthStore()
   const submitRegister = async (form: FormSubmitEvent) => {
-    console.log(form)
-    // await auth.login({ pseudonym: form.values.pseudonym, password: form.values.password })
-    // router.push({ name: "spaces" })
+    if (form.states.password.value !== form.states.confirmPassword) return
+    // appelé route création user
   }
 </script>
 
@@ -22,39 +23,69 @@
     :resolver="zodResolver(RegisterRequestSchema)"
     class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
   >
-    <InputText name="lastname" placeholder="Nom" fluid />
-    <InputText name="name" placeholder="Prénom" fluid />
-    <DatePicker
-      name="birthday"
-      dateFormat="dd/mm/yy"
-      showIcon
-      fluid
-      class="w-full"
-      iconDisplay="input"
-      placeholder="Date de naissance"
-    />
-    <InputText type="mail" name="email" placeholder="Email" fluid />
-    <InputText name="username" placeholder="Pseudonyme" fluid />
-    <Password name="password" placeholder="Mot de passe" toggleMask fluid class="w-full">
-      <template #footer>
-        <Divider />
-        <ul class="pl-2 my-0 leading-normal">
-          <li>Au moins une majuscule</li>
-          <li>Au moins une minuscule</li>
-          <li>Au moins un chiffre</li>
-          <li>Minimum 8 characters</li>
-        </ul>
-      </template>
-    </Password>
-    <Password
-      placeholder="Confirmation mot de passe"
-      fluid
-      class="w-full"
-      :feedback="false"
-      toggleMask
-      name="confirmPassword"
-    />
+    <FormInput name="lastname" placeholder="Nom" :form="$form" />
+    <FormInput name="name" placeholder="Prénom" :form="$form" />
+    <WrapperInput name="birthday" placeholder="Date de naissance" :form="$form">
+      <DatePicker
+        dateFormat="dd/mm/yy"
+        showIcon
+        fluid
+        name="birthday"
+        class="w-full"
+        iconDisplay="input"
+      />
+    </WrapperInput>
 
+    <FormInput name="email" placeholder="Email" type="email" :form="$form" autocomplete="email" />
+    <FormInput name="username" placeholder="Pseudonyme" :form="$form" autocomplete="username" />
+
+    <WrapperInput name="password" placeholder="Mot de passe" :form="$form">
+      <Password
+        placeholder="Mot de passe"
+        name="password"
+        toggleMask
+        fluid
+        class="w-full"
+        :inputProps="{
+          autocomplete: 'new-password',
+        }"
+      >
+        <template #footer>
+          <Divider />
+          <ul class="pl-2 my-0 leading-normal">
+            <li>Au moins une majuscule</li>
+            <li>Au moins une minuscule</li>
+            <li>Au moins un chiffre</li>
+            <li>Minimum 8 caractères</li>
+          </ul>
+        </template>
+      </Password>
+    </WrapperInput>
+
+    <WrapperInput :form="$form" name="confirmPassword" placeholder="Confirmation mot de passe">
+      <Password
+        name="confirmPassword"
+        placeholder="Confirmation mot de passe"
+        fluid
+        class="w-full"
+        :feedback="false"
+        toggleMask
+        :inputProps="{
+          autocomplete: 'new-password',
+        }"
+      />
+      <Message
+        severity="error"
+        size="small"
+        v-if="
+          $form.confirmPassword?.value &&
+          $form.password?.value &&
+          $form.confirmPassword.value !== $form.password.value
+        "
+      >
+        Les mots de passe ne correspondent pas
+      </Message>
+    </WrapperInput>
     <div class="flex flex-col items-center gap-0.5">
       <Button type="submit" class="w-fit">S'inscrire</Button>
       <RouterLink :to="{ name: 'login' }" class="hover:underline">J'ai déjà un compte</RouterLink>

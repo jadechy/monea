@@ -15,7 +15,7 @@ export type RegisterRequestType = z.infer<typeof RegisterRequestSchema>
 export const TokenSchema = z.string()
 export const LoginRequestSchema = z.object({
   username: UserSchema.shape.username,
-  password: RegisterRequestSchema.shape.password,
+  password: UserSchema.shape.password,
 })
 
 export type LoginRequestType = z.infer<typeof LoginRequestSchema>
