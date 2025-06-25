@@ -3,6 +3,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use App\Controller\UserController;
+use App\DTO\UserRegisterDTO;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,6 +20,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/register',
+            controller: UserController::class  . '::register',
+            name: 'user_ register',
+            input: UserRegisterDTO::class,
+            deserialize: true,
+            read: false,
+            denormalizationContext: ['groups' => ['user:write']],
+        ),
+        new Get(),
+        new Patch(),
+        new Delete(),
+    ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']]
 )]
@@ -97,7 +117,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write'])]
     private Collection $shareExpenses;
 
-    #[ORM\Column(length: 255, name: 'USR_PICTURE')]
+    #[ORM\Column(length: 255, name: 'USR_PICTURE', nullable: true)]
     #[Groups(['user:read', 'user:write'])]
     private ?string $picture = null;
 

@@ -4,9 +4,7 @@ namespace App\DTO;
 
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Link;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\GroupeController;
 use App\Entity\Groupe;
@@ -67,7 +65,7 @@ class GroupeDTO
         $this->picture = $groupe->getPicture();
         $this->color = $groupe->getColor();
 
-        foreach ($groupe->getExpenses() as $expense){
+        foreach ($groupe->getExpenses() as $expense) {
             $this->expenses[] = [
                 'expenseId' => $expense?->getId(),
                 'amount' => $expense?->getAmount(),
@@ -75,8 +73,8 @@ class GroupeDTO
                 'createdAt' => $expense?->getCreatedAt()->format('Y-m-d'),
             ];
         }
-        
-        foreach ($groupe->getMembers() as $member){
+
+        foreach ($groupe->getMembers() as $member) {
             $this->members[] = [
                 'memberId' => $member?->getIndividual()->getId(),
                 'role' => $member?->getRole(),
@@ -86,7 +84,7 @@ class GroupeDTO
 
         $this->creator = $groupe->getCreator()->getId();
 
-        foreach ($groupe->getCategories() as $category){
+        foreach ($groupe->getCategories() as $category) {
             $this->categories[] = [
                 'categoryId' => $category?->getId(),
                 'label' => $category?->getLabel(),
