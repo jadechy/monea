@@ -5,7 +5,7 @@
   import { truncateToTenth } from "@/utils/number"
   import router from "@/router"
   import { getSpaceColor } from "@/utils/getColor"
-  import type { BudgetByCategoryType } from "@/types/budget"
+  import type { BudgetByCategoryType } from "@/types/budget.type"
   import type { ErrorType } from "@/types/errors"
   import type { GroupType } from "@/types/group"
   import { Button } from "primevue"

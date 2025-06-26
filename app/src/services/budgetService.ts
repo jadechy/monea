@@ -1,89 +1,64 @@
-import { fetchJson } from "@/utils/apiClient"
 import { formatDateForApi } from "@/utils/date"
+import { type GroupType } from "@/types/group"
+import { z } from "zod"
+import { CategorySchema } from "@/types/category"
 import {
   AmountSchema,
   AmountValueSchema,
   BudgetByCategorySchema,
   type BudgetType,
-} from "@/types/budget"
-import { type GroupType } from "@/types/group"
-import { z } from "zod"
-import { CategorySchema } from "@/types/category"
+} from "@/types/budget.type"
+import { fetchJson } from "@/utils/apiMethods"
 
 export const fetchBudgetGroupDateRemaining = async (
   group_id: GroupType["id"],
   month: BudgetType["monthStart"],
 ) => {
-  try {
-    return await fetchJson({
-      url: `budget/${group_id}/${formatDateForApi(new Date(month))}/remaining`,
-      schema: AmountSchema,
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch de l'utilisateur :", error)
-    return null
-  }
+  return await fetchJson({
+    url: `budget/${group_id}/${formatDateForApi(new Date(month))}/remaining`,
+    schema: AmountSchema,
+  })
 }
 
 export const fetchBudgetGroup = async (
   group_id: GroupType["id"],
   month: BudgetType["monthStart"],
 ) => {
-  try {
-    return await fetchJson({
-      url: `budget/${group_id}/${formatDateForApi(new Date(month))}`,
-      schema: AmountSchema,
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch de l'utilisateur :", error)
-    return null
-  }
+  return await fetchJson({
+    url: `budget/${group_id}/${formatDateForApi(new Date(month))}`,
+    schema: AmountSchema,
+  })
 }
 
 export const fetchAllBudgetCategoriesByGroup = async (group_id: GroupType["id"], month: Date) => {
-  try {
-    return await fetchJson({
-      url: `budgets/${group_id}/${formatDateForApi(month)}/list`,
-      schema: BudgetByCategorySchema.array(),
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch des utilisateurs :", error)
-    return null
-  }
+  return await fetchJson({
+    url: `budgets/${group_id}/${formatDateForApi(month)}/list`,
+    schema: BudgetByCategorySchema.array(),
+  })
 }
-const fetchBudgetRemainingInMonthValueSchema = z.object({
-  remaining: AmountValueSchema,
-  categories: CategorySchema.extend({ remaining: AmountValueSchema }).array(),
-})
-const fetchBudgetRemainingInMonthSchema = z.record(
-  z.string(),
-  fetchBudgetRemainingInMonthValueSchema,
-)
-export type FetchBudgetRemainingInMonthValueType = z.infer<
-  typeof fetchBudgetRemainingInMonthValueSchema
->
 
-export type FetchBudgetRemainingInMonthType = z.infer<typeof fetchBudgetRemainingInMonthSchema>
+export const BudgetRemainingValueSchema = z.object({
+  remaining: AmountValueSchema,
+  categories: CategorySchema.extend({
+    remaining: AmountValueSchema,
+  }).array(),
+})
+
+export const BudgetRemainingByMonthSchema = z.record(z.string(), BudgetRemainingValueSchema)
+
+export type BudgetRemainingValueType = z.infer<typeof BudgetRemainingValueSchema>
+export type BudgetRemainingByMonthType = z.infer<typeof BudgetRemainingByMonthSchema>
 
 export const fetchBudgetRemainingInMonth = async (group_id: GroupType["id"], year: number) => {
-  try {
-    return await fetchJson({
-      url: `budget/${group_id}/${year}/year/remaining/list`,
-      schema: fetchBudgetRemainingInMonthSchema,
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch de l'utilisateur :", error)
-    return null
-  }
+  return await fetchJson({
+    url: `budget/${group_id}/${year}/year/remaining/list`,
+    schema: BudgetRemainingByMonthSchema,
+  })
 }
+
 export const fetchBudgetRemainingInDay = async (group_id: GroupType["id"], month: string) => {
-  try {
-    return await fetchJson({
-      url: `budget/${group_id}/${month}/month/remaining/list`,
-      schema: fetchBudgetRemainingInMonthSchema,
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch de l'utilisateur :", error)
-    return null
-  }
+  return await fetchJson({
+    url: `budget/${group_id}/${month}/month/remaining/list`,
+    schema: BudgetRemainingByMonthSchema,
+  })
 }

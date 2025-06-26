@@ -1,5 +1,5 @@
 import { loginAuth, me } from "@/services/authService"
-import type { LoginRequestType, MeType, RegisterRequestType } from "@/types/authType"
+import type { LoginRequestType, MeType, RegisterRequestType } from "@/types/auth.type"
 import { defineStore } from "pinia"
 import { ref, computed, readonly } from "vue"
 import { useGroupsStore } from "./groupStore"

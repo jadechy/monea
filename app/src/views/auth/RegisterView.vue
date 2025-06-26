@@ -3,7 +3,7 @@
   import { Button, DatePicker, Divider, Message, Password } from "primevue"
   import { Form, type FormSubmitEvent } from "@primevue/forms"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
-  import { RegisterRequestSchema, type RegisterRequestType } from "@/types/authType"
+  import { RegisterRequestSchema, type RegisterRequestType } from "@/types/auth.type"
   import FormInput from "@/components/Input/FormInput.vue"
   import WrapperInput from "@/components/Input/WrapperInput.vue"
   import { registerAuth } from "@/services/authService"
