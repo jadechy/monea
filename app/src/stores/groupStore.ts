@@ -1,5 +1,5 @@
 import { fetchGroupByUser, type FetchGroupByUserType } from "@/services/groupService"
-import type { ErrorType } from "@/types/error"
+import type { ErrorType } from "@/types/errors"
 import type { GroupType } from "@/types/group"
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"

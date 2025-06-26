@@ -3,7 +3,7 @@
   import { truncateToTenth } from "@/utils/number"
   import { fetchBudgetGroup, fetchBudgetGroupDateRemaining } from "@/services/budgetService"
   import type { AmountType } from "@/types/budget"
-  import type { ErrorType } from "@/types/error"
+  import type { ErrorType } from "@/types/errors"
   import { onMounted, ref } from "vue"
   const error = ref<ErrorType>(null)
 

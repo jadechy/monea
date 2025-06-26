@@ -1,4 +1,4 @@
-import { fetchJson } from "@/utils/api"
+import { fetchJson } from "@/utils/apiClient"
 import { CategorySchema, type CategoryType } from "@/types/category"
 import type { GroupType } from "@/types/group"
 

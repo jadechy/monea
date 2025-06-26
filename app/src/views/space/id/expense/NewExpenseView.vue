@@ -3,7 +3,7 @@
   import { peoplesData } from "@/data/people"
   import { Button, DatePicker, InputNumber, InputText, Message, Select } from "primevue"
   import { getSpaceColor } from "@/utils/getColor"
-  import type { ErrorType } from "@/types/error"
+  import type { ErrorType } from "@/types/errors"
   import type { CategoryType } from "@/types/category"
   import type { UserType } from "@/types/user"
   import type { GroupType } from "@/types/group"

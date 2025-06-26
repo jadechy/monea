@@ -9,7 +9,7 @@
   import router from "@/router"
   import { getSpaceColor } from "@/utils/getColor"
   import type { ExpenseType } from "@/types/expense"
-  import type { ErrorType } from "@/types/error"
+  import type { ErrorType } from "@/types/errors"
   import { fetchExpense } from "@/services/expenseService"
   import placeholder from "@/assets/placeholder_people.jpg"
   import { useGroups } from "@/composables/useGroups"

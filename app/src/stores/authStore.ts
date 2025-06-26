@@ -1,22 +1,13 @@
-// stores/authStore.ts
 import { loginAuth, me } from "@/services/authService"
-import type { LoginRequestType, MeType } from "@/types/auth"
+import type { LoginRequestType, MeType, RegisterRequestType } from "@/types/authType"
 import { defineStore } from "pinia"
 import { ref, computed, readonly } from "vue"
 import { useGroupsStore } from "./groupStore"
-
-// Types (adaptez selon vos besoins)
-export interface UserType {
-  id: number
-  name: string
-  email: string
-  avatar?: string
-  role?: string
-}
+import { useMutation } from "@tanstack/vue-query"
 
 export interface AuthResponse {
   token: string
-  user: UserType
+  user: MeType
   refreshToken?: string
 }
 
@@ -87,24 +78,21 @@ export const useAuthStore = defineStore("auth", () => {
     clearStorage()
   }
 
-  const login = async ({ username: pseudonym, password }: LoginRequestType) => {
-    isLoading.value = true
-    error.value = null
+  const loginMutation = useMutation({
+    mutationFn: (params: LoginRequestType) => loginAuth(params),
+    onMutate: () => {
+      isLoading.value = true
+      error.value = null
+    },
+    onSuccess: async (res) => {
+      if (!res) throw new Error("Identifiants incorrects")
 
-    try {
-      const res = await loginAuth({
-        username: pseudonym,
-        password: password,
-      })
-
-      if (res === null) throw new Error(`Identifiant de connexion incorecte`)
       token.value = res.token
       if (res.refreshToken) {
         refreshToken.value = res.refreshToken
       }
-      const resMe = await me()
-      if (resMe === null) throw new Error(`Identifiant de connexion incorecte`)
 
+      const resMe = await me()
       if (resMe) {
         user.value = resMe
       }
@@ -112,15 +100,11 @@ export const useAuthStore = defineStore("auth", () => {
       saveToStorage()
       const store = useGroupsStore()
       await store.fetchGroups({ force: true })
-
-      return { success: true, res: res.token }
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : "Erreur de connexion"
-      return { success: false, error: error.value }
-    } finally {
+    },
+    onSettled: () => {
       isLoading.value = false
-    }
-  }
+    },
+  })
 
   const logout = async () => {
     isLoading.value = true
@@ -175,48 +159,12 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  const updateUser = (userData: Partial<UserType>) => {
+  const updateUser = (userData: Partial<RegisterRequestType>) => {
     if (user.value) {
       user.value = { ...user.value, ...userData }
       saveToStorage()
     }
   }
-
-  // const register = async (userData: LoginRequestType & { name: string }) => {
-  //   isLoading.value = true
-  //   error.value = null
-
-  //   try {
-  //     const response = await fetch("/api/auth/register", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(userData),
-  //     })
-
-  //     if (!response.ok) {
-  //       throw new Error("Erreur lors de l'inscription")
-  //     }
-
-  //     const data: AuthResponse = await response.json()
-
-  //     token.value = data.token
-  //     user.value = data.user
-  //     if (data.refreshToken) {
-  //       refreshToken.value = data.refreshToken
-  //     }
-
-  //     saveToStorage()
-
-  //     return { success: true, data }
-  //   } catch (err) {
-  //     error.value = err instanceof Error ? err.message : "Erreur d'inscription"
-  //     return { success: false, error: error.value }
-  //   } finally {
-  //     isLoading.value = false
-  //   }
-  // }
 
   return {
     token: readonly(token),
@@ -228,9 +176,8 @@ export const useAuthStore = defineStore("auth", () => {
     userInitials,
 
     initAuth,
-    login,
+    loginMutation,
     logout,
-    // register,
     refreshAuthToken,
     updateUser,
 

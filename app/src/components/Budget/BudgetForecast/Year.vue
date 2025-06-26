@@ -4,7 +4,7 @@
   import { useRemaining } from "@/composables/BudgetForecast/useRemaining"
   import { fetchCategoryByGroup } from "@/services/categoryService"
   import type { CategoryType } from "@/types/category"
-  import type { ErrorType } from "@/types/error"
+  import type { ErrorType } from "@/types/errors"
   import type { GroupType } from "@/types/group"
   import { DatePicker, Select } from "primevue"
   import { onMounted, ref } from "vue"

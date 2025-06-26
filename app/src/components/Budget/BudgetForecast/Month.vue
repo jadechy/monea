@@ -7,7 +7,7 @@
     formatDateToDayMonth,
     getCurrentMonthDate,
   } from "@/utils/date"
-  import type { ErrorType } from "@/types/error"
+  import type { ErrorType } from "@/types/errors"
   import type { ExpenseDateType } from "@/types/expense"
   import type { GroupType } from "@/types/group"
   import { DatePicker } from "primevue"

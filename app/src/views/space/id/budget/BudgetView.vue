@@ -6,7 +6,7 @@
   import router from "@/router"
   import { getSpaceColor } from "@/utils/getColor"
   import type { BudgetByCategoryType } from "@/types/budget"
-  import type { ErrorType } from "@/types/error"
+  import type { ErrorType } from "@/types/errors"
   import type { GroupType } from "@/types/group"
   import { Button } from "primevue"
   import { computed, onMounted, ref } from "vue"

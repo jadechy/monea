@@ -7,7 +7,7 @@
   import type { CategoryType } from "@/types/category"
   import type { ExpenseDateType } from "@/types/expense"
   import type { GroupType } from "@/types/group"
-  import type { ErrorType } from "@/types/error"
+  import type { ErrorType } from "@/types/errors"
 
   const props = defineProps<{ group_id: GroupType["id"] }>()
   const expenses = ref<ExpenseDateType>({})

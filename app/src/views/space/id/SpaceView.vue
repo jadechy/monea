@@ -2,7 +2,7 @@
   import AllExpensesLayout from "@/components/Display/AllExpensesDisplay.vue"
   import { useGroups } from "@/composables/useGroups"
   import { fetchAllExpenseByGroup } from "@/services/expenseService"
-  import type { ErrorType } from "@/types/error"
+  import type { ErrorType } from "@/types/errors"
   import type { ExpenseDateType } from "@/types/expense"
   import type { GroupType } from "@/types/group"
   import { computed, onMounted, ref } from "vue"
