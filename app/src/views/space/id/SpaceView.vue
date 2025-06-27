@@ -2,7 +2,7 @@
   import AllExpensesLayout from "@/components/Display/AllExpensesDisplay.vue"
   import { useGroups } from "@/composables/useGroups"
   import { getAllExpensesByGroup } from "@/services/expenseService"
-  import type { GroupType } from "@/types/group"
+  import type { GroupType } from "@/types/groupType"
   import { useQuery } from "@tanstack/vue-query"
   import { computed } from "vue"
 

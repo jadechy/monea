@@ -5,7 +5,7 @@ import {
   FetchNewExpenseSchema,
   type ExpenseType,
 } from "@/types/expenseType"
-import type { GroupType } from "@/types/group"
+import type { GroupType } from "@/types/groupType"
 import { fetchJson } from "@/utils/apiMethods"
 
 export const getExpenseById = async (id: ExpenseType["id"]) =>

@@ -1,5 +1,5 @@
 import { formatDateForApi } from "@/utils/date"
-import { type GroupType } from "@/types/group"
+import { type GroupType } from "@/types/groupType"
 import { z } from "zod"
 import { CategorySchema } from "@/types/category"
 import {

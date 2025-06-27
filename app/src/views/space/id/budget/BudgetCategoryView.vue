@@ -8,7 +8,7 @@
   import { getExpensesByGroupAndCategory } from "@/services/expenseService"
 
   import type { CategoryType } from "@/types/category"
-  import type { GroupType } from "@/types/group"
+  import type { GroupType } from "@/types/groupType"
 
   // Props
   const props = defineProps<{

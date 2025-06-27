@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { UserSchema } from "./user"
-import { GroupSchema } from "./group"
+import { GroupSchema } from "./groupType"
 
 export const MemberSchema = z.object({
   role: z.string().max(255).nullable(),

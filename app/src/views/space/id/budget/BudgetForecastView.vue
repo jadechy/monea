@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import SubHeader from "@/components/Header/SubHeader.vue"
-  import type { GroupType } from "@/types/group"
+  import type { GroupType } from "@/types/groupType"
   import { computed } from "vue"
   import { useGroups } from "@/composables/useGroups"
   import Year from "@/components/Budget/BudgetForecast/Year.vue"

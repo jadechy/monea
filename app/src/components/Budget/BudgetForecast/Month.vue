@@ -7,7 +7,7 @@
     formatDateToDayMonth,
     getCurrentMonthDate,
   } from "@/utils/date"
-  import type { GroupType } from "@/types/group"
+  import type { GroupType } from "@/types/groupType"
   import { DatePicker } from "primevue"
   import { ref, computed, watch } from "vue"
   import { fetchBudgetRemainingInDay } from "@/services/budgetService"

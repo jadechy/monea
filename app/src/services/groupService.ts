@@ -1,5 +1,5 @@
 import { CategoryInOtherSchema } from "@/types/category"
-import { GroupSchema } from "@/types/group"
+import { GroupSchema } from "@/types/groupType"
 import { MemberInGroupSchema } from "@/types/member"
 import { type UserType } from "@/types/user"
 import { fetchJson } from "@/utils/apiMethods"
@@ -11,14 +11,8 @@ export const FetchGroupByUserSchema = GroupSchema.extend({
 })
 export type FetchGroupByUserType = z.infer<typeof FetchGroupByUserSchema>
 
-export const fetchGroupByUser = async (userId: UserType["id"]) => {
-  try {
-    return await fetchJson({
-      url: `groupes/${userId}/list`,
-      schema: FetchGroupByUserSchema.array(),
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch de l'utilisateur :", error)
-    return null
-  }
-}
+export const getGroupByUser = async (userId: UserType["id"]) =>
+  fetchJson({
+    url: `groupes/${userId}/list`,
+    schema: FetchGroupByUserSchema.array(),
+  })

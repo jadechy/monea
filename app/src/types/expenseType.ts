@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { UserInOtherSchema, UserSchema } from "./user"
-import { GroupSchema } from "./group"
+import { GroupSchema } from "./groupType"
 import { CategoryInOtherSchema, CategorySchema } from "./category"
 import { RecurringExpenseSchema } from "./recurring_expense"
 import { DateSchema } from "./date"

@@ -12,7 +12,7 @@
   import { getExpenseById } from "@/services/expenseService"
   import placeholder from "@/assets/placeholder_people.jpg"
   import { useGroups } from "@/composables/useGroups"
-  import type { GroupType } from "@/types/group"
+  import type { GroupType } from "@/types/groupType"
   import { useQuery } from "@tanstack/vue-query"
 
   // Props

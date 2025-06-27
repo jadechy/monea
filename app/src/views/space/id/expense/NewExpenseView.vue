@@ -6,7 +6,7 @@
   import type { ErrorType } from "@/types/errors"
   import type { CategoryType } from "@/types/category"
   import type { UserType } from "@/types/user"
-  import type { GroupType } from "@/types/group"
+  import type { GroupType } from "@/types/groupType"
   import { useAuthStore } from "@/stores/authStore"
   import { computed, ref } from "vue"
   import { useGroups } from "@/composables/useGroups"

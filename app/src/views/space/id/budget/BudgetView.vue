@@ -5,7 +5,7 @@
   import { truncateToTenth } from "@/utils/number"
   import router from "@/router"
   import { getSpaceColor } from "@/utils/getColor"
-  import type { GroupType } from "@/types/group"
+  import type { GroupType } from "@/types/groupType"
   import { Button } from "primevue"
   import { computed } from "vue"
   import { formatDateForApi, getCurrentMonthDate } from "@/utils/date"

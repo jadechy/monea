@@ -1,5 +1,5 @@
 import { CategorySchema, type CategoryType } from "@/types/category"
-import type { GroupType } from "@/types/group"
+import type { GroupType } from "@/types/groupType"
 import { fetchJson } from "@/utils/apiMethods"
 
 export const fetchCategory = (categoryId: CategoryType["id"]) =>

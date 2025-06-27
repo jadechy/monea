@@ -13,16 +13,12 @@ export const GroupSchema = z.object({
   color: ColorSchema,
 })
 
-export const NewGroupSchema = z.object({
-  name: GroupSchema.shape.name,
-  type: GroupSchema.shape.type,
-  color: GroupSchema.shape.color,
+export const NewGroupSchema = GroupSchema.pick({
+  name: true,
+  type: true,
+  color: true,
 })
 export type GroupType = z.infer<typeof GroupSchema>
 export type NewGroupType = z.infer<typeof NewGroupSchema>
 
-export type FindGroup = {
-  id: GroupType["id"]
-  name: GroupType["name"]
-  color: GroupType["color"]
-}
+export type FindGroup = Pick<GroupType, "id" | "name" | "color">

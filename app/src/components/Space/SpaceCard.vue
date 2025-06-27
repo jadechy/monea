@@ -16,7 +16,7 @@
 <script setup lang="ts">
   import { colors } from "@/data/categoryLabel"
   import type { ColorType } from "@/types/color"
-  import type { GroupType } from "@/types/group"
+  import type { GroupType } from "@/types/groupType"
   import { computed } from "vue"
   export type Color = "pink" | "green" | "yellow" | "blue" | "gray" | "orange"
 

@@ -4,7 +4,7 @@
   import { formatDateToDayMonth, getCurrentMonthDate, getCurrentMonthDays } from "@/utils/date"
   import { fetchCategoryByGroup } from "@/services/categoryService"
   import { getMonthlyExpensesByGroup } from "@/services/expenseService"
-  import type { GroupType } from "@/types/group"
+  import type { GroupType } from "@/types/groupType"
   import type { ErrorType } from "@/types/errors"
   import { useQuery } from "@tanstack/vue-query"
 

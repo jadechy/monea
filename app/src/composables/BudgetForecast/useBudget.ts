@@ -2,7 +2,7 @@ import {
   fetchBudgetRemainingInMonth,
   type BudgetRemainingByMonthType,
 } from "@/services/budgetService"
-import type { GroupType } from "@/types/group"
+import type { GroupType } from "@/types/groupType"
 import { computed } from "vue"
 import { useQuery } from "@tanstack/vue-query"
 
