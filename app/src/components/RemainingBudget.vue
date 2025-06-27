@@ -2,8 +2,7 @@
   import { getCurrentMonthString } from "@/utils/date"
   import { truncateToTenth } from "@/utils/number"
   import { fetchBudgetGroup, fetchBudgetGroupDateRemaining } from "@/services/budgetService"
-  import type { ErrorType } from "@/types/errors"
-  import { computed, ref } from "vue"
+  import { computed } from "vue"
   import { useQuery } from "@tanstack/vue-query"
 
   const props = withDefaults(
@@ -12,7 +11,6 @@
       label: "Budget restant",
     },
   )
-  const error = ref<ErrorType>(null)
   const budgetQuery = useQuery({
     queryKey: [
       "budget",

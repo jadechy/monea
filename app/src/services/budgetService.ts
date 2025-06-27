@@ -7,7 +7,7 @@ import {
   AmountValueSchema,
   BudgetByCategorySchema,
   type BudgetType,
-} from "@/types/budget.type"
+} from "@/types/budgetType"
 import { fetchJson } from "@/utils/apiMethods"
 
 export const fetchBudgetGroupDateRemaining = async (
@@ -20,22 +20,17 @@ export const fetchBudgetGroupDateRemaining = async (
   })
 }
 
-export const fetchBudgetGroup = async (
-  group_id: GroupType["id"],
-  month: BudgetType["monthStart"],
-) => {
-  return await fetchJson({
+export const fetchBudgetGroup = (group_id: GroupType["id"], month: BudgetType["monthStart"]) =>
+  fetchJson({
     url: `budget/${group_id}/${formatDateForApi(new Date(month))}`,
     schema: AmountSchema,
   })
-}
 
-export const fetchAllBudgetCategoriesByGroup = async (group_id: GroupType["id"], month: Date) => {
-  return await fetchJson({
+export const fetchAllBudgetCategoriesByGroup = (group_id: GroupType["id"], month: Date) =>
+  fetchJson({
     url: `budgets/${group_id}/${formatDateForApi(month)}/list`,
     schema: BudgetByCategorySchema.array(),
   })
-}
 
 export const BudgetRemainingValueSchema = z.object({
   remaining: AmountValueSchema,

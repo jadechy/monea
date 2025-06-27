@@ -4,16 +4,16 @@
   import { Button, Password } from "primevue"
   import { Form, type FormSubmitEvent } from "@primevue/forms"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
-  import { LoginRequestSchema } from "@/types/auth.type"
+  import { LoginRequestSchema } from "@/types/authType"
   import FormInput from "@/components/Input/FormInput.vue"
   import WrapperInput from "@/components/Input/WrapperInput.vue"
 
   const { loginMutation } = useAuthStore()
   const submitLogin = async (form: FormSubmitEvent) => {
     if (!form.valid) return
-
+    console.log(form)
     loginMutation.mutate({
-      username: form.states.username.value,
+      username: form.states.pseudonym.value,
       password: form.states.password.value,
     })
     router.push({ name: "spaces" })

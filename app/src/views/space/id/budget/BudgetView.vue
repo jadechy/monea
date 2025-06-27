@@ -5,33 +5,42 @@
   import { truncateToTenth } from "@/utils/number"
   import router from "@/router"
   import { getSpaceColor } from "@/utils/getColor"
-  import type { BudgetByCategoryType } from "@/types/budget.type"
-  import type { ErrorType } from "@/types/errors"
   import type { GroupType } from "@/types/group"
   import { Button } from "primevue"
-  import { computed, onMounted, ref } from "vue"
+  import { computed } from "vue"
   import { formatDateForApi, getCurrentMonthDate } from "@/utils/date"
   import { fetchAllBudgetCategoriesByGroup } from "@/services/budgetService"
   import { useGroups } from "@/composables/useGroups"
   import ChartLayout from "@/components/Budget/ChartLayout.vue"
+  import { useQuery } from "@tanstack/vue-query"
+
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
+
+  const budgetCategoriesQuery = useQuery({
+    queryKey: ["budgetCategories", space_id, getCurrentMonthDate()],
+    queryFn: () => {
+      return fetchAllBudgetCategoriesByGroup(space_id, getCurrentMonthDate())
+    },
+    enabled: !!space_id,
+  })
+
   const { groupById } = useGroups()
   const group = computed(() => groupById({ id: space_id }))
+  const budgetCategories = computed(() => budgetCategoriesQuery.data.value ?? [])
 
-  const budgetCategories = ref<BudgetByCategoryType[]>([])
-  const error = ref<ErrorType>(null)
+  // const budgetCategories = ref<BudgetByCategoryType[]>([])
 
-  onMounted(async () => {
-    const resultBudgetCategories = await fetchAllBudgetCategoriesByGroup(
-      space_id,
-      getCurrentMonthDate(),
-    )
-    if (resultBudgetCategories === null) {
-      error.value = "Erreur lors du chargement des utilisateurs"
-    } else {
-      budgetCategories.value = resultBudgetCategories
-    }
-  })
+  // onMounted(async () => {
+  //   const resultBudgetCategories = await fetchAllBudgetCategoriesByGroup(
+  //     space_id,
+  //     getCurrentMonthDate(),
+  //   )
+  //   if (resultBudgetCategories === null) {
+  //     error.value = "Erreur lors du chargement des utilisateurs"
+  //   } else {
+  //     budgetCategories.value = resultBudgetCategories
+  //   }
+  // })
 </script>
 
 <template>

@@ -4,7 +4,7 @@ import {
   RegisterResponseSchema,
   type LoginRequestType,
   type RegisterRequestType,
-} from "@/types/auth.type"
+} from "@/types/authType"
 import { fetchJson, postJson } from "@/utils/apiMethods"
 
 export const loginAuth = async ({ username, password }: LoginRequestType) => {

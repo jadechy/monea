@@ -1,8 +1,8 @@
-import { fetchJson, postJson } from "@/utils/apiClient"
 import { CategoryInOtherSchema } from "@/types/category"
 import { GroupSchema } from "@/types/group"
 import { MemberInGroupSchema } from "@/types/member"
 import { type UserType } from "@/types/user"
+import { fetchJson } from "@/utils/apiMethods"
 import { z } from "zod"
 
 export const FetchGroupByUserSchema = GroupSchema.extend({

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref } from "vue"
   import Chart from "primevue/chart"
-  import type { BudgetByCategoryType } from "@/types/budget.type"
+  import type { BudgetByCategoryType } from "@/types/budgetType"
   import tailwindcolors from "tailwindcss/colors"
   const getTailwindBgColor = (colorName: string) => {
     if (typeof window === "undefined") return "#000000"

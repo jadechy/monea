@@ -11,7 +11,7 @@
   import { computed, ref } from "vue"
   import { useGroups } from "@/composables/useGroups"
   import { Form, type FormSubmitEvent } from "@primevue/forms"
-  import { NewExpenseSchema } from "@/types/expense"
+  import { NewExpenseSchema } from "@/types/expenseType"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
 

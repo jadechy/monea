@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import SubHeader from "@/components/Header/SubHeader.vue"
-  import { computed, onMounted, ref } from "vue"
+  import { computed } from "vue"
   import ColoredLabelComponent from "@/components/CategoryLabel.vue"
   import { formatDateToDayMonth } from "@/utils/date"
   import BaseSection from "@/components/BaseSection.vue"
@@ -8,26 +8,26 @@
   import { Button, Chip } from "primevue"
   import router from "@/router"
   import { getSpaceColor } from "@/utils/getColor"
-  import type { ExpenseType } from "@/types/expense"
-  import type { ErrorType } from "@/types/errors"
-  import { fetchExpense } from "@/services/expenseService"
+  import type { ExpenseType } from "@/types/expenseType"
+  import { getExpenseById } from "@/services/expenseService"
   import placeholder from "@/assets/placeholder_people.jpg"
   import { useGroups } from "@/composables/useGroups"
   import type { GroupType } from "@/types/group"
+  import { useQuery } from "@tanstack/vue-query"
+
+  // Props
   const props = defineProps<{ id: ExpenseType["id"]; space_id: GroupType["id"] }>()
-  const groupsStore = useGroups()
-  const { groupById } = groupsStore
+
+  // Group
+  const { groupById } = useGroups()
   const group = computed(() => groupById({ id: props.space_id }))
 
-  const expense = ref<ExpenseType>()
-  const error = ref<ErrorType>(null)
-  onMounted(async () => {
-    const result = await fetchExpense(props.id)
-    if (result === null) {
-      error.value = "Erreur lors du chargement des utilisateurs"
-    } else {
-      expense.value = result
-    }
+  // Const
+
+  // Query
+  const { data: expense } = useQuery({
+    queryKey: ["expense-by-id", props.id],
+    queryFn: () => getExpenseById(props.id),
   })
 </script>
 

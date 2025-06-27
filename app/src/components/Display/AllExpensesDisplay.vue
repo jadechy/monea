@@ -9,7 +9,7 @@
   import { formatDateToDayMonth } from "@/utils/date"
   import { getSpaceColor } from "@/utils/getColor"
   import { Button } from "primevue"
-  import type { ExpenseDateType } from "@/types/expense"
+  import type { ExpenseDateType } from "@/types/expenseType"
   import ExpenseCardComponent from "@/components/ExpenseCardComponent.vue"
   import type { GroupType } from "@/types/group"
   interface Props {

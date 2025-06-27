@@ -1,80 +1,32 @@
-import { fetchJson } from "@/utils/apiClient"
 import { formatDateForApi } from "@/utils/date"
-import type { BudgetType } from "@/types/budget.type"
 import {
   ExpenseDateSchema,
   ExpenseSchema,
   FetchNewExpenseSchema,
   type ExpenseType,
-} from "@/types/expense"
+} from "@/types/expenseType"
 import type { GroupType } from "@/types/group"
+import { fetchJson } from "@/utils/apiMethods"
 
-export const fetchExpense = async (id: ExpenseType["id"]) => {
-  try {
-    return await fetchJson({
-      url: `expenses/${id}`,
-      schema: ExpenseSchema,
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch de l'utilisateur :", error)
-    return null
-  }
-}
-export const fetchAllExpenseByGroup = async (group_id: GroupType["id"]) => {
-  try {
-    return await fetchJson({
-      url: `expenses/groupe/${group_id}/list`,
-      schema: ExpenseDateSchema,
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch de l'utilisateur :", error)
-    return null
-  }
-}
-export const fetchAllExpenseByGroupAndMonth = async (group_id: GroupType["id"], month: Date) => {
-  try {
-    return await fetchJson({
-      url: `expenses/groupe/${group_id}/mois/${formatDateForApi(month)}/list`,
-      schema: ExpenseDateSchema,
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch de l'utilisateur :", error)
-    return null
-  }
-}
-export const fetchAllExpenseByCategory = async (group_id: GroupType["id"]) => {
-  try {
-    return await fetchJson({
-      url: `expenses/groupe/${group_id}/list`,
-      schema: ExpenseDateSchema,
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch de l'utilisateur :", error)
-    return null
-  }
-}
-export const fetchAllExpenseByCategoryAndMonth = async (
-  group_id: GroupType["id"],
-  month: BudgetType["monthStart"],
-) => {
-  try {
-    return await fetchJson({
-      url: `expenses/groupe/${group_id}/${month}/list`,
-      schema: ExpenseDateSchema,
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch de l'utilisateur :", error)
-    return null
-  }
-}
-export const fetchNewExpense = async (id: string) => {
-  try {
-    return await fetchJson({
-      url: `expenses/new/${id}`,
-      schema: FetchNewExpenseSchema,
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch de l'utilisateur :", error)
-    return null
-  }
-}
+export const getExpenseById = async (id: ExpenseType["id"]) =>
+  fetchJson({
+    url: `expenses/${id}`,
+    schema: ExpenseSchema,
+  })
+
+export const getAllExpensesByGroup = async (group_id: GroupType["id"]) =>
+  fetchJson({
+    url: `expenses/groupe/${group_id}/list`,
+    schema: ExpenseDateSchema,
+  })
+export const getMonthlyExpensesByGroup = async (group_id: GroupType["id"], month: Date) =>
+  fetchJson({
+    url: `expenses/groupe/${group_id}/mois/${formatDateForApi(month)}/list`,
+    schema: ExpenseDateSchema,
+  })
+
+export const getExpensesByGroupAndCategory = async (group_id: GroupType["id"]) =>
+  fetchJson({
+    url: `expenses/groupe/${group_id}/list`,
+    schema: ExpenseDateSchema,
+  })

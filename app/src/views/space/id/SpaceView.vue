@@ -1,26 +1,22 @@
 <script setup lang="ts">
   import AllExpensesLayout from "@/components/Display/AllExpensesDisplay.vue"
   import { useGroups } from "@/composables/useGroups"
-  import { fetchAllExpenseByGroup } from "@/services/expenseService"
-  import type { ErrorType } from "@/types/errors"
-  import type { ExpenseDateType } from "@/types/expense"
+  import { getAllExpensesByGroup } from "@/services/expenseService"
   import type { GroupType } from "@/types/group"
-  import { computed, onMounted, ref } from "vue"
+  import { useQuery } from "@tanstack/vue-query"
+  import { computed } from "vue"
+
+  // Props
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
 
-  const groupsStore = useGroups()
-  const { groupById } = groupsStore
+  // Group
+  const { groupById } = useGroups()
   const group = computed(() => groupById({ id: space_id }))
 
-  const expenses = ref<ExpenseDateType>()
-  const error = ref<ErrorType>(null)
-  onMounted(async () => {
-    const resultExpenses = await fetchAllExpenseByGroup(space_id)
-    if (resultExpenses === null) {
-      error.value = "Erreur lors du chargement des utilisateurs"
-    } else {
-      expenses.value = resultExpenses
-    }
+  // Query
+  const { data: expenses } = useQuery({
+    queryKey: ["expenses-by-group", space_id],
+    queryFn: () => getAllExpensesByGroup(space_id),
   })
 </script>
 

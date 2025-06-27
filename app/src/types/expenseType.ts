@@ -5,7 +5,6 @@ import { CategoryInOtherSchema, CategorySchema } from "./category"
 import { RecurringExpenseSchema } from "./recurring_expense"
 import { DateSchema } from "./date"
 
-// Schéma principal d'une dépense
 export const ExpenseSchema = z.object({
   id: z.number({
     required_error: "Identifiant requis",
@@ -37,7 +36,6 @@ export const ExpenseSchema = z.object({
     .optional(),
 })
 
-// Schéma pour les données retournées lors de la création d'une nouvelle dépense
 export const FetchNewExpenseSchema = GroupSchema.extend({
   categories: z.array(CategorySchema, {
     required_error: "Les catégories sont requises",
@@ -49,7 +47,6 @@ export const FetchNewExpenseSchema = GroupSchema.extend({
   }),
 })
 
-// Schéma d'une nouvelle dépense à soumettre
 export const NewExpenseSchema = z.object({
   category: CategoryInOtherSchema,
   title: ExpenseSchema.shape.title,
@@ -60,7 +57,6 @@ export const NewExpenseSchema = z.object({
   }),
 })
 
-// Schéma d'un enregistrement de dépenses par date
 export const ExpenseDateSchema = z.record(
   DateSchema,
   z.array(ExpenseSchema, {
@@ -68,7 +64,6 @@ export const ExpenseDateSchema = z.record(
   }),
 )
 
-// Types dérivés
 export type ExpenseType = z.infer<typeof ExpenseSchema>
 export type ExpenseDateType = z.infer<typeof ExpenseDateSchema>
 export type FetchNewExpenseType = z.infer<typeof FetchNewExpenseSchema>
