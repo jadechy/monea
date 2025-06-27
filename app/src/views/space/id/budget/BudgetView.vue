@@ -71,7 +71,7 @@
           )"
           :to="{
             name: 'category_budget_space',
-            params: { space_id: group?.id, category_id: budget.category.categoryId },
+            params: { space_id: group?.id, category_id: budget.category.id },
           }"
           class="flex justify-between rounded-full px-4 py-3"
           :key="i"

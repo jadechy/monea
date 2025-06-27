@@ -5,26 +5,24 @@
   import { fetchCategoryByGroup } from "@/services/categoryService"
   import { getMonthlyExpensesByGroup } from "@/services/expenseService"
   import type { GroupType } from "@/types/groupType"
-  import type { ErrorType } from "@/types/errors"
   import { useQuery } from "@tanstack/vue-query"
 
   // Props
-  const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
+  const { group_id } = defineProps<{ group_id: GroupType["id"] }>()
 
   // Const
-  const error = ref<ErrorType>(null)
   const days = getCurrentMonthDays()
   const labels = days.map((d) => formatDateToDayMonth(d))
 
   // Query
   const { data: expenses } = useQuery({
-    queryKey: ["expenses-monthly-group", space_id],
-    queryFn: () => getMonthlyExpensesByGroup(space_id, getCurrentMonthDate()),
+    queryKey: ["expenses-monthly-group", group_id],
+    queryFn: () => getMonthlyExpensesByGroup(group_id, getCurrentMonthDate()),
   })
 
   const { data: categories } = useQuery({
-    queryKey: ["categories-by-group", space_id],
-    queryFn: () => fetchCategoryByGroup(space_id),
+    queryKey: ["categories-by-group", group_id],
+    queryFn: () => fetchCategoryByGroup(group_id),
   })
 
   // Chart
@@ -74,7 +72,7 @@
     // Filtrer uniquement les catégories utilisées
     const filteredCategories = categories.value.filter((category) =>
       Object.values(expenses.value ?? {}).some((expenseArray) =>
-        expenseArray.some((e) => e.category.categoryId === category.id),
+        expenseArray.some((e) => e.category.id === category.id),
       ),
     )
 
@@ -92,7 +90,7 @@
       let totalForDay = 0
 
       dayExpenses.forEach((expense) => {
-        const catId = expense.category.categoryId
+        const catId = expense.category.id
         const amount = expense.amount
         const prev = index > 0 ? cumulativeByCategory[catId][index - 1] : 0
         cumulativeByCategory[catId][index] = prev + amount
@@ -100,7 +98,7 @@
       })
 
       filteredCategories.forEach((cat) => {
-        if (!dayExpenses.some((e) => e.category.categoryId === cat.id)) {
+        if (!dayExpenses.some((e) => e.category.id === cat.id)) {
           cumulativeByCategory[cat.id][index] =
             index > 0 ? cumulativeByCategory[cat.id][index - 1] : 0
         }

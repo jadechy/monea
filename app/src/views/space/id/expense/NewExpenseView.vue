@@ -3,11 +3,9 @@
   import { peoplesData } from "@/data/people"
   import { Button, DatePicker, InputNumber, InputText, Message, Select } from "primevue"
   import { getSpaceColor } from "@/utils/getColor"
-  import type { ErrorType } from "@/types/errors"
-  import type { CategoryType } from "@/types/category"
+  import type { CategoryType } from "@/types/categoryType"
   import type { UserType } from "@/types/user"
   import type { GroupType } from "@/types/groupType"
-  import { useAuthStore } from "@/stores/authStore"
   import { computed, ref } from "vue"
   import { useGroups } from "@/composables/useGroups"
   import { Form, type FormSubmitEvent } from "@primevue/forms"
@@ -31,9 +29,7 @@
 
   const isNew = true
 
-  const error = ref<ErrorType>(null)
-
-  function onFormSubmit(values: FormSubmitEvent) {
+  const onFormSubmit = (values: FormSubmitEvent) => {
     console.log("Form submitted with:", values)
     // Ici tu peux appeler ton API, store, etc.
   }

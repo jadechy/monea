@@ -1,4 +1,3 @@
-export type ErrorType = string | null
 export interface ApiError {
   message: string
   status?: number

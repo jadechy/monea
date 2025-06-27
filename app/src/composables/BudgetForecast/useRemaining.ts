@@ -1,5 +1,5 @@
 import type { FetchBudgetRemainingInMonthValueType } from "@/services/budgetService"
-import type { CategoryType } from "@/types/category"
+import type { CategoryType } from "@/types/categoryType"
 import type { ModelRef } from "vue"
 
 export const useRemaining = (selectedCategory: ModelRef<CategoryType | undefined>) => {

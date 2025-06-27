@@ -1,8 +1,7 @@
-import { getGroupByUser, type FetchGroupByUserType } from "@/services/groupService"
-import type { ErrorType } from "@/types/errors"
+import { getGroupByUser } from "@/services/groupService"
 import type { GroupType } from "@/types/groupType"
 import { defineStore } from "pinia"
-import { computed, ref } from "vue"
+import { computed } from "vue"
 import { useAuthStore } from "./authStore"
 import { useQuery } from "@tanstack/vue-query"
 

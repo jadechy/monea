@@ -43,14 +43,14 @@ export const LoginResponseSchema = z.object({
 export type LoginResponseType = z.infer<typeof LoginResponseSchema>
 
 // ** Me **
-export const MeSchema = z.object({
-  id: UserSchema.shape.id,
-  email: UserSchema.shape.email,
-  name: UserSchema.shape.name,
-  lastname: UserSchema.shape.lastname,
+export const MeSchema = UserSchema.pick({
+  id: true,
+  email: true,
+  name: true,
+  lastname: true,
   // birthday: UserSchema.shape.birthday,
-  username: UserSchema.shape.username,
-  picture: UserSchema.shape.picture,
-  roles: UserSchema.shape.role,
+  username: true,
+  picture: true,
+  roles: true,
 })
 export type MeType = z.infer<typeof MeSchema>

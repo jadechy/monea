@@ -14,6 +14,7 @@
   import { getMonthlyExpensesByGroup } from "@/services/expenseService"
   import { truncateToTenth } from "@/utils/number"
   import { useQuery } from "@tanstack/vue-query"
+  import Day from "./Day.vue"
 
   const { group } = defineProps<{ group: GroupType }>()
 
@@ -22,21 +23,19 @@
 
   const currentMonthFormatted = computed(() => formatDateForApi(currentMonth.value))
 
-  // Query pour les dépenses
+  // Query
   const { data: expenses, refetch: refetchExpenses } = useQuery({
     queryKey: computed(() => ["expenses", group.id, currentMonth.value]),
     queryFn: () => getMonthlyExpensesByGroup(group.id, currentMonth.value),
     enabled: computed(() => !!group.id && !!currentMonth.value),
   })
 
-  // Query pour le budget
   const { data: monthData, refetch: refetchBudget } = useQuery({
     queryKey: computed(() => ["budgetByDay", group.id, currentMonthFormatted.value]),
     queryFn: () => fetchBudgetRemainingInDay(group.id, currentMonthFormatted.value),
     enabled: computed(() => !!group.id && !!currentMonth.value),
   })
 
-  // Mettre à jour les données quand currentMonth change
   watch(currentMonth, () => {
     refetchExpenses()
     refetchBudget()

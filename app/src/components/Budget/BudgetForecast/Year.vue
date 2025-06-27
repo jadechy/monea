@@ -3,7 +3,7 @@
   import { useBudget } from "@/composables/BudgetForecast/useBudget"
   import { useRemaining } from "@/composables/BudgetForecast/useRemaining"
   import { fetchCategoryByGroup } from "@/services/categoryService"
-  import type { CategoryType } from "@/types/category"
+  import type { CategoryType } from "@/types/categoryType"
   import type { GroupType } from "@/types/groupType"
   import { useQuery } from "@tanstack/vue-query"
   import { DatePicker, Select } from "primevue"
@@ -18,11 +18,12 @@
 
   const { yearData, refetch } = useBudget(space_id, year.value.getFullYear())
   const { getRemaining, getRemainingClass } = useRemaining(selectedCategory)
-
+  console.log(space_id)
   // Queries
   const { data: categories } = useQuery({
     queryKey: ["categories-by-group", space_id],
     queryFn: () => fetchCategoryByGroup(space_id),
+    enabled: !!space_id,
   })
 
   watch(year, (newYear) => {

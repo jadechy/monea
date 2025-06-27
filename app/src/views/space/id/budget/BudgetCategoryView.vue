@@ -7,7 +7,7 @@
   import { fetchCategory } from "@/services/categoryService"
   import { getExpensesByGroupAndCategory } from "@/services/expenseService"
 
-  import type { CategoryType } from "@/types/category"
+  import type { CategoryType } from "@/types/categoryType"
   import type { GroupType } from "@/types/groupType"
 
   // Props

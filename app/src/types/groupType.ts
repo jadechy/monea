@@ -1,7 +1,6 @@
 import { z } from "zod"
 import { UserSchema } from "./user"
 import { ColorSchema } from "./color"
-import { DateSchema } from "./date"
 
 export const GroupSchema = z.object({
   id: z.number(),
