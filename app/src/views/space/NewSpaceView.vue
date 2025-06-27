@@ -7,7 +7,7 @@
   import BaseSection from "@/components/BaseSection.vue"
   import { useForm } from "@primevue/forms/useform"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
-  import { NewGroupSchema, type NewGroupType } from "@/types/group"
+  import { NewGroupSchema, type NewGroupType } from "@/types/groupType"
   import { defaultCategories } from "@/data/defaultCategories"
   import SubHeader from "@/components/Header/SubHeader.vue"
   const selectedIndex = ref<number | null>(null)

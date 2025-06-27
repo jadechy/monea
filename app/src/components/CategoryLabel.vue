@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import type { CategoryInOtherType } from "@/types/category"
+  import type { CategoryType } from "@/types/categoryType"
 
   interface Props {
-    category?: CategoryInOtherType
+    category?: CategoryType
     edit?: boolean
     add?: boolean
   }
@@ -11,7 +11,7 @@
     category: () => ({
       label: "default",
       color: "gray",
-      categoryId: 0,
+      id: 0,
     }),
     edit: false,
     add: false,

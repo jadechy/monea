@@ -145,13 +145,13 @@ class ExpenseDTO
         $this->spentAt = $expense->getSpentAt()->format('Y-m-d');
 
         $this->category = [
-            'categoryId' => $expense->getCategory()->getId(),
+            'id' => $expense->getCategory()->getId(),
             'label' => $expense->getCategory()->getLabel(),
             'color' => $expense->getCategory()->getColor()
         ];
         $this->groupe = $expense->getGroupe()?->getId();
         $this->creator = [
-            'userId' => $expense->getCreator()->getId(),
+            'id' => $expense->getCreator()->getId(),
             'username' => $expense->getCreator()->getUsername(),
             'picture' => $expense->getCreator()->getPicture()
         ];
@@ -159,7 +159,7 @@ class ExpenseDTO
 
         foreach ($expense->getParticipants() as $participant) {
             $this->participants[] = [
-                'userId' => $participant?->getId(),
+                'id' => $participant?->getId(),
                 'username' => $participant?->getUsername(),
                 'picture' => $participant?->getPicture()
             ];

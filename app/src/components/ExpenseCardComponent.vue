@@ -23,7 +23,7 @@
   import placeholder from "@/assets/placeholder_people.jpg"
   import ColoredLabelComponent from "./CategoryLabel.vue"
   import { Chip } from "primevue"
-  import type { ExpenseType } from "@/types/expense"
+  import type { ExpenseType } from "@/types/expenseType"
   export interface ExpenseCardComponentProps {
     expense: Pick<
       ExpenseType,

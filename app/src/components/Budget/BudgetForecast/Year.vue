@@ -3,33 +3,32 @@
   import { useBudget } from "@/composables/BudgetForecast/useBudget"
   import { useRemaining } from "@/composables/BudgetForecast/useRemaining"
   import { fetchCategoryByGroup } from "@/services/categoryService"
-  import type { CategoryType } from "@/types/category"
-  import type { ErrorType } from "@/types/error"
-  import type { GroupType } from "@/types/group"
+  import type { CategoryType } from "@/types/categoryType"
+  import type { GroupType } from "@/types/groupType"
+  import { useQuery } from "@tanstack/vue-query"
   import { DatePicker, Select } from "primevue"
   import { onMounted, ref } from "vue"
   import { watch } from "vue"
-  const categories = ref<CategoryType[]>([])
+  // Props
+  const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
+
+  // Const
   const selectedCategory = defineModel<CategoryType>("selectedCategory")
   const year = ref<Date>(new Date())
-  const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
-  const { yearData, error: errorBudget, loadBudgetForYear } = useBudget(space_id)
+
+  const { yearData, refetch } = useBudget(space_id, year.value.getFullYear())
   const { getRemaining, getRemainingClass } = useRemaining(selectedCategory)
-
-  const error = ref<ErrorType>(null)
-
-  onMounted(async () => {
-    const resultCategories = await fetchCategoryByGroup(space_id)
-    if (resultCategories === null) {
-      return (error.value = "Erreur lors du chargement des utilisateurs")
-    }
-    loadBudgetForYear(year.value.getFullYear())
-    categories.value = resultCategories
+  console.log(space_id)
+  // Queries
+  const { data: categories } = useQuery({
+    queryKey: ["categories-by-group", space_id],
+    queryFn: () => fetchCategoryByGroup(space_id),
+    enabled: !!space_id,
   })
 
-  watch(year, async (newYear) => {
+  watch(year, (newYear) => {
     if (!newYear) return
-    loadBudgetForYear(newYear.getFullYear())
+    refetch()
   })
 </script>
 <template>

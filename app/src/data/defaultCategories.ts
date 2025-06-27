@@ -1,4 +1,4 @@
-import type { NewCategoryType } from "@/types/category"
+import type { NewCategoryType } from "@/types/categoryType"
 
 export const defaultCategories: NewCategoryType[] = [
   {

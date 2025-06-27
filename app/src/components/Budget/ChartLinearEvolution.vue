@@ -1,22 +1,31 @@
 <script setup lang="ts">
-  import { onMounted, ref, watchEffect } from "vue"
+  import { ref, watchEffect } from "vue"
   import Chart from "primevue/chart"
   import { formatDateToDayMonth, getCurrentMonthDate, getCurrentMonthDays } from "@/utils/date"
   import { fetchCategoryByGroup } from "@/services/categoryService"
-  import { fetchAllExpenseByGroup, fetchAllExpenseByGroupAndMonth } from "@/services/expenseService"
-  import type { CategoryType } from "@/types/category"
-  import type { ExpenseDateType } from "@/types/expense"
-  import type { GroupType } from "@/types/group"
-  import type { ErrorType } from "@/types/error"
+  import { getMonthlyExpensesByGroup } from "@/services/expenseService"
+  import type { GroupType } from "@/types/groupType"
+  import { useQuery } from "@tanstack/vue-query"
 
-  const props = defineProps<{ group_id: GroupType["id"] }>()
-  const expenses = ref<ExpenseDateType>({})
-  const categories = ref<CategoryType[]>([])
-  const error = ref<ErrorType>(null)
+  // Props
+  const { group_id } = defineProps<{ group_id: GroupType["id"] }>()
 
+  // Const
   const days = getCurrentMonthDays()
   const labels = days.map((d) => formatDateToDayMonth(d))
 
+  // Query
+  const { data: expenses } = useQuery({
+    queryKey: ["expenses-monthly-group", group_id],
+    queryFn: () => getMonthlyExpensesByGroup(group_id, getCurrentMonthDate()),
+  })
+
+  const { data: categories } = useQuery({
+    queryKey: ["categories-by-group", group_id],
+    queryFn: () => fetchCategoryByGroup(group_id),
+  })
+
+  // Chart
   const chartData = ref<{ labels: string[]; datasets: any[] }>({
     labels,
     datasets: [],
@@ -56,53 +65,40 @@
     },
   })
 
-  onMounted(async () => {
-    const resultExpenses = await fetchAllExpenseByGroupAndMonth(
-      props.group_id,
-      getCurrentMonthDate(),
-    )
-    const resultCategories = await fetchCategoryByGroup(props.group_id)
-
-    if (!resultExpenses || !resultCategories) {
-      error.value = "Erreur lors du chargement des données"
-    } else {
-      expenses.value = resultExpenses
-      categories.value = resultCategories
-    }
-  })
-
+  // WatchEffect
   watchEffect(() => {
-    if (!categories.value.length || !Object.keys(expenses.value).length) return
-    categories.value = categories.value.filter((category) =>
-      Object.values(expenses.value).some((expenseArray) =>
-        expenseArray.some((expence) => expence.category === category.id),
+    if (!categories.value || !expenses.value) return
+
+    // Filtrer uniquement les catégories utilisées
+    const filteredCategories = categories.value.filter((category) =>
+      Object.values(expenses.value ?? {}).some((expenseArray) =>
+        expenseArray.some((e) => e.category.id === category.id),
       ),
     )
+
     const cumulativeByCategory: Record<number, number[]> = {}
     const totalData: number[] = new Array(labels.length).fill(0)
 
-    categories.value.forEach((cat) => {
+    filteredCategories.forEach((cat) => {
       cumulativeByCategory[cat.id] = new Array(labels.length).fill(0)
     })
-    labels.forEach((label, index) => {
-      const [day, month] = label.split("/")
-      const year = "2025"
-      const dateKey = `${year}-${month}-${day}`
-      const dayExpenses = expenses.value[dateKey] || []
+
+    days.forEach((date, index) => {
+      const dateKey = date.toISOString().slice(0, 10)
+      const dayExpenses = expenses.value?.[dateKey] ?? []
 
       let totalForDay = 0
 
       dayExpenses.forEach((expense) => {
-        const catId = expense.category
+        const catId = expense.category.id
         const amount = expense.amount
         const prev = index > 0 ? cumulativeByCategory[catId][index - 1] : 0
         cumulativeByCategory[catId][index] = prev + amount
-
         totalForDay += amount
       })
 
-      categories.value.forEach((cat) => {
-        if (!dayExpenses.some((e) => e.category === cat.id)) {
+      filteredCategories.forEach((cat) => {
+        if (!dayExpenses.some((e) => e.category.id === cat.id)) {
           cumulativeByCategory[cat.id][index] =
             index > 0 ? cumulativeByCategory[cat.id][index - 1] : 0
         }
@@ -121,7 +117,7 @@
         tension: 0.05,
         fill: false,
       },
-      ...categories.value.map((cat) => ({
+      ...filteredCategories.map((cat) => ({
         label: cat.label ?? `Catégorie ${cat.id}`,
         data: cumulativeByCategory[cat.id],
         borderColor: cat.color,

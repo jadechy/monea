@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref } from "vue"
   import Chart from "primevue/chart"
-  import type { BudgetByCategoryType } from "@/types/budget"
+  import type { BudgetByCategoryType } from "@/types/budgetType"
   import tailwindcolors from "tailwindcss/colors"
   const getTailwindBgColor = (colorName: string) => {
     if (typeof window === "undefined") return "#000000"
@@ -19,7 +19,7 @@
   const props = defineProps<{ budgets: BudgetByCategoryType[] }>()
   const groupedByCategory = props.budgets.reduce(
     (acc, budget) => {
-      const id = budget.category.categoryId
+      const id = budget.category.id
       if (!acc[id]) {
         acc[id] = {
           label: budget.category.label || "Sans nom",

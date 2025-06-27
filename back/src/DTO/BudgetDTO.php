@@ -72,16 +72,16 @@ class BudgetDTO
         $category = $budget->getCategory();
 
         $this->id = $budget->getId();
-        if($amountCalc){
+        if ($amountCalc) {
             $this->amount = $amountCalc;
-        }else{
+        } else {
             $this->amount = $budget->getAmount();
         }
-        
+
         $this->monthStart = $budget->getMonthStart()->format('Y-m-d');
 
         $this->category = [
-            'categoryId' => $category->getId(),
+            'id' => $category->getId(),
             'label' => $category->getLabel(),
             'color' => $category->getColor()
         ];

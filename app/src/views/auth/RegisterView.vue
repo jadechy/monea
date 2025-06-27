@@ -3,10 +3,18 @@
   import { Button, DatePicker, Divider, Message, Password } from "primevue"
   import { Form, type FormSubmitEvent } from "@primevue/forms"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
-  import { RegisterRequestSchema, type RegisterRequestType } from "@/types/auth"
+  import { RegisterRequestSchema, type RegisterRequestType } from "@/types/authType"
   import FormInput from "@/components/Input/FormInput.vue"
   import WrapperInput from "@/components/Input/WrapperInput.vue"
   import { registerAuth } from "@/services/authService"
+  import { useMutation } from "@tanstack/vue-query"
+
+  const registerMutation = useMutation({
+    mutationFn: (data: RegisterRequestType) => registerAuth(data),
+    onSuccess: () => {
+      router.push({ name: "confirm" })
+    },
+  })
 
   const submitRegister = async (form: FormSubmitEvent) => {
     if (!form.valid) return
@@ -19,8 +27,7 @@
 
     if (data.password !== data.confirmPassword) return
 
-    await registerAuth(data)
-    router.push({ name: "confirm" })
+    registerMutation.mutate(data)
   }
 </script>
 

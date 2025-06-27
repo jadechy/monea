@@ -1,7 +1,6 @@
 import { z } from "zod"
 import { ColorSchema } from "./color"
 
-// Schéma d'une catégorie
 export const CategorySchema = z.object({
   id: z.number({
     required_error: "L'identifiant est requis",
@@ -17,20 +16,10 @@ export const CategorySchema = z.object({
   color: ColorSchema,
 })
 
-// Schéma pour la création d'une nouvelle catégorie
 export const NewCategorySchema = z.object({
   label: CategorySchema.shape.label,
   color: CategorySchema.shape.color,
 })
 
-// Schéma d'une catégorie liée à un groupe
-export const CategoryInOtherSchema = z.object({
-  categoryId: CategorySchema.shape.id,
-  label: CategorySchema.shape.label,
-  color: CategorySchema.shape.color,
-})
-
-// Types dérivés
 export type CategoryType = z.infer<typeof CategorySchema>
 export type NewCategoryType = z.infer<typeof NewCategorySchema>
-export type CategoryInOtherType = z.infer<typeof CategoryInOtherSchema>

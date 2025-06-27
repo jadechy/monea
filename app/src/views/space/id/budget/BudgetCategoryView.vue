@@ -1,35 +1,34 @@
 <script setup lang="ts">
-  import { useGroups } from "@/composables/useGroups"
-  import AllPaiementsLayout from "@/components/Display/AllExpensesDisplay.vue"
-  import { fetchCategory } from "@/services/categoryService"
-  import { fetchAllExpenseByCategory } from "@/services/expenseService"
-  import type { CategoryType } from "@/types/category"
-  import type { ErrorType } from "@/types/error"
-  import type { ExpenseDateType } from "@/types/expense"
-  import type { GroupType } from "@/types/group"
-  import { computed, onMounted, ref } from "vue"
+  import { useQuery } from "@tanstack/vue-query"
+  import { computed } from "vue"
 
-  const { space_id, category_id } = defineProps<{
+  import AllPaiementsLayout from "@/components/Display/AllExpensesDisplay.vue"
+  import { useGroups } from "@/composables/useGroups"
+  import { fetchCategory } from "@/services/categoryService"
+  import { getExpensesByGroupAndCategory } from "@/services/expenseService"
+
+  import type { CategoryType } from "@/types/categoryType"
+  import type { GroupType } from "@/types/groupType"
+
+  // Props
+  const props = defineProps<{
     space_id: GroupType["id"]
     category_id: CategoryType["id"]
   }>()
+
+  // Group
   const { groupById } = useGroups()
-  const group = computed(() => groupById({ id: space_id }))
+  const group = computed(() => groupById({ id: props.space_id }))
 
-  const category = ref<CategoryType>()
-  const error = ref<ErrorType>(null)
-  const expenses = ref<ExpenseDateType>()
+  // Queries
+  const { data: category } = useQuery({
+    queryKey: ["category", props.category_id],
+    queryFn: () => fetchCategory(props.category_id),
+  })
 
-  onMounted(async () => {
-    const resultCategory = await fetchCategory(category_id)
-    const resultExpenses = await fetchAllExpenseByCategory(category_id)
-
-    if (resultCategory === null || resultExpenses === null) {
-      error.value = "Erreur lors du chargement des utilisateurs"
-    } else {
-      category.value = resultCategory
-      expenses.value = resultExpenses
-    }
+  const { data: expenses } = useQuery({
+    queryKey: ["expenses-by-group-category", props.category_id],
+    queryFn: () => getExpensesByGroupAndCategory(props.category_id),
   })
 </script>
 

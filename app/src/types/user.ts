@@ -47,12 +47,11 @@ export const UserSchema = z.object({
       message: "Vous devez avoir au moins 18 ans",
     }),
 
-  password: z
-    .string({
-      message: "Le mot de passe est requis",
-    }),
+  password: z.string({
+    message: "Le mot de passe est requis",
+  }),
 
-  role: z
+  roles: z
     .array(z.string(), {
       required_error: "Le rôle est requis",
       invalid_type_error: "Le rôle doit être une liste de chaînes",
@@ -65,15 +64,15 @@ export const UserSchema = z.object({
     })
     .datetime({ message: "La date de création doit être une date ISO valide" }),
 
-  picture: z.string().nullable(),
+  picture: z.string().optional(),
 
   resetToken: z.string().nullable(),
 })
 
-export const UserInOtherSchema = z.object({
-  userId: UserSchema.shape.id,
-  username: UserSchema.shape.username,
-  picture: UserSchema.shape.picture,
+export const UserInOtherSchema = UserSchema.pick({
+  id: true,
+  username: true,
+  picture: true,
 })
 
 export type UserInOtherType = z.infer<typeof UserInOtherSchema>

@@ -86,7 +86,7 @@ class GroupeDTO
 
         foreach ($groupe->getCategories() as $category) {
             $this->categories[] = [
-                'categoryId' => $category?->getId(),
+                'id' => $category?->getId(),
                 'label' => $category?->getLabel(),
                 'color' => $category?->getColor(),
             ];

@@ -7,50 +7,41 @@
     formatDateToDayMonth,
     getCurrentMonthDate,
   } from "@/utils/date"
-  import type { ErrorType } from "@/types/error"
-  import type { ExpenseDateType } from "@/types/expense"
-  import type { GroupType } from "@/types/group"
+  import type { GroupType } from "@/types/groupType"
   import { DatePicker } from "primevue"
-  import { onMounted, ref, watch } from "vue"
-  import {
-    fetchBudgetRemainingInDay,
-    type FetchBudgetRemainingInMonthType,
-  } from "@/services/budgetService"
-  import { fetchAllExpenseByGroupAndMonth } from "@/services/expenseService"
+  import { ref, computed, watch } from "vue"
+  import { fetchBudgetRemainingInDay } from "@/services/budgetService"
+  import { getMonthlyExpensesByGroup } from "@/services/expenseService"
   import { truncateToTenth } from "@/utils/number"
+  import { useQuery } from "@tanstack/vue-query"
+  import Day from "./Day.vue"
 
-  const error = ref<ErrorType>(null)
-
-  const currentDate = ref<Date | null>(null)
-
-  const currentMonth = ref<Date>(new Date())
-  const expenses = ref<ExpenseDateType>()
-  const monthData = ref<FetchBudgetRemainingInMonthType>({})
   const { group } = defineProps<{ group: GroupType }>()
 
-  onMounted(async () => {
-    const resultExpenses = await fetchAllExpenseByGroupAndMonth(group.id, getCurrentMonthDate())
-    const resultBudgetInDay = await fetchBudgetRemainingInDay(
-      group.id,
-      formatDateForApi(getCurrentMonthDate()),
-    )
-    if (resultBudgetInDay === null || resultExpenses === null) {
-      return (error.value = "Erreur lors du chargement des utilisateurs")
-    }
-    monthData.value = resultBudgetInDay
-    expenses.value = resultExpenses
+  const currentDate = ref<Date | null>(null)
+  const currentMonth = ref<Date>(getCurrentMonthDate())
+
+  const currentMonthFormatted = computed(() => formatDateForApi(currentMonth.value))
+
+  // Query
+  const { data: expenses, refetch: refetchExpenses } = useQuery({
+    queryKey: computed(() => ["expenses", group.id, currentMonth.value]),
+    queryFn: () => getMonthlyExpensesByGroup(group.id, currentMonth.value),
+    enabled: computed(() => !!group.id && !!currentMonth.value),
   })
-  watch(currentMonth, async (newMonth) => {
-    if (!newMonth) return
-    const resultExpenses = await fetchAllExpenseByGroupAndMonth(group.id, newMonth)
-    const resultBudgetInDay = await fetchBudgetRemainingInDay(group.id, formatDateForApi(newMonth))
-    if (resultBudgetInDay === null || resultExpenses === null) {
-      return (error.value = "Erreur lors du chargement des utilisateurs")
-    }
-    monthData.value = resultBudgetInDay
-    expenses.value = resultExpenses
+
+  const { data: monthData, refetch: refetchBudget } = useQuery({
+    queryKey: computed(() => ["budgetByDay", group.id, currentMonthFormatted.value]),
+    queryFn: () => fetchBudgetRemainingInDay(group.id, currentMonthFormatted.value),
+    enabled: computed(() => !!group.id && !!currentMonth.value),
+  })
+
+  watch(currentMonth, () => {
+    refetchExpenses()
+    refetchBudget()
   })
 </script>
+
 <template>
   <BaseSection label="Les dépenses passés et futurs" v-if="group">
     <div class="flex flex-col gap-10">
@@ -82,7 +73,7 @@
       <div class="flex flex-col gap-2 sm:flex-row justify-between items-center" v-if="currentDate">
         <div class="item block lg:flex w-fit lg:w-1/4 rounded-lg">
           <p>Budget restant à date</p>
-          <p class="font-bold">
+          <p class="font-bold" v-if="monthData">
             {{
               monthData[formatDateForApi(currentDate)]
                 ? truncateToTenth(monthData[formatDateForApi(currentDate)].remaining)
