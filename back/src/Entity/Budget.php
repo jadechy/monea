@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\BudgetRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource]
 #[ORM\Entity(repositoryClass: BudgetRepository::class)]
@@ -17,13 +18,24 @@ class Budget
     private int $id;
 
     #[ORM\Column(name: 'BGT_AMOUNT')]
+    #[Assert\NotNull(message: "Le montant ne peut pas être nul.")]
+    #[Assert\Positive(message: "Le montant doit être strictement positif.")]
+    #[Assert\Type(type: 'float', message: "Le montant doit être un nombre décimal.")]
+    #[Assert\Range(
+        min: 0.01,
+        max: 10000,
+        notInRangeMessage: "Le montant doit être compris entre {{ min }} et {{ max }}."
+    )]
     private ?float $amount = null;
 
     #[ORM\Column(name: 'BGT_MONTH_START')]
+    #[Assert\NotNull(message: "La date de début de mois est obligatoire.")]
+    #[Assert\Type(\DateTimeImmutable::class)]
     private \DateTimeImmutable $monthStart;
 
     #[ORM\ManyToOne(inversedBy: 'budgets')]
     #[ORM\JoinColumn(name: 'CAT_ID', referencedColumnName: 'CAT_ID', nullable: false)]
+    #[Assert\NotNull(message: "La catégorie est obligatoire.")]
     private Category $category;
 
     public function getId(): int

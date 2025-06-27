@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Enum\Color;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource]
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
@@ -19,10 +21,19 @@ class Category
     private int $id;
 
     #[ORM\Column(length: 50, name: 'CAT_LABEL')]
+    #[Assert\NotBlank(message: "Le libellé est obligatoire.")]
+    #[Assert\Length(
+        min: 3,
+        max: 50,
+        minMessage: "Le libellé doit faire au moins {{ limit }} caractères.",
+        maxMessage: "Le libellé ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $label = null;
 
-    #[ORM\Column(length: 8, name: 'CAT_COLOR')]
-    private ?string $color = null;
+    #[ORM\Column(length: 8, name: 'CAT_COLOR', enumType: Color::class, type: "string")]
+    #[Assert\NotNull(message: "La couleur est obligatoire.")]
+    #[Assert\Choice(callback: [Color::class, 'cases'], message: "La couleur choisie n'est pas valide.")]
+    private ?Color $color = null;
 
     /**
      * @var Collection<int, Expense>
@@ -32,6 +43,7 @@ class Category
 
     #[ORM\ManyToOne(inversedBy: 'categories')]
     #[ORM\JoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID')]
+    #[Assert\NotNull(message: "Le groupe est obligatoire.")]
     private Groupe $groupe;
 
     /**
@@ -63,12 +75,12 @@ class Category
         return $this;
     }
 
-    public function getColor(): ?string
+    public function getColor(): ?Color
     {
         return $this->color;
     }
 
-    public function setColor(string $color): static
+    public function setColor(Color $color): static
     {
         $this->color = $color;
 

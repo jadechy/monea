@@ -6,7 +6,7 @@ export const GroupSchema = z.object({
   id: z.number(),
   name: z.string().max(255),
   createdAt: z.string(),
-  type: z.string().max(255),
+  type: z.enum(["personnal", "occasional", "daily"]),
   creator: UserSchema.shape.id,
   picture: z.string().max(255).nullable(),
   color: ColorSchema,

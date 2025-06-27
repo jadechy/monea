@@ -7,6 +7,7 @@ use App\Repository\ExpenseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource]
 #[ORM\Entity(repositoryClass: ExpenseRepository::class)]
@@ -19,24 +20,42 @@ class Expense
     private int $id;
 
     #[ORM\Column(name: 'EXP_AMOUNT')]
+    #[Assert\NotNull(message: "Le montant est obligatoire.")]
+    #[Assert\Positive(message: "Le montant doit être strictement positif.")]
+    #[Assert\Type(type: 'float', message: "Le montant doit être un nombre décimal.")]
+    #[Assert\Range(
+        min: 0.01,
+        max: 10000,
+        notInRangeMessage: "Le montant doit être compris entre {{ min }} et {{ max }}."
+    )]
     private ?float $amount = null;
 
-    #[ORM\Column(length: 255, name: 'EXP_TITLE')]
+    #[ORM\Column(length: 150, name: 'EXP_TITLE')]
+    #[Assert\NotBlank(message: "Le titre est obligatoire.")]
+    #[Assert\Length(
+        max: 150,
+        maxMessage: "Le titre ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $title = null;
 
     #[ORM\Column(name: 'EXP_CREATED_AT')]
+    #[Assert\NotNull(message: "La date de création est obligatoire.")]
+    #[Assert\Type(\DateTimeImmutable::class)]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'expenses')]
+    #[Assert\NotNull(message: "Le groupe est obligatoire.")]
     #[ORM\JoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID', nullable: false)]
     private Groupe $groupe;
 
     #[ORM\ManyToOne(inversedBy: 'expenses')]
     #[ORM\JoinColumn(name: 'CAT_ID', referencedColumnName: 'CAT_ID', nullable: false)]
+    #[Assert\NotNull(message: "La catégorie est obligatoire.")]
     private ?Category $category = null;
 
     #[ORM\ManyToOne(inversedBy: 'expenses')]
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
+    #[Assert\NotNull(message: "Le créateur est obligatoire.")]
     private User $creator;
 
     /**
@@ -50,6 +69,8 @@ class Expense
     private ?RecurringExpense $recurringExpense = null;
 
     #[ORM\Column(name: 'EXP_SPENT_AT')]
+    #[Assert\NotNull(message: "La date de dépense est obligatoire.")]
+    #[Assert\Type(\DateTimeImmutable::class)]
     private ?\DateTimeImmutable $spentAt = null;
 
     public function __construct()
