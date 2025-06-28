@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Table(name: 'MON_MEMBER')]
 class Member
 {
-    #[ORM\Column(length: 15, name: 'MBR_ROLE', enumType: MemberRoleEnum::class)]
+    #[ORM\Column(length: 20, name: 'MBR_ROLE', enumType: MemberRoleEnum::class)]
     #[Groups(['groupe:read', 'member:read', 'user:read'])]
     private MemberRoleEnum $role = MemberRoleEnum::MEMBER;
 
