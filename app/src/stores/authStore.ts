@@ -98,8 +98,8 @@ export const useAuthStore = defineStore("auth", () => {
       }
 
       saveToStorage()
-      const store = useGroupsStore()
-      await store.refetch()
+      const groupStore = useGroupsStore()
+      await groupStore.refetch()
     },
     onSettled: () => {
       isLoading.value = false

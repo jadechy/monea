@@ -8,8 +8,8 @@
   import { Form, type FormSubmitEvent } from "@primevue/forms"
   import { NewExpenseSchema, type ExpenseType, type NewExpenseType } from "@/types/expenseType"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
-  import WrapperInput from "@/components/Input/WrapperInput.vue"
-  import FormInput from "@/components/Input/FormInput.vue"
+  import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
+  import FormInput from "@/components/InputComponent/FormInput.vue"
   import { useAuthStore } from "@/stores/authStore"
   import { toLocalDateWithoutTimezoneShift } from "@/utils/date"
   import { useExpenseMutation } from "@/composables/useExpenseMutation"
@@ -109,7 +109,6 @@
         <DatePicker name="spentAt" showIcon iconDisplay="input" />
       </WrapperInput>
     </div>
-    <!-- Bouton -->
 
     <div class="flex flex-col gap-3 w-64" v-if="expense">
       <Button :class="[getSpaceColor({ color: group?.color })]" type="submit">

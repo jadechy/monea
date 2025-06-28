@@ -1,6 +1,7 @@
 import { z } from "zod"
 import { UserSchema } from "./user"
 import { ColorSchema } from "./color"
+import { NewCategorySchema } from "./categoryType"
 
 export const GroupSchema = z.object({
   id: z.number(),
@@ -16,7 +17,7 @@ export const NewGroupSchema = GroupSchema.pick({
   name: true,
   type: true,
   color: true,
-})
+}).extend({ categories: NewCategorySchema.array() })
 export type GroupType = z.infer<typeof GroupSchema>
 export type NewGroupType = z.infer<typeof NewGroupSchema>
 

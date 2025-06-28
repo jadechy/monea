@@ -1,8 +1,8 @@
 import { CategorySchema } from "@/types/categoryType"
-import { GroupSchema } from "@/types/groupType"
+import { GroupSchema, type NewGroupType } from "@/types/groupType"
 import { MemberInGroupSchema } from "@/types/memberType"
 import { type UserType } from "@/types/user"
-import { fetchJson } from "@/utils/apiMethods"
+import { fetchJson, postJson } from "@/utils/apiMethods"
 import { z } from "zod"
 
 export const FetchGroupByUserSchema = GroupSchema.extend({
@@ -15,4 +15,11 @@ export const getGroupByUser = (userId: UserType["id"]) =>
   fetchJson({
     url: `groupes/${userId}/list`,
     schema: FetchGroupByUserSchema.array(),
+  })
+
+export const postGroup = (group: NewGroupType) =>
+  postJson({
+    url: "groups",
+    body: group,
+    schema: z.object({ message: z.string() }),
   })
