@@ -7,7 +7,7 @@
   import type { GroupType } from "@/types/groupType"
   import { useQuery } from "@tanstack/vue-query"
   import { DatePicker, Select } from "primevue"
-  import { onMounted, ref } from "vue"
+  import { ref } from "vue"
   import { watch } from "vue"
   // Props
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()

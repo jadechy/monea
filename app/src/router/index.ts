@@ -4,7 +4,7 @@ import spaceRouter from "./spaceRouter"
 import { useAuthStore } from "@/stores/authStore"
 import authRouter from "./authRouter"
 import HomeView from "@/views/HomeView.vue"
-import NotFound from "@/views/NotFoundView.vue"
+import NotFoundView from "@/views/NotFoundView.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,7 +23,7 @@ const router = createRouter({
     {
       path: "/:pathMatch(.*)*",
       name: "NotFound",
-      component: NotFound,
+      component: NotFoundView,
     },
     ...authRouter,
     ...spaceRouter,
@@ -32,7 +32,9 @@ const router = createRouter({
 router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next("/login")
+    next({ name: "login" })
+  } else if ((to.name === "login" || to.name === "register") && authStore.isAuthenticated) {
+    next({ name: "spaces" })
   } else {
     next()
   }

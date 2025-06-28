@@ -12,6 +12,7 @@
   import type { ExpenseDateType } from "@/types/expenseType"
   import ExpenseCardComponent from "@/components/ExpenseCardComponent.vue"
   import type { GroupType } from "@/types/groupType"
+  import { computed } from "vue"
   interface Props {
     group: GroupType
     haveCategory?: boolean
@@ -20,7 +21,8 @@
     expensesDate?: ExpenseDateType
   }
 
-  defineProps<Props>()
+  const props = defineProps<Props>()
+  const safeExpensesDate = computed(() => props.expensesDate ?? {})
 </script>
 
 <template>
@@ -30,7 +32,7 @@
     :routeName="subHeader.routeName"
     :params="subHeader.params"
   />
-  <div class="flex flex-col gap-10" v-if="group">
+  <div class="flex flex-col gap-10">
     <div class="flex flex-col gap-2 sm:flex-row justify-between items-center">
       <RemainingBudget :space_id="group.id" />
       <div v-if="actionButton">
@@ -52,8 +54,8 @@
       </div>
     </div>
     <BaseSection
-      v-if="expensesDate"
-      v-for="([date, expenses], index) in Object.entries(expensesDate)"
+      v-if="safeExpensesDate"
+      v-for="([date, expenses], index) in Object.entries(safeExpensesDate)"
       :label="formatDateToDayMonth(new Date(date))"
       :key="index"
     >

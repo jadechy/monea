@@ -3,25 +3,24 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
 use App\DTO\CategoryDTO;
+use App\Entity\Category;
 use App\Repository\CategoryRepository;
 use App\Repository\GroupeRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 #[AsController]
 class CategoryController extends AbstractController
 {
     public function __construct(
-        private GroupeRepository $groupeRepository, 
-        private CategoryRepository $categoryRepository, 
-        private SerializerInterface $serializer)
-    {
-    }
+        private GroupeRepository $groupeRepository,
+        private CategoryRepository $categoryRepository,
+        private SerializerInterface $serializer
+    ) {}
 
     public function getCategoryByGroup($groupeId)
     {

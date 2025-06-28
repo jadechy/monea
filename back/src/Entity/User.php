@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use App\Controller\UserController;
 use App\DTO\UserRegisterDTO;
+use App\Enum\UserRoleEnum;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -35,9 +36,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
             uriTemplate: '/me',
             controller: UserController::class  . '::me',
             name: 'me',
-            read: false,        // IMPORTANT: empêche la lecture automatique
-            write: false,       // IMPORTANT: empêche l'écriture automatique
-            deserialize: false, // IMPORTANT: empêche la désérialisation automatique
+            read: false,
+            write: false,
+            deserialize: false,
             normalizationContext: ['groups' => ['user:me']],
         ),
         new Patch(),
@@ -70,26 +71,58 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $username;
 
     #[ORM\Column(length: 50, name: 'USR_NAME')]
+    #[Assert\NotBlank(message: "Le prénom ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: "Le prénom doit comporter au moins {{ limit }} caractères.",
+        maxMessage: "Le prénom ne peut pas dépasser {{ limit }} caractères."
+    )]
     #[Groups(['user:read', 'user:write', 'user:me'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 50, name: 'USR_LASTNAME')]
     #[Groups(['user:read', 'user:write', 'user:me'])]
+    #[Assert\NotBlank(message: "Le nom de famille ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: "Le nom de famille doit comporter au moins {{ limit }} caractères.",
+        maxMessage: "Le nom de famille ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $lastname = null;
 
-    #[ORM\Column(length: 255, name: 'USR_EMAIL')]
+    #[ORM\Column(length: 180, name: 'USR_EMAIL')]
+    #[Assert\NotBlank(message: "L'email ne peut pas être vide.")]
+    #[Assert\Email(message: "L'email '{{ value }}' n'est pas une adresse email valide.")]
+    #[Assert\Length(
+        min: 5,
+        max: 180,
+        minMessage: "L'email doit comporter au moins {{ limit }} caractères.",
+        maxMessage: "L'email ne peut pas dépasser {{ limit }} caractères."
+    )]
     #[Groups(['user:read', 'user:write', 'user:me'])]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255, name: 'USR_PASSWORD')]
+    #[ORM\Column(length: 128, name: 'USR_PASSWORD')]
     #[Groups(['user:read', 'user:write'])]
+    #[Assert\NotBlank(message: "Le mot de passe ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 8,
+        max: 128,
+        minMessage: "Le mot de passe doit comporter au moins {{ limit }} caractères.",
+        maxMessage: "Le mot de passe ne peut pas dépasser {{ limit }} caractères."
+    )]
     private string $password;
 
     private ?string $plainPassword = null;
 
-    #[ORM\Column(type: 'json', name: 'USR_ROLES')]
+    #[ORM\Column(type: 'json', name: 'USR_ROLES', enumType: UserRoleEnum::class)]
     #[Groups(['user:read', 'user:write', 'user:me'])]
-    private array $roles = [];
+    /**
+     * @var array<int, UserRoleEnum::class|string>
+     */
+    private array $roles = [UserRoleEnum::USER];
 
     #[ORM\Column(name: 'USR_CREATED_AT')]
     #[Groups(['user:read', 'user:write'])]
@@ -127,10 +160,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $shareExpenses;
 
     #[ORM\Column(length: 255, name: 'USR_PICTURE', nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le chemin de la photo ne peut pas dépasser {{ limit }} caractères."
+    )]
     #[Groups(['user:read', 'user:write', 'user:me'])]
     private ?string $picture = null;
 
     #[ORM\Column(length: 255, name: 'USR_RESET_TOKEN', nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le token de réinitialisation ne peut pas dépasser {{ limit }} caractères."
+    )]
     #[Groups(['user:read', 'user:write'])]
     private ?string $resetToken = null;
 
@@ -220,12 +261,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
+        $roles = array_map(fn(UserRoleEnum $role) => $role->value, $this->roles ?? []);
 
+        $roles[] = 'ROLE_USER';
         return array_unique($roles);
     }
-
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;

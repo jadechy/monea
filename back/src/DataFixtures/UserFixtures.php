@@ -3,9 +3,9 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
+use App\Enum\UserRoleEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Faker\Factory;
 
 class UserFixtures extends Fixture
@@ -30,9 +30,7 @@ class UserFixtures extends Fixture
             // Mot de passe commun "password123" hashé
             $user->setPlainPassword('password123');
 
-            // Role alterné entre ROLE_USER et ROLE_ADMIN
-            $roles = $i % 3 === 0 ? ['ROLE_ADMIN'] : ['ROLE_USER'];
-            $user->setRoles($roles);
+            $user->setRoles([$faker->randomElement(UserRoleEnum::cases())]);
 
             $user->setCreatedAt(new \DateTimeImmutable('-' . $faker->numberBetween(0, 365) . ' days'));
 

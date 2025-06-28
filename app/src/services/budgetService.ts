@@ -10,15 +10,14 @@ import {
 } from "@/types/budgetType"
 import { fetchJson } from "@/utils/apiMethods"
 
-export const fetchBudgetGroupDateRemaining = async (
+export const fetchBudgetGroupDateRemaining = (
   group_id: GroupType["id"],
   month: BudgetType["monthStart"],
-) => {
-  return await fetchJson({
+) =>
+  fetchJson({
     url: `budget/${group_id}/${formatDateForApi(new Date(month))}/remaining`,
     schema: AmountSchema,
   })
-}
 
 export const fetchBudgetGroup = (group_id: GroupType["id"], month: BudgetType["monthStart"]) =>
   fetchJson({
@@ -44,16 +43,14 @@ export const BudgetRemainingByMonthSchema = z.record(z.string(), BudgetRemaining
 export type BudgetRemainingValueType = z.infer<typeof BudgetRemainingValueSchema>
 export type BudgetRemainingByMonthType = z.infer<typeof BudgetRemainingByMonthSchema>
 
-export const fetchBudgetRemainingInMonth = async (group_id: GroupType["id"], year: number) => {
-  return await fetchJson({
+export const fetchBudgetRemainingInMonth = (group_id: GroupType["id"], year: number) =>
+  fetchJson({
     url: `budget/${group_id}/${year}/year/remaining/list`,
     schema: BudgetRemainingByMonthSchema,
   })
-}
 
-export const fetchBudgetRemainingInDay = async (group_id: GroupType["id"], month: string) => {
-  return await fetchJson({
+export const fetchBudgetRemainingInDay = (group_id: GroupType["id"], month: string) =>
+  fetchJson({
     url: `budget/${group_id}/${month}/month/remaining/list`,
     schema: BudgetRemainingByMonthSchema,
   })
-}

@@ -8,15 +8,14 @@
 
   // Props
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
-
   // Group
   const { groupById } = useGroups()
   const group = computed(() => groupById({ id: space_id }))
-
   // Query
   const { data: expenses } = useQuery({
     queryKey: ["expenses-by-group", space_id],
     queryFn: () => getAllExpensesByGroup(space_id),
+    enabled: !!space_id,
   })
 </script>
 
@@ -26,7 +25,7 @@
     :group="group"
     :subHeader="{
       label: group?.name ?? 'error',
-      routeName: 'home',
+      routeName: 'spaces',
       color: group?.color,
     }"
     action-button

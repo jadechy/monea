@@ -17,6 +17,7 @@ export const CategorySchema = z.object({
 })
 
 export const NewCategorySchema = z.object({
+  id: CategorySchema.shape.id.optional(),
   label: CategorySchema.shape.label,
   color: CategorySchema.shape.color,
 })

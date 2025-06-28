@@ -3,15 +3,43 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use App\Controller\GroupeController;
+use App\DTO\GroupInputDTO;
+use App\Enum\ColorEnum;
+use App\Enum\GroupTypeEnum;
 use App\Repository\GroupeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ApiResource(
     normalizationContext: ['groups' => ['groupe:read']],
-    denormalizationContext: ['groups' => ['groupe:write']]
+    denormalizationContext: ['groups' => ['groupe:write']],
+    operations: [
+        new Post(
+            uriTemplate: '/groupes',
+            controller: GroupeController::class  . '::postGroup',
+            name: 'groupe_new',
+            input: GroupInputDTO::class,
+            deserialize: true,
+            read: false,
+        ),
+        new Patch(
+            uriTemplate: '/groupes/{id}',
+            controller: GroupeController::class  . '::editGroup',
+            name: 'groupe_edit',
+            input: GroupInputDTO::class,
+            deserialize: true,
+            read: false,
+        ),
+        new Delete()
+    ]
 )]
 #[ORM\Entity(repositoryClass: GroupeRepository::class)]
 #[ORM\Table(name: 'MON_GROUPE')]
@@ -23,51 +51,72 @@ class Groupe
     #[Groups(['groupe:read'])]
     private int $id;
 
-    #[ORM\Column(length: 255, name: 'GRP_NAME')]
+    #[ORM\Column(length: 100, name: 'GRP_NAME')]
+    #[Assert\NotBlank(
+        message: 'Le nom du membre ne peut pas être vide.'
+    )]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: 'Le nom du membre ne peut pas dépasser {{ limit }} caractères.'
+    )]
     #[Groups(['groupe:read', 'groupe:write'])]
     private ?string $name = null;
 
     #[ORM\Column(name: 'GRP_CREATED_AT')]
+    #[Assert\NotNull]
+    #[Assert\Type(\DateTimeImmutable::class)]
     #[Groups(['groupe:read', 'groupe:write'])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(length: 255, name: 'GRP_TYPE')]
+    #[ORM\Column(length: 15, name: 'GRP_TYPE', enumType: GroupTypeEnum::class, type: "string")]
+    #[Assert\NotNull(
+        message: 'Le groupe doit être défini.'
+    )]
     #[Groups(['groupe:read', 'groupe:write'])]
-    private ?string $type = null;
+    private ?GroupTypeEnum $type = null;
 
     /**
      * @var Collection<int, Expense>
      */
-    #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'groupe')]
+    #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'groupe', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $expenses;
 
     /**
      * @var Collection<int, Member>
      */
-    #[ORM\OneToMany(targetEntity: Member::class, mappedBy: 'groupe')]
+    #[ORM\OneToMany(targetEntity: Member::class, mappedBy: 'groupe', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $members;
 
     #[ORM\ManyToOne(inversedBy: 'groupes')]
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
+    #[Assert\NotNull(
+        message: 'Le créateur doit être défini.'
+    )]
     #[Groups(['groupe:read', 'groupe:write'])]
     private User $creator;
 
     /**
      * @var Collection<int, Category>
      */
-    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'groupe')]
+    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'groupe',  cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $categories;
 
     #[ORM\Column(length: 255, name: 'GRP_PICTURE')]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le chemin de la photo ne peut pas dépasser {{ limit }} caractères."
+    )]
     #[Groups(['groupe:read', 'groupe:write'])]
     private ?string $picture = null;
 
-    #[ORM\Column(length: 255, name: 'GRP_COLOR')]
+    #[ORM\Column(length: 15, name: 'GRP_COLOR', enumType: ColorEnum::class, type: "string")]
+    #[Assert\NotNull(message: "La couleur est obligatoire.")]
+    #[Assert\Choice(callback: [ColorEnum::class, 'cases'], message: "La couleur choisie n'est pas valide.")]
     #[Groups(['groupe:read', 'groupe:write'])]
-    private ?string $color = null;
+    private ?ColorEnum $color = null;
 
     public function __construct()
     {
@@ -105,12 +154,12 @@ class Groupe
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): ?GroupTypeEnum
     {
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(GroupTypeEnum $type): static
     {
         $this->type = $type;
 
@@ -207,18 +256,17 @@ class Groupe
         return $this;
     }
 
-    public function removeCategory(Category $category): static
+
+    public function getDefaultCategory(): ?Category
     {
-        if ($this->categories->removeElement($category)) {
-            // set the owning side to null (unless already changed)
-            if ($category->getGroupe() === $this) {
-                $category->setGroupe(null);
+        foreach ($this->categories as $category) {
+            if ($category->getLabel() === 'default') {
+                return $category;
             }
         }
 
-        return $this;
+        return null;
     }
-
     public function getPicture(): ?string
     {
         return $this->picture;
@@ -231,12 +279,12 @@ class Groupe
         return $this;
     }
 
-    public function getColor(): ?string
+    public function getColor(): ?ColorEnum
     {
         return $this->color;
     }
 
-    public function setColor(string $color): static
+    public function setColor(ColorEnum $color): static
     {
         $this->color = $color;
 

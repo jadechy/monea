@@ -7,7 +7,7 @@
 
 <template>
   <div class="mb-5">
-    <TitleComponent :label="label" :color="color" />
+    <TitleComponent :label="label ?? 'erorr'" :color="color" />
     <BackComponent :routeName="routeName" :params="params" />
   </div>
 </template>

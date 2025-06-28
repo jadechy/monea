@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Link;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\CategoryController;
 use App\Entity\Category;
+use App\Enum\ColorEnum;
 
 #[ApiResource(operations: [
     new Get(
@@ -31,7 +32,7 @@ class CategoryDTO
     public string $label;
 
     #[Groups(['category:read', 'expense:read'])]
-    public string $color;
+    public ColorEnum $color;
 
     public function __construct(Category $category)
     {

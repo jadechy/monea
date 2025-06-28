@@ -4,8 +4,8 @@
   import { Form, type FormSubmitEvent } from "@primevue/forms"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
   import { RegisterRequestSchema, type RegisterRequestType } from "@/types/authType"
-  import FormInput from "@/components/Input/FormInput.vue"
-  import WrapperInput from "@/components/Input/WrapperInput.vue"
+  import FormInput from "@/components/InputComponent/FormInput.vue"
+  import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
   import { registerAuth } from "@/services/authService"
   import { useMutation } from "@tanstack/vue-query"
 

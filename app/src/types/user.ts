@@ -52,7 +52,7 @@ export const UserSchema = z.object({
   }),
 
   roles: z
-    .array(z.string(), {
+    .array(z.enum(["ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER"]), {
       required_error: "Le rôle est requis",
       invalid_type_error: "Le rôle doit être une liste de chaînes",
     })

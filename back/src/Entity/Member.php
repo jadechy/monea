@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\MemberRoleEnum;
 use App\Repository\MemberRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -10,9 +11,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Table(name: 'MON_MEMBER')]
 class Member
 {
-    #[ORM\Column(length: 255, name: 'MBR_ROLE')]
+    #[ORM\Column(length: 15, name: 'MBR_ROLE', enumType: MemberRoleEnum::class)]
     #[Groups(['groupe:read', 'member:read', 'user:read'])]
-    private ?string $role = null;
+    private MemberRoleEnum $role = MemberRoleEnum::MEMBER;
 
     #[ORM\Column(name: 'MBR_ADD_ON')]
     #[Groups(['member:read'])]
@@ -30,12 +31,12 @@ class Member
     #[Groups(['groupe:read', 'member:read', 'user:read'])]
     private User $individual;
 
-    public function getRole(): ?string
+    public function getRole(): ?MemberRoleEnum
     {
         return $this->role;
     }
 
-    public function setRole(string $role): static
+    public function setRole(MemberRoleEnum $role): static
     {
         $this->role = $role;
 

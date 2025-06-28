@@ -5,6 +5,7 @@ import IndexSpace from "@/views/space/IndexSpace.vue"
 import SpaceView from "@/views/space/id/SpaceView.vue"
 import expenseRouter from "./expenseRouter"
 import SpacesView from "@/views/space/SpacesView.vue"
+import EditSpaceVIew from "@/views/space/id/EditSpaceVIew.vue"
 
 export default [
   {
@@ -36,7 +37,7 @@ export default [
           {
             path: "edit",
             name: "edit_space",
-            component: NewSpaceView,
+            component: EditSpaceVIew,
           },
           ...budgetRouter,
           ...expenseRouter,

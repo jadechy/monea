@@ -102,7 +102,7 @@ use App\Entity\Expense;
             'monthStart' => '\d{4}-\d{2}-\d{2}'
         ],
         normalizationContext: ['groups' => ['expense:read']]
-    )
+    ),
 ])]
 class ExpenseDTO
 {

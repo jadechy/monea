@@ -10,10 +10,10 @@ use Symfony\Component\Serializer\SerializerInterface;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
 class UserController extends AbstractController
@@ -54,12 +54,11 @@ class UserController extends AbstractController
         $this->em->persist($user);
         $this->em->flush();
 
-        return $this->json(['message' => 'Utilisateur créé avec succès'], 201);
+        return $this->json(['message' => 'Utilisateur créé avec succès'], Response::HTTP_CREATED);
     }
 
     public function me(): User
     {
-        // dd($this);
         $user = $this->getUser();
 
         if (!$user instanceof User) {
