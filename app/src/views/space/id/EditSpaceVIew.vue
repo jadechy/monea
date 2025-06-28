@@ -14,7 +14,7 @@
   import type { NewCategoryType } from "@/types/categoryType"
   import { useMutation, useQueryClient } from "@tanstack/vue-query"
   import router from "@/router"
-  import { editGroup, postGroup } from "@/services/groupService"
+  import { deleteGroup, editGroup, postGroup } from "@/services/groupService"
   import { useAuthStore } from "@/stores/authStore"
   import { useGroupsStore } from "@/stores/groupStore"
   import { getSpaceColor } from "@/utils/getColor"
@@ -60,7 +60,20 @@
       if (!group.value?.id) {
         return Promise.reject(new Error("ID du groupe manquant"))
       }
+
       return editGroup(group.value.id, data)
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["groups-by-user", user?.id] })
+      router.push({ name: "spaces" })
+    },
+  })
+  const deleteGroupMutation = useMutation({
+    mutationFn: () => {
+      if (!group.value?.id) {
+        return Promise.reject(new Error("ID du groupe manquant"))
+      }
+      return deleteGroup(group.value.id)
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["groups-by-user", user?.id] })
@@ -72,20 +85,21 @@
   const handleClick = (i: number) => {
     selectedIndex.value = selectedIndex.value === i ? null : i
   }
-  console.log(currentCategories.value)
   const onFormSubmit = (form: FormSubmitEvent) => {
     if (selectedIndex.value === null) return
-    console.log(currentCategories.value.values)
     const data: NewGroupType = {
       name: form.states.name.value,
       type: "occasional",
       color: ColorSchema.options.filter((color) => color !== "gray")[selectedIndex.value],
       categories: currentCategories.value,
     }
+    console.log(data)
     group.value ? editGroupMutation.mutate(data) : createGroupMutation.mutate(data)
   }
 
-  const onDelete = () => {}
+  const onDelete = () => {
+    deleteGroupMutation.mutate()
+  }
 </script>
 
 <template>

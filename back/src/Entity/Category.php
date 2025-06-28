@@ -38,7 +38,7 @@ class Category
     /**
      * @var Collection<int, Expense>
      */
-    #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'category')]
+    #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'category', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $expenses;
 
     #[ORM\ManyToOne(inversedBy: 'categories')]
@@ -49,7 +49,7 @@ class Category
     /**
      * @var Collection<int, Budget>
      */
-    #[ORM\OneToMany(targetEntity: Budget::class, mappedBy: 'category')]
+    #[ORM\OneToMany(targetEntity: Budget::class, mappedBy: 'category',  cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $budgets;
 
     public function __construct()

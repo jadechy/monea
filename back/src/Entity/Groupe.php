@@ -78,14 +78,14 @@ class Groupe
     /**
      * @var Collection<int, Expense>
      */
-    #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'groupe')]
+    #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'groupe', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $expenses;
 
     /**
      * @var Collection<int, Member>
      */
-    #[ORM\OneToMany(targetEntity: Member::class, mappedBy: 'groupe')]
+    #[ORM\OneToMany(targetEntity: Member::class, mappedBy: 'groupe', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $members;
 
@@ -100,7 +100,7 @@ class Groupe
     /**
      * @var Collection<int, Category>
      */
-    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'groupe')]
+    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'groupe',  cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $categories;
 

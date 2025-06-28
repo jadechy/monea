@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\DTO\GroupeDTO;
-use App\DTO\GroupInputDTO;
 use App\Entity\Budget;
 use App\Entity\Category;
 use App\Entity\Groupe;
@@ -19,8 +18,6 @@ use App\Repository\BudgetRepository;
 use App\Repository\GroupeRepository;
 use App\Repository\ExpenseRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\UnitOfWork;
-use PHPUnit\TextUI\XmlConfiguration\Group;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
