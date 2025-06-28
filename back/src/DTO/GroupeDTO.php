@@ -2,8 +2,8 @@
 
 namespace App\DTO;
 
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\GroupeController;
@@ -12,7 +12,7 @@ use App\Enum\ColorEnum;
 use App\Enum\GroupTypeEnum;
 
 #[ApiResource(operations: [
-    new Get(
+    new GetCollection(
         uriTemplate: '/groupes/{userId}/list',
         controller: GroupeController::class . '::getAllGroupesByUser',
         uriVariables: [

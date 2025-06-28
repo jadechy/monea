@@ -4,6 +4,7 @@ namespace App\DTO;
 
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\ExpenseController;
@@ -17,7 +18,7 @@ use App\Entity\Expense;
         name: 'expense_id',
         normalizationContext: ['groups' => ['expense:read']]
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/expenses/groupe/{groupeId}/list',
         controller: ExpenseController::class . '::getAllExpenseByGroup',
         uriVariables: [
@@ -30,7 +31,7 @@ use App\Entity\Expense;
         ],
         normalizationContext: ['groups' => ['expense:read']]
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/expenses/groupe/{groupeId}/mois/{monthStart}/list',
         controller: ExpenseController::class . '::getAllExpenseByGroupAndMonth',
         uriVariables: [
@@ -45,7 +46,7 @@ use App\Entity\Expense;
         ],
         normalizationContext: ['groups' => ['expense:read']]
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/expenses/groupe/{groupeId}/week/{day}/list',
         controller: ExpenseController::class . '::getAllExpenseByGroupAndDay',
         uriVariables: [
@@ -60,7 +61,7 @@ use App\Entity\Expense;
         ],
         normalizationContext: ['groups' => ['expense:read']]
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/expenses/groupe/{groupeId}/day/{day}/list',
         controller: ExpenseController::class . '::getAllExpenseByGroupAndDay',
         uriVariables: [
@@ -75,7 +76,7 @@ use App\Entity\Expense;
         ],
         normalizationContext: ['groups' => ['expense:read']]
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/expenses/category/{categoryId}/list',
         controller: ExpenseController::class . '::getAllExpensesByCategory',
         uriVariables: [
@@ -88,7 +89,7 @@ use App\Entity\Expense;
         ],
         normalizationContext: ['groups' => ['expense:read']]
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/expenses/category/{categoryId}/{monthStart}/list',
         controller: ExpenseController::class . '::getAllExpensesByCategoryAndMonth',
         uriVariables: [

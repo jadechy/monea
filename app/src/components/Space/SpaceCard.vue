@@ -10,7 +10,7 @@
 <template>
   <router-link
     :to="{ name: 'space', params: { space_id: group.id } }"
-    :class="[`bg-${group.color}-400`, `hover:bg-${group.color}-500`]"
+    :class="[`bg-${group.color}-600`, `hover:bg-${group.color}-700`]"
     class="p-2.5 rounded-2xl transition-all text-gray-700"
     @click=""
   >

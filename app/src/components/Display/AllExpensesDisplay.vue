@@ -54,7 +54,7 @@
       </div>
     </div>
     <BaseSection
-      v-if="safeExpensesDate"
+      v-if="Object.keys(safeExpensesDate).length > 0"
       v-for="([date, expenses], index) in Object.entries(safeExpensesDate)"
       :label="formatDateToDayMonth(new Date(date))"
       :key="index"
