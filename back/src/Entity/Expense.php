@@ -3,13 +3,27 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
+use App\Controller\ExpenseController;
+use App\DTO\ExpenseInputDTO;
 use App\Repository\ExpenseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource]
+#[ApiResource(operations: [
+    new Post(
+        uriTemplate: '/expense/new',
+        controller: ExpenseController::class  . '::postExpense',
+        name: 'expense_new',
+        input: ExpenseInputDTO::class,
+        deserialize: true,
+        read: false,
+        validationContext: ['groups' => ['expense:write']],
+    )
+])]
 #[ORM\Entity(repositoryClass: ExpenseRepository::class)]
 #[ORM\Table(name: 'MON_EXPENSE')]
 class Expense
@@ -28,6 +42,7 @@ class Expense
         max: 10000,
         notInRangeMessage: "Le montant doit être compris entre {{ min }} et {{ max }}."
     )]
+    #[Groups(['expense:write'])]
     private ?float $amount = null;
 
     #[ORM\Column(length: 150, name: 'EXP_TITLE')]
@@ -36,6 +51,7 @@ class Expense
         max: 150,
         maxMessage: "Le titre ne peut pas dépasser {{ limit }} caractères."
     )]
+    #[Groups(['expense:write'])]
     private ?string $title = null;
 
     #[ORM\Column(name: 'EXP_CREATED_AT')]
@@ -51,11 +67,13 @@ class Expense
     #[ORM\ManyToOne(inversedBy: 'expenses')]
     #[ORM\JoinColumn(name: 'CAT_ID', referencedColumnName: 'CAT_ID', nullable: false)]
     #[Assert\NotNull(message: "La catégorie est obligatoire.")]
+    #[Groups(['expense:read'])]
     private ?Category $category = null;
 
     #[ORM\ManyToOne(inversedBy: 'expenses')]
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
     #[Assert\NotNull(message: "Le créateur est obligatoire.")]
+    #[Groups(['expense:read'])]
     private User $creator;
 
     /**

@@ -4,7 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Category;
 use App\Entity\Groupe;
-use App\Enum\Color;
+use App\Enum\ColorEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -52,7 +52,7 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
             $label = $possibleLabels[array_rand($possibleLabels)];
             $category->setLabel($label);
 
-            $category->setColor($faker->randomElement(Color::cases()));
+            $category->setColor($faker->randomElement(ColorEnum::cases()));
 
             $groupe = $groupes[$i % count($groupes)];
             $category->setGroupe($groupe);

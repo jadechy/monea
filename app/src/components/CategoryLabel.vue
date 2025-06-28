@@ -1,20 +1,17 @@
 <script setup lang="ts">
-  import type { CategoryType } from "@/types/categoryType"
+  import type { CategoryType, NewCategoryType } from "@/types/categoryType"
 
   interface Props {
-    category?: CategoryType
+    category?: CategoryType | NewCategoryType
     edit?: boolean
-    add?: boolean
   }
 
   withDefaults(defineProps<Props>(), {
     category: () => ({
       label: "default",
       color: "gray",
-      id: 0,
     }),
     edit: false,
-    add: false,
   })
 </script>
 <template>
@@ -29,6 +26,6 @@
       <i class="pi pi-pencil"></i>
       <i class="pi pi-times"></i>
     </div>
-    <i class="pi pi-plus" v-if="add"></i>
+    <i class="pi pi-plus" v-if="!('id' in category)"></i>
   </div>
 </template>

@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Enum\Color;
+use App\Enum\ColorEnum;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,10 +30,10 @@ class Category
     )]
     private ?string $label = null;
 
-    #[ORM\Column(length: 8, name: 'CAT_COLOR', enumType: Color::class, type: "string")]
+    #[ORM\Column(length: 8, name: 'CAT_COLOR', enumType: ColorEnum::class, type: "string")]
     #[Assert\NotNull(message: "La couleur est obligatoire.")]
-    #[Assert\Choice(callback: [Color::class, 'cases'], message: "La couleur choisie n'est pas valide.")]
-    private ?Color $color = null;
+    #[Assert\Choice(callback: [ColorEnum::class, 'cases'], message: "La couleur choisie n'est pas valide.")]
+    private ?ColorEnum $color = null;
 
     /**
      * @var Collection<int, Expense>
@@ -75,12 +75,12 @@ class Category
         return $this;
     }
 
-    public function getColor(): ?Color
+    public function getColor(): ?ColorEnum
     {
         return $this->color;
     }
 
-    public function setColor(Color $color): static
+    public function setColor(ColorEnum $color): static
     {
         $this->color = $color;
 

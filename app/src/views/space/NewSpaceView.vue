@@ -15,7 +15,7 @@
     initialValues: {
       name: "",
       color: "gray",
-      type: "",
+      type: "daily",
     } as NewGroupType,
     resolver: zodResolver(NewGroupSchema),
   })

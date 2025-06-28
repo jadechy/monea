@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { UserInOtherSchema, UserSchema } from "./user"
 import { GroupSchema } from "./groupType"
-import { CategorySchema } from "./categoryType"
+import { CategorySchema, type CategoryType } from "./categoryType"
 import { RecurringExpenseSchema } from "./recurringExpenseType"
 import { DateSchema } from "./date"
 
@@ -36,25 +36,16 @@ export const ExpenseSchema = z.object({
     .optional(),
 })
 
-export const FetchNewExpenseSchema = GroupSchema.extend({
-  categories: z.array(CategorySchema, {
-    required_error: "Les catégories sont requises",
-    invalid_type_error: "Les catégories doivent être une liste",
-  }),
-  members: z.array(UserSchema, {
-    required_error: "Les membres sont requis",
-    invalid_type_error: "Les membres doivent être une liste",
-  }),
-})
-
 export const NewExpenseSchema = z.object({
-  category: CategorySchema,
+  categoryId: CategorySchema.shape.id,
   title: ExpenseSchema.shape.title,
   amount: ExpenseSchema.shape.amount,
-  spendAt: z.date({
+  spentAt: z.date({
     required_error: "La date est requise",
     invalid_type_error: "La date est invalide",
   }),
+  authorId: UserSchema.shape.id,
+  groupId: GroupSchema.shape.id,
 })
 
 export const ExpenseDateSchema = z.record(
@@ -66,4 +57,4 @@ export const ExpenseDateSchema = z.record(
 
 export type ExpenseType = z.infer<typeof ExpenseSchema>
 export type ExpenseDateType = z.infer<typeof ExpenseDateSchema>
-export type FetchNewExpenseType = z.infer<typeof FetchNewExpenseSchema>
+export type NewExpenseType = z.infer<typeof NewExpenseSchema>

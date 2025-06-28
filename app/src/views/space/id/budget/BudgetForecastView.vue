@@ -12,9 +12,16 @@
 </script>
 
 <template>
-  <SubHeader label="Budgets" :color="group?.color" routeName="home" />
+  <SubHeader
+    label="Budgets"
+    :color="group?.color"
+    routeName="budget_space"
+    :params="{
+      space_id: space_id,
+    }"
+  />
   <div class="flex flex-col gap-10">
     <Year :space_id="space_id" />
-    <Month :group="group" v-if="group" />
+    <Month :space_id="space_id" />
   </div>
 </template>

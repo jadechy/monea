@@ -15,25 +15,27 @@
   import { truncateToTenth } from "@/utils/number"
   import { useQuery } from "@tanstack/vue-query"
   import Day from "./Day.vue"
+  import { useGroups } from "@/composables/useGroups"
 
-  const { group } = defineProps<{ group: GroupType }>()
-
+  const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
+  const { groupById } = useGroups()
+  const group = computed(() => groupById({ id: space_id }))
   const currentDate = ref<Date | null>(null)
   const currentMonth = ref<Date>(getCurrentMonthDate())
 
   const currentMonthFormatted = computed(() => formatDateForApi(currentMonth.value))
-
+  console.log(group)
   // Query
   const { data: expenses, refetch: refetchExpenses } = useQuery({
-    queryKey: computed(() => ["expenses", group.id, currentMonth.value]),
-    queryFn: () => getMonthlyExpensesByGroup(group.id, currentMonth.value),
-    enabled: computed(() => !!group.id && !!currentMonth.value),
+    queryKey: computed(() => ["expenses", space_id, currentMonth.value]),
+    queryFn: () => getMonthlyExpensesByGroup(space_id, currentMonth.value),
+    enabled: computed(() => !!space_id),
   })
 
   const { data: monthData, refetch: refetchBudget } = useQuery({
-    queryKey: computed(() => ["budgetByDay", group.id, currentMonthFormatted.value]),
-    queryFn: () => fetchBudgetRemainingInDay(group.id, currentMonthFormatted.value),
-    enabled: computed(() => !!group.id && !!currentMonth.value),
+    queryKey: computed(() => ["budget-remaining-in-day", space_id, currentMonthFormatted.value]),
+    queryFn: () => fetchBudgetRemainingInDay(space_id, currentMonthFormatted.value),
+    enabled: computed(() => !!space_id),
   })
 
   watch(currentMonth, () => {
@@ -43,10 +45,9 @@
 </script>
 
 <template>
-  <BaseSection label="Les dépenses passés et futurs" v-if="group">
+  <BaseSection label="Les dépenses passés et futurs">
     <div class="flex flex-col gap-10">
       <DatePicker
-        v-if="expenses"
         v-model="currentDate"
         inline
         v-on:month-change="
@@ -62,7 +63,7 @@
         panel-class="border-none shadow rounded-xl "
         class="w-full"
       >
-        <template #date="slotProps">
+        <template #date="slotProps" v-if="expenses">
           <Day
             :date="slotProps.date"
             :expensesInDay="expenses['2025-05-05']"

@@ -4,8 +4,8 @@ namespace App\DataFixtures;
 
 use App\Entity\Groupe;
 use App\Entity\User;
-use App\Enum\Color;
-use App\Enum\GroupType;
+use App\Enum\ColorEnum;
+use App\Enum\GroupTypeEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -29,8 +29,8 @@ class GroupeFixtures extends Fixture implements DependentFixtureInterface
 
             $groupe->setName(ucfirst($faker->words(2, true)));
             $groupe->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 years', 'now')));
-            $groupe->setType($faker->randomElement(GroupType::cases()));
-            $groupe->setColor($faker->randomElement(Color::cases()));
+            $groupe->setType($faker->randomElement(GroupTypeEnum::cases()));
+            $groupe->setColor($faker->randomElement(ColorEnum::cases()));
             $groupe->setPicture($faker->imageUrl(400, 300, 'business', true));
 
             $groupe->setCreator($faker->randomElement($users));

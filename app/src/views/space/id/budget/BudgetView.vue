@@ -44,7 +44,12 @@
 </script>
 
 <template>
-  <SubHeader label="Budget du mois" :color="group?.color" routeName="home" />
+  <SubHeader
+    label="Budget du mois"
+    :color="group?.color"
+    routeName="space"
+    :params="{ id: space_id }"
+  />
 
   <div class="flex flex-col gap-10" v-if="group">
     <section class="flex justify-between">

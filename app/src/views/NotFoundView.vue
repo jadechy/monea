@@ -24,11 +24,7 @@
 
   const router = useRouter()
 
-  function goHome() {
-    router.push("/")
+  const goHome = () => {
+    router.push({ name: "home" })
   }
 </script>
-
-<style scoped>
-  /* Tu peux ajouter des styles personnalisés ici si besoin */
-</style>

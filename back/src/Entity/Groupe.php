@@ -3,8 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Enum\Color;
-use App\Enum\GroupType;
+use App\Enum\ColorEnum;
+use App\Enum\GroupTypeEnum;
 use App\Repository\GroupeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -44,12 +44,12 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(length: 15, name: 'GRP_TYPE', enumType: GroupType::class, type: "string")]
+    #[ORM\Column(length: 15, name: 'GRP_TYPE', enumType: GroupTypeEnum::class, type: "string")]
     #[Assert\NotNull(
         message: 'Le groupe doit être défini.'
     )]
     #[Groups(['groupe:read', 'groupe:write'])]
-    private ?GroupType $type = null;
+    private ?GroupTypeEnum $type = null;
 
     /**
      * @var Collection<int, Expense>
@@ -88,11 +88,11 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private ?string $picture = null;
 
-    #[ORM\Column(length: 15, name: 'GRP_COLOR', enumType: Color::class, type: "string")]
+    #[ORM\Column(length: 15, name: 'GRP_COLOR', enumType: ColorEnum::class, type: "string")]
     #[Assert\NotNull(message: "La couleur est obligatoire.")]
-    #[Assert\Choice(callback: [Color::class, 'cases'], message: "La couleur choisie n'est pas valide.")]
+    #[Assert\Choice(callback: [ColorEnum::class, 'cases'], message: "La couleur choisie n'est pas valide.")]
     #[Groups(['groupe:read', 'groupe:write'])]
-    private ?Color $color = null;
+    private ?ColorEnum $color = null;
 
     public function __construct()
     {
@@ -130,12 +130,12 @@ class Groupe
         return $this;
     }
 
-    public function getType(): ?GroupType
+    public function getType(): ?GroupTypeEnum
     {
         return $this->type;
     }
 
-    public function setType(GroupType $type): static
+    public function setType(GroupTypeEnum $type): static
     {
         $this->type = $type;
 
@@ -256,12 +256,12 @@ class Groupe
         return $this;
     }
 
-    public function getColor(): ?Color
+    public function getColor(): ?ColorEnum
     {
         return $this->color;
     }
 
-    public function setColor(Color $color): static
+    public function setColor(ColorEnum $color): static
     {
         $this->color = $color;
 

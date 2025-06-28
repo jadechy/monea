@@ -2,7 +2,7 @@
 
 namespace App\Enum;
 
-enum GroupType: string
+enum GroupTypeEnum: string
 {
     case PERSONNAL = 'personnal';
     case OCCASIONAL = 'occasional';

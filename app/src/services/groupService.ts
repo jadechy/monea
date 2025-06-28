@@ -11,7 +11,7 @@ export const FetchGroupByUserSchema = GroupSchema.extend({
 })
 export type FetchGroupByUserType = z.infer<typeof FetchGroupByUserSchema>
 
-export const getGroupByUser = async (userId: UserType["id"]) =>
+export const getGroupByUser = (userId: UserType["id"]) =>
   fetchJson({
     url: `groupes/${userId}/list`,
     schema: FetchGroupByUserSchema.array(),

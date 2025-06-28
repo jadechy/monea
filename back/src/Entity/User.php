@@ -9,7 +9,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use App\Controller\UserController;
 use App\DTO\UserRegisterDTO;
-use App\Enum\UserRole;
+use App\Enum\UserRoleEnum;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -117,12 +117,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     private ?string $plainPassword = null;
 
-    #[ORM\Column(type: 'json', name: 'USR_ROLES', enumType: UserRole::class)]
+    #[ORM\Column(type: 'json', name: 'USR_ROLES', enumType: UserRoleEnum::class)]
     #[Groups(['user:read', 'user:write', 'user:me'])]
     /**
-     * @var array<int, UserRole::class|string>
+     * @var array<int, UserRoleEnum::class|string>
      */
-    private array $roles = [];
+    private array $roles = [UserRoleEnum::USER];
 
     #[ORM\Column(name: 'USR_CREATED_AT')]
     #[Groups(['user:read', 'user:write'])]
@@ -261,12 +261,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
+        $roles = array_map(fn(UserRoleEnum $role) => $role->value, $this->roles ?? []);
 
+        $roles[] = 'ROLE_USER';
         return array_unique($roles);
     }
-
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;

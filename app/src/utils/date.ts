@@ -29,8 +29,8 @@ const getDaysInterval = (start: Date, end: Date): Date[] => {
   const current = new Date(start)
 
   while (current <= end) {
-    days.push(new Date(current)) // on ajoute une copie de la date
-    current.setDate(current.getDate() + 1) // on passe au jour suivant
+    days.push(new Date(current))
+    current.setDate(current.getDate() + 1)
   }
 
   return days
@@ -41,4 +41,8 @@ export const getCurrentMonthDays = (): Date[] => {
   const end = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
   return getDaysInterval(start, end)
+}
+export const toLocalDateWithoutTimezoneShift = (date: Date): Date => {
+  const correctedTime = date.getTime() - date.getTimezoneOffset() * 60 * 1000
+  return new Date(correctedTime)
 }

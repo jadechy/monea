@@ -8,6 +8,8 @@ use ApiPlatform\Metadata\Link;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\GroupeController;
 use App\Entity\Groupe;
+use App\Enum\ColorEnum;
+use App\Enum\GroupTypeEnum;
 
 #[ApiResource(operations: [
     new Get(
@@ -36,13 +38,13 @@ class GroupeDTO
     public string $createdAt;
 
     #[Groups(['groupe:read'])]
-    public string $type;
+    public GroupTypeEnum $type;
 
     #[Groups(['groupe:read'])]
     public string $picture;
 
     #[Groups(['groupe:read'])]
-    public string $color;
+    public ColorEnum $color;
 
     #[Groups(['groupe:read'])]
     public array $expenses;

@@ -2,6 +2,7 @@
 
 namespace App\DTO;
 
+use App\Enum\ColorEnum;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -14,7 +15,7 @@ class CategoryCalcDTO
     public string $label;
 
     #[Groups(['category:read'])]
-    public string $color;
+    public ColorEnum $color;
 
     #[Groups(['category:read'])]
     public float $amount;

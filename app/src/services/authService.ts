@@ -7,32 +7,29 @@ import {
 } from "@/types/authType"
 import { fetchJson, postJson } from "@/utils/apiMethods"
 
-export const loginAuth = async ({ username, password }: LoginRequestType) => {
-  return await postJson({
+export const loginAuth = ({ username, password }: LoginRequestType) =>
+  postJson({
     url: "login",
     body: { username, password },
     schema: LoginResponseSchema,
   })
-}
 
-export const registerAuth = async ({
+export const registerAuth = ({
   username,
   password,
   confirmPassword,
   name,
   email,
   lastname,
-}: RegisterRequestType) => {
-  return await postJson({
+}: RegisterRequestType) =>
+  postJson({
     url: "register",
     body: { username, password, confirmPassword, name, lastname, email },
     schema: RegisterResponseSchema,
   })
-}
 
-export const me = async () => {
-  return await fetchJson({
+export const me = () =>
+  fetchJson({
     url: `me`,
     schema: MeSchema,
   })
-}

@@ -1,41 +1,62 @@
 <script setup lang="ts">
   import SubHeader from "@/components/Header/SubHeader.vue"
-  import { peoplesData } from "@/data/people"
-  import { Button, DatePicker, InputNumber, InputText, Message, Select } from "primevue"
+  import { Button, DatePicker, InputNumber, Select } from "primevue"
   import { getSpaceColor } from "@/utils/getColor"
-  import type { CategoryType } from "@/types/categoryType"
-  import type { UserType } from "@/types/user"
   import type { GroupType } from "@/types/groupType"
-  import { computed, ref } from "vue"
+  import { computed } from "vue"
   import { useGroups } from "@/composables/useGroups"
   import { Form, type FormSubmitEvent } from "@primevue/forms"
-  import { NewExpenseSchema } from "@/types/expenseType"
+  import { NewExpenseSchema, type NewExpenseType } from "@/types/expenseType"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
+  import WrapperInput from "@/components/Input/WrapperInput.vue"
+  import FormInput from "@/components/Input/FormInput.vue"
+  import { useAuthStore } from "@/stores/authStore"
+  import { useMutation, useQueryClient } from "@tanstack/vue-query"
+  import { postExpense } from "@/services/expenseService"
+  import router from "@/router"
+  import { toLocalDateWithoutTimezoneShift } from "@/utils/date"
+  // Props
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
 
-  const selectedCategory = defineModel<CategoryType>("selectedCategory")
-  const selectedAuthor = defineModel<UserType>("selectedAuthor")
-  const selectedDate = defineModel<Date>("selectedDate")
-  const members = ref<boolean[]>([])
-  const { groupById } = useGroups()
-  const group = computed(() => groupById({ id: space_id }))
-  const initialValues = {
-    category: {},
-    title: "",
-    amount: 0,
-    // author: null as string | null,
-    spendAt: new Date(),
-  }
-
+  // Const
   const isNew = true
 
-  const onFormSubmit = (values: FormSubmitEvent) => {
-    console.log("Form submitted with:", values)
-    // Ici tu peux appeler ton API, store, etc.
+  // Store
+  const { groupById } = useGroups()
+  const group = computed(() => groupById({ id: space_id }))
+  const { user } = useAuthStore()
+
+  // Mutation
+  const queryClient = useQueryClient()
+
+  const expenseMutation = useMutation({
+    mutationFn: (data: NewExpenseType) => postExpense(data),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["expenses-by-group", space_id] })
+      await queryClient.invalidateQueries({ queryKey: ["budget", "remaining", space_id] })
+      router.push({ name: "space", params: { id: space_id } })
+    },
+  })
+
+  // Form
+  const initialValues = {
+    title: "",
+    amount: 0,
+    spentAt: new Date(),
+    author: user?.id,
   }
-  const handleClick = (i: number) => {
-    members.value[i] = !members.value[i]
-    const postData = {}
+
+  const onFormSubmit = (form: FormSubmitEvent) => {
+    if (!form.valid || !group.value) return
+    const data: NewExpenseType = {
+      title: form.states.title.value,
+      amount: form.states.amount.value,
+      spentAt: toLocalDateWithoutTimezoneShift(form.states.spentAt.value),
+      groupId: group.value.id,
+      authorId: form.states.author.value,
+      categoryId: form.states.category.value.id,
+    }
+    expenseMutation.mutate(data)
   }
 </script>
 
@@ -54,63 +75,40 @@
     @submit="onFormSubmit"
     class="flex flex-col items-center gap-10 lg:w-2/3 mx-auto"
   >
-    <!-- Catégorie -->
-    <div class="w-full space-y-1">
+    <WrapperInput name="category" :form="$form" placeholder="Catégorie">
       <Select
-        v-if="group?.categories"
         editable
         showClear
+        v-if="group?.categories"
         name="category"
         :options="group.categories"
         optionLabel="label"
-        placeholder="Choisir une catégorie"
         class="w-full md:w-56"
-        :class="[`bg-${selectedCategory?.color}-700`, `hover:bg-${selectedCategory?.color}-600`]"
-        :labelClass="['capitalize', `text-white`]"
+        :labelClass="['capitalize', `text-${$form.category?.value?.color ?? 'gray'}-600`]"
       />
-      <Message v-if="$form.category?.invalid" severity="error" size="small" class="!w-full">{{
-        $form.category.error.message
-      }}</Message>
-    </div>
+    </WrapperInput>
 
-    <!-- Titre -->
-    <div class="w-full space-y-1">
-      <InputText placeholder="Nom" class="w-full" name="title" />
-      <Message v-if="$form.title?.invalid" severity="error" size="small" class="!w-full">{{
-        $form.title.error.message
-      }}</Message>
-    </div>
-
-    <!-- Montant -->
+    <FormInput name="title" placeholder="Nom" :form="$form" />
     <div class="flex gap-4 w-full items-end">
-      <div class="flex-1 space-y-1">
-        <InputNumber placeholder="Prix" class="w-full" name="amount" />
-        <Message v-if="$form.amount?.invalid" severity="error" size="small" class="!w-full">{{
-          $form.amount.error.message
-        }}</Message>
-      </div>
+      <WrapperInput :form="$form" name="amount" placeholder="Prix">
+        <InputNumber class="w-full" name="amount" />
+      </WrapperInput>
       <p class="text-3xl font-black mb-1">€</p>
     </div>
 
-    <!-- Auteur + Date -->
     <div class="flex justify-between w-full gap-4">
-      <Select
-        v-model="selectedAuthor"
-        :options="peoplesData.map((p) => p.pseudo)"
-        placeholder="Sélectionner une personne"
-        :labelClass="['capitalize']"
-        class="w-2/3"
-      />
-      <DatePicker
-        v-model="selectedDate"
-        showIcon
-        iconDisplay="input"
-        :default-value="new Date()"
-        placeholder="jj/mm/yyyy"
-        name="spendAt"
-      />
+      <WrapperInput :form="$form" name="author" placeholder="Auteur">
+        <Select
+          name="author"
+          :options="group?.members?.map((member) => member.memberId)"
+          :labelClass="['capitalize']"
+          class="w-2/3"
+        />
+      </WrapperInput>
+      <WrapperInput name="spentAt" :form="$form" placeholder="jj/mm/yyyy">
+        <DatePicker name="spentAt" showIcon iconDisplay="input" />
+      </WrapperInput>
     </div>
-
     <!-- Bouton -->
     <Button
       class="w-64"
