@@ -1,11 +1,16 @@
 <script setup lang="ts">
   import { Form, type FormSubmitEvent } from "@primevue/forms"
-  import { Button } from "primevue"
+  import { Button, RadioButton, RadioButtonGroup } from "primevue"
   import { computed, ref, watch } from "vue"
   import { ColorSchema } from "@/types/color"
   import BaseSection from "@/components/BaseSection.vue"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
-  import { NewGroupSchema, type GroupType, type NewGroupType } from "@/types/groupType"
+  import {
+    GroupTypeEnum,
+    NewGroupSchema,
+    type GroupType,
+    type NewGroupType,
+  } from "@/types/groupType"
   import SubHeader from "@/components/Header/SubHeader.vue"
   import ChoiceColor from "@/components/Space/NewSpace/ChoiceColor.vue"
   import CategoriesSelection from "@/components/Space/Form/CategoriesSelection.vue"
@@ -52,7 +57,7 @@
     if (selectedIndex.value === null) return
     const data: NewGroupType = {
       name: form.states.name.value,
-      type: "occasional",
+      type: form.states.type.value,
       color: ColorSchema.options.filter((color) => color !== "gray")[selectedIndex.value],
       categories: currentCategories.value,
     }
@@ -76,7 +81,7 @@
     v-slot="$form"
     :initialValues="{
       name: group?.name ?? '',
-      type: group?.type ?? 'daily',
+      type: group?.type,
     }"
     :resolver="zodResolver(NewGroupSchema)"
     @submit="onFormSubmit"
@@ -84,8 +89,18 @@
   >
     <FormInput class="w-full lg:w-3/4" placeholder="Nom du space" name="name" :form="$form" fluid />
     <Members />
-
-    <CategoriesSelection v-model="currentCategories" />
+    <BaseSection label="Type de groupe">
+      <RadioButtonGroup name="type" class="flex flex-wrap gap-4">
+        <div class="flex items-center gap-2">
+          <RadioButton :inputId="GroupTypeEnum.options[1]" :value="GroupTypeEnum.options[1]" />
+          <label :for="GroupTypeEnum.options[1]">Occasional</label>
+        </div>
+        <div class="flex items-center gap-2">
+          <RadioButton :inputId="GroupTypeEnum.options[2]" :value="GroupTypeEnum.options[2]" />
+          <label :for="GroupTypeEnum.options[2]">Régulier</label>
+        </div>
+      </RadioButtonGroup>
+    </BaseSection>
     <BaseSection label="Choisir la couleur">
       <div class="grid grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4">
         <ChoiceColor
@@ -97,6 +112,9 @@
         />
       </div>
     </BaseSection>
+
+    <CategoriesSelection v-model="currentCategories" />
+
     <div class="flex flex-col gap-3 w-64 self-center" v-if="group">
       <Button
         :class="[getSpaceColor({ color: group?.color })]"

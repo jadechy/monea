@@ -2,12 +2,12 @@ import { z } from "zod"
 import { UserSchema } from "./user"
 import { ColorSchema } from "./color"
 import { NewCategorySchema } from "./categoryType"
-
+export const GroupTypeEnum = z.enum(["personnal", "occasional", "daily"])
 export const GroupSchema = z.object({
   id: z.number(),
   name: z.string().max(255),
   createdAt: z.string(),
-  type: z.enum(["personnal", "occasional", "daily"]),
+  type: GroupTypeEnum,
   creator: UserSchema.shape.id,
   picture: z.string().max(255).nullable(),
   color: ColorSchema,
