@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Budget;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -87,7 +88,27 @@ class BudgetRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+    public function findDefaultBudgetByGroupAndMonth(string $groupeId, DateTimeImmutable $startDate): Budget
+    {
+        $endDate = $startDate->modify('+1 month');
 
+        $qb = $this->createQueryBuilder('b');
+
+        $qb->leftJoin('b.category', 'c')
+            ->leftJoin('c.groupe', 'g')
+            ->where('g.id = :groupeId')
+            ->andWhere('b.monthStart >= :startDate')
+            ->andWhere('b.monthStart < :endDate')
+            ->andWhere('c.label = :categoryLabel')
+            ->setParameter('groupeId', $groupeId)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->setParameter('categoryLabel', 'default')
+            ->orderBy('b.monthStart', 'ASC')
+            ->setMaxResults(1);
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
 
     //    /**
     //     * @return Budget[] Returns an array of Budget objects

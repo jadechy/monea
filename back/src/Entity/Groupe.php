@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use App\Controller\GroupeController;
+use App\DTO\GroupInputDTO;
 use App\Enum\ColorEnum;
 use App\Enum\GroupTypeEnum;
 use App\Repository\GroupeRepository;
@@ -15,7 +20,26 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     normalizationContext: ['groups' => ['groupe:read']],
-    denormalizationContext: ['groups' => ['groupe:write']]
+    denormalizationContext: ['groups' => ['groupe:write']],
+    operations: [
+        new Post(
+            uriTemplate: '/groupes',
+            controller: GroupeController::class  . '::postGroup',
+            name: 'groupe_new',
+            input: GroupInputDTO::class,
+            deserialize: true,
+            read: false,
+        ),
+        new Patch(
+            uriTemplate: '/groupes/{id}',
+            controller: GroupeController::class  . '::editGroup',
+            name: 'groupe_edit',
+            input: GroupInputDTO::class,
+            deserialize: true,
+            read: false,
+        ),
+        new Delete()
+    ]
 )]
 #[ORM\Entity(repositoryClass: GroupeRepository::class)]
 #[ORM\Table(name: 'MON_GROUPE')]
@@ -232,18 +256,17 @@ class Groupe
         return $this;
     }
 
-    public function removeCategory(Category $category): static
+
+    public function getDefaultCategory(): ?Category
     {
-        if ($this->categories->removeElement($category)) {
-            // set the owning side to null (unless already changed)
-            if ($category->getGroupe() === $this) {
-                $category->setGroupe(null);
+        foreach ($this->categories as $category) {
+            if ($category->getLabel() === 'default') {
+                return $category;
             }
         }
 
-        return $this;
+        return null;
     }
-
     public function getPicture(): ?string
     {
         return $this->picture;

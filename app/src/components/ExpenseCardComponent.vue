@@ -6,9 +6,10 @@
     <div>
       <p class="font-bold mb-2.5">{{ expense.title }}</p>
       <div class="flex items-center gap-2.5">
-        <div>
-          <ColoredLabelComponent :category="expense.category" />
-        </div>
+        <ColoredLabelComponent
+          v-if="expense.category.label !== 'default'"
+          :category="expense.category"
+        />
         <Chip :label="expense.creator.username" :image="expense.creator.picture ?? placeholder" />
       </div>
     </div>

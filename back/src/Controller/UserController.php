@@ -59,7 +59,6 @@ class UserController extends AbstractController
 
     public function me(): User
     {
-        // dd($this);
         $user = $this->getUser();
 
         if (!$user instanceof User) {

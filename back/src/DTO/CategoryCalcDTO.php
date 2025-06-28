@@ -3,7 +3,6 @@
 namespace App\DTO;
 
 use App\Enum\ColorEnum;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 class CategoryCalcDTO

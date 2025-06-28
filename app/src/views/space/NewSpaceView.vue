@@ -12,12 +12,14 @@
   import FormInput from "@/components/InputComponent/FormInput.vue"
   import Members from "@/components/Space/Form/Members.vue"
   import type { NewCategoryType } from "@/types/categoryType"
-  import { useMutation } from "@tanstack/vue-query"
+  import { useMutation, useQueryClient } from "@tanstack/vue-query"
   import router from "@/router"
   import { postGroup } from "@/services/groupService"
+  import { useAuthStore } from "@/stores/authStore"
 
   // Const
   defineProps<{}>()
+  const { user } = useAuthStore()
   const selectedIndex = ref<number | null>(null)
   const currentCategories = ref<NewCategoryType[]>([])
 
@@ -29,9 +31,11 @@
   }
 
   // Mutation
+  const queryClient = useQueryClient()
   const createGroupMutation = useMutation({
     mutationFn: (data: NewGroupType) => postGroup(data),
     onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["groups-by-user", user?.id] })
       router.push({ name: "spaces" })
     },
   })

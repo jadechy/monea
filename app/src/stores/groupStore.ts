@@ -21,8 +21,10 @@ export const useGroupsStore = defineStore("groups", () => {
   const groups = computed(() => data?.value ?? [])
 
   const groupsCount = computed(() => groups.value.length)
-  const groupById = ({ id }: { id: GroupType["id"] }) =>
-    groups.value.find((group) => group.id === Number(id))
+  const groupById = ({ id }: { id?: GroupType["id"] }) => {
+    if (id === undefined) return null
+    return groups.value.find((group) => group.id === Number(id))
+  }
 
   return {
     // State

@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Category;
 use App\Entity\Groupe;
 use App\Entity\User;
 use App\Enum\ColorEnum;
@@ -35,7 +36,13 @@ class GroupeFixtures extends Fixture implements DependentFixtureInterface
 
             $groupe->setCreator($faker->randomElement($users));
 
+
             $manager->persist($groupe);
+            $defaultCategory = new Category();
+            $defaultCategory->setLabel('default');
+            $defaultCategory->setColor(ColorEnum::Gray);
+            $defaultCategory->setGroupe($groupe);
+            $manager->persist($defaultCategory);
 
             $this->addReference('groupe_' . $i, $groupe);
         }
