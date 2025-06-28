@@ -12,7 +12,7 @@ export const fetchJson = <T extends z.ZodTypeAny>(params: Omit<RequestParams<T>,
 }
 
 export const patchJson = <T extends z.ZodTypeAny>(params: Omit<RequestParams<T>, "method">) => {
-  return requestJson({ ...params, method: "PATCH" })
+  return requestJson({ ...params, method: "PATCH", contentType: "application/merge-patch+json" })
 }
 
 export const deleteJson = <T extends z.ZodTypeAny>(params: Omit<RequestParams<T>, "method">) => {

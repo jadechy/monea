@@ -60,14 +60,16 @@
         size="small"
         :class="[getSpaceColor({ color: group.color })]"
         class="h-fit w-fit"
-        @click="router.push({ name: 'edit_paiement', params: { id: expense.id } })"
+        @click="
+          router.push({ name: 'edit_expense', params: { id: expense.id, space_id: space_id } })
+        "
       />
     </div>
     <BaseSection label="Participants" class="w-full" v-if="expense.participants">
       <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <PeopleComponent
           v-for="participant in expense.participants"
-          :key="participant.userId"
+          :key="participant.id"
           :user="participant"
         >
           <p>{{ expense.amount / expense.participants.length }} €</p>

@@ -6,7 +6,7 @@ import {
   type NewExpenseType,
 } from "@/types/expenseType"
 import type { GroupType } from "@/types/groupType"
-import { fetchJson, postJson } from "@/utils/apiMethods"
+import { deleteJson, fetchJson, patchJson, postJson } from "@/utils/apiMethods"
 import { z } from "zod"
 
 export const getExpenseById = (id: ExpenseType["id"]) =>
@@ -34,7 +34,20 @@ export const getExpensesByGroupAndCategory = (group_id: GroupType["id"]) =>
 
 export const postExpense = (expense: NewExpenseType) =>
   postJson({
-    url: "expense/new",
+    url: "expenses",
     body: expense,
     schema: z.object({ message: z.string() }),
+  })
+
+export const patchExpense = (expense_id: ExpenseType["id"], expense: NewExpenseType) =>
+  patchJson({
+    url: `expenses/${expense_id}`,
+    body: expense,
+    schema: z.object({ message: z.string() }),
+  })
+
+export const deleteExpense = (expense_id: ExpenseType["id"]) =>
+  deleteJson({
+    url: `expenses/${expense_id}`,
+    schema: z.any(),
   })

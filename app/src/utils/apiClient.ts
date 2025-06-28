@@ -57,9 +57,9 @@ export const requestJson = async <T extends z.ZodTypeAny>({
     }
   }
 
-  if (!res.ok) {
-    throw new Error(`Erreur API (${res.status})`)
-  }
+  if (res.status === 204) return null
+
+  if (!res.ok) throw new Error(`Erreur API (${res.status})`)
 
   const json = await res.json()
   const parsed = schema.safeParse(json)

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Controller\ExpenseController;
 use App\DTO\ExpenseInputDTO;
@@ -15,14 +17,24 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(operations: [
     new Post(
-        uriTemplate: '/expense/new',
+        uriTemplate: '/expenses',
         controller: ExpenseController::class  . '::postExpense',
         name: 'expense_new',
         input: ExpenseInputDTO::class,
         deserialize: true,
         read: false,
         validationContext: ['groups' => ['expense:write']],
-    )
+    ),
+    new Patch(
+        uriTemplate: '/expenses/{id}',
+        controller: ExpenseController::class  . '::updateExpense',
+        name: 'expense_edit',
+        input: ExpenseInputDTO::class,
+        deserialize: true,
+        read: false,
+        validationContext: ['groups' => ['expense:write']],
+    ),
+    new Delete()
 ])]
 #[ORM\Entity(repositoryClass: ExpenseRepository::class)]
 #[ORM\Table(name: 'MON_EXPENSE')]

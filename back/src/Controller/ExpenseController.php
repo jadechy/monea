@@ -16,6 +16,7 @@ use App\Repository\GroupeRepository;
 use App\Repository\ExpenseRepository;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
@@ -177,8 +178,6 @@ class ExpenseController extends AbstractController
     }
     public function postExpense($data): JsonResponse
     {
-
-
         $group = $this->em->getRepository(Groupe::class)->find($data->groupId);
         $category = $this->em->getRepository(Category::class)->find($data->categoryId);
         $creator = $this->em->getRepository(User::class)->find($data->authorId);
@@ -203,5 +202,40 @@ class ExpenseController extends AbstractController
         $this->em->flush();
 
         return $this->json(['message' => 'Dépense créé avec succès'], Response::HTTP_CREATED);
+    }
+
+    public function updateExpense(int $id, Request $request): JsonResponse
+    {
+        $expense = $this->em->getRepository(Expense::class)->find($id);
+
+        if (!$expense) {
+            return $this->json(['error' => 'Dépense introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = json_decode($request->getContent());
+
+        $group = $this->em->getRepository(Groupe::class)->find($data->groupId ?? $expense->getGroupe()->getId());
+        $category = $this->em->getRepository(Category::class)->find($data->categoryId ?? $expense->getCategory()->getId());
+        $creator = $this->em->getRepository(User::class)->find($data->authorId ?? $expense->getCreator()->getId());
+
+        if (!$group || !$category || !$creator) {
+            return $this->json(['error' => 'Références invalides'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $expense->setTitle($data->title ?? $expense->getTitle());
+        $expense->setAmount($data->amount ?? $expense->getAmount());
+        $expense->setSpentAt(new \DateTimeImmutable($data->spentAt ?? $expense->getSpentAt()->format('Y-m-d')));
+        $expense->setGroupe($group);
+        $expense->setCategory($category);
+        $expense->setCreator($creator);
+
+        $errors = $this->validator->validate($expense);
+        if (count($errors) > 0) {
+            return $this->json(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->em->flush();
+
+        return $this->json(['message' => 'Dépense mise à jour avec succès']);
     }
 }
