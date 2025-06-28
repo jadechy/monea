@@ -15,10 +15,10 @@
   import { truncateToTenth } from "@/utils/number"
   import { useQuery } from "@tanstack/vue-query"
   import Day from "./Day.vue"
-  import { useGroups } from "@/composables/useGroups"
+  import { useGroupsStore } from "@/stores/groupStore"
 
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
-  const { groupById } = useGroups()
+  const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: space_id }))
   const currentDate = ref<Date | null>(null)
   const currentMonth = ref<Date>(getCurrentMonthDate())

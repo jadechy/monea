@@ -11,15 +11,15 @@
   import type { ExpenseType } from "@/types/expenseType"
   import { getExpenseById } from "@/services/expenseService"
   import placeholder from "@/assets/placeholder_people.jpg"
-  import { useGroups } from "@/composables/useGroups"
   import type { GroupType } from "@/types/groupType"
   import { useQuery } from "@tanstack/vue-query"
+  import { useGroupsStore } from "@/stores/groupStore"
 
   // Props
   const props = defineProps<{ id: ExpenseType["id"]; space_id: GroupType["id"] }>()
 
   // Group
-  const { groupById } = useGroups()
+  const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: props.space_id }))
 
   // Const

@@ -10,9 +10,9 @@
   import { computed } from "vue"
   import { formatDateForApi, getCurrentMonthDate } from "@/utils/date"
   import { fetchAllBudgetCategoriesByGroup } from "@/services/budgetService"
-  import { useGroups } from "@/composables/useGroups"
   import ChartLayout from "@/components/Budget/ChartLayout.vue"
   import { useQuery } from "@tanstack/vue-query"
+  import { useGroupsStore } from "@/stores/groupStore"
 
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
 
@@ -24,7 +24,7 @@
     enabled: !!space_id,
   })
 
-  const { groupById } = useGroups()
+  const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: space_id }))
   const budgetCategories = computed(() => budgetCategoriesQuery.data.value ?? [])
 

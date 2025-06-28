@@ -15,7 +15,6 @@
       username: form.states.pseudonym.value,
       password: form.states.password.value,
     })
-    router.push({ name: "spaces" })
   }
 </script>
 

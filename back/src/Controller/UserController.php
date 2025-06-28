@@ -3,13 +3,17 @@
 namespace App\Controller;
 
 use App\DTO\UserRegisterDTO;
+use App\Entity\Groupe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
 use App\Entity\User;
+use App\Enum\ColorEnum;
+use App\Enum\GroupTypeEnum;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\TextUI\XmlConfiguration\Group;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -48,10 +52,22 @@ class UserController extends AbstractController
         $user->setRoles(["ROLE_USER"]);
         // $user->setBirthday($input->birthday);
 
+
         $hashedPassword = $this->passwordHasher->hashPassword($user, $input->password);
         $user->setPassword($hashedPassword);
 
+
+
         $this->em->persist($user);
+
+        $group = new Groupe();
+        $group->setName("Personnel");
+        $group->setType(GroupTypeEnum::PERSONNAL);
+        $group->setCreator($user);
+        $group->setCreatedAt(new \DateTimeImmutable());
+        $group->setColor(ColorEnum::Pink);
+        $group->setPicture('');
+        $this->em->persist($group);
         $this->em->flush();
 
         return $this->json(['message' => 'Utilisateur créé avec succès'], Response::HTTP_CREATED);

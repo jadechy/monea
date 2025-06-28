@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import AllExpensesLayout from "@/components/Display/AllExpensesDisplay.vue"
-  import { useGroups } from "@/composables/useGroups"
   import { getAllExpensesByGroup } from "@/services/expenseService"
+  import { useGroupsStore } from "@/stores/groupStore"
   import type { GroupType } from "@/types/groupType"
   import { useQuery } from "@tanstack/vue-query"
   import { computed } from "vue"
@@ -9,7 +9,8 @@
   // Props
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
   // Group
-  const { groupById } = useGroups()
+
+  const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: space_id }))
   // Query
   const { data: expenses } = useQuery({

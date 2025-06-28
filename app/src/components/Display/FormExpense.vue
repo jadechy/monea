@@ -4,7 +4,6 @@
   import { getSpaceColor } from "@/utils/getColor"
   import type { GroupType } from "@/types/groupType"
   import { computed } from "vue"
-  import { useGroups } from "@/composables/useGroups"
   import { Form, type FormSubmitEvent } from "@primevue/forms"
   import { NewExpenseSchema, type ExpenseType, type NewExpenseType } from "@/types/expenseType"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
@@ -13,10 +12,11 @@
   import { useAuthStore } from "@/stores/authStore"
   import { toLocalDateWithoutTimezoneShift } from "@/utils/date"
   import { useExpenseMutation } from "@/composables/useExpenseMutation"
+  import { useGroupsStore } from "@/stores/groupStore"
   // Props
   const { space_id, id } = defineProps<{ space_id: GroupType["id"]; id?: ExpenseType["id"] }>()
   // Store
-  const { groupById } = useGroups()
+  const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: space_id }))
   const { user } = useAuthStore()
 

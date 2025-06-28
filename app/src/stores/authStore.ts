@@ -4,6 +4,7 @@ import { defineStore } from "pinia"
 import { ref, computed, readonly } from "vue"
 import { useGroupsStore } from "./groupStore"
 import { useMutation } from "@tanstack/vue-query"
+import router from "@/router"
 
 export interface AuthResponse {
   token: string
@@ -98,6 +99,7 @@ export const useAuthStore = defineStore("auth", () => {
       }
 
       saveToStorage()
+      router.push({ name: "spaces" })
       const groupStore = useGroupsStore()
       await groupStore.refetch()
     },

@@ -3,12 +3,12 @@
   import { computed } from "vue"
 
   import AllPaiementsLayout from "@/components/Display/AllExpensesDisplay.vue"
-  import { useGroups } from "@/composables/useGroups"
   import { fetchCategory } from "@/services/categoryService"
   import { getExpensesByGroupAndCategory } from "@/services/expenseService"
 
   import type { CategoryType } from "@/types/categoryType"
   import type { GroupType } from "@/types/groupType"
+  import { useGroupsStore } from "@/stores/groupStore"
 
   // Props
   const props = defineProps<{
@@ -17,7 +17,7 @@
   }>()
 
   // Group
-  const { groupById } = useGroups()
+  const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: props.space_id }))
 
   // Queries

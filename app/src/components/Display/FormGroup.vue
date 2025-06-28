@@ -68,7 +68,7 @@
   <SubHeader
     :label="group ? group.name : 'Nouveau space'"
     :color="group ? group.color : 'gray'"
-    :routeName="group ? 'space' : 'home'"
+    :routeName="group ? 'space' : 'spaces'"
     :params="group ? { space_id: group.id } : {}"
   />
 
@@ -111,12 +111,13 @@
         label="Supprimer le groupe"
       />
     </div>
-    <Button
-      class="w-64"
-      :class="[getSpaceColor({ color: 'gray' })]"
-      type="submit"
-      v-else
-      label="Créer le groupe"
-    />
+    <div v-else class="flex justify-center">
+      <Button
+        class="w-64"
+        :class="[getSpaceColor({ color: 'gray' })]"
+        type="submit"
+        label="Créer le groupe"
+      />
+    </div>
   </Form>
 </template>
