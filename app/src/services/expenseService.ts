@@ -1,4 +1,4 @@
-import { formatDateForApi } from "@/utils/date"
+import { formatDateISO } from "@/utils/date"
 import {
   ExpenseDateSchema,
   ExpenseSchema,
@@ -22,7 +22,7 @@ export const getAllExpensesByGroup = (group_id: GroupType["id"]) =>
   })
 export const getMonthlyExpensesByGroup = (group_id: GroupType["id"], month: Date) =>
   fetchJson({
-    url: `expenses/groupe/${group_id}/mois/${formatDateForApi(month)}/list`,
+    url: `expenses/groupe/${group_id}/mois/${formatDateISO(month)}/list`,
     schema: ExpenseDateSchema,
   })
 

@@ -3,8 +3,10 @@ import type { LoginRequestType, MeType, RegisterRequestType } from "@/types/auth
 import { defineStore } from "pinia"
 import { ref, computed, readonly } from "vue"
 import { useGroupsStore } from "./groupStore"
-import { useMutation } from "@tanstack/vue-query"
+import { useMutation, useQueryClient } from "@tanstack/vue-query"
 import router from "@/router"
+import type { UserEditType } from "@/types/user"
+import { editUser } from "@/services/userService"
 
 export interface AuthResponse {
   token: string
@@ -78,6 +80,7 @@ export const useAuthStore = defineStore("auth", () => {
     error.value = null
     clearStorage()
   }
+  const queryClient = useQueryClient()
 
   const loginMutation = useMutation({
     mutationFn: (params: LoginRequestType) => loginAuth(params),
@@ -87,7 +90,7 @@ export const useAuthStore = defineStore("auth", () => {
     },
     onSuccess: async (res) => {
       if (!res) throw new Error("Identifiants incorrects")
-
+      queryClient.invalidateQueries({ queryKey: ["profil"] })
       token.value = res.token
       if (res.refreshToken) {
         refreshToken.value = res.refreshToken
@@ -160,13 +163,27 @@ export const useAuthStore = defineStore("auth", () => {
       throw err
     }
   }
+  const updateUser = useMutation({
+    mutationFn: (data: UserEditType) => editUser(data),
+    onMutate: () => {
+      isLoading.value = true
+      error.value = null
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["profil"] })
 
-  const updateUser = (userData: Partial<RegisterRequestType>) => {
-    if (user.value) {
-      user.value = { ...user.value, ...userData }
+      const resMe = await me()
+      if (resMe) {
+        user.value = resMe
+      }
+
       saveToStorage()
-    }
-  }
+      router.push({ name: "profil" })
+    },
+    onSettled: () => {
+      isLoading.value = false
+    },
+  })
 
   return {
     token: readonly(token),

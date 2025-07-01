@@ -48,9 +48,10 @@ export const MeSchema = UserSchema.pick({
   email: true,
   name: true,
   lastname: true,
-  // birthday: UserSchema.shape.birthday,
+  birthday: true,
   username: true,
   picture: true,
   roles: true,
+  createdAt: true,
 })
 export type MeType = z.infer<typeof MeSchema>

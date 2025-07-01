@@ -1,5 +1,6 @@
 import { z } from "zod"
-const isAdult = (date: Date) => {
+const isAdult = (date: Date | string) => {
+  if (typeof date === "string") date = new Date(date)
   const now = new Date()
   const age = now.getFullYear() - date.getFullYear()
   const hasHadBirthdayThisYear =
@@ -38,14 +39,15 @@ export const UserSchema = z.object({
     })
     .email({ message: "L'adresse email n'est pas valide" }),
 
-  birthday: z
-    .date({
-      message: "La date de naissance est requise",
-      invalid_type_error: "La date de naissance doit être une date valide",
-    })
-    .refine(isAdult, {
+  birthday: z.preprocess(
+    (val) => {
+      if (typeof val === "string" || val instanceof Date) return new Date(val)
+      return val
+    },
+    z.date().refine(isAdult, {
       message: "Vous devez avoir au moins 18 ans",
     }),
+  ),
 
   password: z.string({
     message: "Le mot de passe est requis",
@@ -58,16 +60,40 @@ export const UserSchema = z.object({
     })
     .min(1, { message: "Au moins un rôle est requis" }),
 
-  createdAt: z
-    .string({
-      required_error: "La date de création est requise",
-    })
-    .datetime({ message: "La date de création doit être une date ISO valide" }),
+  createdAt: z.preprocess(
+    (val) => {
+      if (typeof val === "string" || val instanceof Date) {
+        const d = new Date(val)
+        return isNaN(d.getTime()) ? undefined : d
+      }
+      return undefined
+    },
+    z.date({ message: "La date de création doit être une date valide" }),
+  ),
 
   picture: z.string().optional(),
 
   resetToken: z.string().nullable(),
 })
+
+export const UserEditSchema = UserSchema.pick({
+  username: true,
+  lastname: true,
+  name: true,
+  email: true,
+  picture: true,
+  birthday: true,
+})
+// .extend({
+//   birthday: z
+//     .string({
+//       message: "La date de naissance est requise",
+//       invalid_type_error: "La date de naissance doit être une date valide",
+//     })
+//     .refine(isAdult, {
+//       message: "Vous devez avoir au moins 18 ans",
+//     }),
+// })
 
 export const UserInOtherSchema = UserSchema.pick({
   id: true,
@@ -77,3 +103,4 @@ export const UserInOtherSchema = UserSchema.pick({
 
 export type UserInOtherType = z.infer<typeof UserInOtherSchema>
 export type UserType = z.infer<typeof UserSchema>
+export type UserEditType = z.infer<typeof UserEditSchema>

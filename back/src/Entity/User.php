@@ -8,11 +8,13 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use App\Controller\UserController;
+use App\DTO\UserEditDTO;
 use App\DTO\UserRegisterDTO;
 use App\Enum\UserRoleEnum;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -41,7 +43,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
             deserialize: false,
             normalizationContext: ['groups' => ['user:me']],
         ),
-        new Patch(),
+        new Patch(
+            uriTemplate: '/users/edit',
+            controller: UserController::class  . '::updateUser',
+            name: 'user_edit',
+            input: UserEditDTO::class,
+            deserialize: true,
+            read: false,
+            denormalizationContext: ['groups' => ['user:write']],
+        ),
         new Delete(),
     ],
     normalizationContext: ['groups' => ['user:read']],
@@ -125,7 +135,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [UserRoleEnum::USER];
 
     #[ORM\Column(name: 'USR_CREATED_AT')]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     /**
@@ -174,6 +184,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     #[Groups(['user:read', 'user:write'])]
     private ?string $resetToken = null;
+
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, name: "USR_BIRTHDAY", nullable: false)]
+    #[Groups(['user:me'])]
+    private \DateTimeImmutable $birthday;
 
 
     public function __construct()
@@ -438,6 +452,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setResetToken(?string $resetToken): static
     {
         $this->resetToken = $resetToken;
+
+        return $this;
+    }
+
+    public function getBirthday(): ?\DateTimeImmutable
+    {
+        return $this->birthday;
+    }
+
+    public function setBirthday(\DateTimeImmutable $birthday): static
+    {
+        $this->birthday = $birthday;
 
         return $this;
     }

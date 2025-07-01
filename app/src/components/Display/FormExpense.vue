@@ -10,7 +10,7 @@
   import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
   import FormInput from "@/components/InputComponent/FormInput.vue"
   import { useAuthStore } from "@/stores/authStore"
-  import { toLocalDateWithoutTimezoneShift } from "@/utils/date"
+  import { convertToLocalDate } from "@/utils/date"
   import { useExpenseMutation } from "@/composables/useExpenseMutation"
   import { useGroupsStore } from "@/stores/groupStore"
   // Props
@@ -49,7 +49,7 @@
     const data: NewExpenseType = {
       title: form.states.title.value,
       amount: form.states.amount.value,
-      spentAt: toLocalDateWithoutTimezoneShift(form.states.spentAt.value),
+      spentAt: convertToLocalDate(form.states.spentAt.value),
       groupId: group.value.id,
       authorId: form.states.author.value,
       categoryId: form.states.category.value.id,

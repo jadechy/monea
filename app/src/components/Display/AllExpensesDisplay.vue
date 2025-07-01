@@ -6,7 +6,7 @@
   import SubHeader from "@/components/Header/SubHeader.vue"
   import type { TitleComponentProps } from "@/components/Header/TitleComponent.vue"
   import router from "@/router"
-  import { formatDateToDayMonth } from "@/utils/date"
+  import { formatDayMonth } from "@/utils/date"
   import { getSpaceColor } from "@/utils/getColor"
   import { Button } from "primevue"
   import type { ExpenseDateType } from "@/types/expenseType"
@@ -56,7 +56,7 @@
     <BaseSection
       v-if="Object.keys(safeExpensesDate).length > 0"
       v-for="([date, expenses], index) in Object.entries(safeExpensesDate)"
-      :label="formatDateToDayMonth(new Date(date))"
+      :label="formatDayMonth(new Date(date))"
       :key="index"
     >
       <div class="grid gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">

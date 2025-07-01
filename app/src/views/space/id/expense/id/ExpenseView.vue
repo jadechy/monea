@@ -2,7 +2,7 @@
   import SubHeader from "@/components/Header/SubHeader.vue"
   import { computed } from "vue"
   import ColoredLabelComponent from "@/components/CategoryLabel.vue"
-  import { formatDateToDayMonth } from "@/utils/date"
+  import { formatDayMonth } from "@/utils/date"
   import BaseSection from "@/components/BaseSection.vue"
   import PeopleComponent from "@/components/PeopleComponent.vue"
   import { Button, Chip } from "primevue"
@@ -45,7 +45,7 @@
         <div class="flex gap-3 items-end">
           <p class="font-bold text-4xl">{{ expense.amount }} €</p>
           <p v-if="expense.spentAt">
-            <i class="pi pi-calendar mr-1"></i>{{ formatDateToDayMonth(new Date(expense.spentAt)) }}
+            <i class="pi pi-calendar mr-1"></i>{{ formatDayMonth(new Date(expense.spentAt)) }}
           </p>
         </div>
 

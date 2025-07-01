@@ -29,7 +29,11 @@ class UserFixtures extends Fixture
             $user->setName($faker->firstName);
             $user->setLastname($faker->lastName);
             $user->setEmail($faker->unique()->safeEmail);
+            $birthday = \DateTimeImmutable::createFromMutable(
+                $faker->dateTimeBetween('-80 years', '-18 years')
+            );
 
+            $user->setBirthday($birthday);
             // Mot de passe commun "password123" hashé
             $user->setPlainPassword('password123');
 
