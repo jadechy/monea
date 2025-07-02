@@ -1,12 +1,18 @@
 import { loginAuth, me } from "@/services/authService"
-import type { LoginRequestType, MeType, RegisterRequestType } from "@/types/authType"
+import type {
+  LoginRequestType,
+  LoginResponseType,
+  MeType,
+  RegisterRequestType,
+} from "@/types/authType"
 import { defineStore } from "pinia"
 import { ref, computed, readonly } from "vue"
 import { useGroupsStore } from "./groupStore"
-import { useMutation, useQueryClient } from "@tanstack/vue-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query"
 import router from "@/router"
 import type { UserEditType } from "@/types/user"
 import { editUser } from "@/services/userService"
+import { useRoute } from "vue-router"
 
 export interface AuthResponse {
   token: string
@@ -20,6 +26,7 @@ export const useAuthStore = defineStore("auth", () => {
   const user = ref<MeType | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  const route = useRoute()
 
   const isAuthenticated = computed(() => !!token.value)
   const userInitials = computed(() => {
@@ -56,6 +63,7 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   const saveToStorage = () => {
+    console.log(token.value)
     if (token.value) {
       localStorage.setItem(TOKEN_KEY, token.value)
     }
@@ -80,6 +88,24 @@ export const useAuthStore = defineStore("auth", () => {
     error.value = null
     clearStorage()
   }
+  const authSuccess = async (res: LoginResponseType) => {
+    console.log(res)
+    token.value = res.token
+    if (res.refresh_token) {
+      refreshToken.value = res.refresh_token
+    }
+
+    const resMe = await me()
+    if (resMe) {
+      user.value = resMe
+    }
+    saveToStorage()
+
+    router.push({ name: "spaces" })
+    const groupStore = useGroupsStore()
+    await groupStore.refetch()
+  }
+
   const queryClient = useQueryClient()
 
   const loginMutation = useMutation({
@@ -91,44 +117,20 @@ export const useAuthStore = defineStore("auth", () => {
     onSuccess: async (res) => {
       if (!res) throw new Error("Identifiants incorrects")
       queryClient.invalidateQueries({ queryKey: ["profil"] })
-      token.value = res.token
-      if (res.refreshToken) {
-        refreshToken.value = res.refreshToken
-      }
-
-      const resMe = await me()
-      if (resMe) {
-        user.value = resMe
-      }
-
-      saveToStorage()
-      router.push({ name: "spaces" })
-      const groupStore = useGroupsStore()
-      await groupStore.refetch()
+      await authSuccess(res)
     },
     onSettled: () => {
       isLoading.value = false
     },
   })
 
-  const logout = async () => {
-    isLoading.value = true
-
-    try {
-      if (token.value) {
-        await fetch("/api/auth/logout", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token.value}`,
-            "Content-Type": "application/json",
-          },
-        })
-      }
-    } catch (err) {
-      console.error("Erreur lors de la déconnexion:", err)
-    } finally {
-      clearAuth()
-      isLoading.value = false
+  const loginGoogle = async () => {
+    const res: LoginResponseType = route.query as LoginResponseType
+    console.log(res)
+    if (res.token) {
+      await authSuccess(res)
+    } else {
+      router.push({ name: "login" })
     }
   }
 
@@ -170,7 +172,7 @@ export const useAuthStore = defineStore("auth", () => {
       error.value = null
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: ["profil"] })
+      queryClient.invalidateQueries({ queryKey: ["profil", "me"] })
 
       const resMe = await me()
       if (resMe) {
@@ -196,7 +198,7 @@ export const useAuthStore = defineStore("auth", () => {
 
     initAuth,
     loginMutation,
-    logout,
+    loginGoogle,
     refreshAuthToken,
     updateUser,
 

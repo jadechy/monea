@@ -37,7 +37,7 @@ export type LoginRequestType = z.infer<typeof LoginRequestSchema>
 /// Response
 export const LoginResponseSchema = z.object({
   token: TokenSchema,
-  refreshToken: TokenSchema.optional(),
+  refresh_token: TokenSchema.optional(),
 })
 
 export type LoginResponseType = z.infer<typeof LoginResponseSchema>
