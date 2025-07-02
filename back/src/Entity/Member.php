@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\MemberRepository;
+use App\Enum\MemberStatusEnum;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -17,6 +18,10 @@ class Member
     #[ORM\Column(name: 'MBR_ADD_ON')]
     #[Groups(['member:read'])]
     private ?\DateTimeImmutable $addOn = null;
+
+    #[ORM\Column(name: 'MBR_STATUS', enumType: MemberStatusEnum::class)]
+    #[Groups(['groupe:read', 'member:read', 'user:read'])]
+    private MemberStatusEnum $status;
 
     #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'members')]
@@ -50,6 +55,18 @@ class Member
     public function setAddOn(\DateTimeImmutable $addOn): static
     {
         $this->addOn = $addOn;
+
+        return $this;
+    }
+
+    public function getStatus(): MemberStatusEnum
+    {
+        return $this->status;
+    }
+
+    public function setStatus(MemberStatusEnum $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Groupe;
 use App\Entity\Member;
 use App\Entity\User;
+use App\Enum\MemberStatusEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -24,6 +25,7 @@ class MemberFixtures extends Fixture implements DependentFixtureInterface
             $member->setIndividual($user);
             $member->setRole($roles[$i]);
             $member->setAddOn(new \DateTimeImmutable(sprintf('-%d days', $i * 5)));
+            $member->setStatus(MemberStatusEnum::PENDING);
 
             $manager->persist($member);
         }
