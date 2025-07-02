@@ -4,15 +4,21 @@ namespace App\DTO;
 
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Operation;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\ExpenseController;
 use App\Entity\Expense;
 
 #[ApiResource(operations: [
     new Get(
+        uriTemplate: '/expenses/{id}',
+        controller: ExpenseController::class . '::getExpenseById',
+        read: false,
+        name: 'expense_id',
+        normalizationContext: ['groups' => ['expense:read']]
+    ),
+    new GetCollection(
         uriTemplate: '/expenses/groupe/{groupeId}/list',
         controller: ExpenseController::class . '::getAllExpenseByGroup',
         uriVariables: [
@@ -25,7 +31,7 @@ use App\Entity\Expense;
         ],
         normalizationContext: ['groups' => ['expense:read']]
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/expenses/groupe/{groupeId}/mois/{monthStart}/list',
         controller: ExpenseController::class . '::getAllExpenseByGroupAndMonth',
         uriVariables: [
@@ -40,7 +46,7 @@ use App\Entity\Expense;
         ],
         normalizationContext: ['groups' => ['expense:read']]
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/expenses/groupe/{groupeId}/week/{day}/list',
         controller: ExpenseController::class . '::getAllExpenseByGroupAndDay',
         uriVariables: [
@@ -55,7 +61,7 @@ use App\Entity\Expense;
         ],
         normalizationContext: ['groups' => ['expense:read']]
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/expenses/groupe/{groupeId}/day/{day}/list',
         controller: ExpenseController::class . '::getAllExpenseByGroupAndDay',
         uriVariables: [
@@ -70,7 +76,7 @@ use App\Entity\Expense;
         ],
         normalizationContext: ['groups' => ['expense:read']]
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/expenses/category/{categoryId}/list',
         controller: ExpenseController::class . '::getAllExpensesByCategory',
         uriVariables: [
@@ -83,7 +89,7 @@ use App\Entity\Expense;
         ],
         normalizationContext: ['groups' => ['expense:read']]
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/expenses/category/{categoryId}/{monthStart}/list',
         controller: ExpenseController::class . '::getAllExpensesByCategoryAndMonth',
         uriVariables: [
@@ -97,7 +103,7 @@ use App\Entity\Expense;
             'monthStart' => '\d{4}-\d{2}-\d{2}'
         ],
         normalizationContext: ['groups' => ['expense:read']]
-    )
+    ),
 ])]
 class ExpenseDTO
 {
@@ -120,10 +126,10 @@ class ExpenseDTO
     public int $groupe;
 
     #[Groups(['expense:read'])]
-    public int $category;
+    public array $category;
 
     #[Groups(['expense:read'])]
-    public int $creator;
+    public array $creator;
 
     #[Groups(['expense:read'])]
     public array $participants;
@@ -139,16 +145,24 @@ class ExpenseDTO
         $this->createdAt = $expense->getCreatedAt()->format('Y-m-d');
         $this->spentAt = $expense->getSpentAt()->format('Y-m-d');
 
-        $this->category = $expense->getCategory()?->getId();
+        $this->category = [
+            'id' => $expense->getCategory()->getId(),
+            'label' => $expense->getCategory()->getLabel(),
+            'color' => $expense->getCategory()->getColor()
+        ];
         $this->groupe = $expense->getGroupe()?->getId();
-        $this->creator = $expense->getCreator()?->getId();
+        $this->creator = [
+            'id' => $expense->getCreator()->getId(),
+            'username' => $expense->getCreator()->getUsername(),
+            'picture' => $expense->getCreator()->getPicture()
+        ];
         $this->recurringExpense = $expense->getRecurringExpense()?->getId();
 
-        foreach ($expense->getParticipants() as $participant){
+        foreach ($expense->getParticipants() as $participant) {
             $this->participants[] = [
-                'userId' => $participant?->getId(),
+                'id' => $participant?->getId(),
                 'username' => $participant?->getUsername(),
-                'name' => $participant?->getName()
+                'picture' => $participant?->getPicture()
             ];
         }
     }

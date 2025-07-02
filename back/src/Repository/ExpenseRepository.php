@@ -47,8 +47,8 @@ class ExpenseRepository extends ServiceEntityRepository
 
     public function findExpensesByCategoryAndDate(int $catId, \DateTimeInterface $date)
     {
-        $start = (clone $date)->modify('first day of this month')->setTime(0,0,0);
-        $end = (clone $date)->modify('last day of this month')->setTime(23,59,59);
+        $start = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
+        $end = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
 
         return $this->createQueryBuilder('e')
             ->leftJoin('e.category', 'c')
@@ -60,6 +60,63 @@ class ExpenseRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findExpensesByGroupAndYear($groupeId, $year)
+    {
+        $startDate = new \DateTimeImmutable("$year-01-01");
+        $endDate = $startDate->modify('+1 year');
+
+        $qb = $this->createQueryBuilder('e');
+        $qb->select(
+            "SUBSTRING(e.spentAt, 1, 7) AS month",
+            "c.id AS categoryId",
+            "c.label AS categoryLabel",
+            "c.color AS categoryColor",
+            "SUM(e.amount) AS totalAmount"
+        )
+            ->join('e.category', 'c')
+            ->join('e.groupe', 'g')
+            ->where('g.id = :groupId')
+            ->andWhere('e.spentAt >= :startDate')
+            ->andWhere('e.spentAt < :endDate')
+            ->groupBy('month, categoryId, categoryLabel, categoryColor')
+            ->orderBy('month', 'ASC')
+            ->setParameter('groupId', $groupeId)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate);
+
+        $results = $qb->getQuery()->getResult();
+
+        return $results;
+    }
+
+    public function findExpensesByGroupAndMonth($groupeId, $month)
+    {
+        $startDate = new \DateTimeImmutable($month);
+        $endDate = $startDate->modify('+1 month');
+
+        $qb = $this->createQueryBuilder('e');
+        $qb->select(
+            "SUBSTRING(e.spentAt, 1, 10) AS spendAt",
+            "c.id AS categoryId",
+            "c.label AS categoryLabel",
+            "c.color AS categoryColor",
+            "SUM(e.amount) AS totalAmount"
+        )
+            ->join('e.category', 'c')
+            ->join('e.groupe', 'g')
+            ->where('g.id = :groupId')
+            ->andWhere('e.spentAt >= :startDate')
+            ->andWhere('e.spentAt < :endDate')
+            ->groupBy('spendAt', 'c.id', 'c.label', 'c.color')
+            ->orderBy('spendAt', 'ASC')
+            ->setParameter('groupId', $groupeId)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate);
+
+        return $qb->getQuery()->getResult();
+    }
+
 
     //    /**
     //     * @return Expense[] Returns an array of Expense objects

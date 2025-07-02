@@ -15,7 +15,9 @@
   },
   "dependencies": {
     "@primeuix/themes": "^1.1.1",
+    "@primevue/forms": "^4.3.5",
     "@tailwindcss/vite": "^4.1.8",
+    "@tanstack/vue-query": "^5.81.2",
     "chart.js": "^4.4.9",
     "pinia": "^3.0.3",
     "primeicons": "^7.0.0",

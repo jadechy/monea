@@ -16,6 +16,8 @@ services:
     build:
       context: ./back
       dockerfile: Dockerfile
+      args:
+        TIMEZONE: Europe/Paris
     volumes:
       - ./back:/var/www/html
       - vendor-data:/var/www/html/vendor

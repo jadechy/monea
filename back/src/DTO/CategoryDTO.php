@@ -2,17 +2,16 @@
 
 namespace App\DTO;
 
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Operation;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\CategoryController;
 use App\Entity\Category;
+use App\Enum\ColorEnum;
 
 #[ApiResource(operations: [
-    new Get(
+    new GetCollection(
         uriTemplate: '/categories/{groupeId}/list',
         controller: CategoryController::class . '::getCategoryByGroup',
         uriVariables: [
@@ -26,14 +25,14 @@ use App\Entity\Category;
 ])]
 class CategoryDTO
 {
-    #[Groups(['category:read'])]
+    #[Groups(['category:read', 'expense:read'])]
     public int $id;
 
-    #[Groups(['category:read'])]
+    #[Groups(['category:read', 'expense:read'])]
     public string $label;
 
-    #[Groups(['category:read'])]
-    public string $color;
+    #[Groups(['category:read', 'expense:read'])]
+    public ColorEnum $color;
 
     public function __construct(Category $category)
     {

@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Enum\ColorEnum;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource]
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
@@ -19,25 +21,35 @@ class Category
     private int $id;
 
     #[ORM\Column(length: 50, name: 'CAT_LABEL')]
+    #[Assert\NotBlank(message: "Le libellé est obligatoire.")]
+    #[Assert\Length(
+        min: 3,
+        max: 50,
+        minMessage: "Le libellé doit faire au moins {{ limit }} caractères.",
+        maxMessage: "Le libellé ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $label = null;
 
-    #[ORM\Column(length: 8, name: 'CAT_COLOR')]
-    private ?string $color = null;
+    #[ORM\Column(length: 8, name: 'CAT_COLOR', enumType: ColorEnum::class, type: "string")]
+    #[Assert\NotNull(message: "La couleur est obligatoire.")]
+    #[Assert\Choice(callback: [ColorEnum::class, 'cases'], message: "La couleur choisie n'est pas valide.")]
+    private ?ColorEnum $color = null;
 
     /**
      * @var Collection<int, Expense>
      */
-    #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'category')]
+    #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'category', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $expenses;
 
     #[ORM\ManyToOne(inversedBy: 'categories')]
     #[ORM\JoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID')]
+    #[Assert\NotNull(message: "Le groupe est obligatoire.")]
     private Groupe $groupe;
 
     /**
      * @var Collection<int, Budget>
      */
-    #[ORM\OneToMany(targetEntity: Budget::class, mappedBy: 'category')]
+    #[ORM\OneToMany(targetEntity: Budget::class, mappedBy: 'category',  cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $budgets;
 
     public function __construct()
@@ -63,12 +75,12 @@ class Category
         return $this;
     }
 
-    public function getColor(): ?string
+    public function getColor(): ?ColorEnum
     {
         return $this->color;
     }
 
-    public function setColor(string $color): static
+    public function setColor(ColorEnum $color): static
     {
         $this->color = $color;
 

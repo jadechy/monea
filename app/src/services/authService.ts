@@ -1,15 +1,35 @@
-import { postJson } from "@/lib/api"
-import {loginResponseSchema } from "@/types/auth"
+import {
+  LoginResponseSchema,
+  MeSchema,
+  RegisterResponseSchema,
+  type LoginRequestType,
+  type RegisterRequestType,
+} from "@/types/authType"
+import { fetchJson, postJson } from "@/utils/apiMethods"
 
-export const login = async (username: string, password: string) => {
-  try {
-    return await postJson({
-      url: "login",
-      body: { username, password },
-      responseSchema: loginResponseSchema,
-    })
-  } catch (error) {
-    console.error("Erreur lors du post de l'utilisateur :", error)
-    return null
-  }
-}
+export const loginAuth = ({ username, password }: LoginRequestType) =>
+  postJson({
+    url: "login",
+    body: { username, password },
+    schema: LoginResponseSchema,
+  })
+
+export const registerAuth = ({
+  username,
+  password,
+  confirmPassword,
+  name,
+  email,
+  lastname,
+}: RegisterRequestType) =>
+  postJson({
+    url: "register",
+    body: { username, password, confirmPassword, name, lastname, email },
+    schema: RegisterResponseSchema,
+  })
+
+export const me = () =>
+  fetchJson({
+    url: `me`,
+    schema: MeSchema,
+  })

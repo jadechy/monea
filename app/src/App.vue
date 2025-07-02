@@ -1,11 +1,14 @@
 <script setup lang="ts">
   import { RouterView } from "vue-router"
-  import Header from "./components/Header.vue"
+  import { useAuthStore } from "./stores/authStore"
+  import { onBeforeMount } from "vue"
+  const auth = useAuthStore()
+
+  onBeforeMount(() => {
+    auth.initAuth()
+  })
 </script>
 
 <template>
-  <Header />
-  <main class="lg:px-10 px-5">
-    <RouterView />
-  </main>
+  <RouterView />
 </template>

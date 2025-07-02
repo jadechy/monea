@@ -12,41 +12,26 @@ class BudgetFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        // Exemple de budgets à créer
-        $budgetsData = [
-            [
-                'amount' => 500.00,
-                'monthStart' => new \DateTimeImmutable('2025-06-01'),
-                'category_ref' => 'category_0',
-            ],
-            [
-                'amount' => 200.00,
-                'monthStart' => new \DateTimeImmutable('2025-06-01'),
-                'category_ref' => 'category_1',
-            ],
-            [
-                'amount' => 150.00,
-                'monthStart' => new \DateTimeImmutable('2025-07-01'),
-                'category_ref' => 'category_2',
-            ],
-        ];
+        $budgetsCount = 0;
 
-        foreach ($budgetsData as $index => $data) {
+        for ($i = 0; $i < 20; $i++) {
+            /** @var Category $category */
+            $category = $this->getReference('category_' . $i, Category::class);
+
+            if ($i % 7 > 1) continue;
             $budget = new Budget();
-            $budget->setAmount($data['amount']);
-            $budget->setMonthStart($data['monthStart']);
-
-            // Récupérer la catégorie via référence
-            $budget->setCategory($this->getReference($data['category_ref'], Category::class));
+            $budget->setAmount(mt_rand(100, 500));
+            $budget->setMonthStart(new \DateTimeImmutable('2025-06-01'));
+            $budget->setCategory($category);
 
             $manager->persist($budget);
-
-            // Optionnel : référence pour réutiliser dans d'autres fixtures
-            $this->addReference('budget_' . $index, $budget);
+            $this->addReference('budget_' . $budgetsCount, $budget);
+            $budgetsCount++;
         }
 
         $manager->flush();
     }
+
     public function getDependencies(): array
     {
         return [

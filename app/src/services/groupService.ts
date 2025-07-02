@@ -1,44 +1,38 @@
-import { fetchJson, postJson } from "@/lib/api"
-import { CategorySchema } from "@/types/category"
-import { GroupSchema, GroupDTOSchema } from "@/types/group"
-import { type CreateUserInputType, type UserType } from "@/types/user"
+import { CategorySchema } from "@/types/categoryType"
+import { GroupSchema, type GroupType, type NewGroupType } from "@/types/groupType"
+import { MemberInGroupSchema } from "@/types/memberType"
+import { type UserType } from "@/types/user"
+import { deleteJson, fetchJson, patchJson, postJson } from "@/utils/apiMethods"
+import { z } from "zod"
 
-export const createGroup = async (input: CreateUserInputType) => {
-  try {
-    return await postJson({ url: "users", body: input, responseSchema: GroupSchema })
-  } catch (error) {
-    console.error("Erreur lors du post de l'utilisateur :", error)
-    return null
-  }
-}
-export const fetchAllGroup = async () => {
-  try {
-    return await fetchJson({ url: "users", schema: GroupSchema.array() })
-  } catch (error) {
-    console.error("Erreur lors du fetch des utilisateurs :", error)
-    return null
-  }
-}
-export const fetchGroup = async (id: string) => {
-  try {
-    return await fetchJson({
-      url: `groupes/${id}`,
-      schema: GroupSchema,
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch de l'utilisateur :", error)
-    return null
-  }
-}
+export const FetchGroupByUserSchema = GroupSchema.extend({
+  members: MemberInGroupSchema.array().optional(),
+  categories: CategorySchema.array().optional(),
+})
+export type FetchGroupByUserType = z.infer<typeof FetchGroupByUserSchema>
 
-export const fetchGroupByUser = async (userId: UserType["id"]) => {
-  try {
-    return await fetchJson({
-      url: `groupes/${userId}/list`,
-      schema: GroupSchema.array(),
-    })
-  } catch (error) {
-    console.error("Erreur lors du fetch de l'utilisateur :", error)
-    return null
-  }
-}
+export const getGroupByUser = (userId: UserType["id"]) =>
+  fetchJson({
+    url: `groupes/${userId}/list`,
+    schema: FetchGroupByUserSchema.array(),
+  })
+
+export const postGroup = (group: NewGroupType) =>
+  postJson({
+    url: "groupes",
+    body: group,
+    schema: z.object({ message: z.string() }),
+  })
+
+export const editGroup = (groupId: GroupType["id"], group: NewGroupType) =>
+  patchJson({
+    url: `groupes/${groupId}`,
+    body: group,
+    schema: z.object({ message: z.string() }),
+  })
+
+export const deleteGroup = (groupId: GroupType["id"]) =>
+  deleteJson({
+    url: `groupes/${groupId}`,
+    schema: z.any(),
+  })

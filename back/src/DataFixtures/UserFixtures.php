@@ -2,10 +2,13 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Groupe;
 use App\Entity\User;
+use App\Enum\ColorEnum;
+use App\Enum\GroupTypeEnum;
+use App\Enum\UserRoleEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Faker\Factory;
 
 class UserFixtures extends Fixture
@@ -26,20 +29,30 @@ class UserFixtures extends Fixture
             $user->setName($faker->firstName);
             $user->setLastname($faker->lastName);
             $user->setEmail($faker->unique()->safeEmail);
+            $birthday = \DateTimeImmutable::createFromMutable(
+                $faker->dateTimeBetween('-80 years', '-18 years')
+            );
 
+            $user->setBirthday($birthday);
             // Mot de passe commun "password123" hashé
             $user->setPlainPassword('password123');
 
-            // Role alterné entre ROLE_USER et ROLE_ADMIN
-            $roles = $i % 3 === 0 ? ['ROLE_ADMIN'] : ['ROLE_USER'];
-            $user->setRoles($roles);
+            $user->setRoles([$faker->randomElement(UserRoleEnum::cases())]);
 
             $user->setCreatedAt(new \DateTimeImmutable('-' . $faker->numberBetween(0, 365) . ' days'));
 
-            // Optionnel : photo d'avatar via faker (url d'image)
             $user->setPicture($faker->imageUrl(200, 200, 'people', true));
 
             $manager->persist($user);
+
+            $group = new Groupe();
+            $group->setName("Personnel");
+            $group->setType(GroupTypeEnum::PERSONNAL);
+            $group->setCreator($user);
+            $group->setCreatedAt(new \DateTimeImmutable());
+            $group->setColor(ColorEnum::Pink);
+            $group->setPicture('');
+            $manager->persist($group);
             $this->addReference('user_' . $i, $user);
         }
 

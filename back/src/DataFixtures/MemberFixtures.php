@@ -6,15 +6,18 @@ use App\Entity\Groupe;
 use App\Entity\Member;
 use App\Entity\User;
 use App\Enum\MemberStatusEnum;
+use App\Enum\MemberRoleEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Faker\Factory;
 
 class MemberFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        $roles = ['admin', 'member', 'guest', 'editor', 'viewer'];
+        $faker = Factory::create('fr_FR');
+
 
         for ($i = 0; $i < 5; $i++) {
             $member = new Member();
@@ -23,7 +26,7 @@ class MemberFixtures extends Fixture implements DependentFixtureInterface
 
             $member->setGroupe($groupe);
             $member->setIndividual($user);
-            $member->setRole($roles[$i]);
+            $member->setRole($faker->randomElement(MemberRoleEnum::cases()));
             $member->setAddOn(new \DateTimeImmutable(sprintf('-%d days', $i * 5)));
             $member->setStatus(MemberStatusEnum::PENDING);
 

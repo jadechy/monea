@@ -1,14 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router"
-import HomeView from "../views/HomeView.vue"
-import SpaceView from "@/views/SpaceView.vue"
-import NewSpaceView from "@/views/NewSpaceView.vue"
-import ProfilView from "@/views/ProfilView.vue"
-import BudgetView from "@/views/BudgetView.vue"
-import BudgetCategoryView from "@/views/BudgetCategoryView.vue"
-import BudgetForecastView from "@/views/BudgetForecastView.vue"
-import ExpenseView from "@/views/ExpenseView.vue"
-import NewExpenseView from "@/views/NewExpenseView.vue"
-import LoginView from "@/views/LoginView.vue"
+import spaceRouter from "./spaceRouter"
+import { useAuthStore } from "@/stores/authStore"
+import authRouter from "./authRouter"
+import HomeView from "@/views/HomeView.vue"
+import NotFoundView from "@/views/NotFoundView.vue"
+import profilRouter from "./profilRouter"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,72 +15,23 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: "/space/:id",
-      name: "space",
-      props: true,
-      component: SpaceView,
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: NotFoundView,
     },
-    {
-      path: "/space/:id/edit",
-      name: "edit_space",
-      props: true,
-      component: NewSpaceView,
-    },
-    {
-      path: "/new-space",
-      name: "new_space",
-      component: NewSpaceView,
-      props: true,
-    },
-    {
-      path: "/space/:space_id/budget",
-      name: "budget_space",
-      component: BudgetView,
-      props: true,
-    },
-    {
-      path: "/space/:space_id/budget/:category_id",
-      name: "category_budget_space",
-      component: BudgetCategoryView,
-      props: true,
-    },
-    {
-      path: "/space/:space_id/budget/forecast",
-      name: "forecast_budget_space",
-      component: BudgetForecastView,
-      props: true,
-    },
-    {
-      path: "/space/:space_id/expense/:id",
-      name: "expense",
-      props: true,
-      component: ExpenseView,
-    },
-    {
-      path: "/space/:space_id/new-expense",
-      name: "new_expense",
-      props: true,
-      component: NewExpenseView,
-    },
-    {
-      path: "/space/:space_id/:id/edit",
-      name: "edit_paiement",
-      props: true,
-      component: NewExpenseView,
-    },
-
-    {
-      path: "/profil",
-      name: "profil",
-      component: ProfilView,
-    },
-
-    {
-      path: "/login",
-      name: "login",
-      component: LoginView,
-    },
+    ...profilRouter,
+    ...authRouter,
+    ...spaceRouter,
   ],
 })
-
+router.beforeEach((to, _from, next) => {
+  const authStore = useAuthStore()
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next({ name: "login" })
+  } else if ((to.name === "login" || to.name === "register") && authStore.isAuthenticated) {
+    next({ name: "spaces" })
+  } else {
+    next()
+  }
+})
 export default router

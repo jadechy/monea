@@ -4,19 +4,25 @@ namespace App\DTO;
 
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Operation;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\BudgetController;
 use App\Entity\Budget;
 
 #[ApiResource(operations: [
-    new Get(
+    new GetCollection(
         uriTemplate: '/budgets/{groupeId}/{monthStart}/list',
         controller: BudgetController::class . '::getBudgetByGroupe',
         read: false,
         name: 'budget_list',
+        normalizationContext: ['groups' => ['budget:read']]
+    ),
+    new GetCollection(
+        uriTemplate: '/budgets/{groupeId}/{monthStart}/remaining/list',
+        controller: BudgetController::class . '::getRemainingBudgetList',
+        read: false,
+        name: 'budget_remaining_list',
         normalizationContext: ['groups' => ['budget:read']]
     ),
     new Get(
@@ -60,16 +66,21 @@ class BudgetDTO
     #[Groups(['budget:read'])]
     public array $category;
 
-    public function __construct(Budget $budget)
+    public function __construct(Budget $budget, float $amountCalc = null)
     {
         $category = $budget->getCategory();
 
         $this->id = $budget->getId();
-        $this->amount = $budget->getAmount();
+        if ($amountCalc) {
+            $this->amount = $amountCalc;
+        } else {
+            $this->amount = $budget->getAmount();
+        }
+
         $this->monthStart = $budget->getMonthStart()->format('Y-m-d');
 
         $this->category = [
-            'categoryId' => $category->getId(),
+            'id' => $category->getId(),
             'label' => $category->getLabel(),
             'color' => $category->getColor()
         ];

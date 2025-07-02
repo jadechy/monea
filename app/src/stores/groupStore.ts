@@ -1,34 +1,44 @@
-import { fetchGroupByUser } from "@/services/groupService"
-import type { GroupType } from "@/types/group"
-import type { UserType } from "@/types/user"
+import { getGroupByUser } from "@/services/groupService"
+import type { GroupType } from "@/types/groupType"
 import { defineStore } from "pinia"
+import { computed, ref } from "vue"
+import { useAuthStore } from "./authStore"
+import { useQuery } from "@tanstack/vue-query"
 
-export const useGroupStore = defineStore("group", {
-  state: () => ({
-    groups: [] as GroupType[],
-    isLoaded: false,
-  }),
-
-  actions: {
-    async fetchGroups(user_id: UserType["id"]) {
-      if (this.isLoaded) return
-      const res = await fetchGroupByUser(user_id)
-      if (res === null) return
-      this.groups = res
-      this.isLoaded = true
+export const useGroupsStore = defineStore("groups", () => {
+  const { user } = useAuthStore()
+  const { data, refetch, isLoading } = useQuery({
+    queryKey: ["groups-by-user", user?.id],
+    queryFn: async () => {
+      if (!user) throw new Error("Utilisateur non connecté")
+      return await getGroupByUser(user.id)
     },
+    enabled: !!user,
+    staleTime: 1000 * 60 * 5,
+  })
 
-    async getGroups() {
-      if (!this.isLoaded) await this.fetchGroups(1)
-      return this.groups
-    },
+  const groups = computed(() => data?.value ?? [])
 
-    async getGroupById(group_id: number) {
-      if (!this.isLoaded) await this.fetchGroups(1)
-      this.groups.map((group) => console.log(group.id, group_id))
-      const findGroup = this.groups.find((group) => group.id === Number(group_id))
-      if (!findGroup) return
-      return findGroup
-    },
-  },
+  const groupById = ({ id }: { id?: GroupType["id"] }) => {
+    if (id === undefined) return null
+    return groups.value.find((group) => group.id === Number(id))
+  }
+  const groupsNotPersonnal = computed(() =>
+    groups.value.filter((group) => group.type !== "personnal"),
+  )
+  const groupsCount = computed(() => groupsNotPersonnal.value.length)
+
+  const personnalGroup = computed(() => groups.value.find((group) => group.type === "personnal"))
+  return {
+    // State
+    groups: groupsNotPersonnal,
+    personnalGroup,
+    // Getters
+    groupsCount,
+    groupById,
+    isLoading,
+
+    // Actions
+    refetch,
+  }
 })

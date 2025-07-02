@@ -1,13 +1,10 @@
 <script setup lang="ts">
-  import PersonalSpace from "@/layouts/Home/PersonalSpace.vue"
-  import AllSpaceCard from "@/layouts/Home/AllSpace.vue"
-  import AddAction from "@/components/AddAction.vue"
+  import { RouterLink } from "vue-router"
 </script>
 
 <template>
-  <div class="mt-5">
-    <PersonalSpace />
-    <AllSpaceCard />
-  </div>
-  <AddAction route-name="new_space" />
+  <p>home</p>
+  <RouterLink :to="{ name: 'login' }" class="btn">Se connecter</RouterLink>
 </template>
+
+<style></style>

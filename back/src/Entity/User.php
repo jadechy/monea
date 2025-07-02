@@ -3,18 +3,57 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use App\Controller\UserController;
+use App\DTO\UserEditDTO;
+use App\DTO\UserRegisterDTO;
+use App\Enum\UserRoleEnum;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/register',
+            controller: UserController::class  . '::register',
+            name: 'user_register',
+            input: UserRegisterDTO::class,
+            deserialize: true,
+            read: false,
+            denormalizationContext: ['groups' => ['user:write']],
+        ),
+        new Get(),
+        new Get(
+            uriTemplate: '/me',
+            controller: UserController::class  . '::me',
+            name: 'me',
+            read: false,
+            write: false,
+            deserialize: false,
+            normalizationContext: ['groups' => ['user:me']],
+        ),
+        new Patch(
+            uriTemplate: '/users/edit',
+            controller: UserController::class  . '::updateUser',
+            name: 'user_edit',
+            input: UserEditDTO::class,
+            deserialize: true,
+            read: false,
+            denormalizationContext: ['groups' => ['user:write']],
+        ),
+        new Delete(),
+    ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']]
 )]
@@ -27,7 +66,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'USR_ID')]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:me'])]
     private int $id;
 
     #[ORM\Column(length: 50, name: 'USR_USERNAME', unique: true)]
@@ -38,33 +77,65 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         minMessage: "Le nom d'utilisateur doit comporter au moins {{ limit }} caractères.",
         maxMessage: "Le nom d'utilisateur ne peut pas dépasser {{ limit }} caractères."
     )]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
     private string $username;
 
     #[ORM\Column(length: 50, name: 'USR_NAME')]
-    #[Groups(['user:read', 'user:write'])]
+    #[Assert\NotBlank(message: "Le prénom ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: "Le prénom doit comporter au moins {{ limit }} caractères.",
+        maxMessage: "Le prénom ne peut pas dépasser {{ limit }} caractères."
+    )]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 50, name: 'USR_LASTNAME')]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
+    #[Assert\NotBlank(message: "Le nom de famille ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: "Le nom de famille doit comporter au moins {{ limit }} caractères.",
+        maxMessage: "Le nom de famille ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $lastname = null;
 
-    #[ORM\Column(length: 255, name: 'USR_EMAIL')]
-    #[Groups(['user:read', 'user:write'])]
+    #[ORM\Column(length: 180, name: 'USR_EMAIL')]
+    #[Assert\NotBlank(message: "L'email ne peut pas être vide.")]
+    #[Assert\Email(message: "L'email '{{ value }}' n'est pas une adresse email valide.")]
+    #[Assert\Length(
+        min: 5,
+        max: 180,
+        minMessage: "L'email doit comporter au moins {{ limit }} caractères.",
+        maxMessage: "L'email ne peut pas dépasser {{ limit }} caractères."
+    )]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255, name: 'USR_PASSWORD')]
+    #[ORM\Column(length: 128, name: 'USR_PASSWORD')]
     #[Groups(['user:read', 'user:write'])]
+    #[Assert\NotBlank(message: "Le mot de passe ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 8,
+        max: 128,
+        minMessage: "Le mot de passe doit comporter au moins {{ limit }} caractères.",
+        maxMessage: "Le mot de passe ne peut pas dépasser {{ limit }} caractères."
+    )]
     private string $password;
 
     private ?string $plainPassword = null;
 
-    #[ORM\Column(type: 'json', name: 'USR_ROLES')]
-    #[Groups(['user:read', 'user:write'])]
-    private array $roles = [];
+    #[ORM\Column(type: 'json', name: 'USR_ROLES', enumType: UserRoleEnum::class)]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
+    /**
+     * @var array<int, UserRoleEnum::class|string>
+     */
+    private array $roles = [UserRoleEnum::USER];
 
     #[ORM\Column(name: 'USR_CREATED_AT')]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     /**
@@ -98,13 +169,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write'])]
     private Collection $shareExpenses;
 
-    #[ORM\Column(length: 255, name: 'USR_PICTURE')]
-    #[Groups(['user:read', 'user:write'])]
+    #[ORM\Column(length: 255, name: 'USR_PICTURE', nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le chemin de la photo ne peut pas dépasser {{ limit }} caractères."
+    )]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
     private ?string $picture = null;
 
     #[ORM\Column(length: 255, name: 'USR_RESET_TOKEN', nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le token de réinitialisation ne peut pas dépasser {{ limit }} caractères."
+    )]
     #[Groups(['user:read', 'user:write'])]
     private ?string $resetToken = null;
+
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, name: "USR_BIRTHDAY", nullable: false)]
+    #[Groups(['user:me'])]
+    private \DateTimeImmutable $birthday;
+
+    #[ORM\Column(length: 255, nullable: true, unique: true, name: 'USR_GOOGLE_ID')]
+    private ?string $googleId = null;
+
 
     public function __construct()
     {
@@ -191,12 +278,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
+        $roles = array_map(fn(UserRoleEnum $role) => $role->value, $this->roles ?? []);
+        
+        $roles[] = UserRoleEnum::USER->value;
+         return array_unique($roles);
     }
-
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -219,8 +305,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-    * @see UserInterface
-    */
+     * @see UserInterface
+     */
     public function eraseCredentials(): void {}
 
     public function getCreatedAt(): ?\DateTimeImmutable
@@ -369,6 +455,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setResetToken(?string $resetToken): static
     {
         $this->resetToken = $resetToken;
+
+        return $this;
+    }
+
+    public function getBirthday(): ?\DateTimeImmutable
+    {
+        return $this->birthday;
+    }
+
+    public function setBirthday(\DateTimeImmutable $birthday): static
+    {
+        $this->birthday = $birthday;
+
+        return $this;
+    }
+
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
+    }
+
+    public function setGoogleId(?string $googleId): static
+    {
+        $this->googleId = $googleId;
 
         return $this;
     }
