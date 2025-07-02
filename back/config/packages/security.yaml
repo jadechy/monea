@@ -33,6 +33,13 @@ security:
       refresh_jwt:
         check_path: /api/token/refresh
       entry_point: jwt
+
+    oauth:
+      pattern: ^/connect
+      stateless: false
+      provider: app_user_provider
+      custom_authenticators:
+        - App\Security\GoogleAuthenticator
     main:
       lazy: true
       provider: app_user_provider
@@ -48,6 +55,7 @@ security:
   access_control:
     - { path: ^/api/login, roles: PUBLIC_ACCESS }
     - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
+    - { path: ^/connect, roles: PUBLIC_ACCESS }
     # - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

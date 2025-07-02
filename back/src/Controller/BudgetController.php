@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
 use App\DTO\BudgetDTO;
-use App\DTO\CategoryCalcDTO;
 use App\Entity\Groupe;
 use App\Repository\BudgetRepository;
 use App\Repository\GroupeRepository;

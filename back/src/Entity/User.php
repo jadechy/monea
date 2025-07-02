@@ -189,6 +189,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:me'])]
     private \DateTimeImmutable $birthday;
 
+    #[ORM\Column(length: 255, nullable: true, unique: true, name: 'USR_GOOGLE_ID')]
+    private ?string $googleId = null;
+
 
     public function __construct()
     {
@@ -277,7 +280,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = array_map(fn(UserRoleEnum $role) => $role->value, $this->roles ?? []);
 
-        $roles[] = 'ROLE_USER';
+        $roles[] = UserRoleEnum::USER;
         return array_unique($roles);
     }
     public function setRoles(array $roles): static
@@ -464,6 +467,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setBirthday(\DateTimeImmutable $birthday): static
     {
         $this->birthday = $birthday;
+
+        return $this;
+    }
+
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
+    }
+
+    public function setGoogleId(?string $googleId): static
+    {
+        $this->googleId = $googleId;
 
         return $this;
     }
