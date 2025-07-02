@@ -6,7 +6,7 @@
   import TabPanel from "primevue/tabpanel"
   import ChartCategory from "./ChartCategory.vue"
   import type { BudgetByCategoryType } from "@/types/budgetType"
-  import { formatDateForApi, getCurrentMonthDate } from "@/utils/date"
+  import { formatDateISO, getCurrentMonthStartDate } from "@/utils/date"
   import ChartCategoryBalance from "./ChartCategoryBalance.vue"
   import ChartLinearEvolution from "./ChartLinearEvolution.vue"
   import type { GroupType } from "@/types/groupType"
@@ -25,7 +25,7 @@
         <ChartCategory
           :budgets="
             budgets.filter(
-              (budget) => budget.monthStart === formatDateForApi(getCurrentMonthDate()),
+              (budget) => budget.monthStart === formatDateISO(getCurrentMonthStartDate()),
             )
           "
         />

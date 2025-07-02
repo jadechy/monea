@@ -51,7 +51,7 @@
     :style="{ width: '25rem' }"
     @update:visible="emit('update:modelValue', $event)"
   >
-    <FloatLabel variant="on">
+    <FloatLabel variant="on" class="mt-1">
       <InputText id="label" v-model="categoryState.label" />
       <label for="label">Nom</label>
     </FloatLabel>

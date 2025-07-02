@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { getCurrentMonthString } from "@/utils/date"
+  import { getCurrentMonthIsoString } from "@/utils/date"
   import { truncateToTenth } from "@/utils/number"
   import { fetchBudgetGroup, fetchBudgetGroupDateRemaining } from "@/services/budgetService"
   import { computed } from "vue"
@@ -17,8 +17,8 @@
     queryKey: ["budget", initialBudget ? "initial" : "remaining", Number(space_id)],
     queryFn: () => {
       return initialBudget
-        ? fetchBudgetGroup(space_id, getCurrentMonthString())
-        : fetchBudgetGroupDateRemaining(space_id, getCurrentMonthString())
+        ? fetchBudgetGroup(space_id, getCurrentMonthIsoString())
+        : fetchBudgetGroupDateRemaining(space_id, getCurrentMonthIsoString())
     },
   })
   const budget = computed(() => budgetQuery.data.value?.amount ?? 0)

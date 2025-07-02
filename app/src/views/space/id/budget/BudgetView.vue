@@ -8,39 +8,24 @@
   import type { GroupType } from "@/types/groupType"
   import { Button } from "primevue"
   import { computed } from "vue"
-  import { formatDateForApi, getCurrentMonthDate } from "@/utils/date"
+  import { formatDateISO, getCurrentMonthStartDate } from "@/utils/date"
   import { fetchAllBudgetCategoriesByGroup } from "@/services/budgetService"
-  import { useGroups } from "@/composables/useGroups"
   import ChartLayout from "@/components/Budget/ChartLayout.vue"
   import { useQuery } from "@tanstack/vue-query"
+  import { useGroupsStore } from "@/stores/groupStore"
 
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
 
-  const budgetCategoriesQuery = useQuery({
-    queryKey: ["budgetCategories", space_id, getCurrentMonthDate()],
+  const { data: budgetCategories } = useQuery({
+    queryKey: ["budgetCategories", space_id, getCurrentMonthStartDate()],
     queryFn: () => {
-      return fetchAllBudgetCategoriesByGroup(space_id, getCurrentMonthDate())
+      return fetchAllBudgetCategoriesByGroup(space_id, getCurrentMonthStartDate())
     },
     enabled: !!space_id,
   })
 
-  const { groupById } = useGroups()
+  const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: space_id }))
-  const budgetCategories = computed(() => budgetCategoriesQuery.data.value ?? [])
-
-  // const budgetCategories = ref<BudgetByCategoryType[]>([])
-
-  // onMounted(async () => {
-  //   const resultBudgetCategories = await fetchAllBudgetCategoriesByGroup(
-  //     space_id,
-  //     getCurrentMonthDate(),
-  //   )
-  //   if (resultBudgetCategories === null) {
-  //     error.value = "Erreur lors du chargement des utilisateurs"
-  //   } else {
-  //     budgetCategories.value = resultBudgetCategories
-  //   }
-  // })
 </script>
 
 <template>
@@ -66,13 +51,16 @@
         @click="router.push({ name: 'forecast_budget_space', params: { id: group?.id } })"
       />
     </section>
-    <BaseSection label="Budget du mois par catégories" v-if="budgetCategories.length > 0">
+    <BaseSection
+      label="Budget du mois par catégories"
+      v-if="budgetCategories && budgetCategories.length > 0"
+    >
       <div class="grid gap-2 grid-cols-2 md:grid-cols-3">
         <router-link
           v-for="(budget, i) in budgetCategories.filter(
             (budget) =>
               budget.category.label !== 'default' &&
-              budget.monthStart === formatDateForApi(getCurrentMonthDate()),
+              budget.monthStart === formatDateISO(getCurrentMonthStartDate()),
           )"
           :to="{
             name: 'category_budget_space',
@@ -87,6 +75,11 @@
         </router-link>
       </div>
     </BaseSection>
-    <ChartLayout :budgets="budgetCategories" :group_id="space_id" />
+    <p v-else>Créer vos budgets</p>
+    <ChartLayout
+      v-if="budgetCategories && budgetCategories.length > 0"
+      :budgets="budgetCategories"
+      :group_id="space_id"
+    />
   </div>
 </template>

@@ -23,6 +23,7 @@ const buttonRoot: ButtonTokenSections.Root = {
     background: "{primitive.pink.500}",
     activeBackground: "{primitive.pink.500}",
     color: "{primitive.pink.500}",
+    focusRing: {},
   },
   borderRadius: "300px",
 }

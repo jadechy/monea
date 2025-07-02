@@ -2,10 +2,10 @@
   import BaseSection from "@/components/BaseSection.vue"
   import PaiementCardComponent from "@/components/ExpenseCardComponent.vue"
   import {
-    firstDayOfMonth,
-    formatDateForApi,
-    formatDateToDayMonth,
-    getCurrentMonthDate,
+    getCurrentMonthIsoString,
+    formatDateISO,
+    formatDayMonth,
+    getCurrentMonthStartDate,
   } from "@/utils/date"
   import type { GroupType } from "@/types/groupType"
   import { DatePicker } from "primevue"
@@ -15,15 +15,15 @@
   import { truncateToTenth } from "@/utils/number"
   import { useQuery } from "@tanstack/vue-query"
   import Day from "./Day.vue"
-  import { useGroups } from "@/composables/useGroups"
+  import { useGroupsStore } from "@/stores/groupStore"
 
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
-  const { groupById } = useGroups()
+  const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: space_id }))
   const currentDate = ref<Date | null>(null)
-  const currentMonth = ref<Date>(getCurrentMonthDate())
+  const currentMonth = ref<Date>(getCurrentMonthStartDate())
 
-  const currentMonthFormatted = computed(() => formatDateForApi(currentMonth.value))
+  const currentMonthFormatted = computed(() => formatDateISO(currentMonth.value))
   console.log(group)
   // Query
   const { data: expenses, refetch: refetchExpenses } = useQuery({
@@ -52,12 +52,12 @@
         inline
         v-on:month-change="
           (e) => {
-            currentMonth = firstDayOfMonth(new Date(e.year, e.month - 1))
+            currentMonth = getCurrentMonthIsoString(new Date(e.year, e.month - 1))
           }
         "
         v-on:year-change="
           (e: any) => {
-            currentMonth = firstDayOfMonth(new Date(e.year, e.month - 1))
+            currentMonth = getCurrentMonthIsoString(new Date(e.year, e.month - 1))
           }
         "
         panel-class="border-none shadow rounded-xl "
@@ -76,8 +76,8 @@
           <p>Budget restant à date</p>
           <p class="font-bold" v-if="monthData">
             {{
-              monthData[formatDateForApi(currentDate)]
-                ? truncateToTenth(monthData[formatDateForApi(currentDate)].remaining)
+              monthData[formatDateISO(currentDate)]
+                ? truncateToTenth(monthData[formatDateISO(currentDate)].remaining)
                 : 0
             }}€
           </p>
@@ -86,12 +86,12 @@
       </div>
 
       <BaseSection
-        :label="formatDateToDayMonth(currentDate)"
-        v-if="currentDate && expenses && expenses[formatDateForApi(currentDate)]"
+        :label="formatDayMonth(currentDate)"
+        v-if="currentDate && expenses && expenses[formatDateISO(currentDate)]"
       >
         <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           <PaiementCardComponent
-            v-for="expense in expenses[formatDateForApi(currentDate)]"
+            v-for="expense in expenses[formatDateISO(currentDate)]"
             :key="expense.id"
             :expense="expense"
           />

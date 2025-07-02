@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref, watchEffect } from "vue"
   import Chart from "primevue/chart"
-  import { formatDateToDayMonth, getCurrentMonthDate, getCurrentMonthDays } from "@/utils/date"
+  import { formatDayMonth, getCurrentMonthStartDate, getDaysOfCurrentMonth } from "@/utils/date"
   import { fetchCategoryByGroup } from "@/services/categoryService"
   import { getMonthlyExpensesByGroup } from "@/services/expenseService"
   import type { GroupType } from "@/types/groupType"
@@ -11,13 +11,13 @@
   const { group_id } = defineProps<{ group_id: GroupType["id"] }>()
 
   // Const
-  const days = getCurrentMonthDays()
-  const labels = days.map((d) => formatDateToDayMonth(d))
+  const days = getDaysOfCurrentMonth()
+  const labels = days.map((d) => formatDayMonth(d))
 
   // Query
   const { data: expenses } = useQuery({
     queryKey: ["expenses-monthly-group", group_id],
-    queryFn: () => getMonthlyExpensesByGroup(group_id, getCurrentMonthDate()),
+    queryFn: () => getMonthlyExpensesByGroup(group_id, getCurrentMonthStartDate()),
   })
 
   const { data: categories } = useQuery({

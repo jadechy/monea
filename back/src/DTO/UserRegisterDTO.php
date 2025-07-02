@@ -2,6 +2,7 @@
 
 namespace App\DTO;
 
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -24,10 +25,10 @@ class UserRegisterDTO
     #[Groups(['user:write'])]
     public string $lastname;
 
-    // #[Assert\NotBlank]
-    // #[Groups(['user:write'])]
-    // #[Assert\Type("\DateTimeInterface")]
-    // public \DateTimeInterface $birthday;
+    #[Assert\NotBlank]
+    #[Groups(['user:write'])]
+    #[Assert\Type(Types::DATE_IMMUTABLE)]
+    public \DateTimeImmutable $birthday;
 
     #[Assert\NotBlank]
     #[Groups(['user:write'])]

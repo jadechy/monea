@@ -54,5 +54,5 @@ export const getSpaceColor = ({
   outlined?: boolean
 }) =>
   outlined
-    ? `hover:bg-${color}-50 text-${color}-900 border-${color}-600`
+    ? `hover:border-${color}-700! text-${color}-800 border-${color}-600!`
     : `bg-${color}-600 hover:bg-${color}-700 text-${color}-50 bg-${color}-500 border-${color}-600`

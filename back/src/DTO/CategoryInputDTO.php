@@ -3,7 +3,6 @@
 namespace App\DTO;
 
 use App\Enum\ColorEnum;
-use App\Enum\GroupTypeEnum;
 
 
 class CategoryInputDTO

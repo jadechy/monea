@@ -81,19 +81,27 @@ class ExpenseController extends AbstractController
         );
     }
 
-    public function getAllExpenseByGroup($groupeId)
+    public function getAllExpenseByGroup($groupeId): JsonResponse
     {
+        if ($groupeId <= 0) {
+            return new JsonResponse(['error' => 'ID de groupe invalide'], Response::HTTP_BAD_REQUEST);
+        }
         $groupe = $this->groupeRepository->find($groupeId);
-
+        if (!$groupe) {
+            return new JsonResponse(['error' => 'Groupe not found'], Response::HTTP_NOT_FOUND);
+        }
         $expensesData = $this->expenseRepository->findBy(['groupe' => $groupe]);
 
         $expenses = $this->createExpenseArray($expensesData);
 
+
         $json = $this->serializer->serialize($expenses, 'json', [
             'groups' => ['expense:read'],
         ]);
-
-        return new JsonResponse($json, 200, [], true);
+        if ($json === '[]') {
+            $json = '{}';
+        }
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
     public function getAllExpenseByGroupAndMonth($groupeId, $monthStart)
@@ -126,6 +134,9 @@ class ExpenseController extends AbstractController
             'groups' => ['expense:read'],
         ]);
 
+        if ($json === '[]') {
+            $json = '{}';
+        }
         return new JsonResponse($json, 200, [], true);
     }
 
@@ -144,6 +155,9 @@ class ExpenseController extends AbstractController
             'groups' => ['expense:read'],
         ]);
 
+        if ($json === '[]') {
+            $json = '{}';
+        }
         return new JsonResponse($json, 200, [], true);
     }
 
@@ -159,6 +173,9 @@ class ExpenseController extends AbstractController
             'groups' => ['expense:read'],
         ]);
 
+        if ($json === '[]') {
+            $json = '{}';
+        }
         return new JsonResponse($json, 200, [], true);
     }
 
@@ -174,6 +191,9 @@ class ExpenseController extends AbstractController
             'groups' => ['expense:read'],
         ]);
 
+        if ($json === '[]') {
+            $json = '{}';
+        }
         return new JsonResponse($json, 200, [], true);
     }
     public function postExpense($data): JsonResponse

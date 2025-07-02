@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router"
-import ProfilView from "@/views/ProfilView.vue"
 import spaceRouter from "./spaceRouter"
 import { useAuthStore } from "@/stores/authStore"
 import authRouter from "./authRouter"
 import HomeView from "@/views/HomeView.vue"
 import NotFoundView from "@/views/NotFoundView.vue"
+import profilRouter from "./profilRouter"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,16 +15,11 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: "/profil",
-      name: "profil",
-      component: ProfilView,
-      meta: { requiresAuth: true },
-    },
-    {
       path: "/:pathMatch(.*)*",
       name: "NotFound",
       component: NotFoundView,
     },
+    ...profilRouter,
     ...authRouter,
     ...spaceRouter,
   ],

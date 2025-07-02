@@ -8,6 +8,7 @@
   import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
   import { registerAuth } from "@/services/authService"
   import { useMutation } from "@tanstack/vue-query"
+import GoogleComponent from "@/components/GoogleComponent.vue"
 
   const registerMutation = useMutation({
     mutationFn: (data: RegisterRequestType) => registerAuth(data),
@@ -39,6 +40,9 @@
     :resolver="zodResolver(RegisterRequestSchema)"
     class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
   >
+    <div class="flex justify-center">
+    <GoogleComponent/>
+  </div>
     <FormInput name="lastname" placeholder="Nom" :form="$form" />
     <FormInput name="name" placeholder="Prénom" :form="$form" />
     <WrapperInput name="birthday" placeholder="Date de naissance" :form="$form">

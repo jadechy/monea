@@ -2,12 +2,16 @@
 
 namespace App\Controller;
 
+use App\DTO\UserEditDTO;
 use App\DTO\UserRegisterDTO;
+use App\Entity\Groupe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
 use App\Entity\User;
+use App\Enum\ColorEnum;
+use App\Enum\GroupTypeEnum;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,12 +50,22 @@ class UserController extends AbstractController
         $user->setLastname($input->lastname);
         $user->setCreatedAt(new \DateTimeImmutable());
         $user->setRoles(["ROLE_USER"]);
-        // $user->setBirthday($input->birthday);
+        $user->setBirthday($input->birthday);
+
 
         $hashedPassword = $this->passwordHasher->hashPassword($user, $input->password);
         $user->setPassword($hashedPassword);
 
         $this->em->persist($user);
+
+        $group = new Groupe();
+        $group->setName("Personnel");
+        $group->setType(GroupTypeEnum::PERSONNAL);
+        $group->setCreator($user);
+        $group->setCreatedAt(new \DateTimeImmutable());
+        $group->setColor(ColorEnum::Pink);
+        $group->setPicture('');
+        $this->em->persist($group);
         $this->em->flush();
 
         return $this->json(['message' => 'Utilisateur créé avec succès'], Response::HTTP_CREATED);
@@ -66,5 +80,43 @@ class UserController extends AbstractController
         }
 
         return $user;
+    }
+    public function updateUser(UserEditDTO $input): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+
+        $errors = $this->validator->validate($input);
+        if (count($errors) > 0) {
+            return $this->json(['errors' => (string) $errors], 400);
+        }
+
+        if ($input->email !== null) {
+            $user->setEmail($input->email);
+        }
+        if ($input->username !== null) {
+            $user->setUsername($input->username);
+        }
+        if ($input->name !== null) {
+            $user->setName($input->name);
+        }
+        if ($input->lastname !== null) {
+            $user->setLastname($input->lastname);
+        }
+        if ($input->birthday !== null) {
+            try {
+                $birthday = new \DateTimeImmutable($input->birthday);
+                $user->setBirthday($birthday);
+            } catch (\Exception $e) {
+                return $this->json(['error' => 'Invalid birthday format'], 400);
+            }
+        }
+
+        $this->em->flush();
+
+        return $this->json(['message' => 'Utilisateur mis à jour avec succès']);
     }
 }

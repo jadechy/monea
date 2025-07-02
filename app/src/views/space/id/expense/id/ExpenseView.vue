@@ -2,7 +2,7 @@
   import SubHeader from "@/components/Header/SubHeader.vue"
   import { computed } from "vue"
   import ColoredLabelComponent from "@/components/CategoryLabel.vue"
-  import { formatDateToDayMonth } from "@/utils/date"
+  import { formatDayMonth } from "@/utils/date"
   import BaseSection from "@/components/BaseSection.vue"
   import PeopleComponent from "@/components/PeopleComponent.vue"
   import { Button, Chip } from "primevue"
@@ -11,15 +11,15 @@
   import type { ExpenseType } from "@/types/expenseType"
   import { getExpenseById } from "@/services/expenseService"
   import placeholder from "@/assets/placeholder_people.jpg"
-  import { useGroups } from "@/composables/useGroups"
   import type { GroupType } from "@/types/groupType"
   import { useQuery } from "@tanstack/vue-query"
+  import { useGroupsStore } from "@/stores/groupStore"
 
   // Props
   const props = defineProps<{ id: ExpenseType["id"]; space_id: GroupType["id"] }>()
 
   // Group
-  const { groupById } = useGroups()
+  const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: props.space_id }))
 
   // Const
@@ -45,7 +45,7 @@
         <div class="flex gap-3 items-end">
           <p class="font-bold text-4xl">{{ expense.amount }} €</p>
           <p v-if="expense.spentAt">
-            <i class="pi pi-calendar mr-1"></i>{{ formatDateToDayMonth(new Date(expense.spentAt)) }}
+            <i class="pi pi-calendar mr-1"></i>{{ formatDayMonth(new Date(expense.spentAt)) }}
           </p>
         </div>
 

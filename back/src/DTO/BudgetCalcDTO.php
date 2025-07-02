@@ -4,6 +4,7 @@ namespace App\DTO;
 
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Link;
 use Symfony\Component\Routing\Annotation\Route;
@@ -40,14 +41,14 @@ use App\Controller\BudgetController;
         ],
         normalizationContext: ['groups' => ['budget:read']]
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/budget/{groupeId}/{year}/year/remaining/list',
         controller: BudgetController::class . '::getRemainingBudgetByGroupAndYear',
         read: false,
         name: 'budget_get_remaining_by_groupe_and_year',
         normalizationContext: ['groups' => ['budget:read']]
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/budget/{groupeId}/{month}/month/remaining/list',
         controller: BudgetController::class . '::getRemainingBudgetByGroupAndMonth',
         read: false,
