@@ -2,12 +2,15 @@
 
 namespace App\Security;
 
+use App\Enum\UserRoleEnum;
+
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use League\OAuth2\Client\Provider\GoogleUser;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,17 +29,20 @@ class GoogleAuthenticator extends OAuth2Authenticator
     private EntityManagerInterface $entityManager;
     private RouterInterface $router;
     private UserRepository $userRepository;
+    private JWTTokenManagerInterface $jwtManager;
 
     public function __construct(
         ClientRegistry $clientRegistry,
         EntityManagerInterface $entityManager,
         RouterInterface $router,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        JWTTokenManagerInterface $jwtManager
     ) {
         $this->clientRegistry = $clientRegistry;
         $this->entityManager = $entityManager;
         $this->router = $router;
         $this->userRepository = $userRepository;
+        $this->jwtManager= $jwtManager;
     }
 
     /**
@@ -79,16 +85,16 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 $user->setEmail($googleUser->getEmail());
                 $user->setGoogleId($googleUser->getId());
 
-                // Ajoutez d'autres champs selon votre entité User
-                if (method_exists($user, 'setName')) {
-                    $user->setName($googleUser->getName());
-                }
-                if (method_exists($user, 'setLastName')) {
-                    $user->setLastName($googleUser->getLastName());
-                }
-                if (method_exists($user, 'setRoles')) {
-                    $user->setRoles(['ROLE_USER']);
-                }
+                $user->setName($googleUser->getName());
+                $user->setLastName($googleUser->getLastName());
+                $user->setUsername($googleUser->getName());
+                $user->setRoles([UserRoleEnum::USER]);
+                $user->setPlainPassword('password123');
+                $user->setPicture($googleUser->getAvatar());
+                $user->setCreatedAt(new \DateTimeImmutable());
+                $user->setBirthday(new \DateTimeImmutable());
+
+              
 
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
@@ -108,13 +114,10 @@ class GoogleAuthenticator extends OAuth2Authenticator
         if (!$user instanceof User) {
             throw new AccessDeniedException('Access denied message');
         }
+        $jwtToken = $this->jwtManager->create($user);
+
         return new JsonResponse([
-            'message' => 'Authentication successful',
-            // 'token' => $jwtToken,  // si tu génères un JWT ici
-            'user' => [
-                'id' => $user->getId(),
-                'email' => $user->getEmail(),
-            ]
+            'token'=> $jwtToken
         ]);
     }
 
@@ -124,11 +127,6 @@ class GoogleAuthenticator extends OAuth2Authenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         $message = strtr($exception->getMessageKey(), $exception->getMessageData());
-
-        // // Rediriger vers la page de login avec un message d'erreur
-        // return new RedirectResponse($this->router->generate('api_login_check', [
-        //     'error' => $message
-        // ]));
         return new JsonResponse([
             'message' => $message,
         ]);
