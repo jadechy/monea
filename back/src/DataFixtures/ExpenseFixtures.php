@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Expense;
 use App\Entity\Groupe;
 use App\Entity\Category;
+use App\Entity\RecurringExpense;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -69,7 +70,10 @@ class ExpenseFixtures extends Fixture implements DependentFixtureInterface
                 $user = $this->getReference($userRef, User::class);
                 $expense->addParticipant($user);
             }
-
+            if ($i % 3 === 0) {
+                $recurring = $this->getReference('recurring_expense_' . ($i % 5), RecurringExpense::class);
+                $expense->setRecurringExpense($recurring);
+            }
             $manager->persist($expense);
             $this->addReference('expense_' . $i, $expense);
         }
@@ -84,6 +88,7 @@ class ExpenseFixtures extends Fixture implements DependentFixtureInterface
             CategoryFixtures::class,
             GroupeFixtures::class,
             UserFixtures::class,
+            RecurringExpenseFixtures::class
         ];
     }
 }

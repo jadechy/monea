@@ -11,6 +11,7 @@ use App\DTO\ExpenseDTO;
 use App\Entity\Category;
 use App\Entity\Expense;
 use App\Entity\Groupe;
+use App\Entity\RecurringExpense;
 use App\Entity\User;
 use App\Repository\GroupeRepository;
 use App\Repository\ExpenseRepository;
@@ -218,6 +219,22 @@ class ExpenseController extends AbstractController
             return $this->json(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
         }
 
+        if ($data->recurring) {
+            $recurring = $data->recurring;
+            if (
+                !isset($recurring->frequency) ||
+                !isset($recurring->repetitionCount) ||
+                !isset($recurring->endDate)
+            ) {
+                return $this->json(['error' => 'Champs de récurrence manquants'], Response::HTTP_BAD_REQUEST);
+            }
+            $recurringExpense = new RecurringExpense();
+            $recurringExpense->setFrequency($recurring->frequency);
+            $recurringExpense->setRepetitionCount($recurring->repetitionCount);
+            $recurringExpense->setEndDate($recurring->endDate);
+            $expense->setRecurringExpense($recurringExpense);
+            // Création de X nouvelle expense en fonction du nombre de repetition par fréquence depuis la date de debut jusq'a la date de fin
+        }
         $this->em->persist($expense);
         $this->em->flush();
 

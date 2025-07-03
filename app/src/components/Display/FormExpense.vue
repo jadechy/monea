@@ -13,6 +13,7 @@
   import { convertToLocalDate } from "@/utils/date"
   import { useExpenseMutation } from "@/composables/useExpenseMutation"
   import { useGroupsStore } from "@/stores/groupStore"
+  import Recurring from "../Expense/Form/Recurring.vue"
   // Props
   const { space_id, id } = defineProps<{ space_id: GroupType["id"]; id?: ExpenseType["id"] }>()
   // Store
@@ -77,9 +78,8 @@
     @submit="onFormSubmit"
     class="flex flex-col items-center gap-10 lg:w-2/3 mx-auto"
   >
-    <WrapperInput name="category" :form="$form" placeholder="Catégorie">
+    <WrapperInput name="category" :form="$form" placeholder="Catégorie" v-if="group?.categories">
       <Select
-        v-if="group?.categories"
         name="category"
         :options="group.categories"
         optionLabel="label"
@@ -106,10 +106,10 @@
         />
       </WrapperInput>
       <WrapperInput name="spentAt" :form="$form" placeholder="jj/mm/yyyy">
-        <DatePicker name="spentAt" showIcon iconDisplay="input" />
+        <DatePicker name="spentAt" showIcon iconDisplay="input" dateFormat="dd/mm/yy" />
       </WrapperInput>
     </div>
-
+    <Recurring :form="$form" />
     <div class="flex flex-col gap-3 w-64" v-if="expense">
       <Button :class="[getSpaceColor({ color: group?.color })]" type="submit">
         Modifier la dépense

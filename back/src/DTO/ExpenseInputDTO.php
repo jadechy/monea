@@ -23,4 +23,6 @@ class ExpenseInputDTO
 
     #[Assert\NotBlank]
     public ?int $authorId = null;
+
+    public ?RecurringExpenseInputDTO $recurring = null;
 }

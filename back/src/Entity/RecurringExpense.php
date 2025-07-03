@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Enum\RecurringFrequencyEnum;
 use App\Repository\RecurringExpenseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -22,7 +23,7 @@ class RecurringExpense
     private ?int $repetitionCount = null;
 
     #[ORM\Column(length: 20, name: 'REC_FREQUENCY_UNIT')]
-    private ?string $frequency = null;
+    private ?RecurringFrequencyEnum $frequency = null;
 
     #[ORM\Column(name: 'REC_END_DATE')]
     private ?\DateTimeImmutable $endDate = null;
@@ -55,12 +56,12 @@ class RecurringExpense
         return $this;
     }
 
-    public function getFrequency(): ?string
+    public function getFrequency(): ?RecurringFrequencyEnum
     {
         return $this->frequency;
     }
 
-    public function setFrequency(string $frequency): static
+    public function setFrequency(RecurringFrequencyEnum $frequency): static
     {
         $this->frequency = $frequency;
 
