@@ -3,6 +3,7 @@ import {
   MeSchema,
   RegisterResponseSchema,
   type LoginRequestType,
+  type RefreshToken,
   type RegisterRequestType,
 } from "@/types/authType"
 import { fetchJson, postJson } from "@/utils/apiMethods"
@@ -32,4 +33,10 @@ export const me = () =>
   fetchJson({
     url: `me`,
     schema: MeSchema,
+  })
+export const psotRefreshToken = ({ refresh_token }: RefreshToken) =>
+  postJson({
+    url: "token/refresh",
+    body: { refresh_token: refresh_token },
+    schema: LoginResponseSchema,
   })

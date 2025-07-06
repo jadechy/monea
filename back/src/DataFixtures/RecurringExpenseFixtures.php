@@ -3,25 +3,29 @@
 namespace App\DataFixtures;
 
 use App\Entity\RecurringExpense;
+use App\Enum\RecurringFrequencyEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
 
 class RecurringExpenseFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $frequencies = ['daily', 'weekly', 'monthly', 'yearly'];
+        $faker = Factory::create('fr_FR');
+
 
         for ($i = 0; $i < 5; $i++) {
             $re = new RecurringExpense();
 
             $re->setRepetitionCount(10 + $i * 5);
-            $re->setFrequency($frequencies[$i % count($frequencies)]);
+            $re->setFrequency($faker->randomElement(RecurringFrequencyEnum::cases()));
 
             $endDate = new \DateTimeImmutable(sprintf('+%d months', $i + 1));
             $re->setEndDate($endDate);
 
             $manager->persist($re);
+            $this->addReference('recurring_expense_' . $i, $re);
         }
 
         $manager->flush();

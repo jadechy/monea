@@ -49,9 +49,13 @@
           </p>
         </div>
 
-        <div class="flex items-center gap-3">
-          <ColoredLabelComponent :category="expense.category" />
+        <div class="flex flex-wrap items-center gap-3">
+          <ColoredLabelComponent
+            v-if="expense.category.label !== 'default'"
+            :category="expense.category"
+          />
           <Chip :label="expense.creator.username" :image="expense.creator.picture ?? placeholder" />
+          <Chip icon="pi pi-replay" label="Dépense récurrente" v-if="expense.recurringExpense" />
         </div>
       </div>
       <Button

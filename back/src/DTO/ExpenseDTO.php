@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Link;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\ExpenseController;
 use App\Entity\Expense;
+use App\Entity\RecurringExpense;
 
 #[ApiResource(operations: [
     new Get(
@@ -135,7 +136,7 @@ class ExpenseDTO
     public array $participants;
 
     #[Groups(['expense:read'])]
-    public ?int $recurringExpense;
+    public ?array $recurringExpense;
 
     public function __construct(Expense $expense)
     {
@@ -156,7 +157,14 @@ class ExpenseDTO
             'username' => $expense->getCreator()->getUsername(),
             'picture' => $expense->getCreator()->getPicture()
         ];
-        $this->recurringExpense = $expense->getRecurringExpense()?->getId();
+        if ($expense->getRecurringExpense()) {
+            $this->recurringExpense = [
+                'id' => $expense->getRecurringExpense()->getId(),
+                'frequency' => $expense->getRecurringExpense()->getFrequency(),
+                'endDate' => $expense->getRecurringExpense()->getEndDate(),
+                'repetitionCount' => $expense->getRecurringExpense()->getRepetitionCount()
+            ];
+        }
 
         foreach ($expense->getParticipants() as $participant) {
             $this->participants[] = [

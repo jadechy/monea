@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(operations: [
     new Post(
         uriTemplate: '/expenses',
-        controller: ExpenseController::class  . '::postExpense',
+        controller: ExpenseController::class  . '::create',
         name: 'expense_new',
         input: ExpenseInputDTO::class,
         deserialize: true,
@@ -27,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     new Patch(
         uriTemplate: '/expenses/{id}',
-        controller: ExpenseController::class  . '::updateExpense',
+        controller: ExpenseController::class  . '::update',
         name: 'expense_edit',
         input: ExpenseInputDTO::class,
         deserialize: true,
@@ -94,7 +94,7 @@ class Expense
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'shareExpenses')]
     private Collection $participants;
 
-    #[ORM\ManyToOne(inversedBy: 'expenses')]
+    #[ORM\ManyToOne(inversedBy: 'expenses', cascade: ["persist"])]
     #[ORM\JoinColumn(name: 'REC_ID', referencedColumnName: 'REC_ID')]
     private ?RecurringExpense $recurringExpense = null;
 
@@ -223,6 +223,8 @@ class Expense
 
         return $this;
     }
+
+
 
     public function getSpentAt(): ?\DateTimeImmutable
     {
