@@ -58,7 +58,6 @@
     if (!form.valid || !group.value) return
     const { title, amount, spentAt, author, category, frequency, repetitionCount, endDate } =
       form.states
-    console.log(form)
     let data: NewExpenseType = {
       title: title.value,
       amount: amount.value,
@@ -106,7 +105,6 @@
     @submit="onFormSubmit"
     class="flex flex-col items-center gap-10 lg:w-2/3 mx-auto"
   >
-    {{ $form }}
     <WrapperInput
       name="category"
       :form="$form"

@@ -226,7 +226,7 @@ class ExpenseController extends AbstractController
         }
         $this->em->flush();
 
-        return $this->json(['message' => 'Expense created', 'id' => $expense->getId()], 201);
+        return $this->json(['message' => 'La dépense a bien été enregistrée', 'id' => $expense->getId()], Response::HTTP_CREATED);
     }
     /**
      * @param Expense $expense The base expense to update
@@ -311,7 +311,7 @@ class ExpenseController extends AbstractController
         $this->em->persist($expense);
         $this->em->flush();
 
-        return [$expense];
+        return $this->json(['message' => 'La dépense a bien été enregistrée', 'expense' => $expense], Response::HTTP_OK);
     }
 
     private function applyDataToExpense(Expense $expense,  $data, Category $category, Groupe $group, User $creator): void
