@@ -2,7 +2,7 @@ import { z } from "zod"
 import { UserInOtherSchema, UserSchema } from "./user"
 import { GroupSchema } from "./groupType"
 import { CategorySchema, type CategoryType } from "./categoryType"
-import { RecurringExpenseSchema } from "./recurringExpenseType"
+import { NewRecurringExpenseSchema, RecurringExpenseSchema } from "./recurringExpenseType"
 import { DateSchema } from "./date"
 
 export const ExpenseSchema = z.object({
@@ -27,8 +27,8 @@ export const ExpenseSchema = z.object({
   groupe: GroupSchema.shape.id,
   category: CategorySchema,
   creator: UserInOtherSchema,
-  recurringExpense: RecurringExpenseSchema.nullable(),
   spentAt: DateSchema,
+  recurringExpense: RecurringExpenseSchema.optional(),
   participants: z
     .array(UserInOtherSchema, {
       invalid_type_error: "Les participants doivent être une liste d'utilisateurs",
@@ -37,7 +37,7 @@ export const ExpenseSchema = z.object({
 })
 
 export const NewExpenseSchema = z.object({
-  categoryId: CategorySchema.shape.id,
+  categoryId: CategorySchema.shape.id.optional(),
   title: ExpenseSchema.shape.title,
   amount: ExpenseSchema.shape.amount,
   spentAt: z.date({
@@ -46,6 +46,7 @@ export const NewExpenseSchema = z.object({
   }),
   authorId: UserSchema.shape.id,
   groupId: GroupSchema.shape.id,
+  recurringExpense: NewRecurringExpenseSchema.nullable().optional(),
 })
 
 export const ExpenseDateSchema = z.record(

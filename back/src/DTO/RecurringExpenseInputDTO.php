@@ -14,6 +14,5 @@ class RecurringExpenseInputDTO
     public ?RecurringFrequencyEnum $frequency = null;
 
     #[Assert\NotNull]
-    #[Assert\NotNull]
     public ?\DateTimeImmutable $endDate = null;
 }

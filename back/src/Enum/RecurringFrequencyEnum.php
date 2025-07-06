@@ -4,8 +4,8 @@ namespace App\Enum;
 
 enum RecurringFrequencyEnum: string
 {
-    case DAY = 'day';
-    case MONTH = 'month';
-    case WEEK = 'week';
-    case YEAR = 'year';
+    case DAY = 'daily';
+    case MONTH = 'monthly';
+    case WEEK = 'weekly';
+    case YEAR = 'yearly';
 }

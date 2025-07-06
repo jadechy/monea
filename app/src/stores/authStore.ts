@@ -13,6 +13,7 @@ import router from "@/router"
 import type { UserEditType } from "@/types/user"
 import { editUser } from "@/services/userService"
 import { useRoute } from "vue-router"
+const API_URL = import.meta.env.VITE_API_URL
 
 export interface AuthResponse {
   token: string
@@ -63,7 +64,6 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   const saveToStorage = () => {
-    console.log(token.value)
     if (token.value) {
       localStorage.setItem(TOKEN_KEY, token.value)
     }
@@ -89,7 +89,6 @@ export const useAuthStore = defineStore("auth", () => {
     clearStorage()
   }
   const authSuccess = async (res: LoginResponseType) => {
-    console.log(res)
     token.value = res.token
     if (res.refresh_token) {
       refreshToken.value = res.refresh_token
@@ -126,7 +125,6 @@ export const useAuthStore = defineStore("auth", () => {
 
   const loginGoogle = async () => {
     const res: LoginResponseType = route.query as LoginResponseType
-    console.log(res)
     if (res.token) {
       await authSuccess(res)
     } else {
@@ -140,7 +138,7 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     try {
-      const response = await fetch("/api/token/refresh", {
+      const response = await fetch(`${API_URL}/api/token/refresh`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -2,6 +2,7 @@
 
 namespace App\DTO;
 
+use DateTimeImmutable;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class ExpenseInputDTO
@@ -12,8 +13,8 @@ class ExpenseInputDTO
     #[Assert\NotBlank]
     public ?string $title = null;
 
-    #[Assert\NotBlank]
-    public ?string $spentAt = null;
+    #[Assert\NotNull]
+    public ?DateTimeImmutable $spentAt = null;
 
     #[Assert\NotBlank]
     public ?int $groupId = null;

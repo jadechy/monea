@@ -39,13 +39,14 @@ export const postExpense = (expense: NewExpenseType) =>
     schema: z.object({ message: z.string() }),
   })
 
-export const patchExpense = (expense_id: ExpenseType["id"], expense: NewExpenseType) =>
-  patchJson({
+export const patchExpense = (expense_id: ExpenseType["id"], expense: NewExpenseType) => {
+  console.log(expense)
+  return patchJson({
     url: `expenses/${expense_id}`,
     body: expense,
     schema: z.object({ message: z.string() }),
   })
-
+}
 export const deleteExpense = (expense_id: ExpenseType["id"]) =>
   deleteJson({
     url: `expenses/${expense_id}`,
