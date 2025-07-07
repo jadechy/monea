@@ -1,0 +1,19 @@
+{% if user %}
+<h2>Bonjour {{ user.name }} !</h2>
+
+<p>Vous avez été invité à rejoindre un groupe sur notre plateforme.</p>
+
+<p>
+    <a href="{{ invitationLink }}">Cliquez ici pour accepter ou refuser l'invitation</a>
+</p>
+
+<p>Ce lien vous redirigera vers l'interface d'invitation sur notre application.</p>
+{% else %}
+<h2>Bonjour !</h2>
+
+<p>Vous avez été invité à rejoindre un groupe sur notre plateforme.</p>
+
+<p>
+    <a href="{{ invitationLink }}">Cliquez ici pour vous créer un compte et rejoindre votre premier groupe</a>
+</p>
+{% endif %}
