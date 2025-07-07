@@ -23,6 +23,7 @@ services:
       - vendor-data:/var/www/html/vendor
     depends_on:
       - db
+      - mailer
     networks:
       - monea
   nginx:
@@ -63,15 +64,24 @@ services:
       - db
     networks:
       - monea
-  
-  mailhog:
-    image: mailhog/mailhog 
+
+  # mailhog:
+  #   image: mailhog/mailhog
+  #   ports:
+  #     - "1025:1025" # SMTP Server
+  #     - "8025:8025" # Web UI
+  #   networks:
+  #     - monea
+  mailer:
+    image: axllent/mailpit
     ports:
-      - "1025:1025"  # SMTP Server
-      - "8025:8025"  # Web UI
+      - "1025:1025"
+      - "8025:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
     networks:
       - monea
-
 volumes:
   db-data:
   vendor-data:

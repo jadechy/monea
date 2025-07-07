@@ -3,9 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
@@ -15,14 +13,9 @@ use App\Repository\UserRepository;
 
 final class MemberController extends AbstractController
 {
-    public function __construct(private MemberRepository $memberRepository, private UserRepository $userRepository)
-    {
-    }
+    public function __construct(private MemberRepository $memberRepository, private UserRepository $userRepository) {}
 
-    public function addMember(string $userId, string $memberId, int $groupeId): Response
-    {
-        
-    }
+    // public function addMember(string $userId, string $memberId, int $groupeId): Response {}
 
     /**
      * Envoie d'une invitation par mail
@@ -34,7 +27,7 @@ final class MemberController extends AbstractController
         $userId = !empty($data['userId']) ? $data['userId'] : null;
         $mail = !empty($data['mail']) ? $data['mail'] : null;
 
-        if($userId){
+        if ($userId) {
             $user = $this->userRepository->find($userId);
 
             // Page de notification avec les demandes d'invitation au sein d'un groupe
@@ -52,7 +45,7 @@ final class MemberController extends AbstractController
             $mailer->send($email);
         }
 
-        if($mail){
+        if ($mail) {
             $registerLink = 'https://localhost:5173/auth/register';
 
             $email = (new Email())
