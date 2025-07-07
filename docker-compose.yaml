@@ -20,9 +20,10 @@ services:
         TIMEZONE: Europe/Paris
     volumes:
       - ./back:/var/www/html
-      - vendor-data:/var/www/html/vendor
+        - vendor-data:/var/www/html/vendor
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - monea
   nginx:
@@ -51,6 +52,11 @@ services:
       - "3307:3306"
     networks:
       - monea
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
