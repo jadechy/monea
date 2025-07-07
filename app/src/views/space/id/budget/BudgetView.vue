@@ -14,16 +14,11 @@
   import { useQuery } from "@tanstack/vue-query"
   import { useGroupsStore } from "@/stores/groupStore"
   import { fetchCategoryByGroup } from "@/services/categoryService"
+  import { useBudget } from "@/composables/BudgetForecast/useBudget"
 
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
+  const { remainingBudget } = useBudget(space_id)
 
-  const { data: remainingBudget } = useQuery({
-    queryKey: ["budgetCategories", space_id, getCurrentMonthStartDate()],
-    queryFn: () => {
-      return fetchAllRemainingBudgetCategoriesByGroup(space_id, getCurrentMonthStartDate())
-    },
-    enabled: !!space_id,
-  })
   const { data: categories } = useQuery({
     queryKey: ["categories-by-group", space_id],
     queryFn: () => fetchCategoryByGroup(space_id),

@@ -39,6 +39,9 @@ export const NewBudgetSchema = z.object({
     }).extend({ categoryId: CategorySchema.shape.id }),
   ),
 })
+export const NewBudgetSchemaResolver = BudgetSchema.pick({
+  amount: true,
+}).array()
 
 export type AmountType = z.infer<typeof AmountSchema>
 export type BudgetType = z.infer<typeof BudgetSchema>

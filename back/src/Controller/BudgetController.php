@@ -122,7 +122,7 @@ class BudgetController extends AbstractController
                 return new JsonResponse(['error' => 'Catégorie par défaut non définie.'], Response::HTTP_BAD_REQUEST);
             };
             /** @var Budget|null $budgetCategoryDefault */
-            $budgetCategoryDefault = $this->budgetRepository->findBudgetByCategory($defaultCategory->getId(), $date);
+            $budgetCategoryDefault = $this->budgetRepository->findBudgetByCategoryAndDate($defaultCategory->getId(), $date);
             if (!$budgetCategoryDefault) {
                 $budgetCategoryDefault = new Budget();
                 $budgetCategoryDefault->setAmount(0);

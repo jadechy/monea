@@ -63,4 +63,4 @@ export const fetchBudgetRemainingInDay = (group_id: GroupType["id"], month: stri
   })
 
 export const postBudgets = (body: NewBudgetType) =>
-  postJson({ url: `budgets/edit`, body: body, schema: NewBudgetSchema })
+  postJson({ url: `budgets/edit`, body: body, schema: z.any() })

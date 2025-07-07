@@ -1,21 +1,21 @@
 <script setup lang="ts">
   import SubHeader from "@/components/Header/SubHeader.vue"
   import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
+  import Loading from "@/components/Loading.vue"
   import { useBudget } from "@/composables/BudgetForecast/useBudget"
-  import router from "@/router"
-  import { fetchAllRemainingBudgetCategoriesByGroup, postBudgets } from "@/services/budgetService"
   import { fetchCategoryByGroup } from "@/services/categoryService"
   import { useGroupsStore } from "@/stores/groupStore"
-  import type { NewBudgetType } from "@/types/budgetType"
+  import { NewBudgetSchemaResolver, type NewBudgetType } from "@/types/budgetType"
   import type { GroupType } from "@/types/groupType"
-  import { formatDateISO, getCurrentMonthStartDate, getFirstDayOfMonth } from "@/utils/date"
+  import { formatDateISO, getFirstDayOfMonth } from "@/utils/date"
   import { getSpaceColor } from "@/utils/getColor"
-  import { truncateToTenth } from "@/utils/number"
-  import { Form, type FormSubmitEvent } from "@primevue/forms"
-  import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query"
+  import { Form, type FormInstance, type FormSubmitEvent } from "@primevue/forms"
+  import { zodResolver } from "@primevue/forms/resolvers/zod"
+  import { useQuery } from "@tanstack/vue-query"
   import { Button, DatePicker, InputText } from "primevue"
   import { computed, ref } from "vue"
   import { watch } from "vue"
+
   // Props
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
 
@@ -23,36 +23,35 @@
   const year = ref<Date>(new Date())
   const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: space_id }))
-  const { refetch } = useBudget(space_id, year.value.getFullYear())
+  const formRef = ref<FormInstance | null>(null)
 
   // Queries
-  const queryClient = useQueryClient()
+  const { refetchBudget, postBudgetsMutation, budgetList } = useBudget(space_id, year)
 
-  const { data: remainingBudget } = useQuery({
-    queryKey: ["budgetCategories", space_id, getCurrentMonthStartDate()],
-    queryFn: () => {
-      return fetchAllRemainingBudgetCategoriesByGroup(space_id, getCurrentMonthStartDate())
-    },
-    enabled: !!space_id,
-  })
   const { data: categories } = useQuery({
     queryKey: ["categories-by-group", space_id],
     queryFn: () => fetchCategoryByGroup(space_id),
   })
+  const computeInitialValues = () => {
+    if (!budgetList.value || !categories.value) return {}
+    return categories.value.reduce(
+      (acc, current) => {
+        acc[current.id] =
+          budgetList.value.find((budget) => Number(budget.category.id) === Number(current.id))
+            ?.amount ?? 0
+        return acc
+      },
+      {} as Record<string, number>,
+    )
+  }
 
-  const postBudgetsMutatiion = useMutation({
-    mutationFn: (data: NewBudgetType) => postBudgets(data),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["budgetCategories", space_id, getCurrentMonthStartDate()],
-      }),
-        router.push({ name: "budget_space", params: { space_id: space_id } })
-    },
-  })
-
-  watch(year, () => {
+  watch(year, async () => {
     if (!group.value) return
-    refetch()
+    await refetchBudget()
+    if (formRef.value) {
+      const newValues = computeInitialValues()
+      formRef.value.setValues(newValues)
+    }
   })
 
   const onFormSubmit = (form: FormSubmitEvent) => {
@@ -66,10 +65,12 @@
       groupId: group.value.id,
       budgets: budgets,
     }
-    console.log(data)
-    postBudgetsMutatiion.mutate(data)
+    postBudgetsMutation.mutate(data)
   }
+
+  const initialValues = computed(() => computeInitialValues())
 </script>
+
 <template>
   <SubHeader
     label="Edition des Budgets"
@@ -81,7 +82,7 @@
   />
   <div class="w-full flex justify-center">
     <DatePicker
-      :v-model="year"
+      v-model="year"
       view="month"
       dateFormat="mm/yy"
       class="w-64 mt-3"
@@ -90,13 +91,17 @@
   </div>
 
   <Form
+    v-if="budgetList && categories"
+    ref="formRef"
+    :initialValues="initialValues"
     v-slot="$form"
     @submit="onFormSubmit"
+    :resolver="zodResolver(NewBudgetSchemaResolver)"
     class="flex justify-center flex-col items-center gap-10"
   >
     <section class="grid gap-2 grid-cols-2 md:grid-cols-3 mt-6 w-full">
       <div
-        v-for="(category, i) in categories"
+        v-for="category in categories"
         :to="{
           name: 'category_budget_space',
           params: { space_id: group?.id, category_id: category.id },
@@ -110,18 +115,7 @@
           <WrapperInput :form="$form" :name="String(category.id)" placeholder="Budget" class="w-24">
             <InputText :name="String(category.id)" fluid />
           </WrapperInput>
-          <p class="text-2xl">
-            <!-- {{
-                truncateToTenth(
-                  remainingBudget.find(
-                    (budget) =>
-                      budget.category.id === category.id &&
-                      budget.monthStart === formatDateISO(getCurrentMonthStartDate()),
-                  )?.amount ?? 0,
-                )
-              }} -->
-            €
-          </p>
+          <p class="text-2xl">€</p>
         </div>
       </div>
     </section>
@@ -132,4 +126,5 @@
       label="Sauvergarde les budgets"
     />
   </Form>
+  <Loading v-else />
 </template>
