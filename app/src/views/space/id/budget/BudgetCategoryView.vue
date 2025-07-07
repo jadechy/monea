@@ -43,5 +43,6 @@
       color: category?.color,
     }"
     :expensesDate="expenses"
+    :category="category"
   />
 </template>

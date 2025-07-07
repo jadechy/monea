@@ -13,6 +13,7 @@
   import ChartLayout from "@/components/Budget/ChartLayout.vue"
   import { useQuery } from "@tanstack/vue-query"
   import { useGroupsStore } from "@/stores/groupStore"
+  import { fetchCategoryByGroup } from "@/services/categoryService"
 
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
 
@@ -23,7 +24,10 @@
     },
     enabled: !!space_id,
   })
-
+  const { data: categories } = useQuery({
+    queryKey: ["categories-by-group", space_id],
+    queryFn: () => fetchCategoryByGroup(space_id),
+  })
   const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: space_id }))
 </script>
@@ -51,31 +55,35 @@
         @click="router.push({ name: 'forecast_budget_space', params: { id: group?.id } })"
       />
     </section>
-    <BaseSection
-      label="Budget du mois par catégories"
-      v-if="budgetCategories && budgetCategories.length > 0"
-    >
+    <BaseSection label="Budget du mois par catégories" v-if="categories && categories.length > 0">
       <div class="grid gap-2 grid-cols-2 md:grid-cols-3">
         <router-link
-          v-for="(budget, i) in budgetCategories.filter(
-            (budget) =>
-              budget.category.label !== 'default' &&
-              budget.monthStart === formatDateISO(getCurrentMonthStartDate()),
-          )"
+          v-for="(category, i) in categories"
           :to="{
             name: 'category_budget_space',
-            params: { space_id: group?.id, category_id: budget.category.id },
+            params: { space_id: group?.id, category_id: category.id },
           }"
           class="flex justify-between rounded-full px-4 py-3"
           :key="i"
-          :class="`bg-${budget.category.color}-50 hover:bg-${budget.category.color}-100 text-${budget.category.color}-800`"
+          :class="`bg-${category.color}-50 hover:bg-${category.color}-100 text-${category.color}-800`"
         >
-          <p>{{ budget.category.label }}</p>
-          <p>{{ truncateToTenth(budget.amount) }} €</p>
+          <p>{{ category.label !== "default" ? category.label : "Autres" }}</p>
+          <p v-if="budgetCategories">
+            {{
+              truncateToTenth(
+                budgetCategories.find(
+                  (budget) =>
+                    budget.category.id === category.id &&
+                    budget.monthStart === formatDateISO(getCurrentMonthStartDate()),
+                )?.amount ?? 0,
+              )
+            }}
+            €
+          </p>
         </router-link>
       </div>
     </BaseSection>
-    <p v-else>Créer vos budgets</p>
+    <Button v-else size="small">Créer vos budgets</Button>
     <ChartLayout
       v-if="budgetCategories && budgetCategories.length > 0"
       :budgets="budgetCategories"
