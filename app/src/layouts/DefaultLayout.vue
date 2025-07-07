@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import Header from "@/components/Header/Header.vue"
+  import Loading from "@/components/Loading.vue"
   import { useGroupsStore } from "@/stores/groupStore"
   import { storeToRefs } from "pinia"
   const { isLoading } = storeToRefs(useGroupsStore())
@@ -7,7 +8,7 @@
 <template>
   <Header />
   <main class="lg:px-10 px-5">
-    <div v-if="isLoading" class="p-4">Chargement...</div>
-    <RouterView />
+    <Loading v-if="isLoading" />
+    <RouterView v-else />
   </main>
 </template>

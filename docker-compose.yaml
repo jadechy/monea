@@ -20,7 +20,7 @@ services:
         TIMEZONE: Europe/Paris
     volumes:
       - ./back:/var/www/html
-        - vendor-data:/var/www/html/vendor
+      - vendor-data:/var/www/html/vendor
     depends_on:
       db:
         condition: service_healthy

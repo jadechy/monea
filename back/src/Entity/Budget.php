@@ -3,11 +3,24 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
+use App\Controller\BudgetController;
 use App\Repository\BudgetRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/budgets/edit',
+            name: 'budgets_edit',
+            controller: BudgetController::class . "::postBudgets",
+            deserialize: false,
+            read: false,
+            validate: false,
+        )
+    ]
+)]
 #[ORM\Entity(repositoryClass: BudgetRepository::class)]
 #[ORM\Table(name: 'MON_BUDGET')]
 class Budget

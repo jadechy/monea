@@ -11,8 +11,7 @@ export const CategorySchema = z.object({
       required_error: "Le nom de la catégorie est requis",
       invalid_type_error: "Le nom doit être une chaîne de caractères",
     })
-    .max(50, "Le nom de la catégorie doit contenir au maximum 50 caractères")
-    .nullable(),
+    .max(50, "Le nom de la catégorie doit contenir au maximum 50 caractères"),
   color: ColorSchema,
 })
 

@@ -1,5 +1,9 @@
 <script setup lang="ts">
-  export type RouteProps = { routeName: string; params?: Record<string, any> }
+  export type RouteProps = {
+    routeName: string
+    params?: Record<string, any>
+    query?: Record<string, any>
+  }
   defineProps<RouteProps>()
 </script>
 

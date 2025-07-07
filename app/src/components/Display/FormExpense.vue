@@ -14,8 +14,17 @@
   import { useExpenseMutation } from "@/composables/useExpenseMutation"
   import { useGroupsStore } from "@/stores/groupStore"
   import Recurring from "../Expense/Form/Recurring.vue"
+  import type { CategoryType } from "@/types/categoryType"
   // Props
-  const { space_id, id } = defineProps<{ space_id: GroupType["id"]; id?: ExpenseType["id"] }>()
+  const {
+    space_id,
+    id,
+    category: categoryId,
+  } = defineProps<{
+    space_id: GroupType["id"]
+    id?: ExpenseType["id"]
+    category?: CategoryType["id"]
+  }>()
   // Store
   const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: space_id }))
@@ -43,16 +52,16 @@
         endDate: e.recurringExpense?.endDate ?? null,
       }
     } else
-      ({
+      return {
         title: "",
-        amount: 0,
+        amount: null,
         spentAt: new Date(),
         author: user?.id,
-        category: null,
+        category: categories.value?.find((category) => category.id === Number(categoryId)),
         frequency: null,
         repetitionCount: null,
         endDate: null,
-      })
+      }
   })
   const onFormSubmit = (form: FormSubmitEvent) => {
     if (!form.valid || !group.value) return
