@@ -6,9 +6,11 @@ import {
   AmountSchema,
   AmountValueSchema,
   BudgetByCategorySchema,
+  NewBudgetSchema,
   type BudgetType,
+  type NewBudgetType,
 } from "@/types/budgetType"
-import { fetchJson } from "@/utils/apiMethods"
+import { fetchJson, postJson } from "@/utils/apiMethods"
 
 export const fetchBudgetGroupDateRemaining = (
   group_id: GroupType["id"],
@@ -28,6 +30,11 @@ export const fetchBudgetGroup = (group_id: GroupType["id"], month: BudgetType["m
 export const fetchAllBudgetCategoriesByGroup = (group_id: GroupType["id"], month: Date) =>
   fetchJson({
     url: `budgets/${group_id}/${formatDateISO(month)}/list`,
+    schema: BudgetByCategorySchema.array(),
+  })
+export const fetchAllRemainingBudgetCategoriesByGroup = (group_id: GroupType["id"], month: Date) =>
+  fetchJson({
+    url: `budgets/${group_id}/${formatDateISO(month)}/remaining/list`,
     schema: BudgetByCategorySchema.array(),
   })
 
@@ -54,3 +61,6 @@ export const fetchBudgetRemainingInDay = (group_id: GroupType["id"], month: stri
     url: `budget/${group_id}/${month}/month/remaining/list`,
     schema: BudgetRemainingByMonthSchema,
   })
+
+export const postBudgets = (body: NewBudgetType) =>
+  postJson({ url: `budgets/edit`, body: body, schema: NewBudgetSchema })

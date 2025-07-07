@@ -2,6 +2,7 @@ import BudgetView from "@/views/space/id/budget/BudgetView.vue"
 import BudgetCategoryView from "@/views/space/id/budget/BudgetCategoryView.vue"
 import BudgetForecastView from "@/views/space/id/budget/BudgetForecastView.vue"
 import Index from "@/views/space/id/budget/IndexBudget.vue"
+import EditBudget from "@/views/space/id/budget/EditBudget.vue"
 
 export default [
   {
@@ -24,6 +25,12 @@ export default [
         path: ":category_id",
         name: "category_budget_space",
         component: BudgetCategoryView,
+        props: true,
+      },
+      {
+        path: "edit",
+        name: "edit_budget_space",
+        component: EditBudget,
         props: true,
       },
     ],
