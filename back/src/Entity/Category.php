@@ -42,7 +42,7 @@ class Category
     private Collection $expenses;
 
     #[ORM\ManyToOne(inversedBy: 'categories')]
-    #[ORM\JoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID')]
+    #[ORM\JoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID', nullable: false)]
     #[Assert\NotNull(message: "Le groupe est obligatoire.")]
     private Groupe $groupe;
 
@@ -105,17 +105,6 @@ class Category
         return $this;
     }
 
-    public function removeExpense(Expense $expense): static
-    {
-        if ($this->expenses->removeElement($expense)) {
-            // set the owning side to null (unless already changed)
-            if ($expense->getCategory() === $this) {
-                $expense->setCategory(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getGroupe(): Groupe
     {
@@ -142,18 +131,6 @@ class Category
         if (!$this->budgets->contains($budget)) {
             $this->budgets->add($budget);
             $budget->setCategory($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBudget(Budget $budget): static
-    {
-        if ($this->budgets->removeElement($budget)) {
-            // set the owning side to null (unless already changed)
-            if ($budget->getCategory() === $this) {
-                $budget->setCategory(null);
-            }
         }
 
         return $this;

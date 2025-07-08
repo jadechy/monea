@@ -60,7 +60,7 @@ class Groupe
         maxMessage: 'Le nom du membre ne peut pas dépasser {{ limit }} caractères.'
     )]
     #[Groups(['groupe:read', 'groupe:write'])]
-    private ?string $name;
+    private string $name;
 
     #[ORM\Column(name: 'GRP_CREATED_AT', nullable: false)]
     #[Assert\NotNull]
@@ -73,7 +73,7 @@ class Groupe
         message: 'Le groupe doit être défini.'
     )]
     #[Groups(['groupe:read', 'groupe:write'])]
-    private ?GroupTypeEnum $type = null;
+    private GroupTypeEnum $type;
 
     /**
      * @var Collection<int, Expense>
@@ -104,7 +104,7 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $categories;
 
-    #[ORM\Column(length: 255, name: 'GRP_PICTURE')]
+    #[ORM\Column(length: 255, name: 'GRP_PICTURE', nullable: true)]
     #[Assert\Length(
         max: 255,
         maxMessage: "Le chemin de la photo ne peut pas dépasser {{ limit }} caractères."
@@ -184,17 +184,7 @@ class Groupe
         return $this;
     }
 
-    public function removeExpense(Expense $expense): static
-    {
-        if ($this->expenses->removeElement($expense)) {
-            // set the owning side to null (unless already changed)
-            if ($expense->getGroupe() === $this) {
-                $expense->setGroupe(null);
-            }
-        }
 
-        return $this;
-    }
 
     /**
      * @return Collection<int, Member>
@@ -214,17 +204,7 @@ class Groupe
         return $this;
     }
 
-    public function removeMember(Member $member): static
-    {
-        if ($this->members->removeElement($member)) {
-            // set the owning side to null (unless already changed)
-            if ($member->getGroupe() === $this) {
-                $member->setGroupe(null);
-            }
-        }
 
-        return $this;
-    }
 
     public function getCreator(): User
     {

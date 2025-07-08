@@ -30,7 +30,7 @@ class Budget
     #[ORM\Column(name: 'BGT_ID')]
     private int $id;
 
-    #[ORM\Column(name: 'BGT_AMOUNT', nullable: true)]
+    #[ORM\Column(name: 'BGT_AMOUNT', nullable: false)]
     #[Assert\NotNull(message: "Le montant ne peut pas être nul.")]
     #[Assert\Positive(message: "Le montant doit être strictement positif.")]
     #[Assert\Type(type: 'float', message: "Le montant doit être un nombre décimal.")]
