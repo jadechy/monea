@@ -55,7 +55,7 @@ class Expense
         notInRangeMessage: "Le montant doit être compris entre {{ min }} et {{ max }}."
     )]
     #[Groups(['expense:write'])]
-    private ?float $amount = null;
+    private float $amount;
 
     #[ORM\Column(length: 150, name: 'EXP_TITLE')]
     #[Assert\NotBlank(message: "Le titre est obligatoire.")]
@@ -66,10 +66,10 @@ class Expense
     #[Groups(['expense:write'])]
     private ?string $title = null;
 
-    #[ORM\Column(name: 'EXP_CREATED_AT')]
+    #[ORM\Column(name: 'EXP_CREATED_AT', nullable: false)]
     #[Assert\NotNull(message: "La date de création est obligatoire.")]
     #[Assert\Type(\DateTimeImmutable::class)]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\ManyToOne(inversedBy: 'expenses')]
     #[Assert\NotNull(message: "Le groupe est obligatoire.")]
@@ -80,7 +80,7 @@ class Expense
     #[ORM\JoinColumn(name: 'CAT_ID', referencedColumnName: 'CAT_ID', nullable: false)]
     #[Assert\NotNull(message: "La catégorie est obligatoire.")]
     #[Groups(['expense:read'])]
-    private ?Category $category = null;
+    private Category $category;
 
     #[ORM\ManyToOne(inversedBy: 'expenses')]
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
@@ -98,10 +98,10 @@ class Expense
     #[ORM\JoinColumn(name: 'REC_ID', referencedColumnName: 'REC_ID')]
     private ?RecurringExpense $recurringExpense = null;
 
-    #[ORM\Column(name: 'EXP_SPENT_AT')]
+    #[ORM\Column(name: 'EXP_SPENT_AT', nullable: false)]
     #[Assert\NotNull(message: "La date de dépense est obligatoire.")]
     #[Assert\Type(\DateTimeImmutable::class)]
-    private ?\DateTimeImmutable $spentAt = null;
+    private \DateTimeImmutable $spentAt;
 
     public function __construct()
     {
@@ -113,7 +113,7 @@ class Expense
         return $this->id;
     }
 
-    public function getAmount(): ?float
+    public function getAmount(): float
     {
         return $this->amount;
     }
@@ -161,12 +161,12 @@ class Expense
         return $this;
     }
 
-    public function getCategory(): ?Category
+    public function getCategory(): Category
     {
         return $this->category;
     }
 
-    public function setCategory(?Category $category): static
+    public function setCategory(Category $category): static
     {
         $this->category = $category;
 
@@ -226,7 +226,7 @@ class Expense
 
 
 
-    public function getSpentAt(): ?\DateTimeImmutable
+    public function getSpentAt(): \DateTimeImmutable
     {
         return $this->spentAt;
     }

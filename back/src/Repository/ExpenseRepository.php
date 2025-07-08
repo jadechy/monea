@@ -16,7 +16,10 @@ class ExpenseRepository extends ServiceEntityRepository
         parent::__construct($registry, Expense::class);
     }
 
-    public function findExpensesByGroupeBetweenDates(int $groupeId, \DateTimeInterface $start, \DateTimeInterface $end)
+    /**
+     * @return Expense[]
+     */
+    public function findExpensesByGroupeBetweenDates(int $groupeId, \DateTimeInterface $start, \DateTimeInterface $end): array
     {
         return $this->createQueryBuilder('e')
             ->leftJoin('e.groupe', 'g')
@@ -29,7 +32,10 @@ class ExpenseRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findExpensesByGroupeAndDay(int $groupeId, \DateTimeInterface $day)
+    /**
+     * @return Expense[]
+     */
+    public function findExpensesByGroupeAndDay(int $groupeId, \DateTimeInterface $day): array
     {
         $startOfDay = (clone $day)->setTime(0, 0, 0);
         $endOfDay = (clone $day)->setTime(23, 59, 59);
@@ -45,7 +51,10 @@ class ExpenseRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findExpensesByCategoryAndDate(int $catId, \DateTimeInterface $date)
+    /**
+     * @return Expense[]
+     */
+    public function findExpensesByCategoryAndDate(int $catId, \DateTimeInterface $date): array
     {
         $start = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
         $end = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
@@ -61,7 +70,11 @@ class ExpenseRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findExpensesByGroupAndYear($groupeId, $year)
+
+    /**
+     * @return Expense[]
+     */
+    public function findExpensesByGroupAndYear(int $groupeId, $year): array
     {
         $startDate = new \DateTimeImmutable("$year-01-01");
         $endDate = $startDate->modify('+1 year');
@@ -90,7 +103,10 @@ class ExpenseRepository extends ServiceEntityRepository
         return $results;
     }
 
-    public function findExpensesByGroupAndMonth($groupeId, $month)
+    /**
+     * @return Expense[]
+     */
+    public function findExpensesByGroupAndMonth(int $groupeId, $month): array
     {
         $startDate = new \DateTimeImmutable($month);
         $endDate = $startDate->modify('+1 month');
