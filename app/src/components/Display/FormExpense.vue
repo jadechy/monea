@@ -13,17 +13,30 @@
   import { convertToLocalDate } from "@/utils/date"
   import { useExpenseMutation } from "@/composables/useExpenseMutation"
   import { useGroupsStore } from "@/stores/groupStore"
+  import Recurring from "../Expense/Form/Recurring.vue"
+  import type { CategoryType } from "@/types/categoryType"
   // Props
-  const { space_id, id } = defineProps<{ space_id: GroupType["id"]; id?: ExpenseType["id"] }>()
+  const {
+    space_id,
+    id,
+    category: categoryId,
+  } = defineProps<{
+    space_id: GroupType["id"]
+    id?: ExpenseType["id"]
+    category?: CategoryType["id"]
+  }>()
   // Store
   const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: space_id }))
   const { user } = useAuthStore()
-
+  // Const
+  const categories = computed(() => {
+    if (!group.value) return []
+    return group?.value.categories?.filter((category) => category.label !== "default")
+  })
   // Mutation
   const { expense, createExpenseMutation, updateExpenseMutation, deleteExpenseMutation } =
     useExpenseMutation(space_id, id)
-
   // Form
   const initialValues = computed(() => {
     if (expense?.value) {
@@ -33,27 +46,51 @@
         amount: e.amount,
         spentAt: new Date(e.spentAt),
         author: e.creator.id,
-        category: e.category,
+        category: e.category.label !== "default" ? e.category : null,
+        frequency: e.recurringExpense?.frequency ?? null,
+        repetitionCount: e.recurringExpense?.repetitionCount ?? null,
+        endDate: e.recurringExpense?.endDate ?? null,
       }
     } else
-      ({
+      return {
         title: "",
-        amount: 0,
+        amount: null,
         spentAt: new Date(),
         author: user?.id,
-        category: null,
-      })
+        category: categories.value?.find((category) => category.id === Number(categoryId)),
+        frequency: null,
+        repetitionCount: null,
+        endDate: null,
+      }
   })
   const onFormSubmit = (form: FormSubmitEvent) => {
     if (!form.valid || !group.value) return
-    const data: NewExpenseType = {
-      title: form.states.title.value,
-      amount: form.states.amount.value,
-      spentAt: convertToLocalDate(form.states.spentAt.value),
+    const { title, amount, spentAt, author, category, frequency, repetitionCount, endDate } =
+      form.states
+    let data: NewExpenseType = {
+      title: title.value,
+      amount: amount.value,
+      spentAt: convertToLocalDate(spentAt.value),
       groupId: group.value.id,
-      authorId: form.states.author.value,
-      categoryId: form.states.category.value.id,
+      authorId: author.value.id,
     }
+    if (category.value) {
+      data["categoryId"] = category.value.id
+    }
+    if (
+      frequency &&
+      repetitionCount &&
+      endDate &&
+      frequency.value &&
+      repetitionCount.value &&
+      endDate.value
+    ) {
+      data["recurringExpense"] = {
+        frequency: frequency.value,
+        repetitionCount: repetitionCount.value,
+        endDate: endDate.value,
+      }
+    } else data["recurringExpense"] = null
     id && expense ? updateExpenseMutation.mutate(data) : createExpenseMutation.mutate(data)
   }
   const onDelete = () => {
@@ -77,11 +114,15 @@
     @submit="onFormSubmit"
     class="flex flex-col items-center gap-10 lg:w-2/3 mx-auto"
   >
-    <WrapperInput name="category" :form="$form" placeholder="Catégorie">
+    <WrapperInput
+      name="category"
+      :form="$form"
+      placeholder="Catégorie"
+      v-if="categories && categories.length > 0"
+    >
       <Select
-        v-if="group?.categories"
         name="category"
-        :options="group.categories"
+        :options="categories"
         optionLabel="label"
         class="w-full md:w-56"
         :labelClass="['capitalize', `text-${$form.category?.value?.color ?? 'gray'}-600`]"
@@ -100,16 +141,17 @@
       <WrapperInput :form="$form" name="author" placeholder="Auteur">
         <Select
           name="author"
-          :options="group?.members?.map((member) => member.memberId)"
+          :options="[user]"
+          optionLabel="name"
           :labelClass="['capitalize']"
           class="w-2/3"
         />
       </WrapperInput>
       <WrapperInput name="spentAt" :form="$form" placeholder="jj/mm/yyyy">
-        <DatePicker name="spentAt" showIcon iconDisplay="input" />
+        <DatePicker name="spentAt" showIcon iconDisplay="input" dateFormat="dd/mm/yy" />
       </WrapperInput>
     </div>
-
+    <Recurring :form="$form" :recurringExpense="expense?.recurringExpense" />
     <div class="flex flex-col gap-3 w-64" v-if="expense">
       <Button :class="[getSpaceColor({ color: group?.color })]" type="submit">
         Modifier la dépense

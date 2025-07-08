@@ -2,7 +2,8 @@
   import router from "@/router"
   import type { RouteProps } from "./Header/BackComponent.vue"
   import { Button } from "primevue"
-  defineProps<RouteProps>()
+  const props = defineProps<RouteProps>()
+  console.log(props.query)
 </script>
 
 <template>
@@ -11,6 +12,6 @@
     icon="pi pi-plus"
     aria-label="Filter"
     class="fixed bottom-4 right-4"
-    @click="router.push({ name: routeName, params: params })"
+    @click="router.push({ name: routeName, params: params, query: query })"
   />
 </template>

@@ -8,17 +8,30 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
 use App\DTO\BudgetDTO;
+use App\DTO\BudgetInputDTO;
+use App\Entity\Budget;
 use App\Entity\Groupe;
 use App\Repository\BudgetRepository;
 use App\Repository\GroupeRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\ExpenseRepository;
+use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 #[AsController]
 class BudgetController extends AbstractController
 {
 
-    public function __construct(private BudgetRepository $budgetRepository, private GroupeRepository $groupeRepository, private ExpenseRepository $expenseRepository, private CategoryRepository $categoryRepository, private SerializerInterface $serializer) {}
+    public function __construct(
+        private BudgetRepository $budgetRepository,
+        private GroupeRepository $groupeRepository,
+        private ExpenseRepository $expenseRepository,
+        private CategoryRepository $categoryRepository,
+        private SerializerInterface $serializer,
+        private EntityManagerInterface $em,
+    ) {}
 
     private function computeTotalBudgetForGroup(Groupe $groupe, \DateTimeInterface $monthStart): float
     {
@@ -69,7 +82,11 @@ class BudgetController extends AbstractController
 
     public function getBudgetByGroupe(string $groupeId, string $monthStart)
     {
+        /** @var Groupe|null $groupe */
         $groupe = $this->groupeRepository->find($groupeId);
+        if (!$groupe) {
+            return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
         $categories = $this->categoryRepository->findBy(['groupe' => $groupe]);
 
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
@@ -89,13 +106,31 @@ class BudgetController extends AbstractController
 
     public function getRemainingBudgetList(string $groupeId, string $monthStart)
     {
+        /** @var Groupe|null $groupe */
         $groupe = $this->groupeRepository->find($groupeId);
+        if (!$groupe) {
+            return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
         $categories = $this->categoryRepository->findBy(['groupe' => $groupe]);
 
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
 
         $budgets = [];
         foreach ($categories as $category) {
+            $defaultCategory = $groupe->getDefaultCategory();
+            if (!$defaultCategory) {
+                return new JsonResponse(['error' => 'Catégorie par défaut non définie.'], Response::HTTP_BAD_REQUEST);
+            };
+            /** @var Budget|null $budgetCategoryDefault */
+            $budgetCategoryDefault = $this->budgetRepository->findBudgetByCategoryAndDate($defaultCategory->getId(), $date);
+            if (!$budgetCategoryDefault) {
+                $budgetCategoryDefault = new Budget();
+                $budgetCategoryDefault->setAmount(0);
+                $budgetCategoryDefault->setMonthStart($date);
+                $budgetCategoryDefault->setCategory($groupe->getDefaultCategory());
+                $this->em->persist($budgetCategoryDefault);
+                $this->em->flush();
+            }
             $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($category->getId(), $date);
 
             $categoryId = $category->getId();
@@ -108,6 +143,8 @@ class BudgetController extends AbstractController
                 $budgets[] = new BudgetDTO($budgetCategory, $amount);
             }
         }
+
+
 
         $json = $this->serializer->serialize($budgets, 'json', ['groups' => ['budget:read']]);
 
@@ -330,5 +367,41 @@ class BudgetController extends AbstractController
         return $this->json([
             'amount' => $amount
         ]);
+    }
+
+    public function postBudgets(Request $request, SerializerInterface $serializer): JsonResponse
+    {
+        /** @var BudgetInputDTO $budgetsData */
+        $data = $serializer->deserialize(
+            $request->getContent(),
+            BudgetInputDTO::class,
+            'json'
+        );
+        $groupId = $data->groupId;
+
+        foreach ($data->budgets as $budgetData) {
+            $category = $this->categoryRepository->find($budgetData->categoryId);
+            if (!$category) {
+                return new JsonResponse(['error' => 'Catégorie non trouvée.'], Response::HTTP_BAD_REQUEST);
+            }
+            $monthStart = new DateTimeImmutable($budgetData->monthStart);
+            /** @var Budget|null $budget */
+            $budget = $this->budgetRepository->findOneBy(["category" => $category, "monthStart" => $monthStart]);
+
+            if (!$budget) {
+                $budget = new Budget();
+                $budget->setMonthStart($monthStart);
+                $budget->setCategory($category);
+            } else if ($budget->getCategory()->getGroupe()->getId() !== $groupId) {
+                return new JsonResponse(['error' => 'Le budget existant n’appartient pas au groupe.'], Response::HTTP_BAD_REQUEST);
+            };
+
+            /** @var Budget $budget */
+            $budget->setAmount($budgetData->amount);
+            $this->em->persist($budget);
+        };
+        $this->em->flush();
+
+        return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
     }
 }

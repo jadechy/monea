@@ -36,7 +36,7 @@ class BudgetRepository extends ServiceEntityRepository
             ->where('c.id = :categoryId')
             ->setParameter('categoryId', $categoryId)
             ->getQuery()
-            ->getResult();
+            ->getOneOrNullResult();
     }
 
     public function findBudgetByGroupAndYear($groupeId, $year)

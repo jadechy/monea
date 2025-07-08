@@ -32,7 +32,7 @@ export const useExpenseMutation = (groupId: GroupType["id"], expenseId?: Expense
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["expense-by-id", expenseId] })
       await invalidateQueries()
-      router.push({ name: "expense", params: { id: expenseId, space_id: groupId } })
+      await router.push({ name: "expense", params: { id: expenseId, space_id: groupId } })
     },
   })
 

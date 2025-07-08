@@ -55,3 +55,6 @@ export const MeSchema = UserSchema.pick({
   createdAt: true,
 })
 export type MeType = z.infer<typeof MeSchema>
+
+// ** Refresh token **
+export type RefreshToken = { refresh_token: string }

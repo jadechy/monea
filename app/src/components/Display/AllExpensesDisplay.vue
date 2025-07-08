@@ -13,12 +13,14 @@
   import ExpenseCardComponent from "@/components/ExpenseCardComponent.vue"
   import type { GroupType } from "@/types/groupType"
   import { computed } from "vue"
+  import type { CategoryType } from "@/types/categoryType"
   interface Props {
     group: GroupType
     haveCategory?: boolean
     actionButton?: boolean
     subHeader: TitleComponentProps & RouteProps
     expensesDate?: ExpenseDateType
+    category?: CategoryType
   }
 
   const props = defineProps<Props>()
@@ -69,6 +71,11 @@
     v-if="group"
     route-name="new_expense"
     :class="[getSpaceColor({ color: group.color })]"
-    :params="{ space_id: String(group.id) }"
+    :params="{
+      space_id: String(group.id),
+    }"
+    :query="{
+      ...(category ? { category: category.id } : { category: 0 }),
+    }"
   />
 </template>
