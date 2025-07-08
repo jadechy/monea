@@ -23,12 +23,11 @@ class GroupeFixtures extends Fixture implements DependentFixtureInterface
             $users[] = $this->getReference('user_' . $i, User::class);
         }
 
-        $types = ['privé', 'public', 'secret', 'open'];
-
         for ($i = 0; $i < 15; $i++) {
             $groupe = new Groupe();
+            $words = $faker->words(2, true);
             /** @var string $name */
-            $name = ucfirst($faker->words(2, true));
+            $name = ucfirst(is_array($words) ? implode(' ', $words) : $words);
             $groupe->setName($name);
             $groupe->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 years', 'now')));
             $filteredTypes = array_filter(GroupTypeEnum::cases(), fn($case) => $case !== GroupTypeEnum::PERSONNAL);
@@ -42,18 +41,14 @@ class GroupeFixtures extends Fixture implements DependentFixtureInterface
             /** @var User  */
             $user = $faker->randomElement($users);
             $groupe->setCreator($user);
-
-
             $manager->persist($groupe);
             $defaultCategory = new Category();
             $defaultCategory->setLabel('default');
             $defaultCategory->setColor(ColorEnum::Gray);
             $defaultCategory->setGroupe($groupe);
             $manager->persist($defaultCategory);
-
             $this->addReference('groupe_' . $i, $groupe);
         }
-
         $manager->flush();
     }
 

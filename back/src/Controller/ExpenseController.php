@@ -285,7 +285,7 @@ class ExpenseController extends AbstractController
             $newEndDate = $recurringData->endDate;
 
             // 🎯 On vérifie si les paramètres de récurrence n'ont pas changé
-            $sameFrequency = $recurringExpense && $recurringExpense->getFrequency()?->value === $recurringData->frequency;
+            $sameFrequency = $recurringExpense && $recurringExpense->getFrequency()->value === $recurringData->frequency->value;
             $sameRepetition = $recurringExpense && $recurringExpense->getRepetitionCount() === $recurringData->repetitionCount;
             $sameEndDate = $recurringExpense && $recurringExpense->getEndDate()->getTimestamp() === $newEndDate->getTimestamp();
 
