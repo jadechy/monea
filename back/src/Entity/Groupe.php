@@ -62,11 +62,11 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private ?string $name;
 
-    #[ORM\Column(name: 'GRP_CREATED_AT')]
+    #[ORM\Column(name: 'GRP_CREATED_AT', nullable: false)]
     #[Assert\NotNull]
     #[Assert\Type(\DateTimeImmutable::class)]
     #[Groups(['groupe:read', 'groupe:write'])]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(length: 15, name: 'GRP_TYPE', enumType: GroupTypeEnum::class, type: "string")]
     #[Assert\NotNull(
@@ -142,7 +142,7 @@ class Groupe
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }

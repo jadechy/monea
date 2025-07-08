@@ -19,7 +19,7 @@ class CategoryCalcDTO
     #[Groups(['category:read'])]
     public float $amount;
 
-    public function __construct($id, $label, $color, $amount)
+    public function __construct(int $id, string $label, ColorEnum $color, float $amount)
     {
         $this->id = $id;
         $this->label = $label;

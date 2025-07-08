@@ -89,7 +89,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         maxMessage: "Le prénom ne peut pas dépasser {{ limit }} caractères."
     )]
     #[Groups(['user:read', 'user:write', 'user:me'])]
-    private ?string $name = null;
+    private string $name;
 
     #[ORM\Column(length: 50, name: 'USR_LASTNAME')]
     #[Groups(['user:read', 'user:write', 'user:me'])]
@@ -100,7 +100,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         minMessage: "Le nom de famille doit comporter au moins {{ limit }} caractères.",
         maxMessage: "Le nom de famille ne peut pas dépasser {{ limit }} caractères."
     )]
-    private ?string $lastname = null;
+    private string $lastname;
 
     #[ORM\Column(length: 180, name: 'USR_EMAIL')]
     #[Assert\NotBlank(message: "L'email ne peut pas être vide.")]
@@ -112,7 +112,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         maxMessage: "L'email ne peut pas dépasser {{ limit }} caractères."
     )]
     #[Groups(['user:read', 'user:write', 'user:me'])]
-    private ?string $email = null;
+    private string $email;
 
     #[ORM\Column(length: 128, name: 'USR_PASSWORD')]
     #[Groups(['user:read', 'user:write'])]
@@ -218,7 +218,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -230,7 +230,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getLastname(): ?string
+    public function getLastname(): string
     {
         return $this->lastname;
     }

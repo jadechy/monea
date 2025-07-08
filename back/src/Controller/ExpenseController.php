@@ -16,6 +16,7 @@ use App\Entity\Groupe;
 use App\Entity\RecurringExpense;
 use App\Entity\User;
 use App\Enum\RecurringFrequencyEnum;
+use App\Exception\RecurringExpenseValidationException;
 use App\Repository\GroupeRepository;
 use App\Repository\ExpenseRepository;
 use App\Repository\CategoryRepository;
@@ -235,7 +236,13 @@ class ExpenseController extends AbstractController
         $this->em->persist($expense);
 
         if (isset($data->recurringExpense)) {
-            $recurringExpenseService->createSeries($expense, $data);
+            try {
+                $recurringExpenseService->createSeries($expense, $data);
+            } catch (RecurringExpenseValidationException $e) {
+                return new JsonResponse([
+                    'errors' => (string) $e->getErrors()
+                ], Response::HTTP_BAD_REQUEST);
+            }
         }
         $this->em->flush();
 
@@ -304,7 +311,13 @@ class ExpenseController extends AbstractController
                     }
                 }
                 // 🔨 Puis on recrée une nouvelle série récurrente avec les nouvelles données
-                $recurringExpenseService->createSeries($expense, $data);
+                try {
+                    $recurringExpenseService->createSeries($expense, $data);
+                } catch (RecurringExpenseValidationException $e) {
+                    return new JsonResponse([
+                        'errors' => (string) $e->getErrors()
+                    ], Response::HTTP_BAD_REQUEST);
+                }
             }
         } else if ($recurringExpense) {
             // Cas où on enlève la récurrence : suppression des dépenses liées sauf la dépense courante

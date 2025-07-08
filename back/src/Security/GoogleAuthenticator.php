@@ -32,7 +32,6 @@ class GoogleAuthenticator extends OAuth2Authenticator
 {
     private ClientRegistry $clientRegistry;
     private EntityManagerInterface $entityManager;
-    private RouterInterface $router;
     private UserRepository $userRepository;
     private JWTTokenManagerInterface $jwtManager;
     private RefreshTokenManagerInterface $refreshTokenManager;
@@ -41,14 +40,12 @@ class GoogleAuthenticator extends OAuth2Authenticator
     public function __construct(
         ClientRegistry $clientRegistry,
         EntityManagerInterface $entityManager,
-        RouterInterface $router,
         UserRepository $userRepository,
         JWTTokenManagerInterface $jwtManager,
         RefreshTokenManagerInterface $refreshTokenManager,
     ) {
         $this->clientRegistry = $clientRegistry;
         $this->entityManager = $entityManager;
-        $this->router = $router;
         $this->userRepository = $userRepository;
         $this->jwtManager = $jwtManager;
         $this->refreshTokenManager = $refreshTokenManager;
@@ -69,33 +66,40 @@ class GoogleAuthenticator extends OAuth2Authenticator
     public function authenticate(Request $request): Passport
     {
         $client = $this->clientRegistry->getClient('google');
+        /** @var \League\OAuth2\Client\Token\AccessToken */
         $accessToken = $this->fetchAccessToken($client);
 
         return new SelfValidatingPassport(
             new UserBadge($accessToken->getToken(), function () use ($accessToken, $client) {
                 /** @var GoogleUser $googleUser */
                 $googleUser = $client->fetchUserFromToken($accessToken);
+                /** @var string $googleId */
+                $googleId = $googleUser->getId();
 
-                $existingUser = $this->userRepository->findOneBy(['googleId' => $googleUser->getId()]);
+                $existingUser = $this->userRepository->findOneBy(['googleId' => $googleId]);
 
                 if ($existingUser) {
                     return $existingUser;
                 }
+                $googleEmail = $googleUser->getEmail();
+                if (!$googleEmail) {
+                    throw new \RuntimeException('Email manquant dans les données Google.');
+                }
 
-                $existingUser = $this->userRepository->findOneBy(['email' => $googleUser->getEmail()]);
+                $existingUser = $this->userRepository->findOneBy(['email' => $googleEmail]);
 
                 if ($existingUser) {
-                    $existingUser->setGoogleId($googleUser->getId());
+                    $existingUser->setGoogleId($googleId);
                     $this->entityManager->flush();
                     return $existingUser;
                 }
 
                 $user = new User();
-                $user->setEmail($googleUser->getEmail());
-                $user->setGoogleId($googleUser->getId());
+                $user->setEmail($googleEmail);
+                $user->setGoogleId($googleId);
 
                 $user->setName($googleUser->getName());
-                $user->setLastName($googleUser->getLastName());
+                $user->setLastName($googleUser->getLastName() ?? "");
                 $user->setUsername($googleUser->getName());
                 $user->setRoles([UserRoleEnum::USER]);
                 $user->setPlainPassword('password123');

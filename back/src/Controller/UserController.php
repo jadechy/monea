@@ -7,12 +7,10 @@ use App\DTO\UserRegisterDTO;
 use App\Entity\Groupe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\SerializerInterface;
 
 use App\Entity\User;
 use App\Enum\ColorEnum;
 use App\Enum\GroupTypeEnum;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -23,8 +21,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class UserController extends AbstractController
 {
     public function __construct(
-        private UserRepository $userRepository,
-        private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private EntityManagerInterface $em,
         private UserPasswordHasherInterface $passwordHasher

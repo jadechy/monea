@@ -20,43 +20,46 @@ class BudgetRepository extends ServiceEntityRepository
     /**
      * @return Budget|null
      */
-    public function findBudgetByCategoryAndDate($categoryId, $date): ?Budget
+    public function findBudgetByCategoryAndDate(int $categoryId, DateTimeImmutable $date): ?Budget
     {
-        return $this->createQueryBuilder('b')
+        $qb = $this->createQueryBuilder('b')
             ->leftJoin('b.category', 'c')
             ->where('c.id = :catId')
             ->andWhere('b.monthStart = :date')
             ->setParameter('catId', $categoryId)
-            ->setParameter('date', $date)
-            ->getQuery()
-            ->getOneOrNullResult();
+            ->setParameter('date', $date);
+        /** @var Budget|null $result */
+        $result = $qb->getQuery()->getOneOrNullResult();
+        return $result;
     }
 
     /**
      * @return Budget[]
      */
-    public function findBudgetByCategory($categoryId): array
+    public function findBudgetByCategory(int $categoryId): array
     {
-        return $this->createQueryBuilder('b')
+        $qb = $this->createQueryBuilder('b')
             ->leftJoin('b.category', 'c')
             ->where('c.id = :categoryId')
-            ->setParameter('categoryId', $categoryId)
-            ->getQuery()
-            ->getResult();
+            ->setParameter('categoryId', $categoryId);
+
+        /** @var Budget[] $results */
+        $results = $qb->getQuery()->getResult();
+        return $results;
     }
 
     /**
      * @return Budget[]
      */
-    public function findBudgetByGroupAndYear($groupeId, $year): array
+    public function findBudgetByGroupAndYear(int $groupeId, DateTimeImmutable $year): array
     {
-        $startDate = new \DateTimeImmutable("$year-01-01");
+        $startDate = (new \DateTimeImmutable())->setDate((int)$year->format('Y'), 1, 1)->setTime(0, 0);
         $endDate = $startDate->modify('+1 year');
 
         $qb = $this->createQueryBuilder('b');
 
         $qb->select(
-            "SUBSTRING(b.monthStart, 1, 7) AS month", // 'YYYY-MM' extrait de la date
+            "SUBSTRING(b.monthStart, 1, 7) AS month",
             "SUM(b.amount) AS totalAmount"
         )
             ->leftJoin('b.category', 'c')
@@ -70,15 +73,17 @@ class BudgetRepository extends ServiceEntityRepository
             ->setParameter('startDate', $startDate)
             ->setParameter('endDate', $endDate);
 
-        return $qb->getQuery()->getResult();
+        /** @var Budget[] $results */
+        $results = $qb->getQuery()->getResult();
+        return $results;
     }
 
     /**
      * @return Budget[]
      */
-    public function findBudgetByGroupAndMonth(int $groupeId, string $month): array
+    public function findBudgetByGroupAndMonth(int $groupeId, DateTimeImmutable $month): array
     {
-        $startDate = new \DateTimeImmutable($month);
+        $startDate = $month;
         $endDate = $startDate->modify('+1 month');
 
         $qb = $this->createQueryBuilder('b');
@@ -98,7 +103,9 @@ class BudgetRepository extends ServiceEntityRepository
             ->setParameter('startDate', $startDate)
             ->setParameter('endDate', $endDate);
 
-        return $qb->getQuery()->getResult();
+        /** @var Budget[] $results */
+        $results = $qb->getQuery()->getResult();
+        return $results;
     }
 
     /**
@@ -123,31 +130,9 @@ class BudgetRepository extends ServiceEntityRepository
             ->orderBy('b.monthStart', 'ASC')
             ->setMaxResults(1);
 
-        return $qb->getQuery()->getOneOrNullResult();
+
+        /** @var Budget|null $result */
+        $result = $qb->getQuery()->getOneOrNullResult();
+        return $result;
     }
-
-    //    /**
-    //     * @return Budget[] Returns an array of Budget objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('b.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Budget
-    //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

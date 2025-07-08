@@ -11,13 +11,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Table(name: 'MON_MEMBER')]
 class Member
 {
-    #[ORM\Column(length: 20, name: 'MBR_ROLE', enumType: MemberRoleEnum::class)]
+    #[ORM\Column(length: 20, name: 'MBR_ROLE', enumType: MemberRoleEnum::class, nullable: false)]
     #[Groups(['groupe:read', 'member:read', 'user:read'])]
     private MemberRoleEnum $role = MemberRoleEnum::MEMBER;
 
-    #[ORM\Column(name: 'MBR_ADD_ON')]
+    #[ORM\Column(name: 'MBR_ADD_ON', nullable: false)]
     #[Groups(['member:read'])]
-    private ?\DateTimeImmutable $addOn = null;
+    private \DateTimeImmutable $addOn;
 
     #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'members')]
@@ -31,7 +31,7 @@ class Member
     #[Groups(['groupe:read', 'member:read', 'user:read'])]
     private User $individual;
 
-    public function getRole(): ?MemberRoleEnum
+    public function getRole(): MemberRoleEnum
     {
         return $this->role;
     }
@@ -43,7 +43,7 @@ class Member
         return $this;
     }
 
-    public function getAddOn(): ?\DateTimeImmutable
+    public function getAddOn(): \DateTimeImmutable
     {
         return $this->addOn;
     }
