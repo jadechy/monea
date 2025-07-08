@@ -8,6 +8,9 @@ use DateTimeImmutable;
 
 class RecurrenceDateGenerator
 {
+    /**
+     * @return DateTimeImmutable[]
+     */
     public function generate(
         DateTimeImmutable $startDate,
         RecurringFrequencyEnum $frequency,
@@ -21,9 +24,8 @@ class RecurrenceDateGenerator
         $intervalSeconds = match ($frequency->value) {
             'daily' => 24 * 3600,
             'weekly' => 7 * 24 * 3600,
-            'monthly' => 30 * 24 * 3600,  // approximation
-            'yearly' => 365 * 24 * 3600,  // approximation
-            default => throw new \InvalidArgumentException("Invalid frequency: $frequency"),
+            'monthly' => 30 * 24 * 3600,
+            'yearly' => 365 * 24 * 3600,
         };
 
         // On fixe la date actuelle à la date de départ

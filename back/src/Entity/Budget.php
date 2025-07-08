@@ -30,7 +30,7 @@ class Budget
     #[ORM\Column(name: 'BGT_ID')]
     private int $id;
 
-    #[ORM\Column(name: 'BGT_AMOUNT')]
+    #[ORM\Column(name: 'BGT_AMOUNT', nullable: true)]
     #[Assert\NotNull(message: "Le montant ne peut pas être nul.")]
     #[Assert\Positive(message: "Le montant doit être strictement positif.")]
     #[Assert\Type(type: 'float', message: "Le montant doit être un nombre décimal.")]
@@ -39,7 +39,7 @@ class Budget
         max: 10000,
         notInRangeMessage: "Le montant doit être compris entre {{ min }} et {{ max }}."
     )]
-    private ?float $amount = null;
+    private float $amount;
 
     #[ORM\Column(name: 'BGT_MONTH_START')]
     #[Assert\NotNull(message: "La date de début de mois est obligatoire.")]
@@ -56,7 +56,7 @@ class Budget
         return $this->id;
     }
 
-    public function getAmount(): ?float
+    public function getAmount(): float
     {
         return $this->amount;
     }

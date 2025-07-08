@@ -32,14 +32,17 @@ class BudgetRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function findBudgetByCategory($categoryId): ?Budget
+    /**
+     * @return Budget[]
+     */
+    public function findBudgetByCategory($categoryId): array
     {
         return $this->createQueryBuilder('b')
             ->leftJoin('b.category', 'c')
             ->where('c.id = :categoryId')
             ->setParameter('categoryId', $categoryId)
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getResult();
     }
 
     /**
@@ -73,7 +76,7 @@ class BudgetRepository extends ServiceEntityRepository
     /**
      * @return Budget[]
      */
-    public function findBudgetByGroupAndMonth(string $groupeId, string $month): array
+    public function findBudgetByGroupAndMonth(int $groupeId, string $month): array
     {
         $startDate = new \DateTimeImmutable($month);
         $endDate = $startDate->modify('+1 month');
@@ -101,7 +104,7 @@ class BudgetRepository extends ServiceEntityRepository
     /**
      * @return Budget|null
      */
-    public function findDefaultBudgetByGroupAndMonth(string $groupeId, DateTimeImmutable $startDate): ?Budget
+    public function findDefaultBudgetByGroupAndMonth(int $groupeId, DateTimeImmutable $startDate): ?Budget
     {
         $endDate = $startDate->modify('+1 month');
 

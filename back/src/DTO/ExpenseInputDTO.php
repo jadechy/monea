@@ -8,22 +8,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ExpenseInputDTO
 {
     #[Assert\NotBlank]
-    public ?float $amount = null;
+    public float $amount;
 
     #[Assert\NotBlank]
-    public ?string $title = null;
+    public string $title;
 
     #[Assert\NotNull]
-    public ?DateTimeImmutable $spentAt = null;
+    public DateTimeImmutable $spentAt;
 
     #[Assert\NotBlank]
-    public ?int $groupId = null;
+    public int $groupId;
 
     #[Assert\NotBlank]
-    public ?int $categoryId = null;
+    public int $categoryId;
 
     #[Assert\NotBlank]
-    public ?int $authorId = null;
+    public int $authorId;
 
     public ?RecurringExpenseInputDTO $recurring = null;
 }

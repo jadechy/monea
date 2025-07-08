@@ -51,7 +51,7 @@ class Groupe
     #[Groups(['groupe:read'])]
     private int $id;
 
-    #[ORM\Column(length: 100, name: 'GRP_NAME')]
+    #[ORM\Column(length: 100, name: 'GRP_NAME', nullable: false)]
     #[Assert\NotBlank(
         message: 'Le nom du membre ne peut pas être vide.'
     )]
@@ -60,7 +60,7 @@ class Groupe
         maxMessage: 'Le nom du membre ne peut pas dépasser {{ limit }} caractères.'
     )]
     #[Groups(['groupe:read', 'groupe:write'])]
-    private ?string $name = null;
+    private ?string $name;
 
     #[ORM\Column(name: 'GRP_CREATED_AT')]
     #[Assert\NotNull]
@@ -112,11 +112,11 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private ?string $picture = null;
 
-    #[ORM\Column(length: 15, name: 'GRP_COLOR', enumType: ColorEnum::class, type: "string")]
+    #[ORM\Column(length: 15, name: 'GRP_COLOR', enumType: ColorEnum::class, type: "string", nullable: false)]
     #[Assert\NotNull(message: "La couleur est obligatoire.")]
     #[Assert\Choice(callback: [ColorEnum::class, 'cases'], message: "La couleur choisie n'est pas valide.")]
     #[Groups(['groupe:read', 'groupe:write'])]
-    private ?ColorEnum $color = null;
+    private ColorEnum $color;
 
     public function __construct()
     {
@@ -130,7 +130,7 @@ class Groupe
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -154,7 +154,7 @@ class Groupe
         return $this;
     }
 
-    public function getType(): ?GroupTypeEnum
+    public function getType(): GroupTypeEnum
     {
         return $this->type;
     }
@@ -279,7 +279,7 @@ class Groupe
         return $this;
     }
 
-    public function getColor(): ?ColorEnum
+    public function getColor(): ColorEnum
     {
         return $this->color;
     }

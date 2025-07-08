@@ -106,7 +106,7 @@ class ExpenseRepository extends ServiceEntityRepository
     /**
      * @return Expense[]
      */
-    public function findExpensesByGroupAndMonth(int $groupeId, $month): array
+    public function findExpensesByGroupAndMonth(int $groupeId, string $month): array
     {
         $startDate = new \DateTimeImmutable($month);
         $endDate = $startDate->modify('+1 month');

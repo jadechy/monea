@@ -66,7 +66,7 @@ class BudgetDTO
     #[Groups(['budget:read'])]
     public array $category;
 
-    public function __construct(Budget $budget, float $amountCalc = null)
+    public function __construct(Budget $budget, ?float $amountCalc = null)
     {
         $category = $budget->getCategory();
 

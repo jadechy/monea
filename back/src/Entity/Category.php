@@ -20,7 +20,7 @@ class Category
     #[ORM\Column(name: 'CAT_ID')]
     private int $id;
 
-    #[ORM\Column(length: 50, name: 'CAT_LABEL')]
+    #[ORM\Column(length: 50, name: 'CAT_LABEL', nullable: false)]
     #[Assert\NotBlank(message: "Le libellé est obligatoire.")]
     #[Assert\Length(
         min: 3,
@@ -28,12 +28,12 @@ class Category
         minMessage: "Le libellé doit faire au moins {{ limit }} caractères.",
         maxMessage: "Le libellé ne peut pas dépasser {{ limit }} caractères."
     )]
-    private ?string $label = null;
+    private string $label;
 
-    #[ORM\Column(length: 8, name: 'CAT_COLOR', enumType: ColorEnum::class, type: "string")]
+    #[ORM\Column(length: 8, name: 'CAT_COLOR', enumType: ColorEnum::class, type: "string", nullable: false)]
     #[Assert\NotNull(message: "La couleur est obligatoire.")]
     #[Assert\Choice(callback: [ColorEnum::class, 'cases'], message: "La couleur choisie n'est pas valide.")]
-    private ?ColorEnum $color = null;
+    private ColorEnum $color;
 
     /**
      * @var Collection<int, Expense>
@@ -63,7 +63,7 @@ class Category
         return $this->id;
     }
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return $this->label;
     }
@@ -75,7 +75,7 @@ class Category
         return $this;
     }
 
-    public function getColor(): ?ColorEnum
+    public function getColor(): ColorEnum
     {
         return $this->color;
     }

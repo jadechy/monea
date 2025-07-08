@@ -22,7 +22,7 @@ class CategoryController extends AbstractController
         private SerializerInterface $serializer
     ) {}
 
-    public function getCategoryByGroup($groupeId)
+    public function getCategoryByGroup(int $groupeId): JsonResponse
     {
         $groupe = $this->groupeRepository->find($groupeId);
         $categoriesData = $this->categoryRepository->findBy(['groupe' => $groupe]);

@@ -8,11 +8,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class RecurringExpenseInputDTO
 {
     #[Assert\NotBlank]
-    public ?int $repetitionCount = null;
+    public int $repetitionCount;
 
     #[Assert\NotBlank]
-    public ?RecurringFrequencyEnum $frequency = null;
+    public RecurringFrequencyEnum $frequency;
 
     #[Assert\NotNull]
-    public ?\DateTimeImmutable $endDate = null;
+    public \DateTimeImmutable $endDate;
 }

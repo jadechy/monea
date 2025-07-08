@@ -64,7 +64,7 @@ class Expense
         maxMessage: "Le titre ne peut pas dépasser {{ limit }} caractères."
     )]
     #[Groups(['expense:write'])]
-    private ?string $title = null;
+    private string $title;
 
     #[ORM\Column(name: 'EXP_CREATED_AT', nullable: false)]
     #[Assert\NotNull(message: "La date de création est obligatoire.")]
@@ -125,7 +125,7 @@ class Expense
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }

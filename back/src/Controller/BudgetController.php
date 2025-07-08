@@ -192,17 +192,16 @@ class BudgetController extends AbstractController
         $budgetsByMonth = [];
 
         foreach ($budgetsData as $budget) {
-            $month = $budget['month'];
-            $categoryId = $budget['categoryId'] ?? null;
-            $amount = $budget['totalAmount'];
+            $month = $budget->getMonthStart()->format('Y-m');
+            $categoryId = $budget->getCategory()->getId();
+            $amount = $budget->getAmount();
 
             $months[$month] = true;
 
             $budgetsByMonth[$month] = ($budgetsByMonth[$month] ?? 0) + $amount;
 
-            if ($categoryId !== null) {
-                $budgetsByMonthCategory[$month][$categoryId] = $amount;
-            }
+
+            $budgetsByMonthCategory[$month][$categoryId] = $amount;
         }
         if (empty($months)) {
             for ($m = 1; $m <= 12; $m++) {
@@ -245,24 +244,24 @@ class BudgetController extends AbstractController
         $budgetsData = $this->budgetRepository->findBudgetByGroupAndMonth($groupeId, $month);
         $expensesData = $this->expenseRepository->findExpensesByGroupAndMonth($groupeId, $month);
 
-        foreach ($expensesData as &$row) {
-            $date = $row['spendAt'];
-            if ($date instanceof \DateTimeInterface) {
-                $row['spendAt'] = $date->format('Y-m-d');
-            } else {
-                $row['spendAt'] = (new \DateTimeImmutable($date))->format('Y-m-d');
-            }
-        }
-        unset($row);
+        // foreach ($expensesData as &$row) {
+        //     $date = $row->getSpentAt();
+        //     if ($date instanceof \DateTimeInterface) {
+        //         $row['spendAt'] = $date->format('Y-m-d');
+        //     } else {
+        //         $row['spendAt'] = (new \DateTimeImmutable($date))->format('Y-m-d');
+        //     }
+        // }
+        // unset($row);
 
         $days = [];
         $expensesByDay = [];
         $expensesByDayCategory = [];
         $categoryMeta = [];
         foreach ($expensesData as $expense) {
-            $day = $expense['spendAt'];
-            $categoryId = $expense['categoryId'];
-            $amount = $expense['totalAmount'];
+            $day = $expense->getSpentAt()->format('Y-m');
+            $categoryId = $expense->getCategory()->getId();
+            $amount = $expense->getAmount();
 
             $days[$day] = true;
 
@@ -270,25 +269,21 @@ class BudgetController extends AbstractController
             $expensesByDayCategory[$day][$categoryId] = ($expensesByDayCategory[$day][$categoryId] ?? 0) + $amount;
 
             $categoryMeta[$categoryId] = [
-                'label' => $expense['categoryLabel'],
-                'color' => $expense['categoryColor'],
+                'label' => $expense->getCategory()->getLabel(),
+                'color' => $expense->getCategory()->getColor(),
             ];
         }
 
         $budgetsByDay = [];
         $budgetsByDayCategory = [];
         foreach ($budgetsData as $budget) {
-            $day = $budget['spendAt'];
-            $categoryId = $budget['categoryId'] ?? null;
-            $amount = $budget['totalAmount'];
+            $day = $budget->getMonthStart()->format('Y-m');
+            $categoryId = $budget->getCategory()->getId();
+            $amount = $budget->getAmount();
 
             $days[$day] = true;
 
             $budgetsByDay[$day] = ($budgetsByDay[$day] ?? 0) + $amount;
-
-            if ($categoryId !== null) {
-                $budgetsByDayCategory[$day][$categoryId] = $amount;
-            }
         }
         if (empty($days)) {
             $start = new \DateTimeImmutable($month);
@@ -360,13 +355,23 @@ class BudgetController extends AbstractController
         return new JsonResponse(null, 200);
     }
 
-    public function getRemainingBudgetByCategoryAndMonth(string $categoryId, string $monthStart): JsonResponse
+    public function getRemainingBudgetByCategoryAndMonth(int $categoryId, string $monthStart): JsonResponse
     {
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
-
+        /** @var Category|null $category */
         $category = $this->categoryRepository->find($categoryId);
+        if (!$category) {
+            return new JsonResponse(['error' => 'Catégorie non trouvée.'], Response::HTTP_BAD_REQUEST);
+        }
+        /** @var Budget|null $budget */
         $budget = $this->budgetRepository->findOneBy(['category' => $category, 'monthStart' => $date]);
 
+        if (!$budget) {
+            $budget = new Budget();
+            $budget->setMonthStart($date);
+            $budget->setCategory($category);
+            $budget->setAmount(0.0);
+        }
         $totalBudget = $budget->getAmount();
 
         $expenses = $this->expenseRepository->findExpensesByCategoryAndDate($categoryId, $date);
