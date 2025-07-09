@@ -8,4 +8,6 @@ enum MemberRoleEnum: string
     case ADMIN = 'admin';
     case MEMBER = 'member';
     case VIEWER = 'viewer';
+    case ANONYME = 'anonyme';
+    case BANNED = 'banned';
 }

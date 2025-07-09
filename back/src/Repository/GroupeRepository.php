@@ -26,6 +26,7 @@ class GroupeRepository extends ServiceEntityRepository
             ->leftJoin('g.members', 'm')
             ->leftJoin('m.individual', 'i')
             ->where('i.id = :userId')
+            ->andWhere('m.status = accepted')
             ->setParameter('userId', $userId);
         /** @var Groupe[] $result */
         $result = $qb->getQuery()->getResult();

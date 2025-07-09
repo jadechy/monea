@@ -28,6 +28,15 @@ use DateTimeImmutable;
         read: false,
         validationContext: ['groups' => ['member:write']],
     ),
+    new Patch(
+        uriTemplate: '/member/leave',
+        controller: MemberController::class  . '::leaveGroup',
+        name: 'member_leave',
+        input: MemberInputDTO::class,
+        deserialize: true,
+        read: false,
+        validationContext: ['groups' => ['member:write']],
+    ),
 ])]
 class MemberDTO
 {

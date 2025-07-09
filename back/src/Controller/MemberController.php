@@ -135,7 +135,7 @@ final class MemberController extends AbstractController
         }
 
         $modifMember = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $authorId]);
-        
+
         if($member->getRole() !== MemberRoleEnum::AUTHOR && $modifMember->getRole() == MemberRoleEnum::AUTHOR){
             throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
         }
@@ -155,5 +155,54 @@ final class MemberController extends AbstractController
             []
         );
         
+    }
+
+    public function leaveGroup(Request $request, SerializerInterface $serializer)
+    {
+        try {
+            /** @var MemberInputDTO $data */
+            $data = $serializer->deserialize($request->getContent(), MemberInputDTO::class, 'json');
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'JSON invalide : ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+
+        $groupId = $data->groupId;
+        $authorId = $data->authorId;
+        if (!$groupId) {
+            return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
+
+        if (!$authorId) {
+            return new JsonResponse(['error' => 'Utilisateur non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+
+        $member = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $user->getId()]);
+        if (!$member) {
+            return new JsonResponse(['error' => 'Vous n\'êtes pas un membre du groupe.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $modifMember = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $authorId]);
+
+        if($member->getIndividual()->getId() !== $modifMember->getIndividual()->getId()){
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
+        }
+
+        $modifMember->setRole(MemberRoleEnum::ANONYME);
+        $modifMember->setStatus(MemberStatusEnum::DELETED);
+
+        $this->em->persist($modifMember);
+        $this->em->flush();
+
+        return $this->json(
+            ['message' => 'Le membre a bien été enregistrée'],
+            Response::HTTP_OK,
+            []
+        );
     }
 }
