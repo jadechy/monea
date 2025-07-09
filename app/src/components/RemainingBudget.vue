@@ -12,9 +12,10 @@
       label: "Budget restant",
     },
   )
-
   const budgetQuery = useQuery({
-    queryKey: ["budget", initialBudget ? "initial" : "remaining", Number(space_id)],
+    queryKey: initialBudget
+      ? ["budget", "initial", Number(space_id)]
+      : ["budget", "remaining", Number(space_id)],
     queryFn: () => {
       return initialBudget
         ? fetchBudgetGroup(space_id, getCurrentMonthIsoString())

@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { UserSchema } from "./user"
+import { UserDTOSchema, UserSchema } from "./user"
 import { GroupSchema } from "./groupType"
 import { dateSchema } from "./date"
 
@@ -9,10 +9,10 @@ export const MemberSchema = z.object({
   groupe: GroupSchema,
   individual: UserSchema,
 })
-export const MemberInGroupSchema = z.object({
-  memberId: z.number(),
+export const MemberDTO = z.object({
+  user: UserDTOSchema,
   role: MemberSchema.shape.role,
   addOn: dateSchema,
 })
 export type MemberType = z.infer<typeof MemberSchema>
-export type MemberInGroupType = z.infer<typeof MemberInGroupSchema>
+export type MemberInGroupType = z.infer<typeof MemberDTO>

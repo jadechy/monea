@@ -9,7 +9,6 @@
   import { Button } from "primevue"
   import { computed } from "vue"
   import { formatDateISO, getCurrentMonthStartDate } from "@/utils/date"
-  import { fetchAllRemainingBudgetCategoriesByGroup } from "@/services/budgetService"
   import ChartLayout from "@/components/Budget/ChartLayout.vue"
   import { useQuery } from "@tanstack/vue-query"
   import { useGroupsStore } from "@/stores/groupStore"
@@ -18,7 +17,6 @@
 
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
   const { remainingBudget } = useBudget(space_id)
-
   const { data: categories } = useQuery({
     queryKey: ["categories-by-group", space_id],
     queryFn: () => fetchCategoryByGroup(space_id),
@@ -44,7 +42,7 @@
 
       <Button
         icon="pi pi-pencil"
-        label="Prévision des dépenses"
+        label="Récap des dépenses"
         size="small"
         :class="[getSpaceColor({ color: group?.color })]"
         @click="router.push({ name: 'forecast_budget_space', params: { id: group?.id } })"

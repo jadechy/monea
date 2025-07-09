@@ -72,12 +72,20 @@ export const useBudget = (space_id: GroupType["id"], year?: Ref<Date>) => {
   const postBudgetsMutation = useMutation({
     mutationFn: (data: NewBudgetType) => postBudgets(data),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["budgetRemainingCategories", space_id, getFirstDayOfMonth(year.value)],
-      })
-      await queryClient.invalidateQueries({
-        queryKey: ["budgetCategories", space_id, getFirstDayOfMonth(year.value)],
-      })
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["budgetRemainingCategories", space_id, getFirstDayOfMonth(year.value)],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["budgetCategories", space_id, getFirstDayOfMonth(year.value)],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["budget", "initial", Number(space_id)],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["budget", "remaining", Number(space_id)],
+        }),
+      ])
       router.push({ name: "budget_space", params: { space_id: space_id } })
     },
   })
