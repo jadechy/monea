@@ -22,10 +22,11 @@ export const registerAuth = ({
   name,
   email,
   lastname,
+  invitationToken
 }: RegisterRequestType) =>
   postJson({
     url: "register",
-    body: { username, password, confirmPassword, name, lastname, email },
+    body: { username, password, confirmPassword, name, lastname, email, invitationToken },
     schema: RegisterResponseSchema,
   })
 
@@ -34,7 +35,7 @@ export const me = () =>
     url: `me`,
     schema: MeSchema,
   })
-export const psotRefreshToken = ({ refresh_token }: RefreshToken) =>
+export const postRefreshToken = ({ refresh_token }: RefreshToken) =>
   postJson({
     url: "token/refresh",
     body: { refresh_token: refresh_token },

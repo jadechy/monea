@@ -4,7 +4,7 @@ namespace App\Enum;
 
 enum MemberStatusEnum: string 
 {
-    case PENDING = 'en attente';
-    case ACCEPTED = 'accepté';
-    case REFUSED = 'refusé';
+    case PENDING = 'pending';
+    case ACCEPTED = 'accepted';
+    case REFUSED = 'refused';
 }

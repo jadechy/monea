@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250706113947 extends AbstractMigration
+final class Version20250709084550 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -30,6 +30,9 @@ final class Version20250706113947 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE MON_GROUPE (GRP_ID INT AUTO_INCREMENT NOT NULL, GRP_NAME VARCHAR(100) NOT NULL, GRP_CREATED_AT DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)', GRP_TYPE VARCHAR(15) NOT NULL, GRP_PICTURE VARCHAR(255) NOT NULL, GRP_COLOR VARCHAR(15) NOT NULL, USR_ID INT NOT NULL, INDEX IDX_25EC8B35C4DC529D (USR_ID), PRIMARY KEY(GRP_ID)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE TABLE MON_GROUP_INVITATION (INV_ID INT AUTO_INCREMENT NOT NULL, INV_TOKEN VARCHAR(255) NOT NULL, INV_EMAIL VARCHAR(50) NOT NULL, INV_USED TINYINT(1) NOT NULL, INV_CREATED_AT DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)', GRP_ID INT NOT NULL, INDEX IDX_95FB11291DAB1036 (GRP_ID), PRIMARY KEY(INV_ID)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE MON_MEMBER (MBR_ROLE VARCHAR(20) NOT NULL, MBR_ADD_ON DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)', MBR_STATUS VARCHAR(255) NOT NULL, GRP_ID INT NOT NULL, USR_ID INT NOT NULL, INDEX IDX_51B1FD6C1DAB1036 (GRP_ID), INDEX IDX_51B1FD6CC4DC529D (USR_ID), PRIMARY KEY(GRP_ID, USR_ID)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
@@ -71,6 +74,9 @@ final class Version20250706113947 extends AbstractMigration
             ALTER TABLE MON_GROUPE ADD CONSTRAINT FK_25EC8B35C4DC529D FOREIGN KEY (USR_ID) REFERENCES MON_USER (USR_ID)
         SQL);
         $this->addSql(<<<'SQL'
+            ALTER TABLE MON_GROUP_INVITATION ADD CONSTRAINT FK_95FB11291DAB1036 FOREIGN KEY (GRP_ID) REFERENCES MON_GROUPE (GRP_ID)
+        SQL);
+        $this->addSql(<<<'SQL'
             ALTER TABLE MON_MEMBER ADD CONSTRAINT FK_51B1FD6C1DAB1036 FOREIGN KEY (GRP_ID) REFERENCES MON_GROUPE (GRP_ID)
         SQL);
         $this->addSql(<<<'SQL'
@@ -108,6 +114,9 @@ final class Version20250706113947 extends AbstractMigration
             ALTER TABLE MON_GROUPE DROP FOREIGN KEY FK_25EC8B35C4DC529D
         SQL);
         $this->addSql(<<<'SQL'
+            ALTER TABLE MON_GROUP_INVITATION DROP FOREIGN KEY FK_95FB11291DAB1036
+        SQL);
+        $this->addSql(<<<'SQL'
             ALTER TABLE MON_MEMBER DROP FOREIGN KEY FK_51B1FD6C1DAB1036
         SQL);
         $this->addSql(<<<'SQL'
@@ -130,6 +139,9 @@ final class Version20250706113947 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE MON_GROUPE
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP TABLE MON_GROUP_INVITATION
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE MON_MEMBER

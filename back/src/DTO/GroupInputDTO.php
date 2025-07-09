@@ -7,10 +7,10 @@ use App\Enum\GroupTypeEnum;
 
 class GroupInputDTO
 {
-    public ?string $name = null;
-    public ?GroupTypeEnum $type = null;
-    public ?ColorEnum $color = null;
-    public ?int $authorId = null;
+    public string $name;
+    public GroupTypeEnum $type;
+    public ColorEnum $color;
+    public int $authorId;
 
     /** @var array<int, CategoryInputDTO>|null */
     public ?array $categories = null;

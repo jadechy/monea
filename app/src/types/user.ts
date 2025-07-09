@@ -74,6 +74,8 @@ export const UserSchema = z.object({
   picture: z.string().optional(),
 
   resetToken: z.string().nullable(),
+
+  invitationToken: z.string().optional(),
 })
 
 export const UserEditSchema = UserSchema.pick({

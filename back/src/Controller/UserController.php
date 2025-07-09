@@ -8,28 +8,31 @@ use App\Entity\Groupe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
-
-use App\Entity\User;
-use App\Enum\ColorEnum;
-use App\Enum\GroupTypeEnum;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+use App\Entity\User;
+use App\Enum\ColorEnum;
+use App\Enum\GroupTypeEnum;
+use App\Repository\UserRepository;
+use App\Entity\Member;
+use App\Enum\MemberRoleEnum;
+use App\Enum\MemberStatusEnum;
+use App\Repository\GroupInvitationRepository;
+
 #[AsController]
 class UserController extends AbstractController
 {
     public function __construct(
         private UserRepository $userRepository,
+        private GroupInvitationRepository $groupInvitationRepository,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private EntityManagerInterface $em,
         private UserPasswordHasherInterface $passwordHasher
-
-
     ) {}
 
     public function register(UserRegisterDto $input): JsonResponse
@@ -50,8 +53,7 @@ class UserController extends AbstractController
         $user->setLastname($input->lastname);
         $user->setCreatedAt(new \DateTimeImmutable());
         $user->setRoles(["ROLE_USER"]);
-        $user->setBirthday($input->birthday);
-
+        // $user->setBirthday($input->birthday);
 
         $hashedPassword = $this->passwordHasher->hashPassword($user, $input->password);
         $user->setPassword($hashedPassword);
@@ -67,6 +69,28 @@ class UserController extends AbstractController
         $group->setPicture('');
         $this->em->persist($group);
         $this->em->flush();
+
+        if($input->invitationToken){
+            $invitation = $this->groupInvitationRepository->findOneBy(['token' => $input->invitationToken, 'used' => false]);
+            if (!$invitation) {
+                return new JsonResponse(['error' => 'Invitation invalide ou déjà utilisée'], 404);
+            }
+
+            $member = new Member();
+            $member->setIndividual($user);
+            $member->setGroupe($invitation->getGroupe());
+            $member->setAddOn(new \DateTimeImmutable());
+            $member->setStatus(MemberStatusEnum::PENDING);
+            $member->setRole(MemberRoleEnum::MEMBER);
+
+            $invitation->setUsed(true);
+
+            $this->em->persist($member);
+            dump(gettype($member->getStatus()), get_class($member->getStatus()));
+            dump(gettype($member->getRole()), get_class($member->getRole()));
+
+            $this->em->flush();
+        }
 
         return $this->json(['message' => 'Utilisateur créé avec succès'], Response::HTTP_CREATED);
     }

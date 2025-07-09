@@ -17,7 +17,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 #[ApiResource(
     normalizationContext: ['groups' => ['groupe:read']],
     denormalizationContext: ['groups' => ['groupe:write']],
@@ -68,7 +67,7 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(length: 15, name: 'GRP_TYPE', enumType: GroupTypeEnum::class, type: "string")]
+    #[ORM\Column(length: 15, name: 'GRP_TYPE', enumType: GroupTypeEnum::class)]
     #[Assert\NotNull(
         message: 'Le groupe doit être défini.'
     )]
@@ -112,17 +111,24 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private ?string $picture = null;
 
-    #[ORM\Column(length: 15, name: 'GRP_COLOR', enumType: ColorEnum::class, type: "string")]
+    #[ORM\Column(length: 15, name: 'GRP_COLOR', enumType: ColorEnum::class)]
     #[Assert\NotNull(message: "La couleur est obligatoire.")]
     #[Assert\Choice(callback: [ColorEnum::class, 'cases'], message: "La couleur choisie n'est pas valide.")]
     #[Groups(['groupe:read', 'groupe:write'])]
     private ?ColorEnum $color = null;
+
+    /**
+     * @var Collection<int, GroupInvitation>
+     */
+    #[ORM\OneToMany(targetEntity: GroupInvitation::class, mappedBy: 'groupe')]
+    private Collection $groupInvitations;
 
     public function __construct()
     {
         $this->expenses = new ArrayCollection();
         $this->members = new ArrayCollection();
         $this->categories = new ArrayCollection();
+        $this->groupInvitations = new ArrayCollection();
     }
 
     public function getId(): int
@@ -287,6 +293,36 @@ class Groupe
     public function setColor(ColorEnum $color): static
     {
         $this->color = $color;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupInvitation>
+     */
+    public function getGroupInvitations(): Collection
+    {
+        return $this->groupInvitations;
+    }
+
+    public function addGroupInvitation(GroupInvitation $groupInvitation): static
+    {
+        if (!$this->groupInvitations->contains($groupInvitation)) {
+            $this->groupInvitations->add($groupInvitation);
+            $groupInvitation->setGroupe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupInvitation(GroupInvitation $groupInvitation): static
+    {
+        if ($this->groupInvitations->removeElement($groupInvitation)) {
+            // set the owning side to null (unless already changed)
+            if ($groupInvitation->getGroupe() === $this) {
+                $groupInvitation->setGroupe(null);
+            }
+        }
 
         return $this;
     }

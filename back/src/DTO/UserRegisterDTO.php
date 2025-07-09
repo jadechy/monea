@@ -25,10 +25,10 @@ class UserRegisterDTO
     #[Groups(['user:write'])]
     public string $lastname;
 
-    #[Assert\NotBlank]
-    #[Groups(['user:write'])]
-    #[Assert\Type(Types::DATE_IMMUTABLE)]
-    public \DateTimeImmutable $birthday;
+    // #[Assert\NotBlank]
+    // #[Groups(['user:write'])]
+    // #[Assert\Type(Types::DATE_IMMUTABLE)]
+    // public \DateTimeImmutable $birthday;
 
     #[Assert\NotBlank]
     #[Groups(['user:write'])]
@@ -37,4 +37,7 @@ class UserRegisterDTO
     #[Assert\NotBlank]
     #[Groups(['user:write'])]
     public string $confirmPassword;
+
+    #[Groups(['user:write'])]
+    public string $invitationToken;
 }
