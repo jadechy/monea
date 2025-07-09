@@ -4,6 +4,7 @@ namespace App\DTO;
 
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
 use App\Controller\MemberController;
 
@@ -37,6 +38,14 @@ use DateTimeImmutable;
         read: false,
         validationContext: ['groups' => ['member:write']],
     ),
+    new Get(
+        uriTemplate: '/member/response/{authorId}/{groupeId}',
+        controller: MemberController::class  . '::responseInvitation',
+        name: 'member_response',
+        deserialize: false,
+        read: false,
+        normalizationContext: ['groups' => ['member:read']]
+    )
 ])]
 class MemberDTO
 {

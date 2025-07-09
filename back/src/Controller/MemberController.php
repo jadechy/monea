@@ -101,6 +101,20 @@ final class MemberController extends AbstractController
         return new JsonResponse(['message' => 'Invitation envoyée']);
     }
 
+    public function responseInvitation(int $authorId, int $groupeId, Request $request): JsonResponse
+    {
+        $response = $request->query->getBoolean('response', false);
+
+        $member = $this->memberRepository->findOneBy(['groupe' => $groupeId, 'individual' => $authorId]);
+
+        $member->setStatus($response ? MemberStatusEnum::ACCEPTED : MemberStatusEnum::REFUSED);
+
+        $this->em->persist($member);
+        $this->em->flush();
+
+        return new JsonResponse(['message' => 'Réponse enregistrée']);
+    }
+
     public function updateMemberRole(Request $request, SerializerInterface $serializer): JsonResponse
     {
         try {
