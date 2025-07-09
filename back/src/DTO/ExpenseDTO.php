@@ -9,7 +9,7 @@ use ApiPlatform\Metadata\Link;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\ExpenseController;
 use App\Entity\Expense;
-use App\Entity\RecurringExpense;
+use DateTimeImmutable;
 
 #[ApiResource(operations: [
     new Get(
@@ -108,70 +108,52 @@ use App\Entity\RecurringExpense;
 ])]
 class ExpenseDTO
 {
-    #[Groups(['expense:read'])]
+    #[Groups(['expense:read', 'groupe:read'])]
     public int $id;
 
-    #[Groups(['expense:read'])]
+    #[Groups(['expense:read', 'groupe:read'])]
     public float $amount;
 
-    #[Groups(['expense:read'])]
+    #[Groups(['expense:read', 'groupe:read'])]
     public string $title;
 
-    #[Groups(['expense:read'])]
-    public string $createdAt;
+    #[Groups(['expense:read', 'groupe:read'])]
+    public DateTimeImmutable $createdAt;
 
-    #[Groups(['expense:read'])]
-    public string $spentAt;
+    #[Groups(['expense:read', 'groupe:read'])]
+    public DateTimeImmutable $spentAt;
 
-    #[Groups(['expense:read'])]
+    #[Groups(['expense:read', 'groupe:read'])]
     public int $groupe;
 
-    #[Groups(['expense:read'])]
-    public array $category;
+    #[Groups(['expense:read', 'groupe:read'])]
+    public CategoryDTO $category;
 
-    #[Groups(['expense:read'])]
-    public array $creator;
+    #[Groups(['expense:read', 'groupe:read'])]
+    public UserDTO $creator;
 
-    #[Groups(['expense:read'])]
-    public array $participants;
+    /** @var UserDTO[] */
+    #[Groups(['expense:read', 'groupe:read'])]
+    public array $participants = [];
 
-    #[Groups(['expense:read'])]
-    public ?array $recurringExpense;
+    #[Groups(['expense:read', 'groupe:read'])]
+    public ?RecurringExpenseDTO $recurring = null;
 
     public function __construct(Expense $expense)
     {
         $this->id = $expense->getId();
         $this->amount = $expense->getAmount();
         $this->title = $expense->getTitle();
-        $this->createdAt = $expense->getCreatedAt()->format('Y-m-d');
-        $this->spentAt = $expense->getSpentAt()->format('Y-m-d');
-
-        $this->category = [
-            'id' => $expense->getCategory()->getId(),
-            'label' => $expense->getCategory()->getLabel(),
-            'color' => $expense->getCategory()->getColor()
-        ];
-        $this->groupe = $expense->getGroupe()?->getId();
-        $this->creator = [
-            'id' => $expense->getCreator()->getId(),
-            'username' => $expense->getCreator()->getUsername(),
-            'picture' => $expense->getCreator()->getPicture()
-        ];
+        $this->createdAt = $expense->getCreatedAt();
+        $this->spentAt = $expense->getSpentAt();
+        $this->category = new CategoryDTO($expense->getCategory());
+        $this->groupe = $expense->getGroupe()->getId();
+        $this->creator = new UserDTO($expense->getCreator());
         if ($expense->getRecurringExpense()) {
-            $this->recurringExpense = [
-                'id' => $expense->getRecurringExpense()->getId(),
-                'frequency' => $expense->getRecurringExpense()->getFrequency(),
-                'endDate' => $expense->getRecurringExpense()->getEndDate(),
-                'repetitionCount' => $expense->getRecurringExpense()->getRepetitionCount()
-            ];
+            $this->recurring = new RecurringExpenseDTO($expense->getRecurringExpense());
         }
-
         foreach ($expense->getParticipants() as $participant) {
-            $this->participants[] = [
-                'id' => $participant?->getId(),
-                'username' => $participant?->getUsername(),
-                'picture' => $participant?->getPicture()
-            ];
+            $this->participants[] = new UserDTO($participant);
         }
     }
 }

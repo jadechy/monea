@@ -89,7 +89,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         maxMessage: "Le prénom ne peut pas dépasser {{ limit }} caractères."
     )]
     #[Groups(['user:read', 'user:write', 'user:me'])]
-    private ?string $name = null;
+    private string $name;
 
     #[ORM\Column(length: 50, name: 'USR_LASTNAME')]
     #[Groups(['user:read', 'user:write', 'user:me'])]
@@ -100,7 +100,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         minMessage: "Le nom de famille doit comporter au moins {{ limit }} caractères.",
         maxMessage: "Le nom de famille ne peut pas dépasser {{ limit }} caractères."
     )]
-    private ?string $lastname = null;
+    private string $lastname;
 
     #[ORM\Column(length: 180, name: 'USR_EMAIL')]
     #[Assert\NotBlank(message: "L'email ne peut pas être vide.")]
@@ -112,7 +112,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         maxMessage: "L'email ne peut pas dépasser {{ limit }} caractères."
     )]
     #[Groups(['user:read', 'user:write', 'user:me'])]
-    private ?string $email = null;
+    private string $email;
 
     #[ORM\Column(length: 128, name: 'USR_PASSWORD')]
     #[Groups(['user:read', 'user:write'])]
@@ -127,16 +127,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     private ?string $plainPassword = null;
 
-    #[ORM\Column(type: 'json', name: 'USR_ROLES', enumType: UserRoleEnum::class)]
-    #[Groups(['user:read', 'user:write', 'user:me'])]
     /**
-     * @var array<int, UserRoleEnum::class|string>
+     * @var array<string>
      */
-    private array $roles = [UserRoleEnum::USER];
+    #[ORM\Column(type: 'json', name: 'USR_ROLES')]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
+    private array $roles = [UserRoleEnum::USER->value];
 
     #[ORM\Column(name: 'USR_CREATED_AT')]
     #[Groups(['user:read', 'user:write', 'user:me'])]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     /**
      * @var Collection<int, Expense>
@@ -218,7 +218,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -230,7 +230,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getLastname(): ?string
+    public function getLastname(): string
     {
         return $this->lastname;
     }
@@ -278,14 +278,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        $roles = array_map(fn(UserRoleEnum $role) => $role->value, $this->roles ?? []);
-
+        $roles = $this->roles ?? [];
         $roles[] = UserRoleEnum::USER->value;
         return array_unique($roles);
+
+
+        // $roles = array_map(fn(UserRoleEnum $role) => $role->value, $this->roles ?? []);
+
+        // $roles[] = UserRoleEnum::USER->value;
+        // return array_unique($roles);
     }
+
+    /**
+     * @param array<string|UserRoleEnum> $roles
+     */
+
     public function setRoles(array $roles): static
     {
-        $this->roles = $roles;
+        $this->roles = array_map(fn($role) => $role instanceof UserRoleEnum ? $role->value : $role, $roles);
 
         return $this;
     }
@@ -309,7 +319,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials(): void {}
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -339,17 +349,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeExpense(Expense $expense): static
-    {
-        if ($this->expenses->removeElement($expense)) {
-            // set the owning side to null (unless already changed)
-            if ($expense->getCreator() === $this) {
-                $expense->setCreator(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Member>
@@ -369,17 +368,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeMember(Member $member): static
-    {
-        if ($this->members->removeElement($member)) {
-            // set the owning side to null (unless already changed)
-            if ($member->getIndividual() === $this) {
-                $member->setIndividual(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Groupe>
@@ -399,17 +387,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeGroupe(Groupe $groupe): static
-    {
-        if ($this->groupes->removeElement($groupe)) {
-            // set the owning side to null (unless already changed)
-            if ($groupe->getCreator() === $this) {
-                $groupe->setCreator(null);
-            }
-        }
 
-        return $this;
-    }
 
     /**
      * @return Collection<int, Expense>

@@ -20,13 +20,13 @@ class RecurringExpense
     private int $id;
 
     #[ORM\Column(name: 'REC_REPETITION_COUNT')]
-    private ?int $repetitionCount = null;
+    private int $repetitionCount;
 
     #[ORM\Column(length: 20, name: 'REC_FREQUENCY_UNIT')]
-    private ?RecurringFrequencyEnum $frequency = null;
+    private RecurringFrequencyEnum $frequency;
 
     #[ORM\Column(name: 'REC_END_DATE')]
-    private ?\DateTimeImmutable $endDate = null;
+    private \DateTimeImmutable $endDate;
 
     /**
      * @var Collection<int, Expense>
@@ -44,7 +44,7 @@ class RecurringExpense
         return $this->id;
     }
 
-    public function getRepetitionCount(): ?int
+    public function getRepetitionCount(): int
     {
         return $this->repetitionCount;
     }
@@ -56,7 +56,7 @@ class RecurringExpense
         return $this;
     }
 
-    public function getFrequency(): ?RecurringFrequencyEnum
+    public function getFrequency(): RecurringFrequencyEnum
     {
         return $this->frequency;
     }
@@ -68,7 +68,7 @@ class RecurringExpense
         return $this;
     }
 
-    public function getEndDate(): ?\DateTimeImmutable
+    public function getEndDate(): \DateTimeImmutable
     {
         return $this->endDate;
     }

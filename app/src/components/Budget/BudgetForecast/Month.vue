@@ -2,10 +2,11 @@
   import BaseSection from "@/components/BaseSection.vue"
   import PaiementCardComponent from "@/components/ExpenseCardComponent.vue"
   import {
-    getCurrentMonthIsoString,
     formatDateISO,
     formatDayMonth,
     getCurrentMonthStartDate,
+    getFirstDayOfMonth,
+    getFirstDayOfYear,
   } from "@/utils/date"
   import type { GroupType } from "@/types/groupType"
   import { DatePicker } from "primevue"
@@ -52,12 +53,12 @@
         inline
         v-on:month-change="
           (e) => {
-            currentMonth = getCurrentMonthIsoString(new Date(e.year, e.month - 1))
+            currentMonth = getFirstDayOfMonth(new Date(e.year, e.month - 1))
           }
         "
         v-on:year-change="
           (e: any) => {
-            currentMonth = getCurrentMonthIsoString(new Date(e.year, e.month - 1))
+            currentMonth = getFirstDayOfYear(new Date(e.year, e.month - 1))
           }
         "
         panel-class="border-none shadow rounded-xl "

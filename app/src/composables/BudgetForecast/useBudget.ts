@@ -9,7 +9,12 @@ import type { GroupType } from "@/types/groupType"
 import { computed, ref, type Ref } from "vue"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query"
 import type { NewBudgetType } from "@/types/budgetType"
-import { getCurrentMonthStartDate, getFirstDayOfMonth } from "@/utils/date"
+import {
+  formatDateISO,
+  getCurrentMonthStartDate,
+  getFirstDayOfMonth,
+  getFirstDayOfYear,
+} from "@/utils/date"
 import router from "@/router"
 
 export const useBudget = (space_id: GroupType["id"], year?: Ref<Date>) => {
@@ -34,7 +39,8 @@ export const useBudget = (space_id: GroupType["id"], year?: Ref<Date>) => {
   }
   const query = useQuery({
     queryKey: ["budgetByMonth", space_id, year],
-    queryFn: () => fetchBudgetRemainingInMonth(space_id, year.value.getFullYear()),
+    queryFn: () =>
+      fetchBudgetRemainingInMonth(space_id, formatDateISO(getFirstDayOfYear(year.value))),
     enabled: !!space_id,
   })
   const { data: budgetList, refetch: refetchBudget } = useQuery({

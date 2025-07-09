@@ -20,7 +20,7 @@ class Category
     #[ORM\Column(name: 'CAT_ID')]
     private int $id;
 
-    #[ORM\Column(length: 50, name: 'CAT_LABEL')]
+    #[ORM\Column(length: 50, name: 'CAT_LABEL', nullable: false)]
     #[Assert\NotBlank(message: "Le libellé est obligatoire.")]
     #[Assert\Length(
         min: 3,
@@ -28,12 +28,12 @@ class Category
         minMessage: "Le libellé doit faire au moins {{ limit }} caractères.",
         maxMessage: "Le libellé ne peut pas dépasser {{ limit }} caractères."
     )]
-    private ?string $label = null;
+    private string $label;
 
-    #[ORM\Column(length: 8, name: 'CAT_COLOR', enumType: ColorEnum::class, type: "string")]
+    #[ORM\Column(length: 8, name: 'CAT_COLOR', enumType: ColorEnum::class, type: "string", nullable: false)]
     #[Assert\NotNull(message: "La couleur est obligatoire.")]
     #[Assert\Choice(callback: [ColorEnum::class, 'cases'], message: "La couleur choisie n'est pas valide.")]
-    private ?ColorEnum $color = null;
+    private ColorEnum $color = ColorEnum::Gray;
 
     /**
      * @var Collection<int, Expense>
@@ -42,7 +42,7 @@ class Category
     private Collection $expenses;
 
     #[ORM\ManyToOne(inversedBy: 'categories')]
-    #[ORM\JoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID')]
+    #[ORM\JoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID', nullable: false)]
     #[Assert\NotNull(message: "Le groupe est obligatoire.")]
     private Groupe $groupe;
 
@@ -63,7 +63,7 @@ class Category
         return $this->id;
     }
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return $this->label;
     }
@@ -75,7 +75,7 @@ class Category
         return $this;
     }
 
-    public function getColor(): ?ColorEnum
+    public function getColor(): ColorEnum
     {
         return $this->color;
     }
@@ -105,17 +105,6 @@ class Category
         return $this;
     }
 
-    public function removeExpense(Expense $expense): static
-    {
-        if ($this->expenses->removeElement($expense)) {
-            // set the owning side to null (unless already changed)
-            if ($expense->getCategory() === $this) {
-                $expense->setCategory(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getGroupe(): Groupe
     {
@@ -142,18 +131,6 @@ class Category
         if (!$this->budgets->contains($budget)) {
             $this->budgets->add($budget);
             $budget->setCategory($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBudget(Budget $budget): static
-    {
-        if ($this->budgets->removeElement($budget)) {
-            // set the owning side to null (unless already changed)
-            if ($budget->getCategory() === $this) {
-                $budget->setCategory(null);
-            }
         }
 
         return $this;

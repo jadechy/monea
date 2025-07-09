@@ -51,7 +51,7 @@ class Groupe
     #[Groups(['groupe:read'])]
     private int $id;
 
-    #[ORM\Column(length: 100, name: 'GRP_NAME')]
+    #[ORM\Column(length: 100, name: 'GRP_NAME', nullable: false)]
     #[Assert\NotBlank(
         message: 'Le nom du membre ne peut pas être vide.'
     )]
@@ -60,20 +60,20 @@ class Groupe
         maxMessage: 'Le nom du membre ne peut pas dépasser {{ limit }} caractères.'
     )]
     #[Groups(['groupe:read', 'groupe:write'])]
-    private ?string $name = null;
+    private string $name;
 
-    #[ORM\Column(name: 'GRP_CREATED_AT')]
+    #[ORM\Column(name: 'GRP_CREATED_AT', nullable: false)]
     #[Assert\NotNull]
     #[Assert\Type(\DateTimeImmutable::class)]
     #[Groups(['groupe:read', 'groupe:write'])]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(length: 15, name: 'GRP_TYPE', enumType: GroupTypeEnum::class, type: "string")]
     #[Assert\NotNull(
         message: 'Le groupe doit être défini.'
     )]
     #[Groups(['groupe:read', 'groupe:write'])]
-    private ?GroupTypeEnum $type = null;
+    private GroupTypeEnum $type;
 
     /**
      * @var Collection<int, Expense>
@@ -104,7 +104,7 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $categories;
 
-    #[ORM\Column(length: 255, name: 'GRP_PICTURE')]
+    #[ORM\Column(length: 255, name: 'GRP_PICTURE', nullable: true)]
     #[Assert\Length(
         max: 255,
         maxMessage: "Le chemin de la photo ne peut pas dépasser {{ limit }} caractères."
@@ -112,11 +112,11 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private ?string $picture = null;
 
-    #[ORM\Column(length: 15, name: 'GRP_COLOR', enumType: ColorEnum::class, type: "string")]
+    #[ORM\Column(length: 15, name: 'GRP_COLOR', enumType: ColorEnum::class, type: "string", nullable: false)]
     #[Assert\NotNull(message: "La couleur est obligatoire.")]
     #[Assert\Choice(callback: [ColorEnum::class, 'cases'], message: "La couleur choisie n'est pas valide.")]
     #[Groups(['groupe:read', 'groupe:write'])]
-    private ?ColorEnum $color = null;
+    private ColorEnum $color;
 
     public function __construct()
     {
@@ -130,7 +130,7 @@ class Groupe
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -142,7 +142,7 @@ class Groupe
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -154,7 +154,7 @@ class Groupe
         return $this;
     }
 
-    public function getType(): ?GroupTypeEnum
+    public function getType(): GroupTypeEnum
     {
         return $this->type;
     }
@@ -184,17 +184,7 @@ class Groupe
         return $this;
     }
 
-    public function removeExpense(Expense $expense): static
-    {
-        if ($this->expenses->removeElement($expense)) {
-            // set the owning side to null (unless already changed)
-            if ($expense->getGroupe() === $this) {
-                $expense->setGroupe(null);
-            }
-        }
 
-        return $this;
-    }
 
     /**
      * @return Collection<int, Member>
@@ -214,17 +204,7 @@ class Groupe
         return $this;
     }
 
-    public function removeMember(Member $member): static
-    {
-        if ($this->members->removeElement($member)) {
-            // set the owning side to null (unless already changed)
-            if ($member->getGroupe() === $this) {
-                $member->setGroupe(null);
-            }
-        }
 
-        return $this;
-    }
 
     public function getCreator(): User
     {
@@ -279,7 +259,7 @@ class Groupe
         return $this;
     }
 
-    public function getColor(): ?ColorEnum
+    public function getColor(): ColorEnum
     {
         return $this->color;
     }

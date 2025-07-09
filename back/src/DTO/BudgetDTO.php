@@ -64,9 +64,9 @@ class BudgetDTO
     public string $monthStart;
 
     #[Groups(['budget:read'])]
-    public array $category;
+    public CategoryDTO $category;
 
-    public function __construct(Budget $budget, float $amountCalc = null)
+    public function __construct(Budget $budget, ?float $amountCalc = null)
     {
         $category = $budget->getCategory();
 
@@ -79,10 +79,6 @@ class BudgetDTO
 
         $this->monthStart = $budget->getMonthStart()->format('Y-m-d');
 
-        $this->category = [
-            'id' => $category->getId(),
-            'label' => $category->getLabel(),
-            'color' => $category->getColor()
-        ];
+        $this->category = new CategoryDTO($category);
     }
 }

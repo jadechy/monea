@@ -37,7 +37,9 @@ class UserFixtures extends Fixture
             // Mot de passe commun "password123" hashé
             $user->setPlainPassword('password123');
 
-            $user->setRoles([$faker->randomElement(UserRoleEnum::cases())]);
+            /** @var UserRoleEnum $role */
+            $role = $faker->randomElement(UserRoleEnum::cases());
+            $user->setRoles([$role]);
 
             $user->setCreatedAt(new \DateTimeImmutable('-' . $faker->numberBetween(0, 365) . ' days'));
 

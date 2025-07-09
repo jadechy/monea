@@ -1,14 +1,15 @@
 import { z } from "zod"
-import { UserSchema } from "./user"
+import { UserDTOSchema } from "./user"
 import { ColorSchema } from "./color"
 import { NewCategorySchema } from "./categoryType"
+import { dateSchema } from "./date"
 export const GroupTypeEnum = z.enum(["personnal", "occasional", "daily"])
 export const GroupSchema = z.object({
   id: z.number(),
   name: z.string().max(255),
-  createdAt: z.string(),
+  createdAt: dateSchema,
   type: GroupTypeEnum,
-  creator: UserSchema.shape.id,
+  // creator: UserDTOSchema.op,
   picture: z.string().max(255).nullable(),
   color: ColorSchema,
 })

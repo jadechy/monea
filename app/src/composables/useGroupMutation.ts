@@ -11,7 +11,7 @@ export const useGroupMutation = (group: ComputedRef<GroupType | undefined | null
 
   const queryClient = useQueryClient()
   const invalidateQueries = async () => {
-    await Promise.all([queryClient.invalidateQueries({ queryKey: ["groups-by-user", user?.id] })])
+    await Promise.all([queryClient.invalidateQueries({ queryKey: ["groups-by-user"] })])
   }
 
   const createGroupMutation = useMutation({

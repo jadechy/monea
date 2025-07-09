@@ -1,19 +1,15 @@
 import { getGroupByUser } from "@/services/groupService"
 import type { GroupType } from "@/types/groupType"
 import { defineStore } from "pinia"
-import { computed, ref } from "vue"
-import { useAuthStore } from "./authStore"
+import { computed } from "vue"
 import { useQuery } from "@tanstack/vue-query"
 
 export const useGroupsStore = defineStore("groups", () => {
-  const { user } = useAuthStore()
   const { data, refetch, isLoading } = useQuery({
-    queryKey: ["groups-by-user", user?.id],
+    queryKey: ["groups-by-user"],
     queryFn: async () => {
-      if (!user) throw new Error("Utilisateur non connecté")
-      return await getGroupByUser(user.id)
+      return await getGroupByUser()
     },
-    enabled: !!user,
     staleTime: 1000 * 60 * 5,
   })
 

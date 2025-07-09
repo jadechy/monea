@@ -25,13 +25,14 @@ use App\Enum\ColorEnum;
 ])]
 class CategoryDTO
 {
-    #[Groups(['category:read', 'expense:read'])]
+
+    #[Groups(['category:read', 'expense:read', 'budget:read', 'groupe:read'])]
     public int $id;
 
-    #[Groups(['category:read', 'expense:read'])]
+    #[Groups(['category:read', 'expense:read', 'budget:read', 'groupe:read'])]
     public string $label;
 
-    #[Groups(['category:read', 'expense:read'])]
+    #[Groups(['category:read', 'expense:read', 'budget:read', 'groupe:read'])]
     public ColorEnum $color;
 
     public function __construct(Category $category)

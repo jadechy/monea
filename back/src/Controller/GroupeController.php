@@ -3,12 +3,12 @@
 namespace App\Controller;
 
 use App\DTO\GroupeDTO;
+use App\DTO\GroupInputDTO;
 use App\Entity\Budget;
 use App\Entity\Category;
 use App\Entity\Groupe;
 use App\Entity\User;
 use App\Enum\ColorEnum;
-use App\Enum\GroupTypeEnum;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +16,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use App\Repository\BudgetRepository;
 use App\Repository\GroupeRepository;
-use App\Repository\ExpenseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -27,27 +26,36 @@ class GroupeController extends AbstractController
     public function __construct(
         private BudgetRepository $budgetRepository,
         private GroupeRepository $groupeRepository,
-        private ExpenseRepository $expenseRepository,
         private EntityManagerInterface $em,
         private ValidatorInterface $validator,
 
     ) {}
 
-    public function getAllGroupesByUser(int $userId): JsonResponse
+    public function getAllGroupesByUser(): JsonResponse
     {
-        $groupesData = $this->groupeRepository->findGroupesByUser($userId);
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+        /** @var Groupe[] $groupesData */
+        $groupesData = $this->groupeRepository->findGroupesByUser($user->getId());
 
         $groupes = array_map(
             fn($groupe) => new GroupeDTO($groupe),
             $groupesData
         );
-
-        return new JsonResponse($groupes, Response::HTTP_OK);
+        return $this->json($groupes, Response::HTTP_OK, [], ['groups' => ['groupe:read']]);
     }
 
     public function postGroup(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent());
+        $jsonData = json_decode($request->getContent(), false);
+        try {
+            $data = (new GroupInputDTO())->fromObject($jsonData);
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
 
         $user = $this->getUser();
 
@@ -56,23 +64,25 @@ class GroupeController extends AbstractController
         }
         $group = new Groupe();
         $group->setName($data->name);
-        $group->setType(GroupTypeEnum::from($data->type));
-        $group->setColor(ColorEnum::from($data->color));
+        $group->setType($data->type);
+        $group->setColor($data->color);
         $group->setCreator($user);
         $group->setCreatedAt(new \DateTimeImmutable());
         $group->setPicture("lalaal");
-        foreach ($data->categories as $categoryInput) {
-            $category = new Category();
-            $category->setLabel($categoryInput->label);
-            $category->setColor(ColorEnum::from($categoryInput->color));
-            $category->setGroupe($group);
-            $errors = $this->validator->validate($category);
-            if (count($errors) > 0) {
-                return $this->json(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
-            }
-            $this->em->persist($category);
-            $group->addCategory($category);
-        };
+        if ($data->categories) {
+            foreach ($data->categories as $categoryInput) {
+                $category = new Category();
+                $category->setLabel($categoryInput->label);
+                $category->setColor($categoryInput->color);
+                $category->setGroupe($group);
+                $errors = $this->validator->validate($category);
+                if (count($errors) > 0) {
+                    return $this->json(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
+                }
+                $this->em->persist($category);
+                $group->addCategory($category);
+            };
+        }
 
         $category = new Category();
         $category->setLabel("default");
@@ -94,7 +104,12 @@ class GroupeController extends AbstractController
     }
     public function editGroup(Request $request, Groupe $group): JsonResponse
     {
-        $data = json_decode($request->getContent());
+        $jsonData = json_decode($request->getContent(), false);
+        try {
+            $data = (new GroupInputDTO())->fromObject($jsonData);
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -105,36 +120,35 @@ class GroupeController extends AbstractController
         }
 
         $group->setName($data->name ?? $group->getName());
-        $group->setType(isset($data->type) ? GroupTypeEnum::from($data->type) : $group->getType());
-        $group->setColor(isset($data->color) ? ColorEnum::from($data->color) : $group->getColor());
+        $group->setType(isset($data->type) ? $data->type : $group->getType());
+        $group->setColor(isset($data->color) ? $data->color : $group->getColor());
         $sentCategoryIds = [];
 
         foreach ($data->categories ?? [] as $categoryInput) {
             if (isset($categoryInput->id)) {
+                /** @var Category $existingCategory */
                 $existingCategory = $group->getCategories()->filter(
                     fn($c) => $c->getId() === $categoryInput->id
                 )->first();
 
-                if ($existingCategory) {
-                    $existingCategory->setLabel($categoryInput->label ?? $existingCategory->getLabel());
-                    $existingCategory->setColor(
-                        isset($categoryInput->color)
-                            ? ColorEnum::from($categoryInput->color)
-                            : $existingCategory->getColor()
-                    );
+                $existingCategory->setLabel($categoryInput->label ?? $existingCategory->getLabel());
+                $existingCategory->setColor(
+                    isset($categoryInput->color)
+                        ? $categoryInput->color
+                        : $existingCategory->getColor()
+                );
 
-                    $errors = $this->validator->validate($existingCategory);
-                    if (count($errors) > 0) {
-                        return $this->json(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
-                    }
-                    $sentCategoryIds[] = $existingCategory->getId();
+                $errors = $this->validator->validate($existingCategory);
+                if (count($errors) > 0) {
+                    return $this->json(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
                 }
+                $sentCategoryIds[] = $existingCategory->getId();
             } else {
 
                 $newCategory = new Category();
-                $newCategory->setLabel($categoryInput->label ?? '');
+                $newCategory->setLabel($categoryInput->label);
                 $newCategory->setColor(
-                    isset($categoryInput->color) ? ColorEnum::from($categoryInput->color) : ColorEnum::Gray
+                    isset($categoryInput->color) ? $categoryInput->color : ColorEnum::Gray
                 );
                 $newCategory->setGroupe($group);
                 $errors = $this->validator->validate($newCategory);
@@ -153,9 +167,6 @@ class GroupeController extends AbstractController
             if (!in_array($category->getId(), $sentCategoryIds) && $category->getLabel() !== "default") {
                 $categoryGroup = $category->getGroupe();
 
-                if (!$categoryGroup) {
-                    throw new \LogicException("Category has no group");
-                }
 
                 $categoryDefault = $categoryGroup->getDefaultCategory();
 

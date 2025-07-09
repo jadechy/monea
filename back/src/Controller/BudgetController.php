@@ -11,11 +11,13 @@ use App\DTO\BudgetDTO;
 use App\DTO\BudgetInputDTO;
 use App\Entity\Budget;
 use App\Entity\Groupe;
+use App\Entity\Category;
 use App\Repository\BudgetRepository;
 use App\Repository\GroupeRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\ExpenseRepository;
 use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,12 +35,13 @@ class BudgetController extends AbstractController
         private EntityManagerInterface $em,
     ) {}
 
-    private function computeTotalBudgetForGroup(Groupe $groupe, \DateTimeInterface $monthStart): float
+    private function computeTotalBudgetForGroup(Groupe $groupe, \DateTimeImmutable $monthStart): float
     {
         $categories = $this->categoryRepository->findBy(['groupe' => $groupe]);
-
-        $total = 0;
+        /** @var float $total */
+        $total = 0.0;
         foreach ($categories as $category) {
+            /** @var Budget|null $budgetCategory */
             $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($category->getId(), $monthStart);
             if ($budgetCategory) {
                 $total += $budgetCategory->getAmount();
@@ -48,11 +51,15 @@ class BudgetController extends AbstractController
         return $total;
     }
 
-    public function getBudget(string $groupeId, $monthStart)
+    public function getBudget(int $groupeId, DateTimeImmutable $monthStart): JsonResponse
     {
+        /** @var Groupe|null $groupe */
         $groupe = $this->groupeRepository->find($groupeId);
+        if (!$groupe) {
+            return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
 
-        $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
+        $date = ($monthStart)->modify('first day of this month')->setTime(0, 0);
         $amount = $this->computeTotalBudgetForGroup($groupe, $date);
 
         return $this->json([
@@ -60,11 +67,14 @@ class BudgetController extends AbstractController
         ]);
     }
 
-    public function getRemainingBudget(string $groupeId, $monthStart)
+    public function getRemainingBudget(int $groupeId, DateTimeImmutable $monthStart): JsonResponse
     {
+        /** @var Groupe|null $groupe */
         $groupe = $this->groupeRepository->find($groupeId);
-
-        $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
+        if (!$groupe) {
+            return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
+        $date = ($monthStart)->modify('first day of this month')->setTime(0, 0);
         $budgetAmount = $this->computeTotalBudgetForGroup($groupe, $date);
 
         $start = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
@@ -80,7 +90,7 @@ class BudgetController extends AbstractController
         ]);
     }
 
-    public function getBudgetByGroupe(string $groupeId, string $monthStart)
+    public function getBudgetByGroupe(int $groupeId, DateTimeImmutable $monthStart): JsonResponse
     {
         /** @var Groupe|null $groupe */
         $groupe = $this->groupeRepository->find($groupeId);
@@ -89,7 +99,7 @@ class BudgetController extends AbstractController
         }
         $categories = $this->categoryRepository->findBy(['groupe' => $groupe]);
 
-        $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
+        $date = ($monthStart)->modify('first day of this month')->setTime(0, 0);
 
         $budgets = [];
         foreach ($categories as $category) {
@@ -104,16 +114,17 @@ class BudgetController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
-    public function getRemainingBudgetList(string $groupeId, string $monthStart)
+    public function getRemainingBudgetList(int $groupeId, DateTimeImmutable $monthStart): JsonResponse
     {
         /** @var Groupe|null $groupe */
         $groupe = $this->groupeRepository->find($groupeId);
         if (!$groupe) {
             return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
         }
+        /** @var Category[] $categories */
         $categories = $this->categoryRepository->findBy(['groupe' => $groupe]);
 
-        $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
+        $date = ($monthStart)->modify('first day of this month')->setTime(0, 0);
 
         $budgets = [];
         foreach ($categories as $category) {
@@ -127,7 +138,7 @@ class BudgetController extends AbstractController
                 $budgetCategoryDefault = new Budget();
                 $budgetCategoryDefault->setAmount(0);
                 $budgetCategoryDefault->setMonthStart($date);
-                $budgetCategoryDefault->setCategory($groupe->getDefaultCategory());
+                $budgetCategoryDefault->setCategory($defaultCategory);
                 $this->em->persist($budgetCategoryDefault);
                 $this->em->flush();
             }
@@ -151,7 +162,7 @@ class BudgetController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
-    public function getRemainingBudgetByGroupAndYear(string $groupeId, int $year)
+    public function getRemainingBudgetByGroupAndYear(int $groupeId, DateTimeImmutable $year): JsonResponse
     {
         $budgetsData = $this->budgetRepository->findBudgetByGroupAndYear($groupeId, $year);
         $expensesData = $this->expenseRepository->findExpensesByGroupAndYear($groupeId, $year);
@@ -162,9 +173,9 @@ class BudgetController extends AbstractController
         $categoryMeta = [];
 
         foreach ($expensesData as $expense) {
-            $month = $expense['month'];
-            $categoryId = $expense['categoryId'];
-            $amount = $expense['totalAmount'];
+            $month = $expense->getSpentAt()->format('Y-m');
+            $categoryId = $expense->getCategory()->getId();
+            $amount = $expense->getAmount();
 
             $months[$month] = true;
 
@@ -173,8 +184,8 @@ class BudgetController extends AbstractController
             $expensesByMonthCategory[$month][$categoryId] = ($expensesByMonthCategory[$month][$categoryId] ?? 0) + $amount;
 
             $categoryMeta[$categoryId] = [
-                'label' => $expense['categoryLabel'],
-                'color' => $expense['categoryColor'],
+                'label' => $expense->getCategory()->getLabel(),
+                'color' => $expense->getCategory()->getColor(),
             ];
         }
 
@@ -182,21 +193,20 @@ class BudgetController extends AbstractController
         $budgetsByMonth = [];
 
         foreach ($budgetsData as $budget) {
-            $month = $budget['month'];
-            $categoryId = $budget['categoryId'] ?? null;
-            $amount = $budget['totalAmount'];
+            $month = $budget->getMonthStart()->format('Y-m');
+            $categoryId = $budget->getCategory()->getId();
+            $amount = $budget->getAmount();
 
             $months[$month] = true;
 
             $budgetsByMonth[$month] = ($budgetsByMonth[$month] ?? 0) + $amount;
 
-            if ($categoryId !== null) {
-                $budgetsByMonthCategory[$month][$categoryId] = $amount;
-            }
+
+            $budgetsByMonthCategory[$month][$categoryId] = $amount;
         }
         if (empty($months)) {
             for ($m = 1; $m <= 12; $m++) {
-                $monthKey = sprintf('%04d-%02d', $year, $m);
+                $monthKey = sprintf('%04d-%02d', $year->format("Y"), $m);
                 $months[$monthKey] = true;
             }
         }
@@ -230,29 +240,21 @@ class BudgetController extends AbstractController
 
         return $this->json($result, 200, [], ['json_encode_options' => JSON_PRETTY_PRINT]);
     }
-    public function getRemainingBudgetByGroupAndMonth(string $groupeId, string $month)
+    public function getRemainingBudgetByGroupAndMonth(int $groupeId, DateTimeImmutable $month): JsonResponse
     {
         $budgetsData = $this->budgetRepository->findBudgetByGroupAndMonth($groupeId, $month);
         $expensesData = $this->expenseRepository->findExpensesByGroupAndMonth($groupeId, $month);
 
-        foreach ($expensesData as &$row) {
-            $date = $row['spendAt'];
-            if ($date instanceof \DateTimeInterface) {
-                $row['spendAt'] = $date->format('Y-m-d');
-            } else {
-                $row['spendAt'] = (new \DateTimeImmutable($date))->format('Y-m-d');
-            }
-        }
-        unset($row);
+
 
         $days = [];
         $expensesByDay = [];
         $expensesByDayCategory = [];
         $categoryMeta = [];
         foreach ($expensesData as $expense) {
-            $day = $expense['spendAt'];
-            $categoryId = $expense['categoryId'];
-            $amount = $expense['totalAmount'];
+            $day = $expense->getSpentAt()->format('Y-m');
+            $categoryId = $expense->getCategory()->getId();
+            $amount = $expense->getAmount();
 
             $days[$day] = true;
 
@@ -260,28 +262,24 @@ class BudgetController extends AbstractController
             $expensesByDayCategory[$day][$categoryId] = ($expensesByDayCategory[$day][$categoryId] ?? 0) + $amount;
 
             $categoryMeta[$categoryId] = [
-                'label' => $expense['categoryLabel'],
-                'color' => $expense['categoryColor'],
+                'label' => $expense->getCategory()->getLabel(),
+                'color' => $expense->getCategory()->getColor(),
             ];
         }
 
         $budgetsByDay = [];
         $budgetsByDayCategory = [];
         foreach ($budgetsData as $budget) {
-            $day = $budget['spendAt'];
-            $categoryId = $budget['categoryId'] ?? null;
-            $amount = $budget['totalAmount'];
+            $day = $budget->getMonthStart()->format('Y-m');
+            $categoryId = $budget->getCategory()->getId();
+            $amount = $budget->getAmount();
 
             $days[$day] = true;
 
             $budgetsByDay[$day] = ($budgetsByDay[$day] ?? 0) + $amount;
-
-            if ($categoryId !== null) {
-                $budgetsByDayCategory[$day][$categoryId] = $amount;
-            }
         }
         if (empty($days)) {
-            $start = new \DateTimeImmutable($month);
+            $start = $month;
             $daysInMonth = (int) $start->format('t');
             for ($d = 1; $d <= $daysInMonth; $d++) {
                 $dayDate = $start->modify('+' . ($d - 1) . ' days');
@@ -322,7 +320,7 @@ class BudgetController extends AbstractController
 
 
 
-    public function getBudgetByCategory(string $categoryId)
+    public function getBudgetByCategory(int $categoryId): JsonResponse
     {
         $budgetsData = $this->budgetRepository->findBudgetByCategory($categoryId);
 
@@ -350,13 +348,23 @@ class BudgetController extends AbstractController
         return new JsonResponse(null, 200);
     }
 
-    public function getRemainingBudgetByCategoryAndMonth(string $categoryId, string $monthStart): JsonResponse
+    public function getRemainingBudgetByCategoryAndMonth(int $categoryId, string $monthStart): JsonResponse
     {
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
-
+        /** @var Category|null $category */
         $category = $this->categoryRepository->find($categoryId);
+        if (!$category) {
+            return new JsonResponse(['error' => 'Catégorie non trouvée.'], Response::HTTP_BAD_REQUEST);
+        }
+        /** @var Budget|null $budget */
         $budget = $this->budgetRepository->findOneBy(['category' => $category, 'monthStart' => $date]);
 
+        if (!$budget) {
+            $budget = new Budget();
+            $budget->setMonthStart($date);
+            $budget->setCategory($category);
+            $budget->setAmount(0.0);
+        }
         $totalBudget = $budget->getAmount();
 
         $expenses = $this->expenseRepository->findExpensesByCategoryAndDate($categoryId, $date);
