@@ -25,6 +25,7 @@ use App\Repository\GroupeRepository;
 use App\Repository\ExpenseRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\MemberRepository;
+use App\Repository\UserRepository;
 use App\Service\RecurringExpenseService;
 use DateTimeImmutable;
 
@@ -37,6 +38,7 @@ class ExpenseController extends AbstractController
         private ExpenseRepository $expenseRepository,
         private CategoryRepository $categoryRepository,
         private MemberRepository $memberRepository,
+        private UserRepository $userRepository,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private EntityManagerInterface $em,
@@ -218,7 +220,7 @@ class ExpenseController extends AbstractController
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
-        $membre = $this->memberRepository->findRoleByUserAndGroupe($creator, $group);
+        $membre = $this->memberRepository->findOneBy(['groupe' => $group, 'individual' => $creator]);
         if(!$membre){
             throw $this->createAccessDeniedException('Vous ne pouvez pas créer une dépense car vous ne faites pas partie de ce groupe');
         }
@@ -248,6 +250,20 @@ class ExpenseController extends AbstractController
                     ], Response::HTTP_BAD_REQUEST);
                 }
             }
+
+            if (isset($data->participants)) {
+                foreach ($data->participants as $userDto) {
+                    // On suppose que $userRepository est injecté ou accessible
+                    $user = $this->userRepository->find($userDto->id);
+
+                    if (!$user) {
+                        throw new \Exception("Utilisateur avec l'ID {$userDto->id} non trouvé.");
+                    }
+
+                    $expense->addParticipant($user);
+                }
+            }
+
             $this->em->flush();
 
             return $this->json(['message' => 'La dépense a bien été enregistrée', 'id' => $expense->getId()], Response::HTTP_CREATED);
