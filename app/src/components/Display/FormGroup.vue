@@ -131,7 +131,7 @@
       />
 
       <Button
-        v-if="group.type !== 'personnal'"
+        v-if="group.type !== 'personnal' && group.userRole === 'author'"
         variant="outlined"
         @click="onDelete()"
         :class="getSpaceColor({ color: group?.color, outlined: true })"

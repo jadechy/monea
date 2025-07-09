@@ -22,8 +22,6 @@
   const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: props.space_id }))
 
-  // Const
-
   // Query
   const { data: expense } = useQuery({
     queryKey: ["expense-by-id", props.id],
@@ -55,10 +53,11 @@
             :category="expense.category"
           />
           <Chip :label="expense.creator.username" :image="expense.creator.picture ?? placeholder" />
-          <Chip icon="pi pi-replay" label="Dépense récurrente" v-if="expense.recurringExpense" />
+          <Chip icon="pi pi-replay" label="Dépense récurrente" v-if="expense.recurring" />
         </div>
       </div>
       <Button
+        v-if="group.userRole !== 'viewer' && group.userRole !== 'banned'"
         icon="pi pi-pencil"
         label="Edition"
         size="small"
