@@ -13,7 +13,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 use App\Entity\Member;
 use App\Entity\User;
-use App\Entity\Groupe;
 use App\Entity\GroupInvitation;
 use App\Enum\MemberRoleEnum;
 use App\Enum\MemberStatusEnum;
@@ -211,7 +210,7 @@ final class MemberController extends AbstractController
         $this->em->flush();
 
         return $this->json(
-            ['message' => 'Le membre a bien été enregistrée'],
+            ['message' => 'Le membre est bien parti du groupe'],
             Response::HTTP_OK,
             []
         );

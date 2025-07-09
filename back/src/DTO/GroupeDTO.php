@@ -84,7 +84,6 @@ class GroupeDTO
             }
         }
 
-
         foreach ($groupe->getCategories() as $category) {
             $this->categories[] = new CategoryDTO($category);
         }
