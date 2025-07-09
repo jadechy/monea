@@ -19,7 +19,7 @@
     categories.value.splice(index, 1)
   }
   const deleteCategory = ({ category }: { category: NewCategoryType }) => {
-    if (!model) return
+    if (!model.value) return
     const index = model?.value.indexOf(category)
     model?.value.splice(index, 1)
     categories.value.push(category)
@@ -38,7 +38,7 @@
   }
 
   const handleSave = (newCat: NewCategoryType) => {
-    if (!model) return
+    if (!model.value) return
     if (mode.value === "edit" && selectedCategory.value) {
       const index = model?.value.findIndex((c) => c.label === selectedCategory.value?.label)
       if (index !== -1) model.value[index] = newCat

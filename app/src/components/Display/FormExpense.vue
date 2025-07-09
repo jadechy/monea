@@ -67,7 +67,7 @@
     if (!form.valid || !group.value) return
     const { title, amount, spentAt, author, category, frequency, repetitionCount, endDate } =
       form.states
-    let data: NewExpenseType = {
+    const data: NewExpenseType = {
       title: title.value,
       amount: amount.value,
       spentAt: convertToLocalDate(spentAt.value),

@@ -1,12 +1,11 @@
 <script setup lang="ts">
   import type { ColorType } from "@/types/color"
-  import type { Color } from "../Space/SpaceCard.vue"
   export interface TitleComponentProps {
     label: string
     color?: ColorType
   }
   withDefaults(defineProps<TitleComponentProps>(), {
-    color: "gray" as Color,
+    color: "gray" as ColorType,
   })
 </script>
 

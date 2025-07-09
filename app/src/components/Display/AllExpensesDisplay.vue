@@ -37,7 +37,7 @@
   />
   <div class="flex flex-col gap-10">
     <div class="flex flex-col gap-2 sm:flex-row justify-between items-center">
-      <RemainingBudget :space_id="group.id" />
+      <RemainingBudget :space_id="group.id" :category="category" />
       <div v-if="actionButton">
         <Button
           icon="pi pi-eye"

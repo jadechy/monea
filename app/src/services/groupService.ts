@@ -1,7 +1,6 @@
 import { CategorySchema } from "@/types/categoryType"
 import { GroupSchema, type GroupType, type NewGroupType } from "@/types/groupType"
 import { MemberDTOSchema } from "@/types/memberType"
-import { type UserType } from "@/types/user"
 import { deleteJson, fetchJson, patchJson, postJson } from "@/utils/apiMethods"
 import { z } from "zod"
 

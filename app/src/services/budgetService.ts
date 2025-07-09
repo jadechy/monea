@@ -1,7 +1,7 @@
 import { formatDateISO } from "@/utils/date"
 import { type GroupType } from "@/types/groupType"
 import { z } from "zod"
-import { CategorySchema } from "@/types/categoryType"
+import { CategorySchema, type CategoryType } from "@/types/categoryType"
 import {
   AmountSchema,
   AmountValueSchema,
@@ -18,6 +18,15 @@ export const fetchBudgetGroupDateRemaining = (
 ) =>
   fetchJson({
     url: `budget/${group_id}/${formatDateISO(new Date(month))}/remaining`,
+    schema: AmountSchema,
+  })
+
+export const fetchBudgetCategoryDateRemaining = (
+  category_id: CategoryType["id"],
+  month: BudgetType["monthStart"],
+) =>
+  fetchJson({
+    url: `budget/${category_id}/${formatDateISO(new Date(month))}/remaining/category`,
     schema: AmountSchema,
   })
 

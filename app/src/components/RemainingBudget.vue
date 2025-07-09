@@ -1,26 +1,47 @@
 <script setup lang="ts">
   import { getCurrentMonthIsoString } from "@/utils/date"
   import { truncateToTenth } from "@/utils/number"
-  import { fetchBudgetGroup, fetchBudgetGroupDateRemaining } from "@/services/budgetService"
+  import {
+    fetchBudgetCategoryDateRemaining,
+    fetchBudgetGroup,
+    fetchBudgetGroupDateRemaining,
+  } from "@/services/budgetService"
   import { computed } from "vue"
   import { useQuery } from "@tanstack/vue-query"
   import type { GroupType } from "@/types/groupType"
+  import type { CategoryType } from "@/types/categoryType"
 
-  const { space_id, label, initialBudget } = withDefaults(
-    defineProps<{ space_id: GroupType["id"]; label?: string; initialBudget?: boolean }>(),
+  const { space_id, label, initialBudget, category } = withDefaults(
+    defineProps<{
+      space_id: GroupType["id"]
+      label?: string
+      initialBudget?: boolean
+      category?: CategoryType
+    }>(),
     {
       label: "Budget restant",
     },
   )
+  const query = () => {
+    if (category)
+      return {
+        key: ["budget", "remaining", "category", Number(category.id)],
+        fn: fetchBudgetCategoryDateRemaining(category.id, getCurrentMonthIsoString()),
+      }
+    else if (initialBudget)
+      return {
+        key: ["budget", "initial", Number(space_id)],
+        fn: fetchBudgetGroup(space_id, getCurrentMonthIsoString()),
+      }
+    else
+      return {
+        key: ["budget", "remaining", Number(space_id)],
+        fn: fetchBudgetGroupDateRemaining(space_id, getCurrentMonthIsoString()),
+      }
+  }
   const budgetQuery = useQuery({
-    queryKey: initialBudget
-      ? ["budget", "initial", Number(space_id)]
-      : ["budget", "remaining", Number(space_id)],
-    queryFn: () => {
-      return initialBudget
-        ? fetchBudgetGroup(space_id, getCurrentMonthIsoString())
-        : fetchBudgetGroupDateRemaining(space_id, getCurrentMonthIsoString())
-    },
+    queryKey: query().key,
+    queryFn: () => query().fn,
   })
   const budget = computed(() => budgetQuery.data.value?.amount ?? 0)
 </script>

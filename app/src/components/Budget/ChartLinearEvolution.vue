@@ -1,16 +1,18 @@
 <script setup lang="ts">
-  import { ref, watchEffect } from "vue"
+  import { computed, ref, watchEffect } from "vue"
   import Chart from "primevue/chart"
   import { formatDayMonth, getCurrentMonthStartDate, getDaysOfCurrentMonth } from "@/utils/date"
-  import { fetchCategoryByGroup } from "@/services/categoryService"
   import { getMonthlyExpensesByGroup } from "@/services/expenseService"
   import type { GroupType } from "@/types/groupType"
   import { useQuery } from "@tanstack/vue-query"
+  import { useGroupsStore } from "@/stores/groupStore"
 
   // Props
   const { group_id } = defineProps<{ group_id: GroupType["id"] }>()
 
   // Const
+  const { groupById } = useGroupsStore()
+  const group = computed(() => groupById({ id: group_id }))
   const days = getDaysOfCurrentMonth()
   const labels = days.map((d) => formatDayMonth(d))
 
@@ -18,11 +20,6 @@
   const { data: expenses } = useQuery({
     queryKey: ["expenses-monthly-group", group_id],
     queryFn: () => getMonthlyExpensesByGroup(group_id, getCurrentMonthStartDate()),
-  })
-
-  const { data: categories } = useQuery({
-    queryKey: ["categories-by-group", group_id],
-    queryFn: () => fetchCategoryByGroup(group_id),
   })
 
   // Chart
@@ -67,10 +64,10 @@
 
   // WatchEffect
   watchEffect(() => {
-    if (!categories.value || !expenses.value) return
+    if (!group.value?.categories || !expenses.value) return
 
     // Filtrer uniquement les catégories utilisées
-    const filteredCategories = categories.value.filter((category) =>
+    const filteredCategories = group.value.categories.filter((category) =>
       Object.values(expenses.value ?? {}).some((expenseArray) =>
         expenseArray.some((e) => e.category.id === category.id),
       ),

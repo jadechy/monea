@@ -25,6 +25,7 @@ export const useGroupsStore = defineStore("groups", () => {
   const groupsCount = computed(() => groupsNotPersonnal.value.length)
 
   const personnalGroup = computed(() => groups.value.find((group) => group.type === "personnal"))
+
   return {
     // State
     groups: groupsNotPersonnal,
