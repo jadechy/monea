@@ -23,10 +23,9 @@ class GroupeRepository extends ServiceEntityRepository
     public function findGroupesByUser(int $userId): array
     {
         $qb = $this->createQueryBuilder('g')
-            ->leftJoin('g.creator', 'c')
             ->leftJoin('g.members', 'm')
             ->leftJoin('m.individual', 'i')
-            ->where('c.id = :userId OR i.id = :userId')
+            ->where('i.id = :userId')
             ->setParameter('userId', $userId);
         /** @var Groupe[] $result */
         $result = $qb->getQuery()->getResult();

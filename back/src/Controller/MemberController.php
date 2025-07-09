@@ -53,7 +53,7 @@ final class MemberController extends AbstractController
             $member->setStatus(MemberStatusEnum::PENDING);
             $member->setGroupe($groupe);
             $member->setIndividual($user);
-            $this->em->persist($expense);
+            $this->em->persist($member);
             $this->em->flush();
 
             // Page de notification avec les demandes d'invitation au sein d'un groupe

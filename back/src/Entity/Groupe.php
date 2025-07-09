@@ -88,14 +88,6 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $members;
 
-    #[ORM\ManyToOne(inversedBy: 'groupes')]
-    #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
-    #[Assert\NotNull(
-        message: 'Le créateur doit être défini.'
-    )]
-    #[Groups(['groupe:read', 'groupe:write'])]
-    private User $creator;
-
     /**
      * @var Collection<int, Category>
      */
@@ -206,20 +198,6 @@ class Groupe
             $this->members->add($member);
             $member->setGroupe($this);
         }
-
-        return $this;
-    }
-
-
-
-    public function getCreator(): User
-    {
-        return $this->creator;
-    }
-
-    public function setCreator(User $creator): static
-    {
-        $this->creator = $creator;
 
         return $this;
     }

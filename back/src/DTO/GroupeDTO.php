@@ -50,9 +50,6 @@ class GroupeDTO
     #[Groups(['groupe:read'])]
     public array $members;
 
-    #[Groups(['groupe:read'])]
-    public UserDTO $creator;
-
     /** @var CategoryDTO[] */
     #[Groups(['groupe:read'])]
     public array $categories;
@@ -66,8 +63,6 @@ class GroupeDTO
         $this->picture = $groupe->getPicture();
         $this->color = $groupe->getColor();
 
-
-
         foreach ($groupe->getExpenses() as $expense) {
             $this->expenses[] = new ExpenseDTO($expense);
         }
@@ -75,9 +70,6 @@ class GroupeDTO
         foreach ($groupe->getMembers() as $member) {
             $this->members[] = new MemberDTO($member);
         }
-
-
-        $this->creator = new UserDTO($groupe->getCreator());
 
         foreach ($groupe->getCategories() as $category) {
             $this->categories[] = new CategoryDTO($category);

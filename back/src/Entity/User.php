@@ -153,13 +153,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $members;
 
     /**
-     * @var Collection<int, Groupe>
-     */
-    #[ORM\OneToMany(targetEntity: Groupe::class, mappedBy: 'creator')]
-    #[Groups(['user:read', 'user:write'])]
-    private Collection $groupes;
-
-    /**
      * @var Collection<int, Expense>
      */
     #[ORM\ManyToMany(targetEntity: Expense::class, inversedBy: 'participants')]
@@ -197,7 +190,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->expenses = new ArrayCollection();
         $this->members = new ArrayCollection();
-        $this->groupes = new ArrayCollection();
         $this->shareExpenses = new ArrayCollection();
     }
 
@@ -367,27 +359,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
-
-    /**
-     * @return Collection<int, Groupe>
-     */
-    public function getGroupes(): Collection
-    {
-        return $this->groupes;
-    }
-
-    public function addGroupe(Groupe $groupe): static
-    {
-        if (!$this->groupes->contains($groupe)) {
-            $this->groupes->add($groupe);
-            $groupe->setCreator($this);
-        }
-
-        return $this;
-    }
-
-
 
     /**
      * @return Collection<int, Expense>

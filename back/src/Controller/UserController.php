@@ -68,7 +68,6 @@ class UserController extends AbstractController
         $group = new Groupe();
         $group->setName("Personnel");
         $group->setType(GroupTypeEnum::PERSONNAL);
-        $group->setCreator($user);
         $group->setCreatedAt(new \DateTimeImmutable());
         $group->setColor(ColorEnum::Pink);
         $group->setPicture('');
