@@ -1,4 +1,4 @@
-import type { ApiError, ErrorNotification } from "@/types/errors"
+import type { ErrorNotification } from "@/types/errors"
 import router from "@/router"
 import { useErrorHandler } from "@/composables/userErrorHandler"
 

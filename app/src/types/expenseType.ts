@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { UserDTOSchema, UserSchema } from "./user"
 import { GroupSchema } from "./groupType"
-import { CategorySchema, type CategoryType } from "./categoryType"
+import { CategorySchema } from "./categoryType"
 import { NewRecurringExpenseSchema, RecurringExpenseSchema } from "./recurringExpenseType"
 import { dateSchema, DateSchema } from "./date"
 
@@ -23,7 +23,6 @@ export const ExpenseSchema = z.object({
     })
     .min(3, "Le titre doit contenir au moins 3 caractères")
     .max(255, "Le titre doit contenir au maximum 255 caractères"),
-  createdAt: dateSchema,
   groupe: GroupSchema.shape.id,
   category: CategorySchema,
   creator: UserDTOSchema,
@@ -48,9 +47,17 @@ export const NewExpenseSchema = z.object({
 
 export const ExpenseDateSchema = z.record(
   DateSchema,
-  z.array(ExpenseSchema, {
-    invalid_type_error: "Les dépenses doivent être une liste",
-  }),
+  z.array(
+    ExpenseSchema.pick({
+      amount: true,
+      id: true,
+      title: true,
+      category: true,
+    }).extend({ creator: UserDTOSchema.pick({ picture: true, username: true }) }),
+    {
+      invalid_type_error: "Les dépenses doivent être une liste",
+    },
+  ),
 )
 
 export type ExpenseType = z.infer<typeof ExpenseSchema>

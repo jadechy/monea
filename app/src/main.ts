@@ -99,7 +99,7 @@ const queryClient = new QueryClient({
     },
   }),
   mutationCache: new MutationCache({
-    onError: (error, variables, context, mutation) => {
+    onError: (error) => {
       console.error("Erreur mutation:", error)
       handleApiError(error)
     },

@@ -4,8 +4,6 @@ namespace App\Controller;
 
 use App\DTO\UserEditDTO;
 use App\DTO\UserRegisterDTO;
-use App\Entity\Category;
-use App\Entity\Groupe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -17,13 +15,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 use App\Entity\User;
-use App\Enum\ColorEnum;
-use App\Enum\GroupTypeEnum;
 use App\Repository\UserRepository;
 use App\Entity\Member;
-use App\Enum\MemberRoleEnum;
 use App\Enum\MemberStatusEnum;
 use App\Repository\GroupInvitationRepository;
+use App\Service\UserSetupService;
 
 #[AsController]
 class UserController extends AbstractController
@@ -34,7 +30,8 @@ class UserController extends AbstractController
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private EntityManagerInterface $em,
-        private UserPasswordHasherInterface $passwordHasher
+        private UserPasswordHasherInterface $passwordHasher,
+        private UserSetupService $userSetupService
     ) {}
 
     public function register(UserRegisterDto $input): JsonResponse
@@ -65,45 +62,26 @@ class UserController extends AbstractController
         }
         $this->em->persist($user);
 
-        $group = new Groupe();
-        $group->setName("Espace personnel");
-        $group->setType(GroupTypeEnum::PERSONNAL);
-        $group->setCreatedAt(new \DateTimeImmutable());
-        $group->setColor(ColorEnum::Pink);
-        $group->setPicture('');
-        $errorsGroup = $this->validator->validate($group);
-        if (count($errorsGroup) > 0) {
-            return $this->json(['errors' => (string) $errorsGroup], Response::HTTP_BAD_REQUEST);
+        $error = $this->userSetupService->setupUser($user);
+        if ($error) {
+            return $this->json($error, Response::HTTP_BAD_REQUEST);
         }
-        $this->em->persist($group);
-        $defaultCategory = new Category();
-        $defaultCategory->setLabel("default");
-        $defaultCategory->setColor(ColorEnum::Gray);
-        $defaultCategory->setGroupe($group);
-        $this->em->persist($defaultCategory);
-        $this->em->flush();
 
         if ($input->invitationToken) {
             $invitation = $this->groupInvitationRepository->findOneBy(['token' => $input->invitationToken, 'used' => false]);
             if (!$invitation) {
                 return new JsonResponse(['error' => 'Invitation invalide ou déjà utilisée'], Response::HTTP_BAD_REQUEST);
             }
-
             $member = new Member();
             $member->setIndividual($user);
             $member->setGroupe($invitation->getGroupe());
             $member->setAddOn(new \DateTimeImmutable());
             $member->setStatus(MemberStatusEnum::PENDING);
             $member->setRole($invitation->getRole());
-
             $invitation->setUsed(true);
-
             $this->em->persist($member);
-            dump(gettype($member->getStatus()), get_class($member->getStatus()));
-            dump(gettype($member->getRole()), get_class($member->getRole()));
-
-            $this->em->flush();
         }
+        $this->em->flush();
 
         return $this->json(['message' => 'Utilisateur créé avec succès'], Response::HTTP_CREATED);
     }

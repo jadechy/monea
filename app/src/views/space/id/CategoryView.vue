@@ -4,7 +4,7 @@
 
   import AllPaiementsLayout from "@/components/Display/AllExpensesDisplay.vue"
   import { fetchCategory } from "@/services/categoryService"
-  import { getExpensesByGroupAndCategory } from "@/services/expenseService"
+  import { getExpensesByCategory } from "@/services/expenseService"
 
   import type { CategoryType } from "@/types/categoryType"
   import type { GroupType } from "@/types/groupType"
@@ -28,7 +28,7 @@
 
   const { data: expenses } = useQuery({
     queryKey: ["expenses-by-group-category", props.category_id],
-    queryFn: () => getExpensesByGroupAndCategory(props.category_id),
+    queryFn: () => getExpensesByCategory(props.category_id),
   })
 </script>
 

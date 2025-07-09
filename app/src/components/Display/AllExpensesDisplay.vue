@@ -14,6 +14,7 @@
   import type { GroupType } from "@/types/groupType"
   import { computed } from "vue"
   import type { CategoryType } from "@/types/categoryType"
+  import { hasEditPermission } from "@/utils/authorization"
   interface Props {
     group: GroupType
     haveCategory?: boolean
@@ -36,7 +37,7 @@
   />
   <div class="flex flex-col gap-10">
     <div class="flex flex-col gap-2 sm:flex-row justify-between items-center">
-      <RemainingBudget :space_id="group.id" />
+      <RemainingBudget :space_id="group.id" :category="category" />
       <div v-if="actionButton">
         <Button
           icon="pi pi-eye"
@@ -47,6 +48,7 @@
           @click="router.push({ name: 'budget_space', params: { space_id: group.id } })"
         />
         <Button
+          v-if="hasEditPermission(group)"
           icon="pi pi-pencil"
           label="Edition"
           size="small"
@@ -68,7 +70,7 @@
     <p v-else>Créer votre première dépense !</p>
   </div>
   <AddAction
-    v-if="group"
+    v-if="group && group.userRole !== 'viewer' && group.userRole !== 'banned'"
     route-name="new_expense"
     :class="[getSpaceColor({ color: group.color })]"
     :params="{

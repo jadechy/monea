@@ -27,7 +27,7 @@ export const formatLongDate = (dateInput: Date | string): string => {
  * Format pour API : "YYYY-MM-DD"
  */
 export const formatDateISO = (dateInput: Date | string): string => {
-  let date = convertToLocalDate(dateInput)
+  const date = convertToLocalDate(dateInput)
   const year = date.getFullYear()
   const month = pad2(date.getMonth() + 1)
   const day = pad2(date.getDate())

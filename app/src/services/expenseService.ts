@@ -8,6 +8,7 @@ import {
 import type { GroupType } from "@/types/groupType"
 import { deleteJson, fetchJson, patchJson, postJson } from "@/utils/apiMethods"
 import { z } from "zod"
+import type { CategoryType } from "@/types/categoryType"
 
 export const getExpenseById = (id: ExpenseType["id"]) =>
   fetchJson({
@@ -26,9 +27,9 @@ export const getMonthlyExpensesByGroup = (group_id: GroupType["id"], month: Date
     schema: ExpenseDateSchema,
   })
 
-export const getExpensesByGroupAndCategory = (group_id: GroupType["id"]) =>
+export const getExpensesByCategory = (category_id: CategoryType["id"]) =>
   fetchJson({
-    url: `expenses/groupe/${group_id}/list`,
+    url: `expenses/category/${category_id}/list`,
     schema: ExpenseDateSchema,
   })
 

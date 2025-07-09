@@ -9,7 +9,6 @@
   // Props
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
   // Group
-
   const { groupById } = useGroupsStore()
   const group = computed(() => groupById({ id: space_id }))
   // Query

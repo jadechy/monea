@@ -3,7 +3,6 @@
   import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
   import Loading from "@/components/Loading.vue"
   import { useBudget } from "@/composables/BudgetForecast/useBudget"
-  import { fetchCategoryByGroup } from "@/services/categoryService"
   import { useGroupsStore } from "@/stores/groupStore"
   import { NewBudgetSchemaResolver, type NewBudgetType } from "@/types/budgetType"
   import type { GroupType } from "@/types/groupType"
@@ -11,7 +10,6 @@
   import { getSpaceColor } from "@/utils/getColor"
   import { Form, type FormInstance, type FormSubmitEvent } from "@primevue/forms"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
-  import { useQuery } from "@tanstack/vue-query"
   import { Button, DatePicker, InputText } from "primevue"
   import { computed, ref } from "vue"
   import { watch } from "vue"
@@ -28,13 +26,9 @@
   // Queries
   const { refetchBudget, postBudgetsMutation, budgetList } = useBudget(space_id, year)
 
-  const { data: categories } = useQuery({
-    queryKey: ["categories-by-group", space_id],
-    queryFn: () => fetchCategoryByGroup(space_id),
-  })
   const computeInitialValues = () => {
-    if (!budgetList.value || !categories.value) return {}
-    return categories.value.reduce(
+    if (!budgetList.value || !group.value?.categories) return {}
+    return group.value.categories.reduce(
       (acc, current) => {
         acc[current.id] =
           budgetList.value.find((budget) => Number(budget.category.id) === Number(current.id))
@@ -91,7 +85,7 @@
   </div>
 
   <Form
-    v-if="budgetList && categories"
+    v-if="budgetList && group?.categories"
     ref="formRef"
     :initialValues="initialValues"
     v-slot="$form"
@@ -101,7 +95,7 @@
   >
     <section class="grid gap-2 grid-cols-2 md:grid-cols-3 mt-6 w-full">
       <div
-        v-for="category in categories"
+        v-for="category in group.categories"
         :to="{
           name: 'category_budget_space',
           params: { space_id: group?.id, category_id: category.id },

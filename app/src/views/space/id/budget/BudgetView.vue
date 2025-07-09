@@ -14,6 +14,7 @@
   import { useGroupsStore } from "@/stores/groupStore"
   import { fetchCategoryByGroup } from "@/services/categoryService"
   import { useBudget } from "@/composables/BudgetForecast/useBudget"
+  import { hasEditPermission } from "@/utils/authorization"
 
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
   const { remainingBudget } = useBudget(space_id)
@@ -51,6 +52,7 @@
     <BaseSection label="Budget du mois par catégories" v-if="categories && categories.length > 0">
       <template #header>
         <Button
+          v-if="hasEditPermission(group)"
           icon="pi pi-pencil"
           label="Modifier les budgets"
           size="small"

@@ -1,12 +1,11 @@
 import { CategorySchema } from "@/types/categoryType"
 import { GroupSchema, type GroupType, type NewGroupType } from "@/types/groupType"
-import { MemberDTO } from "@/types/memberType"
-import { type UserType } from "@/types/user"
+import { MemberDTOSchema } from "@/types/memberType"
 import { deleteJson, fetchJson, patchJson, postJson } from "@/utils/apiMethods"
 import { z } from "zod"
 
 export const FetchGroupByUserSchema = GroupSchema.extend({
-  members: MemberDTO.array().optional(),
+  members: MemberDTOSchema.array().optional(),
   categories: CategorySchema.array().optional(),
 })
 export type FetchGroupByUserType = z.infer<typeof FetchGroupByUserSchema>
