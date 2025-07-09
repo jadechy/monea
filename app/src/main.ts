@@ -8,6 +8,8 @@ import type { ButtonTokenSections } from "@primeuix/themes/types/button"
 import type { InputTextTokenSections } from "@primeuix/themes/types/inputtext"
 import "primeicons/primeicons.css"
 import type { SelectTokenSections } from "@primeuix/themes/types/select"
+// @ts-ignore
+import Matomo from "vue-matomo"
 import { createPinia } from "pinia"
 import {
   MutationCache,
@@ -131,6 +133,15 @@ const pinia = createPinia()
 
 app.use(VueQueryPlugin, vueQueryOptions)
 app.use(pinia)
+app.use(Matomo, {
+  host: "http:localhost:5173",
+  siteId: 1,
+  router: router,
+  enableLinkTracking: true,
+  requireConsent: false,
+  trackInitialView: true,
+  trackPageView: true,
+})
 
 app.use(router)
 app.use(PrimeVue, {
