@@ -41,7 +41,7 @@
       </div>
 
       <Button
-        icon="pi pi-pencil"
+        icon="pi pi-eye"
         label="Récap des dépenses"
         size="small"
         :class="[getSpaceColor({ color: group?.color })]"

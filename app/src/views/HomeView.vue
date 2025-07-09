@@ -26,10 +26,19 @@
 </script>
 
 <template>
-  <div class="p-10">
+  <div class="flex justify-between px-10 items-center mt-2">
+    <h1 class="font-extrabold text-center text-4xl">Monéa</h1>
+    <div class="flex gap-4 items-center">
+      <RouterLink :to="{ name: 'home' }">Accueil</RouterLink>
+      <RouterLink :to="{ name: 'login' }"
+        ><Button size="small">Commencer à gerer le budgets</Button></RouterLink
+      >
+    </div>
+  </div>
+  <main class="p-10">
     <section class="flex gap-10 items-center">
       <div class="flex flex-col gap-6">
-        <p class="text-6xl font-bold">Monéa</p>
+        <p class="text-6xl font-extrabold">Monéa</p>
         <p class="text-2xl font-light text-gray-700">Gérez vos budgets en toute simplicité.</p>
         <p>
           Une application intuitive pour suivre vos dépenses, planifier l’avenir et garder le
@@ -57,7 +66,7 @@
       </div>
     </section>
     <Testimonial />
-  </div>
+  </main>
 </template>
 
 <style></style>
