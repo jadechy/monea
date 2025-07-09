@@ -40,7 +40,6 @@ class GroupeFixtures extends Fixture implements DependentFixtureInterface
             $groupe->setPicture($faker->imageUrl(400, 300, 'business', true));
             /** @var User  */
             $user = $faker->randomElement($users);
-            $groupe->setCreator($user);
             $manager->persist($groupe);
             $defaultCategory = new Category();
             $defaultCategory->setLabel('default');
