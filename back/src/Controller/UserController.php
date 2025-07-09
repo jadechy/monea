@@ -94,7 +94,7 @@ class UserController extends AbstractController
             $member->setGroupe($invitation->getGroupe());
             $member->setAddOn(new \DateTimeImmutable());
             $member->setStatus(MemberStatusEnum::PENDING);
-            $member->setRole(MemberRoleEnum::MEMBER);
+            $member->setRole($invitation->getRole());
 
             $invitation->setUsed(true);
 

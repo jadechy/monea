@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\GroupInvitationRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
+use App\Enum\MemberRoleEnum;
 
 #[ORM\Entity(repositoryClass: GroupInvitationRepository::class)]
 #[ORM\Table(name: 'MON_GROUP_INVITATION')]
@@ -30,6 +31,9 @@ class GroupInvitation
     #[ORM\ManyToOne(inversedBy: 'groupInvitations')]
     #[ORM\JoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID', nullable: false)]
     private Groupe $groupe;
+
+    #[ORM\Column(length: 20, name: 'INV_ROLE', enumType: MemberRoleEnum::class, nullable: false)]
+    private MemberRoleEnum $role;
 
     public function __construct()
     {
@@ -98,6 +102,18 @@ class GroupInvitation
     public function setGroupe(Groupe $groupe): static
     {
         $this->groupe = $groupe;
+
+        return $this;
+    }
+
+    public function getRole(): MemberRoleEnum
+    {
+        return $this->role;
+    }
+
+    public function setRole(MemberRoleEnum $role): static
+    {
+        $this->role = $role;
 
         return $this;
     }

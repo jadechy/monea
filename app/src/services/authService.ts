@@ -22,11 +22,12 @@ export const registerAuth = ({
   name,
   email,
   lastname,
+  birthday,
   invitationToken
 }: RegisterRequestType) =>
   postJson({
     url: "register",
-    body: { username, password, confirmPassword, name, lastname, email, invitationToken },
+    body: { username, password, confirmPassword, name, lastname, email, birthday, invitationToken },
     schema: RegisterResponseSchema,
   })
 

@@ -38,6 +38,7 @@ final class MemberController extends AbstractController
         $groupeId = !empty($data['groupeId']) ? $data['groupeId'] : null;
         $userId = !empty($data['userId']) ? $data['userId'] : null;
         $mail = !empty($data['mail']) ? $data['mail'] : null;
+        $role = !empty($data['role']) ? $data['role'] : null;
 
         if (!$groupeId) {
             return new JsonResponse(['error' => 'Groupe ID is missing'], 400);
@@ -52,7 +53,7 @@ final class MemberController extends AbstractController
             $user = $this->userRepository->find($userId);
 
             $member = new Member();
-            $member->setRole(MemberRoleEnum::MEMBER);
+            $member->setRole(MemberRoleEnum::from($role));
             $member->setAddOn(new \DateTimeImmutable());
             $member->setStatus(MemberStatusEnum::PENDING);
             $member->setGroupe($groupe);
@@ -80,6 +81,7 @@ final class MemberController extends AbstractController
             $invitation->setEmail($mail);
             $invitation->setUsed(false);
             $invitation->setGroupe($groupe);
+            $invitation->setRole(MemberRoleEnum::from($role));
             $this->em->persist($invitation);
             $this->em->flush();
 
@@ -97,11 +99,6 @@ final class MemberController extends AbstractController
         }
 
         return new JsonResponse(['message' => 'Invitation envoyée']);
-    }
-
-    public function responseInvitation()
-    {
-
     }
 
     public function updateMemberRole(Request $request, SerializerInterface $serializer): JsonResponse
