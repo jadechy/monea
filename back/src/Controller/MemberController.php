@@ -133,22 +133,27 @@ final class MemberController extends AbstractController
         if (!$member) {
             return new JsonResponse(['error' => 'Vous n\'êtes pas un membre du groupe.'], Response::HTTP_NOT_FOUND);
         }
-    
+
+        $modifMember = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $authorId]);
+        
+        if($member->getRole() !== MemberRoleEnum::AUTHOR && $modifMember->getRole() == MemberRoleEnum::AUTHOR){
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
+        }
+
         if($member->getRole() !== MemberRoleEnum::AUTHOR && $member->getRole() !== MemberRoleEnum::ADMIN) {
             throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
-        }else{
-            $modifMember = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $authorId]);
-
-            $modifMember->setRole($data->role);
-
-            $this->em->persist($modifMember);
-            $this->em->flush();
-
-            return $this->json(
-                ['message' => 'Le membre a bien été enregistrée'],
-                Response::HTTP_OK,
-                []
-            );
         }
+            
+        $modifMember->setRole($data->role);
+
+        $this->em->persist($modifMember);
+        $this->em->flush();
+
+        return $this->json(
+            ['message' => 'Le membre a bien été enregistrée'],
+            Response::HTTP_OK,
+            []
+        );
+        
     }
 }
