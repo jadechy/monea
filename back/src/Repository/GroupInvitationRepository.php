@@ -2,39 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Groupe;
-use App\Entity\User;
+use App\Entity\GroupInvitation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Groupe>
+ * @extends ServiceEntityRepository<GroupInvitation>
  */
-class GroupeRepository extends ServiceEntityRepository
+class GroupInvitationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Groupe::class);
-    }
-
-    /**
-     * @return Groupe[]
-     */
-    public function findGroupesByUser(int $userId): array
-    {
-        $qb = $this->createQueryBuilder('g')
-            ->leftJoin('g.members', 'm')
-            ->leftJoin('m.individual', 'i')
-            ->where('i.id = :userId')
-            ->andWhere('m.status = accepted')
-            ->setParameter('userId', $userId);
-        /** @var Groupe[] $result */
-        $result = $qb->getQuery()->getResult();
-        return $result;
+        parent::__construct($registry, GroupInvitation::class);
     }
 
     //    /**
-    //     * @return Groupe[] Returns an array of Groupe objects
+    //     * @return GroupInvitation[] Returns an array of GroupInvitation objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -48,7 +31,7 @@ class GroupeRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Groupe
+    //    public function findOneBySomeField($value): ?GroupInvitation
     //    {
     //        return $this->createQueryBuilder('g')
     //            ->andWhere('g.exampleField = :val')

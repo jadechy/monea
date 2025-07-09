@@ -6,9 +6,12 @@
   import { RegisterRequestSchema, type RegisterRequestType } from "@/types/authType"
   import FormInput from "@/components/InputComponent/FormInput.vue"
   import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
-  import { registerAuth } from "@/services/authService"
+  import { registerAuth  } from "@/services/authService"
   import { useMutation } from "@tanstack/vue-query"
-import GoogleComponent from "@/components/GoogleComponent.vue"
+  import GoogleComponent from "@/components/GoogleComponent.vue"
+  import { useRoute } from "vue-router"
+
+  const route = useRoute()
 
   const registerMutation = useMutation({
     mutationFn: (data: RegisterRequestType) => registerAuth(data),
@@ -27,6 +30,11 @@ import GoogleComponent from "@/components/GoogleComponent.vue"
     }, {} as RegisterRequestType)
 
     if (data.password !== data.confirmPassword) return
+
+    const invitationToken = route.query.invitationToken as string | undefined
+    if (invitationToken) {
+      data.invitationToken = invitationToken
+    }
 
     registerMutation.mutate(data)
   }

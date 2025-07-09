@@ -2,6 +2,14 @@
 
 namespace App\Controller;
 
+use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 use App\DTO\GroupeDTO;
 use App\DTO\GroupInputDTO;
 use App\Entity\Budget;
@@ -9,16 +17,10 @@ use App\Entity\Category;
 use App\Entity\Groupe;
 use App\Entity\User;
 use App\Enum\ColorEnum;
-use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use App\Enum\MemberRoleEnum;
 use App\Repository\BudgetRepository;
 use App\Repository\GroupeRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Repository\MemberRepository;
 
 #[AsController]
 class GroupeController extends AbstractController
@@ -26,6 +28,7 @@ class GroupeController extends AbstractController
     public function __construct(
         private BudgetRepository $budgetRepository,
         private GroupeRepository $groupeRepository,
+        private MemberRepository $memberRepository,
         private EntityManagerInterface $em,
         private ValidatorInterface $validator,
 
@@ -66,7 +69,6 @@ class GroupeController extends AbstractController
         $group->setName($data->name);
         $group->setType($data->type);
         $group->setColor($data->color);
-        $group->setCreator($user);
         $group->setCreatedAt(new \DateTimeImmutable());
         $group->setPicture("lalaal");
         if ($data->categories) {
@@ -102,6 +104,7 @@ class GroupeController extends AbstractController
 
         return $this->json(['message' => 'Groupe créé avec succès'], Response::HTTP_CREATED);
     }
+
     public function editGroup(Request $request, Groupe $group): JsonResponse
     {
         $jsonData = json_decode($request->getContent(), false);
@@ -115,7 +118,9 @@ class GroupeController extends AbstractController
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException('User not authenticated');
         }
-        if ($group->getCreator() !== $user) {
+
+        $membre = $this->memberRepository->findOneBy(['groupe' => $group->getId(), 'individual' => $user->getId()]);
+        if($membre->getRole() !== MemberRoleEnum::AUTHOR && $membre->getRole() !== MemberRoleEnum::ADMIN) {
             throw $this->createAccessDeniedException('Vous ne pouvez modifier que vos groupes');
         }
 

@@ -17,7 +17,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 #[ApiResource(
     normalizationContext: ['groups' => ['groupe:read']],
     denormalizationContext: ['groups' => ['groupe:write']],
@@ -68,7 +67,7 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private \DateTimeImmutable $createdAt;
 
-    #[ORM\Column(length: 15, name: 'GRP_TYPE', enumType: GroupTypeEnum::class, type: "string")]
+    #[ORM\Column(length: 15, name: 'GRP_TYPE', enumType: GroupTypeEnum::class)]
     #[Assert\NotNull(
         message: 'Le groupe doit être défini.'
     )]
@@ -88,14 +87,6 @@ class Groupe
     #[ORM\OneToMany(targetEntity: Member::class, mappedBy: 'groupe', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $members;
-
-    #[ORM\ManyToOne(inversedBy: 'groupes')]
-    #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
-    #[Assert\NotNull(
-        message: 'Le créateur doit être défini.'
-    )]
-    #[Groups(['groupe:read', 'groupe:write'])]
-    private User $creator;
 
     /**
      * @var Collection<int, Category>
@@ -118,11 +109,18 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private ColorEnum $color;
 
+    /**
+     * @var Collection<int, GroupInvitation>
+     */
+    #[ORM\OneToMany(targetEntity: GroupInvitation::class, mappedBy: 'groupe')]
+    private Collection $groupInvitations;
+
     public function __construct()
     {
         $this->expenses = new ArrayCollection();
         $this->members = new ArrayCollection();
         $this->categories = new ArrayCollection();
+        $this->groupInvitations = new ArrayCollection();
     }
 
     public function getId(): int
@@ -204,20 +202,6 @@ class Groupe
         return $this;
     }
 
-
-
-    public function getCreator(): User
-    {
-        return $this->creator;
-    }
-
-    public function setCreator(User $creator): static
-    {
-        $this->creator = $creator;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Category>
      */
@@ -267,6 +251,24 @@ class Groupe
     public function setColor(ColorEnum $color): static
     {
         $this->color = $color;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupInvitation>
+     */
+    public function getGroupInvitations(): Collection
+    {
+        return $this->groupInvitations;
+    }
+
+    public function addGroupInvitation(GroupInvitation $groupInvitation): static
+    {
+        if (!$this->groupInvitations->contains($groupInvitation)) {
+            $this->groupInvitations->add($groupInvitation);
+            $groupInvitation->setGroupe($this);
+        }
 
         return $this;
     }
