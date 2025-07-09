@@ -30,17 +30,18 @@ security:
         success_handler: lexik_jwt_authentication.handler.authentication_success
         failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
+    refresh:
+      pattern: ^/api/token/refresh$
+      stateless: true
+      refresh_jwt: ~
+      provider: app_user_provider_email
     api:
       pattern: ^/api
       stateless: true
       provider: app_user_provider
       jwt: ~
       entry_point: jwt
-    refresh:
-      pattern: ^/api/token/refresh$
-      stateless: true
-      refresh_jwt: ~
-      provider: app_user_provider_email
+
     oauth:
       pattern: ^/connect
       stateless: false

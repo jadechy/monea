@@ -30,7 +30,7 @@ use DateTimeImmutable;
         requirements: [
             'groupeId' => '\d+'
         ],
-        normalizationContext: ['groups' => ['expense:read']]
+        normalizationContext: ['groups' => ['array_expense:read', 'category:read']]
     ),
     new GetCollection(
         uriTemplate: '/expenses/groupe/{groupeId}/mois/{monthStart}/list',
@@ -108,35 +108,34 @@ use DateTimeImmutable;
 ])]
 class ExpenseDTO
 {
-    #[Groups(['expense:read', 'groupe:read'])]
+    #[Groups(['expense:read', 'array_expense:read'])]
     public int $id;
 
-    #[Groups(['expense:read', 'groupe:read'])]
+    #[Groups(['expense:read', 'array_expense:read'])]
     public float $amount;
 
-    #[Groups(['expense:read', 'groupe:read'])]
+    #[Groups(['expense:read', 'array_expense:read'])]
     public string $title;
 
-    #[Groups(['expense:read', 'groupe:read'])]
     public DateTimeImmutable $createdAt;
 
-    #[Groups(['expense:read', 'groupe:read'])]
+    #[Groups(['expense:read'])]
     public DateTimeImmutable $spentAt;
 
-    #[Groups(['expense:read', 'groupe:read'])]
+    #[Groups(['expense:read'])]
     public int $groupe;
 
-    #[Groups(['expense:read', 'groupe:read'])]
+    #[Groups(['expense:read', 'array_expense:read'])]
     public CategoryDTO $category;
 
-    #[Groups(['expense:read', 'groupe:read'])]
+    #[Groups(['expense:read', 'array_expense:read'])]
     public UserDTO $creator;
 
     /** @var UserDTO[] */
-    #[Groups(['expense:read', 'groupe:read'])]
+    #[Groups(['expense:read'])]
     public array $participants = [];
 
-    #[Groups(['expense:read', 'groupe:read'])]
+    #[Groups(['expense:read'])]
     public ?RecurringExpenseDTO $recurring = null;
 
     public function __construct(Expense $expense)

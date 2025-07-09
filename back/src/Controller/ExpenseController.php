@@ -104,7 +104,7 @@ class ExpenseController extends AbstractController
         }
 
         $expenses = $this->createExpenseArray($expensesData);
-        return $this->json($expenses, Response::HTTP_OK, [], ['groups' => ['expense:read']]);
+        return $this->json($expenses, Response::HTTP_OK, [], ['groups' => ['array_expense:read', 'category:read']]);
     }
 
     public function getAllExpenseByGroupAndMonth(int $groupeId, string $monthStart): JsonResponse
@@ -219,11 +219,11 @@ class ExpenseController extends AbstractController
         }
 
         $membre = $this->memberRepository->findRoleByUserAndGroupe($creator, $group);
-        if(!$membre){
+        if (!$membre) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas créer une dépense car vous ne faites pas partie de ce groupe');
         }
 
-        if($membre->getRole() !== MemberRoleEnum::VIEWER) {
+        if ($membre->getRole() !== MemberRoleEnum::VIEWER) {
             $expense = new Expense();
             /** @var string */
             $title = $data->title;
@@ -251,7 +251,7 @@ class ExpenseController extends AbstractController
             $this->em->flush();
 
             return $this->json(['message' => 'La dépense a bien été enregistrée', 'id' => $expense->getId()], Response::HTTP_CREATED);
-        }else{
+        } else {
             throw $this->createAccessDeniedException('Vous ne pouvez pas créer une dépense');
         }
     }

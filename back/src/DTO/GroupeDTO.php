@@ -51,15 +51,12 @@ class GroupeDTO
     public MemberStatusEnum $userStatus;
 
     /** @var ExpenseDTO[] */
-    #[Groups(['groupe:read'])]
     public array $expenses;
 
     /** @var MemberDTO[] */
-    #[Groups(['groupe:read'])]
     public array $members;
 
     /** @var CategoryDTO[] */
-    #[Groups(['groupe:read'])]
     public array $categories;
 
     public function __construct(Groupe $groupe, User $currentUser)
