@@ -115,7 +115,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 $this->entityManager->persist($user);
 
                 $group = new Groupe();
-                $group->setName("Personnel");
+                $group->setName("Espace personnel");
                 $group->setType(GroupTypeEnum::PERSONNAL);
                 $group->setCreator($user);
                 $group->setCreatedAt(new \DateTimeImmutable());

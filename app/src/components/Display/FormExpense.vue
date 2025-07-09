@@ -151,7 +151,11 @@
         <DatePicker name="spentAt" showIcon iconDisplay="input" dateFormat="dd/mm/yy" />
       </WrapperInput>
     </div>
-    <Recurring :form="$form" :recurringExpense="expense?.recurring" />
+    <Recurring
+      :form="$form"
+      :recurringExpense="expense?.recurring"
+      v-if="group?.type === 'daily'"
+    />
     <div class="flex flex-col gap-3 w-64" v-if="expense">
       <Button :class="[getSpaceColor({ color: group?.color })]" type="submit">
         Modifier la dépense

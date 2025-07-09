@@ -48,7 +48,7 @@ class UserFixtures extends Fixture
             $manager->persist($user);
 
             $group = new Groupe();
-            $group->setName("Personnel");
+            $group->setName("Espace personnel");
             $group->setType(GroupTypeEnum::PERSONNAL);
             $group->setCreator($user);
             $group->setCreatedAt(new \DateTimeImmutable());
