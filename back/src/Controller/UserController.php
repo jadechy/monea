@@ -56,7 +56,7 @@ class UserController extends AbstractController
         $this->em->persist($user);
 
         $group = new Groupe();
-        $group->setName("Personnel");
+        $group->setName("Espace personnel");
         $group->setType(GroupTypeEnum::PERSONNAL);
         $group->setCreator($user);
         $group->setCreatedAt(new \DateTimeImmutable());

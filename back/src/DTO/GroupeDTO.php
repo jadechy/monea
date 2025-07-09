@@ -4,7 +4,6 @@ namespace App\DTO;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\GroupeController;
 use App\Entity\Groupe;
@@ -24,22 +23,22 @@ use DateTimeImmutable;
 ])]
 class GroupeDTO
 {
-    #[Groups(['groupe:read', 'groupe:read'])]
+    #[Groups(['groupe:read'])]
     public int $id;
 
-    #[Groups(['groupe:read', 'groupe:read'])]
+    #[Groups(['groupe:read'])]
     public string $name;
 
     #[Groups(['groupe:read'])]
     public DateTimeImmutable $createdAt;
 
-    #[Groups(['groupe:read', 'groupe:read'])]
+    #[Groups(['groupe:read'])]
     public GroupTypeEnum $type;
 
-    #[Groups(['groupe:read', 'groupe:read'])]
+    #[Groups(['groupe:read'])]
     public ?string $picture;
 
-    #[Groups(['groupe:read', 'groupe:read'])]
+    #[Groups(['groupe:read'])]
     public ColorEnum $color;
 
     /** @var ExpenseDTO[] */

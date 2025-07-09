@@ -87,9 +87,17 @@
     @submit="onFormSubmit"
     class="flex flex-col gap-10"
   >
-    <FormInput class="w-full lg:w-3/4" placeholder="Nom du space" name="name" :form="$form" fluid />
-    <Members />
-    <BaseSection label="Type de groupe">
+    <FormInput
+      class="w-full lg:w-3/4"
+      placeholder="Nom du space"
+      name="name"
+      :form="$form"
+      fluid
+      v-if="group?.type !== 'personnal'"
+    />
+    <Members v-if="group?.type !== 'personnal'" />
+
+    <BaseSection label="Type de groupe" v-if="group?.type !== 'personnal'">
       <RadioButtonGroup name="type" class="flex flex-wrap gap-4">
         <div class="flex items-center gap-2">
           <RadioButton :inputId="GroupTypeEnum.options[1]" :value="GroupTypeEnum.options[1]" />
@@ -123,6 +131,7 @@
       />
 
       <Button
+        v-if="group.type !== 'personnal'"
         variant="outlined"
         @click="onDelete()"
         :class="getSpaceColor({ color: group?.color, outlined: true })"

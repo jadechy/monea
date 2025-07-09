@@ -13,7 +13,7 @@
 
 <template>
   <SubHeader
-    label="Budgets"
+    label="Récap budgets"
     :color="group?.color"
     routeName="budget_space"
     :params="{

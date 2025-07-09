@@ -127,34 +127,43 @@ class BudgetController extends AbstractController
         $date = ($monthStart)->modify('first day of this month')->setTime(0, 0);
 
         $budgets = [];
-        foreach ($categories as $category) {
-            $defaultCategory = $groupe->getDefaultCategory();
-            if (!$defaultCategory) {
-                return new JsonResponse(['error' => 'Catégorie par défaut non définie.'], Response::HTTP_BAD_REQUEST);
-            };
-            /** @var Budget|null $budgetCategoryDefault */
-            $budgetCategoryDefault = $this->budgetRepository->findBudgetByCategoryAndDate($defaultCategory->getId(), $date);
-            if (!$budgetCategoryDefault) {
-                $budgetCategoryDefault = new Budget();
-                $budgetCategoryDefault->setAmount(0);
-                $budgetCategoryDefault->setMonthStart($date);
-                $budgetCategoryDefault->setCategory($defaultCategory);
-                $this->em->persist($budgetCategoryDefault);
-                $this->em->flush();
-            }
-            $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($category->getId(), $date);
+        $defaultCategory = $groupe->getDefaultCategory();
+        if (!$defaultCategory) {
+            return new JsonResponse(['error' => 'Catégorie par défaut non définie.'], Response::HTTP_BAD_REQUEST);
+        };
+        $categories[] = $defaultCategory;
 
-            $categoryId = $category->getId();
-            $expenses = $this->expenseRepository->findExpensesByCategoryAndDate($categoryId, $date);
-            $totalExpenses = array_sum(array_map(fn($e) => $e->getAmount(), $expenses));
-
-            if ($budgetCategory) {
-                $amount = $budgetCategory->getAmount() - $totalExpenses;
-
-                $budgets[] = new BudgetDTO($budgetCategory, $amount);
-            }
+        $uniqueCategories = [];
+        foreach ($categories as $cat) {
+            $uniqueCategories[$cat->getId()] = $cat; // Évite les doublons si la catégorie par défaut est déjà dans la liste
         }
 
+        foreach ($uniqueCategories as $category) {
+            $categoryId = $category->getId();
+
+            /** @var Budget|null $budgetCategory */
+            $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($categoryId, $date);
+
+            if (!$budgetCategory) {
+                $budgetCategory = new Budget();
+                $budgetCategory->setAmount(0);
+                $budgetCategory->setMonthStart($date);
+                $budgetCategory->setCategory($category);
+                $this->em->persist($budgetCategory);
+                $newBudgets[] = $budgetCategory;
+            }
+        }
+        $this->em->flush();
+        foreach ($uniqueCategories as $category) {
+            $categoryId = $category->getId();
+            $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($categoryId, $date);
+
+            $expenses = $this->expenseRepository->findExpensesByCategoryAndDate($categoryId, $date);
+            $totalExpenses = array_sum(array_map(fn($e) => $e->getAmount(), $expenses));
+            $remaining = $budgetCategory->getAmount() - $totalExpenses;
+
+            $budgets[] = new BudgetDTO($budgetCategory, $remaining);
+        }
 
 
         $json = $this->serializer->serialize($budgets, 'json', ['groups' => ['budget:read']]);
