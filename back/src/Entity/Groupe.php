@@ -37,7 +37,13 @@ use Symfony\Component\Validator\Constraints as Assert;
             deserialize: true,
             read: false,
         ),
-        new Delete()
+        new Delete(
+            uriTemplate: '/groupes/{id}',
+            controller: GroupeController::class  . '::deleteGroup',
+            name: 'groupe_delete',
+            deserialize: false,
+            read: false,
+        )
     ]
 )]
 #[ORM\Entity(repositoryClass: GroupeRepository::class)]
@@ -91,7 +97,7 @@ class Groupe
     /**
      * @var Collection<int, Category>
      */
-    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'groupe',  cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'groupe', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $categories;
 
@@ -112,7 +118,7 @@ class Groupe
     /**
      * @var Collection<int, GroupInvitation>
      */
-    #[ORM\OneToMany(targetEntity: GroupInvitation::class, mappedBy: 'groupe')]
+    #[ORM\OneToMany(targetEntity: GroupInvitation::class, mappedBy: 'groupe', cascade: ['persist', 'remove'])]
     private Collection $groupInvitations;
 
     public function __construct()
