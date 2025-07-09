@@ -84,26 +84,21 @@ class ExpenseRepository extends ServiceEntityRepository
         $endDate = $startDate->modify('+1 year');
 
         $qb = $this->createQueryBuilder('e');
-        $qb->select(
-            "SUBSTRING(e.spentAt, 1, 7) AS month",
-            "c.id AS categoryId",
-            "c.label AS categoryLabel",
-            "c.color AS categoryColor",
-            "SUM(e.amount) AS totalAmount"
-        )
+
+        $qb->select('e')
             ->join('e.category', 'c')
             ->join('e.groupe', 'g')
             ->where('g.id = :groupId')
             ->andWhere('e.spentAt >= :startDate')
             ->andWhere('e.spentAt < :endDate')
-            ->groupBy('month, categoryId, categoryLabel, categoryColor')
-            ->orderBy('month', 'ASC')
-            ->setParameter('groupId', $groupeId)
+            ->orderBy('e.spentAt', 'ASC');
+
+        $qb->setParameter('groupId', $groupeId)
             ->setParameter('startDate', $startDate)
             ->setParameter('endDate', $endDate);
+
         /** @var Expense[] $results */
-        $results = $qb->getQuery()->getResult();
-        return $results;
+        return $qb->getQuery()->getResult();
     }
 
     /**
@@ -114,22 +109,14 @@ class ExpenseRepository extends ServiceEntityRepository
         $startDate = $month;
         $endDate = $startDate->modify('+1 month');
 
-        $qb = $this->createQueryBuilder('e');
-        $qb->select(
-            "SUBSTRING(e.spentAt, 1, 10) AS spendAt",
-            "c.id AS categoryId",
-            "c.label AS categoryLabel",
-            "c.color AS categoryColor",
-            "SUM(e.amount) AS totalAmount"
-        )
+        $qb = $this->createQueryBuilder('e')
             ->join('e.category', 'c')
             ->join('e.groupe', 'g')
             ->where('g.id = :groupId')
             ->andWhere('e.spentAt >= :startDate')
-            ->andWhere('e.spentAt < :endDate')
-            ->groupBy('spendAt', 'c.id', 'c.label', 'c.color')
-            ->orderBy('spendAt', 'ASC')
-            ->setParameter('groupId', $groupeId)
+            ->andWhere('e.spentAt < :endDate');
+
+        $qb->setParameter('groupId', $groupeId)
             ->setParameter('startDate', $startDate)
             ->setParameter('endDate', $endDate);
 

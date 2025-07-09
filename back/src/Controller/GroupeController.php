@@ -31,10 +31,15 @@ class GroupeController extends AbstractController
 
     ) {}
 
-    public function getAllGroupesByUser(int $userId): JsonResponse
+    public function getAllGroupesByUser(): JsonResponse
     {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
         /** @var Groupe[] $groupesData */
-        $groupesData = $this->groupeRepository->findGroupesByUser($userId);
+        $groupesData = $this->groupeRepository->findGroupesByUser($user->getId());
 
         $groupes = array_map(
             fn($groupe) => new GroupeDTO($groupe),

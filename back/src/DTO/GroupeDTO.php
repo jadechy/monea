@@ -15,37 +15,31 @@ use DateTimeImmutable;
 
 #[ApiResource(operations: [
     new GetCollection(
-        uriTemplate: '/groupes/{userId}/list',
+        uriTemplate: '/groupes/list',
         controller: GroupeController::class . '::getAllGroupesByUser',
-        uriVariables: [
-            'userId' => new Link(fromClass: null, fromProperty: 'userId')
-        ],
         read: false,
         name: 'groupes_user',
-        requirements: [
-            'userId' => '\d+'
-        ],
         normalizationContext: ['groups' => ['groupe:read']]
     ),
 ])]
 class GroupeDTO
 {
-    #[Groups(['groupe:read'])]
+    #[Groups(['groupe:read', 'groupe:read'])]
     public int $id;
 
-    #[Groups(['groupe:read'])]
+    #[Groups(['groupe:read', 'groupe:read'])]
     public string $name;
 
     #[Groups(['groupe:read'])]
     public DateTimeImmutable $createdAt;
 
-    #[Groups(['groupe:read'])]
+    #[Groups(['groupe:read', 'groupe:read'])]
     public GroupTypeEnum $type;
 
-    #[Groups(['groupe:read'])]
+    #[Groups(['groupe:read', 'groupe:read'])]
     public ?string $picture;
 
-    #[Groups(['groupe:read'])]
+    #[Groups(['groupe:read', 'groupe:read'])]
     public ColorEnum $color;
 
     /** @var ExpenseDTO[] */

@@ -101,10 +101,6 @@ class ExpenseController extends AbstractController
         }
 
         $expenses = $this->createExpenseArray($expensesData);
-
-        // dd(new stdClass());
-
-
         return $this->json($expenses, Response::HTTP_OK, [], ['groups' => ['expense:read']]);
     }
 

@@ -2,8 +2,7 @@
   import router from "@/router"
   import type { RouteProps } from "./Header/BackComponent.vue"
   import { Button } from "primevue"
-  const props = defineProps<RouteProps>()
-  console.log(props.query)
+  defineProps<RouteProps>()
 </script>
 
 <template>

@@ -245,15 +245,7 @@ class BudgetController extends AbstractController
         $budgetsData = $this->budgetRepository->findBudgetByGroupAndMonth($groupeId, $month);
         $expensesData = $this->expenseRepository->findExpensesByGroupAndMonth($groupeId, $month);
 
-        // foreach ($expensesData as &$row) {
-        //     $date = $row->getSpentAt();
-        //     if ($date instanceof \DateTimeInterface) {
-        //         $row['spendAt'] = $date->format('Y-m-d');
-        //     } else {
-        //         $row['spendAt'] = (new \DateTimeImmutable($date))->format('Y-m-d');
-        //     }
-        // }
-        // unset($row);
+
 
         $days = [];
         $expensesByDay = [];

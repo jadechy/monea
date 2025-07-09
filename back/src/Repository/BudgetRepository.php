@@ -56,19 +56,16 @@ class BudgetRepository extends ServiceEntityRepository
         $startDate = (new \DateTimeImmutable())->setDate((int)$year->format('Y'), 1, 1)->setTime(0, 0);
         $endDate = $startDate->modify('+1 year');
 
+
         $qb = $this->createQueryBuilder('b');
 
-        $qb->select(
-            "SUBSTRING(b.monthStart, 1, 7) AS month",
-            "SUM(b.amount) AS totalAmount"
-        )
+        $qb->select('b')
             ->leftJoin('b.category', 'c')
             ->leftJoin('c.groupe', 'g')
             ->where('g.id = :groupeId')
             ->andWhere('b.monthStart >= :startDate')
             ->andWhere('b.monthStart < :endDate')
-            ->groupBy('month')
-            ->orderBy('month', 'ASC')
+            ->orderBy('b.monthStart', 'ASC')
             ->setParameter('groupeId', $groupeId)
             ->setParameter('startDate', $startDate)
             ->setParameter('endDate', $endDate);
@@ -86,19 +83,16 @@ class BudgetRepository extends ServiceEntityRepository
         $startDate = $month;
         $endDate = $startDate->modify('+1 month');
 
+
         $qb = $this->createQueryBuilder('b');
 
-        $qb->select(
-            "SUBSTRING(b.monthStart, 1, 10) AS spendAt",
-            "SUM(b.amount) AS totalAmount"
-        )
+        $qb->select('b')
             ->leftJoin('b.category', 'c')
             ->leftJoin('c.groupe', 'g')
             ->where('g.id = :groupeId')
             ->andWhere('b.monthStart >= :startDate')
             ->andWhere('b.monthStart < :endDate')
-            ->groupBy('spendAt')
-            ->orderBy('spendAt', 'ASC')
+            ->orderBy('b.monthStart', 'ASC')
             ->setParameter('groupeId', $groupeId)
             ->setParameter('startDate', $startDate)
             ->setParameter('endDate', $endDate);

@@ -16,9 +16,8 @@
   const selectedCategory = defineModel<CategoryType>("selectedCategory")
   const year = ref<Date>(new Date())
 
-  const { yearData, refetch } = useBudget(space_id, year.value.getFullYear())
+  const { yearData, refetch } = useBudget(space_id, year)
   const { getRemaining, getRemainingClass } = useRemaining(selectedCategory)
-  console.log(space_id)
   // Queries
   const { data: categories } = useQuery({
     queryKey: ["categories-by-group", space_id],

@@ -43,6 +43,14 @@ export const getFirstDayOfMonth = (dateInput: Date | string): Date => {
 }
 
 /**
+ * Renvoie le premier jour de l'année UTC pour la date donnée
+ */
+export const getFirstDayOfYear = (dateInput: Date | string): Date => {
+  const date = toDate(dateInput)
+  return new Date(Date.UTC(date.getFullYear(), 0, 1))
+}
+
+/**
  * Renvoie la date du premier jour du mois courant en UTC
  */
 export const getCurrentMonthStartDate = (): Date => {
