@@ -253,7 +253,6 @@ class ExpenseController extends AbstractController
 
             if (isset($data->participants)) {
                 foreach ($data->participants as $userDto) {
-                    // On suppose que $userRepository est injecté ou accessible
                     $user = $this->userRepository->find($userDto->id);
 
                     if (!$user) {
@@ -361,6 +360,19 @@ class ExpenseController extends AbstractController
         }
         if (isset($data->spentAt)) {
             $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
+        }
+        if (isset($data->participants)) {
+            foreach ($data->participants as $userDto) {
+                $user = $this->userRepository->find($userDto->id);
+
+                if (!$user) {
+                    throw new \Exception("Utilisateur avec l'ID {$userDto->id} non trouvé.");
+                }
+
+                if (!$expense->getParticipants()->contains($user)) {
+                    $expense->addParticipant($user);
+                }
+            }
         }
         $this->applyDataToExpense($expense, $data, $category, $group, $creator);
         $this->validateExpense($expense);
