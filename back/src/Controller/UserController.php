@@ -57,20 +57,29 @@ class UserController extends AbstractController
 
         $hashedPassword = $this->passwordHasher->hashPassword($user, $input->password);
         $user->setPassword($hashedPassword);
-
+        $errorsUser = $this->validator->validate($user);
+        if (count($errorsUser) > 0) {
+            return $this->json(['errors' => (string) $errorsUser], Response::HTTP_BAD_REQUEST);
+        }
         $this->em->persist($user);
 
         $group = new Groupe();
         $group->setName("Personnel");
-        $group->setType(GroupTypeEnum::PERSONNAL);
+        $group->setType(GroupTypeEnum::PERSONNAL->value);
         $group->setCreator($user);
         $group->setCreatedAt(new \DateTimeImmutable());
         $group->setColor(ColorEnum::Pink);
         $group->setPicture('');
+        dd($group);
+        $errorsGroup = $this->validator->validate($group);
+        if (count($errorsGroup) > 0) {
+            return $this->json(['errors' => (string) $errorsGroup], Response::HTTP_BAD_REQUEST);
+        }
+
         $this->em->persist($group);
         $this->em->flush();
 
-        if($input->invitationToken){
+        if ($input->invitationToken) {
             $invitation = $this->groupInvitationRepository->findOneBy(['token' => $input->invitationToken, 'used' => false]);
             if (!$invitation) {
                 return new JsonResponse(['error' => 'Invitation invalide ou déjà utilisée'], 404);

@@ -39,5 +39,5 @@ class UserRegisterDTO
     public string $confirmPassword;
 
     #[Groups(['user:write'])]
-    public string $invitationToken;
+    public ?string $invitationToken = null;
 }
