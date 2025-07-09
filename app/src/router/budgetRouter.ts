@@ -2,7 +2,7 @@ import BudgetView from "@/views/space/id/budget/BudgetView.vue"
 import BudgetForecastView from "@/views/space/id/budget/BudgetForecastView.vue"
 import Index from "@/views/space/id/budget/IndexBudget.vue"
 import EditBudget from "@/views/space/id/budget/EditBudget.vue"
-import BudgetCategoryView from "@/views/space/id/budget/BudgetCategoryView.vue"
+import BudgetCategoryView from "@/views/space/id/CategoryView.vue"
 
 export default [
   {
