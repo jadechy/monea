@@ -3,7 +3,6 @@
 namespace App\DTO;
 
 use App\Entity\User;
-use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 

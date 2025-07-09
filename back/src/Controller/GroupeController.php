@@ -213,4 +213,33 @@ class GroupeController extends AbstractController
 
         return $this->json(['message' => 'Groupe modifié avec succès'], Response::HTTP_OK);
     }
+
+    public function deleteGroup(int $id): JsonResponse
+    {
+        $groupe = $this->groupeRepository->find($id);
+
+        if (!$groupe) {
+            return $this->json(['error' => 'Groupe introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+
+        $member = $this->memberRepository->findOneBy(['groupe' => $groupe, 'individual' => $user]);
+        if (!$member) {
+            return new JsonResponse(['error' => 'Vous n\'êtes pas un membre du groupe.'], Response::HTTP_NOT_FOUND);
+        }
+
+        if($member->getRole() !== MemberRoleEnum::AUTHOR){
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
+        }
+
+        $this->em->remove($groupe);
+        $this->em->flush();
+
+        return new JsonResponse(['message' => 'Groupe supprimé avec succès']);
+    }
 }
