@@ -55,7 +55,7 @@ class UserController extends AbstractController
         $user->setLastname($input->lastname);
         $user->setCreatedAt(new \DateTimeImmutable());
         $user->setRoles(["ROLE_USER"]);
-        // $user->setBirthday($input->birthday);
+        $user->setBirthday($input->birthday);
 
         $hashedPassword = $this->passwordHasher->hashPassword($user, $input->password);
         $user->setPassword($hashedPassword);
@@ -72,12 +72,10 @@ class UserController extends AbstractController
         $group->setCreatedAt(new \DateTimeImmutable());
         $group->setColor(ColorEnum::Pink);
         $group->setPicture('');
-        dd($group);
         $errorsGroup = $this->validator->validate($group);
         if (count($errorsGroup) > 0) {
             return $this->json(['errors' => (string) $errorsGroup], Response::HTTP_BAD_REQUEST);
         }
-
         $this->em->persist($group);
         $defaultCategory = new Category();
         $defaultCategory->setLabel("default");
@@ -89,7 +87,7 @@ class UserController extends AbstractController
         if ($input->invitationToken) {
             $invitation = $this->groupInvitationRepository->findOneBy(['token' => $input->invitationToken, 'used' => false]);
             if (!$invitation) {
-                return new JsonResponse(['error' => 'Invitation invalide ou déjà utilisée'], 404);
+                return new JsonResponse(['error' => 'Invitation invalide ou déjà utilisée'], Response::HTTP_BAD_REQUEST);
             }
 
             $member = new Member();

@@ -25,10 +25,9 @@ class UserRegisterDTO
     #[Groups(['user:write'])]
     public string $lastname;
 
-    // #[Assert\NotBlank]
-    // #[Groups(['user:write'])]
-    // #[Assert\Type(Types::DATE_IMMUTABLE)]
-    // public \DateTimeImmutable $birthday;
+    #[Assert\NotBlank]
+    #[Groups(['user:write'])]
+    public \DateTimeImmutable $birthday;
 
     #[Assert\NotBlank]
     #[Groups(['user:write'])]
