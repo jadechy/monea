@@ -97,12 +97,14 @@ export const UserEditSchema = UserSchema.pick({
 //     }),
 // })
 
-export const UserInOtherSchema = UserSchema.pick({
+export const UserDTOSchema = UserSchema.pick({
   id: true,
   username: true,
   picture: true,
+  lastname: true,
+  name: true,
 })
 
-export type UserInOtherType = z.infer<typeof UserInOtherSchema>
+export type UserDTOType = z.infer<typeof UserDTOSchema>
 export type UserType = z.infer<typeof UserSchema>
 export type UserEditType = z.infer<typeof UserEditSchema>

@@ -19,7 +19,10 @@ class RecurringExpenseFixtures extends Fixture
             $re = new RecurringExpense();
 
             $re->setRepetitionCount(10 + $i * 5);
-            $re->setFrequency($faker->randomElement(RecurringFrequencyEnum::cases()));
+
+            /** @var RecurringFrequencyEnum $frequency */
+            $frequency = $faker->randomElement(RecurringFrequencyEnum::cases());
+            $re->setFrequency($frequency);
 
             $endDate = new \DateTimeImmutable(sprintf('+%d months', $i + 1));
             $re->setEndDate($endDate);

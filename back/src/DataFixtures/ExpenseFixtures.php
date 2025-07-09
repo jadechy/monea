@@ -38,11 +38,13 @@ class ExpenseFixtures extends Fixture implements DependentFixtureInterface
         for ($i = 0; $i < 20; $i++) {
             $expense = new Expense();
 
-            $expense->setTitle($faker->words(mt_rand(2, 5), true));
+            /** @var string $title */
+            $title = $faker->words(mt_rand(2, 5), true);
+            $expense->setTitle($title);
             $expense->setAmount($faker->randomFloat(2, 5, 200));
             $expense->setSpentAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 months', 'now')));
             $expense->setCreatedAt(new \DateTimeImmutable());
-
+            /** @var Groupe $groupe */
             $groupe = $faker->randomElement($groupes);
             $expense->setGroupe($groupe);
 
@@ -50,10 +52,14 @@ class ExpenseFixtures extends Fixture implements DependentFixtureInterface
             $categories = $categoriesParGroupe[$groupeId] ?? [];
 
             if (!empty($categories)) {
-                $expense->setCategory($faker->randomElement($categories));
+                /** @var Category $category */
+                $category = $faker->randomElement($categories);
+                $expense->setCategory($category);
             }
 
-            $expense->setCreator($this->getReference($faker->randomElement($userRefs), User::class));
+            /** @var string $userRef */
+            $userRef = $faker->randomElement($userRefs);
+            $expense->setCreator($this->getReference($userRef, User::class));
 
             $participants = [];
             $numParticipants = $faker->numberBetween(1, 3);
@@ -66,6 +72,7 @@ class ExpenseFixtures extends Fixture implements DependentFixtureInterface
             }
 
             foreach ($participants as $userRef) {
+                /** @var string $userRef */
                 /** @var User $user */
                 $user = $this->getReference($userRef, User::class);
                 $expense->addParticipant($user);

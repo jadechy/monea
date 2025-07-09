@@ -8,10 +8,10 @@
   </div>
 </template>
 <script setup lang="ts">
-  import type { UserInOtherType } from "@/types/user"
+  import type { UserDTOType } from "@/types/user"
 
   interface Props {
-    user: UserInOtherType
+    user: UserDTOType
   }
   defineProps<Props>()
 </script>

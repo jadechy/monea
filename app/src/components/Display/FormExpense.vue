@@ -10,7 +10,7 @@
   import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
   import FormInput from "@/components/InputComponent/FormInput.vue"
   import { useAuthStore } from "@/stores/authStore"
-  import { convertToLocalDate } from "@/utils/date"
+  import { convertToLocalDate, formatDateISO } from "@/utils/date"
   import { useExpenseMutation } from "@/composables/useExpenseMutation"
   import { useGroupsStore } from "@/stores/groupStore"
   import Recurring from "../Expense/Form/Recurring.vue"
@@ -47,9 +47,9 @@
         spentAt: new Date(e.spentAt),
         author: e.creator.id,
         category: e.category.label !== "default" ? e.category : null,
-        frequency: e.recurringExpense?.frequency ?? null,
-        repetitionCount: e.recurringExpense?.repetitionCount ?? null,
-        endDate: e.recurringExpense?.endDate ?? null,
+        frequency: e.recurring?.frequency ?? null,
+        repetitionCount: e.recurring?.repetitionCount ?? null,
+        endDate: e.recurring?.endDate ?? null,
       }
     } else
       return {
@@ -74,7 +74,7 @@
       groupId: group.value.id,
       authorId: author.value.id,
     }
-    if (category.value) {
+    if (category && category.value) {
       data["categoryId"] = category.value.id
     }
     if (
@@ -85,12 +85,12 @@
       repetitionCount.value &&
       endDate.value
     ) {
-      data["recurringExpense"] = {
+      data["recurring"] = {
         frequency: frequency.value,
         repetitionCount: repetitionCount.value,
         endDate: endDate.value,
       }
-    } else data["recurringExpense"] = null
+    } else data["recurring"] = null
     id && expense ? updateExpenseMutation.mutate(data) : createExpenseMutation.mutate(data)
   }
   const onDelete = () => {
@@ -151,7 +151,7 @@
         <DatePicker name="spentAt" showIcon iconDisplay="input" dateFormat="dd/mm/yy" />
       </WrapperInput>
     </div>
-    <Recurring :form="$form" :recurringExpense="expense?.recurringExpense" />
+    <Recurring :form="$form" :recurringExpense="expense?.recurring" />
     <div class="flex flex-col gap-3 w-64" v-if="expense">
       <Button :class="[getSpaceColor({ color: group?.color })]" type="submit">
         Modifier la dépense

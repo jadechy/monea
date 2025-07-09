@@ -1,9 +1,9 @@
 import { z } from "zod"
-import { UserInOtherSchema, UserSchema } from "./user"
+import { UserDTOSchema, UserSchema } from "./user"
 import { GroupSchema } from "./groupType"
 import { CategorySchema, type CategoryType } from "./categoryType"
 import { NewRecurringExpenseSchema, RecurringExpenseSchema } from "./recurringExpenseType"
-import { DateSchema } from "./date"
+import { dateSchema, DateSchema } from "./date"
 
 export const ExpenseSchema = z.object({
   id: z.number({
@@ -23,14 +23,14 @@ export const ExpenseSchema = z.object({
     })
     .min(3, "Le titre doit contenir au moins 3 caractères")
     .max(255, "Le titre doit contenir au maximum 255 caractères"),
-  createdAt: DateSchema,
+  createdAt: dateSchema,
   groupe: GroupSchema.shape.id,
   category: CategorySchema,
-  creator: UserInOtherSchema,
-  spentAt: DateSchema,
-  recurringExpense: RecurringExpenseSchema.optional(),
+  creator: UserDTOSchema,
+  spentAt: dateSchema,
+  recurring: RecurringExpenseSchema.nullable(),
   participants: z
-    .array(UserInOtherSchema, {
+    .array(UserDTOSchema, {
       invalid_type_error: "Les participants doivent être une liste d'utilisateurs",
     })
     .optional(),
@@ -40,13 +40,10 @@ export const NewExpenseSchema = z.object({
   categoryId: CategorySchema.shape.id.optional(),
   title: ExpenseSchema.shape.title,
   amount: ExpenseSchema.shape.amount,
-  spentAt: z.date({
-    required_error: "La date est requise",
-    invalid_type_error: "La date est invalide",
-  }),
+  spentAt: z.date(),
   authorId: UserSchema.shape.id,
   groupId: GroupSchema.shape.id,
-  recurringExpense: NewRecurringExpenseSchema.nullable().optional(),
+  recurring: NewRecurringExpenseSchema.nullable().optional(),
 })
 
 export const ExpenseDateSchema = z.record(

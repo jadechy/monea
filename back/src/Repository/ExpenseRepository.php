@@ -16,130 +16,112 @@ class ExpenseRepository extends ServiceEntityRepository
         parent::__construct($registry, Expense::class);
     }
 
-    public function findExpensesByGroupeBetweenDates(int $groupeId, \DateTimeInterface $start, \DateTimeInterface $end)
+    /**
+     * @return Expense[]
+     */
+    public function findExpensesByGroupeBetweenDates(int $groupeId, \DateTimeInterface $start, \DateTimeInterface $end): array
     {
-        return $this->createQueryBuilder('e')
+        $qb = $this->createQueryBuilder('e')
             ->leftJoin('e.groupe', 'g')
             ->where('g.id = :groupeId')
             ->andWhere('e.spentAt BETWEEN :start AND :end')
             ->setParameter('groupeId', $groupeId)
             ->setParameter('start', $start)
-            ->setParameter('end', $end)
-            ->getQuery()
-            ->getResult();
+            ->setParameter('end', $end);
+        /** @var Expense[] $result */
+        $result = $qb->getQuery()->getResult();
+        return $result;
     }
 
-    public function findExpensesByGroupeAndDay(int $groupeId, \DateTimeInterface $day)
+    /**
+     * @return Expense[]
+     */
+    public function findExpensesByGroupeAndDay(int $groupeId, \DateTimeImmutable $day): array
     {
         $startOfDay = (clone $day)->setTime(0, 0, 0);
         $endOfDay = (clone $day)->setTime(23, 59, 59);
 
-        return $this->createQueryBuilder('e')
+        $qb = $this->createQueryBuilder('e')
             ->leftJoin('e.groupe', 'g')
             ->where('g.id = :groupeId')
             ->andWhere('e.spentAt BETWEEN :start AND :end')
             ->setParameter('groupeId', $groupeId)
             ->setParameter('start', $startOfDay)
-            ->setParameter('end', $endOfDay)
-            ->getQuery()
-            ->getResult();
+            ->setParameter('end', $endOfDay);
+        /** @var Expense[] $result */
+        $result = $qb->getQuery()->getResult();
+        return $result;
     }
 
-    public function findExpensesByCategoryAndDate(int $catId, \DateTimeInterface $date)
+    /**
+     * @return Expense[]
+     */
+    public function findExpensesByCategoryAndDate(int $catId, \DateTimeImmutable $date): array
     {
         $start = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
         $end = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
 
-        return $this->createQueryBuilder('e')
+        $qb = $this->createQueryBuilder('e')
             ->leftJoin('e.category', 'c')
             ->where('c.id = :categoryId')
             ->andWhere('e.spentAt BETWEEN :start AND :end')
             ->setParameter('categoryId', $catId)
             ->setParameter('start', $start)
-            ->setParameter('end', $end)
-            ->getQuery()
-            ->getResult();
+            ->setParameter('end', $end);
+
+        /** @var Expense[] $result */
+        $result = $qb->getQuery()->getResult();
+        return $result;
     }
 
-    public function findExpensesByGroupAndYear($groupeId, $year)
+
+    /**
+     * @return Expense[]
+     */
+    public function findExpensesByGroupAndYear(int $groupeId, \DateTimeImmutable $year): array
     {
-        $startDate = new \DateTimeImmutable("$year-01-01");
+        $startDate = (new \DateTimeImmutable())->setDate((int)$year->format('Y'), 1, 1)->setTime(0, 0);
         $endDate = $startDate->modify('+1 year');
 
         $qb = $this->createQueryBuilder('e');
-        $qb->select(
-            "SUBSTRING(e.spentAt, 1, 7) AS month",
-            "c.id AS categoryId",
-            "c.label AS categoryLabel",
-            "c.color AS categoryColor",
-            "SUM(e.amount) AS totalAmount"
-        )
+
+        $qb->select('e')
             ->join('e.category', 'c')
             ->join('e.groupe', 'g')
             ->where('g.id = :groupId')
             ->andWhere('e.spentAt >= :startDate')
             ->andWhere('e.spentAt < :endDate')
-            ->groupBy('month, categoryId, categoryLabel, categoryColor')
-            ->orderBy('month', 'ASC')
-            ->setParameter('groupId', $groupeId)
+            ->orderBy('e.spentAt', 'ASC');
+
+        $qb->setParameter('groupId', $groupeId)
             ->setParameter('startDate', $startDate)
             ->setParameter('endDate', $endDate);
 
-        $results = $qb->getQuery()->getResult();
-
-        return $results;
-    }
-
-    public function findExpensesByGroupAndMonth($groupeId, $month)
-    {
-        $startDate = new \DateTimeImmutable($month);
-        $endDate = $startDate->modify('+1 month');
-
-        $qb = $this->createQueryBuilder('e');
-        $qb->select(
-            "SUBSTRING(e.spentAt, 1, 10) AS spendAt",
-            "c.id AS categoryId",
-            "c.label AS categoryLabel",
-            "c.color AS categoryColor",
-            "SUM(e.amount) AS totalAmount"
-        )
-            ->join('e.category', 'c')
-            ->join('e.groupe', 'g')
-            ->where('g.id = :groupId')
-            ->andWhere('e.spentAt >= :startDate')
-            ->andWhere('e.spentAt < :endDate')
-            ->groupBy('spendAt', 'c.id', 'c.label', 'c.color')
-            ->orderBy('spendAt', 'ASC')
-            ->setParameter('groupId', $groupeId)
-            ->setParameter('startDate', $startDate)
-            ->setParameter('endDate', $endDate);
-
+        /** @var Expense[] $results */
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @return Expense[]
+     */
+    public function findExpensesByGroupAndMonth(int $groupeId, \DateTimeImmutable $month): array
+    {
+        $startDate = $month;
+        $endDate = $startDate->modify('+1 month');
 
-    //    /**
-    //     * @return Expense[] Returns an array of Expense objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('e.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+        $qb = $this->createQueryBuilder('e')
+            ->join('e.category', 'c')
+            ->join('e.groupe', 'g')
+            ->where('g.id = :groupId')
+            ->andWhere('e.spentAt >= :startDate')
+            ->andWhere('e.spentAt < :endDate');
 
-    //    public function findOneBySomeField($value): ?Expense
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $qb->setParameter('groupId', $groupeId)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate);
+
+        /** @var Expense[] $results */
+        $results = $qb->getQuery()->getResult();
+        return $results;
+    }
 }

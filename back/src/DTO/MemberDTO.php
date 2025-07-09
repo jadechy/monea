@@ -4,11 +4,11 @@ namespace App\DTO;
 
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
-use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\MemberController;
-use App\Entity\Mmeber;
+
+use App\Entity\Member;
+use App\Enum\MemberRoleEnum;
+use DateTimeImmutable;
 
 #[ApiResource(operations: [
     new Post(
@@ -21,5 +21,13 @@ use App\Entity\Mmeber;
 ])]
 class MemberDTO
 {
-
+    public UserDTO $user;
+    public MemberRoleEnum $role;
+    public DateTimeImmutable $addOn;
+    public function __construct(Member $member)
+    {
+        $this->user = new UserDTO($member->getIndividual());
+        $this->role = $member->getRole();
+        $this->addOn = $member->getAddOn();
+    }
 }

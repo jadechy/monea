@@ -51,8 +51,9 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
 
             $label = $possibleLabels[array_rand($possibleLabels)];
             $category->setLabel($label);
-
-            $category->setColor($faker->randomElement(ColorEnum::cases()));
+            /** @var ColorEnum $color */
+            $color = $faker->randomElement(ColorEnum::cases());
+            $category->setColor($color);
 
             $groupe = $groupes[$i % count($groupes)];
             $category->setGroupe($groupe);

@@ -26,7 +26,10 @@ class MemberFixtures extends Fixture implements DependentFixtureInterface
 
             $member->setGroupe($groupe);
             $member->setIndividual($user);
-            $member->setRole($faker->randomElement(MemberRoleEnum::cases()));
+
+            /** @var MemberRoleEnum $role */
+            $role = $faker->randomElement(MemberRoleEnum::cases());
+            $member->setRole($role);
             $member->setAddOn(new \DateTimeImmutable(sprintf('-%d days', $i * 5)));
             $member->setStatus(MemberStatusEnum::PENDING);
 

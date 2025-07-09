@@ -4,10 +4,12 @@ namespace App\Controller;
 
 use App\DTO\UserEditDTO;
 use App\DTO\UserRegisterDTO;
+use App\Entity\Category;
 use App\Entity\Groupe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -65,7 +67,7 @@ class UserController extends AbstractController
 
         $group = new Groupe();
         $group->setName("Personnel");
-        $group->setType(GroupTypeEnum::PERSONNAL->value);
+        $group->setType(GroupTypeEnum::PERSONNAL);
         $group->setCreator($user);
         $group->setCreatedAt(new \DateTimeImmutable());
         $group->setColor(ColorEnum::Pink);
@@ -77,6 +79,11 @@ class UserController extends AbstractController
         }
 
         $this->em->persist($group);
+        $defaultCategory = new Category();
+        $defaultCategory->setLabel("default");
+        $defaultCategory->setColor(ColorEnum::Gray);
+        $defaultCategory->setGroupe($group);
+        $this->em->persist($defaultCategory);
         $this->em->flush();
 
         if ($input->invitationToken) {
