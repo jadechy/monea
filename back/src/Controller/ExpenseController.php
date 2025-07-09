@@ -6,6 +6,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use stdClass;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
 use App\DTO\ExpenseDTO;
 use App\DTO\ExpenseInputDTO;
@@ -14,17 +19,15 @@ use App\Entity\Category;
 use App\Entity\Expense;
 use App\Entity\Groupe;
 use App\Entity\User;
+use App\Enum\MemberRoleEnum;
 use App\Exception\RecurringExpenseValidationException;
 use App\Repository\GroupeRepository;
 use App\Repository\ExpenseRepository;
 use App\Repository\CategoryRepository;
+use App\Repository\MemberRepository;
 use App\Service\RecurringExpenseService;
 use DateTimeImmutable;
-use Doctrine\ORM\EntityManagerInterface;
-use stdClass;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\AsController;
+
 
 #[AsController]
 class ExpenseController extends AbstractController
@@ -33,6 +36,7 @@ class ExpenseController extends AbstractController
         private GroupeRepository $groupeRepository,
         private ExpenseRepository $expenseRepository,
         private CategoryRepository $categoryRepository,
+        private MemberRepository $memberRepository,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private EntityManagerInterface $em,
@@ -47,7 +51,6 @@ class ExpenseController extends AbstractController
      */
     private function createExpenseArray(array $expensesData): array
     {
-
         $expenses = [];
 
         foreach ($expensesData as $expense) {
@@ -199,7 +202,6 @@ class ExpenseController extends AbstractController
 
     public function create(Request $request, RecurringExpenseService $recurringExpenseService): JsonResponse
     {
-
         $jsonData = json_decode($request->getContent(), false);
         try {
             $data = (new ExpenseInputDTO())->fromObject($jsonData);
@@ -215,33 +217,43 @@ class ExpenseController extends AbstractController
         } catch (\InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
-        $expense = new Expense();
-        /** @var string */
-        $title = $data->title;
-        /** @var float */
-        $amount = $data->amount;
-        $expense->setTitle($title);
-        $expense->setGroupe($group);
-        $expense->setAmount($amount);
-        $expense->setCreator($creator);
-        $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
-        $expense->setCreatedAt(new \DateTimeImmutable());
-        $expense->setCategory($category);
-        $this->validateExpense($expense);
-        $this->em->persist($expense);
 
-        if (isset($data->recurring)) {
-            try {
-                $recurringExpenseService->createSeries($expense, $data);
-            } catch (RecurringExpenseValidationException $e) {
-                return new JsonResponse([
-                    'errors' => (string) $e->getErrors()
-                ], Response::HTTP_BAD_REQUEST);
-            }
+        $membre = $this->memberRepository->findRoleByUserAndGroupe($creator, $group);
+        if(!$membre){
+            throw $this->createAccessDeniedException('Vous ne pouvez pas créer une dépense car vous ne faites pas partie de ce groupe');
         }
-        $this->em->flush();
 
-        return $this->json(['message' => 'La dépense a bien été enregistrée', 'id' => $expense->getId()], Response::HTTP_CREATED);
+        if($membre->getRole() !== MemberRoleEnum::VIEWER) {
+            $expense = new Expense();
+            /** @var string */
+            $title = $data->title;
+            /** @var float */
+            $amount = $data->amount;
+            $expense->setTitle($title);
+            $expense->setGroupe($group);
+            $expense->setAmount($amount);
+            $expense->setCreator($creator);
+            $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
+            $expense->setCreatedAt(new \DateTimeImmutable());
+            $expense->setCategory($category);
+            $this->validateExpense($expense);
+            $this->em->persist($expense);
+
+            if (isset($data->recurring)) {
+                try {
+                    $recurringExpenseService->createSeries($expense, $data);
+                } catch (RecurringExpenseValidationException $e) {
+                    return new JsonResponse([
+                        'errors' => (string) $e->getErrors()
+                    ], Response::HTTP_BAD_REQUEST);
+                }
+            }
+            $this->em->flush();
+
+            return $this->json(['message' => 'La dépense a bien été enregistrée', 'id' => $expense->getId()], Response::HTTP_CREATED);
+        }else{
+            throw $this->createAccessDeniedException('Vous ne pouvez pas créer une dépense');
+        }
     }
 
     /**
