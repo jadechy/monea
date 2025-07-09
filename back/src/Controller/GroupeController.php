@@ -45,7 +45,7 @@ class GroupeController extends AbstractController
         $groupesData = $this->groupeRepository->findGroupesByUser($user->getId());
 
         $groupes = array_map(
-            fn($groupe) => new GroupeDTO($groupe),
+            fn($groupe) => new GroupeDTO($groupe, $user),
             $groupesData
         );
         return $this->json($groupes, Response::HTTP_OK, [], ['groups' => ['groupe:read']]);
@@ -120,7 +120,7 @@ class GroupeController extends AbstractController
         }
 
         $membre = $this->memberRepository->findOneBy(['groupe' => $group->getId(), 'individual' => $user->getId()]);
-        if($membre->getRole() !== MemberRoleEnum::AUTHOR && $membre->getRole() !== MemberRoleEnum::ADMIN) {
+        if ($membre->getRole() !== MemberRoleEnum::AUTHOR && $membre->getRole() !== MemberRoleEnum::ADMIN) {
             throw $this->createAccessDeniedException('Vous ne pouvez modifier que vos groupes');
         }
 

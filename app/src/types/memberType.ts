@@ -1,18 +1,23 @@
 import { z } from "zod"
-import { UserDTOSchema, UserSchema } from "./user"
+import { UserDTOSchema } from "./user"
 import { GroupSchema } from "./groupType"
 import { dateSchema } from "./date"
+import { MemberRoleEnum, MemberStatusEnum } from "./memberEnumType"
 
 export const MemberSchema = z.object({
-  role: z.enum(["creator", "admin", "viewer", "member", "rejected", "waiting_validation"]),
+  role: MemberRoleEnum,
   addOn: dateSchema,
   groupe: GroupSchema,
-  individual: UserSchema,
+  status: MemberStatusEnum,
+  individual: UserDTOSchema,
 })
-export const MemberDTO = z.object({
+export const MemberDTOSchema = MemberSchema.pick({
+  role: true,
+  addOn: true,
+  status: true,
+}).extend({
   user: UserDTOSchema,
-  role: MemberSchema.shape.role,
-  addOn: dateSchema,
 })
+
 export type MemberType = z.infer<typeof MemberSchema>
-export type MemberInGroupType = z.infer<typeof MemberDTO>
+export type MemberInGroupType = z.infer<typeof MemberDTOSchema>

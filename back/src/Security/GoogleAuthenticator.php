@@ -2,15 +2,12 @@
 
 namespace App\Security;
 
-use App\Entity\Category;
-use App\Entity\Groupe;
 use App\Entity\RefreshToken;
 use App\Enum\UserRoleEnum;
 
 use App\Entity\User;
-use App\Enum\ColorEnum;
-use App\Enum\GroupTypeEnum;
 use App\Repository\UserRepository;
+use App\Service\UserSetupService;
 use Doctrine\ORM\EntityManagerInterface;
 use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
@@ -21,13 +18,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class GoogleAuthenticator extends OAuth2Authenticator
 {
@@ -36,6 +33,8 @@ class GoogleAuthenticator extends OAuth2Authenticator
     private UserRepository $userRepository;
     private JWTTokenManagerInterface $jwtManager;
     private RefreshTokenManagerInterface $refreshTokenManager;
+    private UserSetupService $userSetupService;
+    private ValidatorInterface $validator;
 
 
     public function __construct(
@@ -44,12 +43,18 @@ class GoogleAuthenticator extends OAuth2Authenticator
         UserRepository $userRepository,
         JWTTokenManagerInterface $jwtManager,
         RefreshTokenManagerInterface $refreshTokenManager,
+        UserSetupService $userSetupService,
+        ValidatorInterface $validator,
+
+
     ) {
         $this->clientRegistry = $clientRegistry;
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
         $this->jwtManager = $jwtManager;
         $this->refreshTokenManager = $refreshTokenManager;
+        $this->userSetupService = $userSetupService;
+        $this->validator = $validator;
     }
 
     /**
@@ -104,31 +109,22 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 $user->setUsername($googleUser->getName());
                 $user->setRoles([UserRoleEnum::USER]);
                 $user->setPlainPassword('password123');
+                $user->setPassword('password123');
                 $user->setPicture($googleUser->getAvatar());
                 $user->setCreatedAt(new \DateTimeImmutable());
                 $user->setBirthday(new \DateTimeImmutable('2003-09-21'));
-
-
-
+                $errorsUser = $this->validator->validate($user);
+                if (count($errorsUser) > 0) {
+                    throw new \RuntimeException('Erreur lors de la validation de l’utilisateur : ' . (string) $errorsUser);
+                }
                 $this->entityManager->persist($user);
-                $this->entityManager->flush();
-                $this->entityManager->persist($user);
 
-                $group = new Groupe();
-                $group->setName("Espace personnel");
-                $group->setType(GroupTypeEnum::PERSONNAL);
-                $group->setCreator($user);
-                $group->setCreatedAt(new \DateTimeImmutable());
-                $group->setColor(ColorEnum::Pink);
-                $group->setPicture('');
-                $this->entityManager->persist($group);
-                $defaultCategory = new Category();
-                $defaultCategory->setLabel("default");
-                $defaultCategory->setColor(ColorEnum::Gray);
-                $defaultCategory->setGroupe($group);
-                $this->entityManager->persist($defaultCategory);
-                $this->entityManager->flush();
+                $error = $this->userSetupService->setupUser($user);
+                if ($error) {
+                    throw new \RuntimeException('Erreur lors de l\'initialisation de l\'utilisateur : ' . json_encode($error));
+                }
 
+                $this->entityManager->flush();
 
                 return $user;
             })

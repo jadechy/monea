@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Groupe;
-use App\Entity\User;
+use App\Enum\MemberStatusEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -26,35 +26,11 @@ class GroupeRepository extends ServiceEntityRepository
             ->leftJoin('g.members', 'm')
             ->leftJoin('m.individual', 'i')
             ->where('i.id = :userId')
-            ->andWhere('m.status = accepted')
+            ->andWhere('m.status = :status')
+            ->setParameter('status', MemberStatusEnum::ACCEPTED->value)
             ->setParameter('userId', $userId);
         /** @var Groupe[] $result */
         $result = $qb->getQuery()->getResult();
         return $result;
     }
-
-    //    /**
-    //     * @return Groupe[] Returns an array of Groupe objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('g.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Groupe
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }
