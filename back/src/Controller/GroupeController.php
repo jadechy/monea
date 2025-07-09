@@ -9,7 +9,6 @@ use App\Entity\Category;
 use App\Entity\Groupe;
 use App\Entity\User;
 use App\Enum\ColorEnum;
-use App\Enum\GroupTypeEnum;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,14 +40,17 @@ class GroupeController extends AbstractController
             fn($groupe) => new GroupeDTO($groupe),
             $groupesData
         );
-
-        return new JsonResponse($groupes, Response::HTTP_OK);
+        return $this->json($groupes, Response::HTTP_OK, [], ['groups' => ['groupe:read']]);
     }
 
     public function postGroup(Request $request): JsonResponse
     {
-        /** @var GroupInputDTO $data */
-        $data = json_decode($request->getContent());
+        $jsonData = json_decode($request->getContent(), false);
+        try {
+            $data = (new GroupInputDTO())->fromObject($jsonData);
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
 
         $user = $this->getUser();
 
@@ -97,8 +99,12 @@ class GroupeController extends AbstractController
     }
     public function editGroup(Request $request, Groupe $group): JsonResponse
     {
-        /** @var GroupInputDTO $data */
-        $data = json_decode($request->getContent());
+        $jsonData = json_decode($request->getContent(), false);
+        try {
+            $data = (new GroupInputDTO())->fromObject($jsonData);
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -135,7 +141,7 @@ class GroupeController extends AbstractController
             } else {
 
                 $newCategory = new Category();
-                $newCategory->setLabel($categoryInput->label ?? '');
+                $newCategory->setLabel($categoryInput->label);
                 $newCategory->setColor(
                     isset($categoryInput->color) ? $categoryInput->color : ColorEnum::Gray
                 );

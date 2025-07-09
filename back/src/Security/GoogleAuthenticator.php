@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use App\Entity\Category;
 use App\Entity\Groupe;
 use App\Entity\RefreshToken;
 use App\Enum\UserRoleEnum;
@@ -121,6 +122,11 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 $group->setColor(ColorEnum::Pink);
                 $group->setPicture('');
                 $this->entityManager->persist($group);
+                $defaultCategory = new Category();
+                $defaultCategory->setLabel("default");
+                $defaultCategory->setColor(ColorEnum::Gray);
+                $defaultCategory->setGroupe($group);
+                $this->entityManager->persist($defaultCategory);
                 $this->entityManager->flush();
 
 

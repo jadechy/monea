@@ -33,7 +33,7 @@ class Category
     #[ORM\Column(length: 8, name: 'CAT_COLOR', enumType: ColorEnum::class, type: "string", nullable: false)]
     #[Assert\NotNull(message: "La couleur est obligatoire.")]
     #[Assert\Choice(callback: [ColorEnum::class, 'cases'], message: "La couleur choisie n'est pas valide.")]
-    private ColorEnum $color;
+    private ColorEnum $color = ColorEnum::Gray;
 
     /**
      * @var Collection<int, Expense>

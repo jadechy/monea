@@ -13,9 +13,7 @@ use App\DTO\RecurringExpenseInputDTO;
 use App\Entity\Category;
 use App\Entity\Expense;
 use App\Entity\Groupe;
-use App\Entity\RecurringExpense;
 use App\Entity\User;
-use App\Enum\RecurringFrequencyEnum;
 use App\Exception\RecurringExpenseValidationException;
 use App\Repository\GroupeRepository;
 use App\Repository\ExpenseRepository;
@@ -23,7 +21,7 @@ use App\Repository\CategoryRepository;
 use App\Service\RecurringExpenseService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\TextUI\XmlConfiguration\Group;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -49,6 +47,7 @@ class ExpenseController extends AbstractController
      */
     private function createExpenseArray(array $expensesData): array
     {
+
         $expenses = [];
 
         foreach ($expensesData as $expense) {
@@ -62,10 +61,8 @@ class ExpenseController extends AbstractController
         }
 
         krsort($expenses);
-
         return $expenses;
     }
-
 
     public function getExpenseById(int $id): JsonResponse
     {
@@ -99,17 +96,16 @@ class ExpenseController extends AbstractController
             return new JsonResponse(['error' => 'Groupe not found'], Response::HTTP_NOT_FOUND);
         }
         $expensesData = $this->expenseRepository->findBy(['groupe' => $groupe]);
+        if (empty($expensesData)) {
+            return new JsonResponse(new stdClass(), Response::HTTP_OK);
+        }
 
         $expenses = $this->createExpenseArray($expensesData);
 
+        // dd(new stdClass());
 
-        $json = $this->serializer->serialize($expenses, 'json', [
-            'groups' => ['expense:read'],
-        ]);
-        if ($json === '[]') {
-            $json = '{}';
-        }
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
+
+        return $this->json($expenses, Response::HTTP_OK, [], ['groups' => ['expense:read']]);
     }
 
     public function getAllExpenseByGroupAndMonth(int $groupeId, string $monthStart): JsonResponse
@@ -207,8 +203,13 @@ class ExpenseController extends AbstractController
 
     public function create(Request $request, RecurringExpenseService $recurringExpenseService): JsonResponse
     {
-        /** @var ExpenseInputDTO */
-        $data = json_decode($request->getContent());
+
+        $jsonData = json_decode($request->getContent(), false);
+        try {
+            $data = (new ExpenseInputDTO())->fromObject($jsonData);
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
 
         try {
             /** @var Groupe $group */
@@ -223,19 +224,17 @@ class ExpenseController extends AbstractController
         $title = $data->title;
         /** @var float */
         $amount = $data->amount;
-        /** @var string */
-        $spentAt = $data->spentAt;
         $expense->setTitle($title);
         $expense->setGroupe($group);
         $expense->setAmount($amount);
         $expense->setCreator($creator);
-        $expense->setSpentAt(new \DateTimeImmutable($spentAt));
+        $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
         $expense->setCreatedAt(new \DateTimeImmutable());
         $expense->setCategory($category);
         $this->validateExpense($expense);
         $this->em->persist($expense);
 
-        if (isset($data->recurringExpense)) {
+        if (isset($data->recurring)) {
             try {
                 $recurringExpenseService->createSeries($expense, $data);
             } catch (RecurringExpenseValidationException $e) {
@@ -252,7 +251,7 @@ class ExpenseController extends AbstractController
     /**
      * @throws \InvalidArgumentException if data is invalid
      */
-    public function update(int $id, Request $request, RecurringExpenseService $recurringExpenseService): JsonResponse
+    public function update(int $id, Request $request, RecurringExpenseService $recurringExpenseService, SerializerInterface $serializer): JsonResponse
     {
 
         $expense = $this->em->getRepository(Expense::class)->find($id);
@@ -261,8 +260,12 @@ class ExpenseController extends AbstractController
             return $this->json(['error' => 'Dépense introuvable'], Response::HTTP_NOT_FOUND);
         }
 
-        /** @var ExpenseInputDTO */
-        $data = json_decode($request->getContent());
+        try {
+            /** @var ExpenseInputDTO $data */
+            $data = $serializer->deserialize($request->getContent(), ExpenseInputDTO::class, 'json');
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'JSON invalide : ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
 
         $groupId = $data->groupId ?? $expense->getGroupe()->getId();
         $authorId = $data->authorId ?? $expense->getCreator()->getId();
@@ -276,7 +279,7 @@ class ExpenseController extends AbstractController
         } catch (\InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
-        $recurringData = $data->recurringExpense ?? null;
+        $recurringData = $data->recurring ?? null;
         $recurringExpense = $expense->getRecurringExpense();
 
         /** @var RecurringExpenseInputDTO|null $recurringData */
@@ -333,9 +336,7 @@ class ExpenseController extends AbstractController
             $this->em->remove($recurringExpense);
         }
         if (isset($data->spentAt)) {
-            /** @var string */
-            $spentAt = $data->spentAt;
-            $expense->setSpentAt(new \DateTimeImmutable($spentAt));
+            $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
         }
         $this->applyDataToExpense($expense, $data, $category, $group, $creator);
         $this->validateExpense($expense);

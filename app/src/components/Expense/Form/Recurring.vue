@@ -13,7 +13,7 @@
     } & {
       [key: string]: FormFieldState
     }
-    recurringExpense?: RecurringExpenseType
+    recurringExpense?: RecurringExpenseType | null
   }>()
   const isActif = ref(recurringExpense !== undefined)
   const deleteRecurring = () => {

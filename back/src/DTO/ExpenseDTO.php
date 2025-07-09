@@ -2,7 +2,6 @@
 
 namespace App\DTO;
 
-use App\Entity\User;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
@@ -10,7 +9,6 @@ use ApiPlatform\Metadata\Link;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Controller\ExpenseController;
 use App\Entity\Expense;
-use App\Entity\RecurringExpense;
 use DateTimeImmutable;
 
 #[ApiResource(operations: [
@@ -110,36 +108,36 @@ use DateTimeImmutable;
 ])]
 class ExpenseDTO
 {
-    #[Groups(['expense:read'])]
+    #[Groups(['expense:read', 'groupe:read'])]
     public int $id;
 
-    #[Groups(['expense:read'])]
+    #[Groups(['expense:read', 'groupe:read'])]
     public float $amount;
 
-    #[Groups(['expense:read'])]
+    #[Groups(['expense:read', 'groupe:read'])]
     public string $title;
 
-    #[Groups(['expense:read'])]
+    #[Groups(['expense:read', 'groupe:read'])]
     public DateTimeImmutable $createdAt;
 
-    #[Groups(['expense:read'])]
+    #[Groups(['expense:read', 'groupe:read'])]
     public DateTimeImmutable $spentAt;
 
-    #[Groups(['expense:read'])]
+    #[Groups(['expense:read', 'groupe:read'])]
     public int $groupe;
 
-    #[Groups(['expense:read'])]
+    #[Groups(['expense:read', 'groupe:read'])]
     public CategoryDTO $category;
 
-    #[Groups(['expense:read'])]
+    #[Groups(['expense:read', 'groupe:read'])]
     public UserDTO $creator;
 
     /** @var UserDTO[] */
-    #[Groups(['expense:read'])]
+    #[Groups(['expense:read', 'groupe:read'])]
     public array $participants = [];
 
-    #[Groups(['expense:read'])]
-    public ?RecurringExpenseDTO $recurringExpense = null;
+    #[Groups(['expense:read', 'groupe:read'])]
+    public ?RecurringExpenseDTO $recurring = null;
 
     public function __construct(Expense $expense)
     {
@@ -152,7 +150,7 @@ class ExpenseDTO
         $this->groupe = $expense->getGroupe()->getId();
         $this->creator = new UserDTO($expense->getCreator());
         if ($expense->getRecurringExpense()) {
-            $this->recurringExpense = new RecurringExpenseDTO($expense->getRecurringExpense());
+            $this->recurring = new RecurringExpenseDTO($expense->getRecurringExpense());
         }
         foreach ($expense->getParticipants() as $participant) {
             $this->participants[] = new UserDTO($participant);
