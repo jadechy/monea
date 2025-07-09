@@ -3,6 +3,7 @@
 namespace App\DTO;
 
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\ApiResource;
 use App\Controller\MemberController;
 
@@ -17,7 +18,16 @@ use DateTimeImmutable;
         read: false,
         deserialize: false,
         name: 'member_send_invitation',
-    )
+    ),
+    new Patch(
+        uriTemplate: '/member/update',
+        controller: MemberController::class  . '::updateMemberRole',
+        name: 'member_edit',
+        input: MemberInputDTO::class,
+        deserialize: true,
+        read: false,
+        validationContext: ['groups' => ['member:write']],
+    ),
 ])]
 class MemberDTO
 {

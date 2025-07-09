@@ -2,7 +2,6 @@
 
 namespace App\DTO;
 
-use DateTimeImmutable;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class ExpenseInputDTO

@@ -4,20 +4,24 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
+use App\Entity\Member;
+use App\Entity\User;
+use App\Entity\Groupe;
+use App\Entity\GroupInvitation;
+use App\Enum\MemberRoleEnum;
+use App\Enum\MemberStatusEnum;
 use App\Repository\MemberRepository;
 use App\Repository\UserRepository;
 use App\Repository\GroupeRepository;
-use App\Entity\Member;
-use App\Enum\MemberRoleEnum;
-use App\Enum\MemberStatusEnum;
-
-use App\Entity\GroupInvitation;
 use App\Repository\GroupInvitationRepository;
+use App\DTO\MemberInputDTO;
 
 final class MemberController extends AbstractController
 {
@@ -95,4 +99,56 @@ final class MemberController extends AbstractController
         return new JsonResponse(['message' => 'Invitation envoyée']);
     }
 
+    public function responseInvitation()
+    {
+
+    }
+
+    public function updateMemberRole(Request $request, SerializerInterface $serializer): JsonResponse
+    {
+        try {
+            /** @var MemberInputDTO $data */
+            $data = $serializer->deserialize($request->getContent(), MemberInputDTO::class, 'json');
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'JSON invalide : ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+
+        $groupId = $data->groupId;
+        $authorId = $data->authorId;
+        if (!$groupId) {
+            return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
+
+        if (!$authorId) {
+            return new JsonResponse(['error' => 'Utilisateur non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+
+        $member = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $user->getId()]);
+        if (!$member) {
+            return new JsonResponse(['error' => 'Vous n\'êtes pas un membre du groupe.'], Response::HTTP_NOT_FOUND);
+        }
+    
+        if($member->getRole() !== MemberRoleEnum::AUTHOR && $member->getRole() !== MemberRoleEnum::ADMIN) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
+        }else{
+            $modifMember = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $authorId]);
+
+            $modifMember->setRole($data->role);
+
+            $this->em->persist($modifMember);
+            $this->em->flush();
+
+            return $this->json(
+                ['message' => 'Le membre a bien été enregistrée'],
+                Response::HTTP_OK,
+                []
+            );
+        }
+    }
 }
