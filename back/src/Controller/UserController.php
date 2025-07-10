@@ -41,13 +41,13 @@ class UserController extends AbstractController
         }
 
         $user = new User();
-        $user->setEmail($input->email);
-        $user->setUsername($input->username);
-        $user->setName($input->name);
-        $user->setLastname($input->lastname);
-        $user->setCreatedAt(new \DateTimeImmutable());
-        $user->setRoles(["ROLE_USER"]);
-        $user->setBirthday($input->birthday);
+        $user->setEmail($input->email)
+            ->setUsername($input->username)
+            ->setName($input->name)
+            ->setLastname($input->lastname)
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setRoles(["ROLE_USER"])
+            ->setBirthday($input->birthday);
 
         $hashedPassword = $this->passwordHasher->hashPassword($user, $input->password);
         $user->setPassword($hashedPassword);
@@ -68,11 +68,11 @@ class UserController extends AbstractController
                 return new JsonResponse(['error' => 'Invitation invalide ou déjà utilisée'], Response::HTTP_BAD_REQUEST);
             }
             $member = new Member();
-            $member->setIndividual($user);
-            $member->setGroupe($invitation->getGroupe());
-            $member->setAddOn(new \DateTimeImmutable());
-            $member->setStatus(MemberStatusEnum::PENDING);
-            $member->setRole($invitation->getRole());
+            $member->setIndividual($user)
+                ->setGroupe($invitation->getGroupe())
+                ->setAddOn(new \DateTimeImmutable())
+                ->setStatus(MemberStatusEnum::PENDING)
+                ->setRole($invitation->getRole());
             $invitation->setUsed(true);
             $this->em->persist($member);
         }
@@ -91,6 +91,7 @@ class UserController extends AbstractController
 
         return $user;
     }
+    
     public function updateUser(UserEditDTO $input): JsonResponse
     {
         $user = $this->getUser();

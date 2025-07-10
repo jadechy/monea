@@ -23,7 +23,7 @@ use App\DTO\MemberInputDTO;
 
 final class MemberController extends AbstractController
 {
-    public function __construct(private MemberRepository $memberRepository, private UserRepository $userRepository, private GroupeRepository $groupeRepository, private EntityManagerInterface $em) {}
+    public function __construct(private MemberRepository $memberRepository, private UserRepository $userRepository, private GroupeRepository $groupeRepository, private EntityManagerInterface $em, private SerializerInterface $serializer) {}
 
     /**
      * Envoie d'une invitation par mail
@@ -54,11 +54,11 @@ final class MemberController extends AbstractController
             $user = $this->userRepository->find($userId);
 
             $member = new Member();
-            $member->setRole(MemberRoleEnum::from($role));
-            $member->setAddOn(new \DateTimeImmutable());
-            $member->setStatus(MemberStatusEnum::PENDING);
-            $member->setGroupe($groupe);
-            $member->setIndividual($user);
+            $member->setRole(MemberRoleEnum::from($role))
+                ->setAddOn(new \DateTimeImmutable())
+                ->setStatus(MemberStatusEnum::PENDING)
+                ->setGroupe($groupe)
+                ->setIndividual($user);
             $this->em->persist($member);
             $this->em->flush();
 
@@ -83,10 +83,10 @@ final class MemberController extends AbstractController
         /** @var string $mail */
         if ($mail) {
             $invitation = new GroupInvitation();
-            $invitation->setEmail($mail);
-            $invitation->setUsed(false);
-            $invitation->setGroupe($groupe);
-            $invitation->setRole(MemberRoleEnum::from($role));
+            $invitation->setEmail($mail)
+                ->setUsed(false)
+                ->setGroupe($groupe)
+                ->setRole(MemberRoleEnum::from($role));
             $this->em->persist($invitation);
             $this->em->flush();
 
@@ -123,11 +123,11 @@ final class MemberController extends AbstractController
         return new JsonResponse(['message' => 'Réponse enregistrée']);
     }
 
-    public function updateMemberRole(Request $request, SerializerInterface $serializer): JsonResponse
+    public function updateMemberRole(Request $request): JsonResponse
     {
         try {
             /** @var MemberInputDTO $data */
-            $data = $serializer->deserialize($request->getContent(), MemberInputDTO::class, 'json');
+            $data = $this->serializer->deserialize($request->getContent(), MemberInputDTO::class, 'json');
         } catch (\Exception $e) {
             return $this->json(['error' => 'JSON invalide : ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
@@ -178,11 +178,11 @@ final class MemberController extends AbstractController
         );
     }
 
-    public function leaveGroup(Request $request, SerializerInterface $serializer): JsonResponse
+    public function leaveGroup(Request $request): JsonResponse
     {
         try {
             /** @var MemberInputDTO $data */
-            $data = $serializer->deserialize($request->getContent(), MemberInputDTO::class, 'json');
+            $data = $this->serializer->deserialize($request->getContent(), MemberInputDTO::class, 'json');
         } catch (\Exception $e) {
             return $this->json(['error' => 'JSON invalide : ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
