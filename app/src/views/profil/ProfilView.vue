@@ -8,13 +8,14 @@
   import { getSpaceColor } from "@/utils/getColor"
   import { storeToRefs } from "pinia"
   import { Button } from "primevue"
+  import default_avatar from "@/assets/default_avatar.svg"
   const { user } = useAuthStore()
   const { groupsCount, personnalGroup } = storeToRefs(useGroupsStore())
 </script>
 
 <template>
   <div class="flex flex-col justify-center items-center" v-if="user">
-    <div class="rounded-full w-32 h-32 bg-gray-400" />
+    <img :src="user.picture ?? default_avatar" class="rounded-full w-32 h-32 bg-gray-100" />
     <p class="text-sm mt-3">Membre depuis le {{ formatLongDate(user.createdAt) }}</p>
     <p class="text-2xl font-bold" :class="[`text-${personnalGroup?.color}-700`]">
       {{ user?.name }} {{ user?.lastname }}

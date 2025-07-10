@@ -10,7 +10,7 @@
   import { getSpaceColor } from "@/utils/getColor"
   import type { ExpenseType } from "@/types/expenseType"
   import { getExpenseById } from "@/services/expenseService"
-  import placeholder from "@/assets/placeholder_people.jpg"
+  import default_avatar from "@/assets/default_avatar.svg"
   import type { GroupType } from "@/types/groupType"
   import { useQuery } from "@tanstack/vue-query"
   import { useGroupsStore } from "@/stores/groupStore"
@@ -52,7 +52,10 @@
             v-if="expense.category.label !== 'default'"
             :category="expense.category"
           />
-          <Chip :label="expense.creator.username" :image="expense.creator.picture ?? placeholder" />
+          <Chip
+            :label="expense.creator.username"
+            :image="expense.creator.picture ?? default_avatar"
+          />
           <Chip icon="pi pi-replay" label="Dépense récurrente" v-if="expense.recurring" />
         </div>
       </div>

@@ -10,7 +10,10 @@
           v-if="expense.category.label !== 'default'"
           :category="expense.category"
         />
-        <Chip :label="expense.creator.username" :image="expense.creator.picture ?? placeholder" />
+        <Chip
+          :label="expense.creator.username"
+          :image="expense.creator.picture ?? default_avatar"
+        />
       </div>
     </div>
     <p>
@@ -21,11 +24,11 @@
 </template>
 
 <script setup lang="ts">
-  import placeholder from "@/assets/placeholder_people.jpg"
   import ColoredLabelComponent from "./CategoryLabel.vue"
   import { Chip } from "primevue"
   import type { ExpenseSingleValueDateType } from "@/types/expenseType"
   import type { GroupType } from "@/types/groupType"
+  import default_avatar from "@/assets/default_avatar.svg"
   export interface ExpenseCardComponentProps {
     expense: ExpenseSingleValueDateType
     groupId: GroupType["id"]
