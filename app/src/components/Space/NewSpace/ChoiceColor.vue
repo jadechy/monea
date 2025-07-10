@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import type { ColorType } from "@/types/color"
 
-  const props = defineProps<{ color: ColorType; selected?: boolean }>()
+  defineProps<{ color: ColorType; selected?: boolean }>()
 </script>
 
 <template>

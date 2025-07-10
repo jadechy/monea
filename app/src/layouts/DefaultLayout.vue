@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import Header from "@/components/Header/HeaderComponent.vue"
-  import Loading from "@/components/Loading.vue"
+  import Loading from "@/components/LoadingComponent.vue"
   import { useGroupsStore } from "@/stores/groupStore"
   import { storeToRefs } from "pinia"
   const { isLoading } = storeToRefs(useGroupsStore())

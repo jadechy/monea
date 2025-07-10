@@ -15,7 +15,7 @@
   import ChoiceColor from "@/components/Space/NewSpace/ChoiceColor.vue"
   import CategoriesSelection from "@/components/Space/Form/CategoriesSelection.vue"
   import FormInput from "@/components/InputComponent/FormInput.vue"
-  import Members from "@/components/Space/Form/Members.vue"
+  import Members from "@/components/Space/Form/MembersForm.vue"
   import type { NewCategoryType } from "@/types/categoryType"
   import { useGroupsStore } from "@/stores/groupStore"
   import { getSpaceColor } from "@/utils/getColor"

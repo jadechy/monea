@@ -150,6 +150,7 @@
     initialValues: initialValues.value,
     resolver: zodResolver(NewExpenseSchema),
   })
+  defineExpose({ form, onFormSubmit, createExpenseMutation, deleteExpenseMutation })
 </script>
 
 <template v-if="group">

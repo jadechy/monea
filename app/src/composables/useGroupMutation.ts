@@ -2,13 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query"
 import router from "@/router"
 import type { GroupType, NewGroupType } from "@/types/groupType"
 import { deleteGroup, editGroup, postGroup } from "@/services/groupService"
-import type { UserType } from "@/types/user"
 import type { ComputedRef } from "vue"
-import { useAuthStore } from "@/stores/authStore"
 
 export const useGroupMutation = (group: ComputedRef<GroupType | undefined | null>) => {
-  const { user } = useAuthStore()
-
   const queryClient = useQueryClient()
   const invalidateQueries = async () => {
     await Promise.all([queryClient.invalidateQueries({ queryKey: ["groups-by-user"] })])

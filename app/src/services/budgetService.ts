@@ -6,7 +6,6 @@ import {
   AmountSchema,
   AmountValueSchema,
   BudgetByCategorySchema,
-  NewBudgetSchema,
   type BudgetType,
   type NewBudgetType,
 } from "@/types/budgetType"
