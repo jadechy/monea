@@ -1,23 +1,26 @@
 <script setup lang="ts">
-  import CardProfil from "@/components/Profil/CardProfil.vue"
-  import Info from "@/components/Profil/InfoProfil.vue"
-  import router from "@/router"
-  import { useAuthStore } from "@/stores/authStore"
-  import { useGroupsStore } from "@/stores/groupStore"
-  import { formatLongDate } from "../../../../app/utils/date"
-  import { getSpaceColor } from "../../../../app/utils/getColor"
-  import { storeToRefs } from "pinia"
-  import { Button } from "primevue"
-  import default_avatar from "@/assets/default_avatar.svg"
-  const { user } = useAuthStore()
-  const { groupsCount, personnalGroup } = storeToRefs(useGroupsStore())
+import { useAuthStore } from "@/stores/authStore";
+import { useGroupsStore } from "@/stores/groupStore";
+import default_avatar from "@/assets/default_avatar.svg";
+import { storeToRefs } from "pinia";
+const { user } = useAuthStore();
+const { groupsCount, personnalGroup } = storeToRefs(useGroupsStore());
+const router = useRouter();
 </script>
 
 <template>
   <div class="flex flex-col justify-center items-center" v-if="user">
-    <img :src="user.picture ?? default_avatar" class="rounded-full w-32 h-32 bg-gray-100" />
-    <p class="text-sm mt-3">Membre depuis le {{ formatLongDate(user.createdAt) }}</p>
-    <p class="text-2xl font-bold" :class="[`text-${personnalGroup?.color}-700`]">
+    <img
+      :src="user.picture ?? default_avatar"
+      class="rounded-full w-32 h-32 bg-gray-100"
+    />
+    <p class="text-sm mt-3">
+      Membre depuis le {{ formatLongDate(user.createdAt) }}
+    </p>
+    <p
+      class="text-2xl font-bold"
+      :class="[`text-${personnalGroup?.color}-700`]"
+    >
       {{ user?.name }} {{ user?.lastname }}
     </p>
     <p class="font-bold">{{ user?.username }}</p>
@@ -53,6 +56,10 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12" v-if="user">
     <CardProfil icon="pi-inbox" label="Email" :content="user?.email" />
     <CardProfil icon="pi-phone" label="Téléphone" content="07 83 05 89 63" />
-    <CardProfil icon="pi-gift" label="Anniversaire" :content="formatLongDate(user.birthday)" />
+    <CardProfil
+      icon="pi-gift"
+      label="Anniversaire"
+      :content="formatLongDate(user.birthday)"
+    />
   </div>
 </template>

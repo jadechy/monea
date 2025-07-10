@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import router from "@/router";
-import homepage from "../assets/homepage.jpg";
-import { Button } from "primevue";
-import Testimonial from "@/components/Homepage/TestimonialComponent.vue";
+import homepage from "~/assets/homepage.jpg";
 import { getSpaceColor } from "../utils/getColor";
+import TestimonialComponent from "~/components/Homepage/TestimonialComponent.vue";
 
 type Average = {
   icon: string;
@@ -23,14 +21,15 @@ const averages: Average[] = [
     label: "Vue mensuelle / annuelle",
   },
 ];
+const router = useRouter();
 </script>
 
 <template>
   <div class="flex justify-between px-10 items-center mt-2">
     <h1 class="font-extrabold text-center text-4xl">Monéa</h1>
     <div class="flex gap-4 items-center">
-      <RouterLink :to="{ name: 'home' }">Accueil</RouterLink>
-      <RouterLink :to="{ name: 'login' }"
+      <RouterLink :to="{ name: 'index' }">Accueil</RouterLink>
+      <RouterLink :to="{ name: 'auth-login' }"
         ><Button size="small">Commencer à gerer le budgets</Button></RouterLink
       >
     </div>
@@ -49,12 +48,12 @@ const averages: Average[] = [
         <div class="flex gap-3">
           <Button
             label="Se connecter"
-            @click="router.push({ name: 'login' })"
+            @click="router.push({ name: 'auth-login' })"
             :class="[getSpaceColor({ color: 'pink' })]"
           />
           <Button
             label="Créer un compte gratuitement"
-            @click="router.push({ name: 'register' })"
+            @click="router.push({ name: 'auth-register' })"
             :class="[getSpaceColor({ color: 'pink' })]"
           />
         </div>
@@ -68,13 +67,13 @@ const averages: Average[] = [
         :key="i"
       >
         <p
-          class="text-6xl text-center mb-3 pi pi-chart-bar text-gray-700"
+          class="text-6xl text-center mb-3 pi text-gray-700"
           :class="average.icon"
         />
         <p class="text-center">{{ average.label }}</p>
       </div>
     </section>
-    <Testimonial />
+    <TestimonialComponent />
   </main>
 </template>
 

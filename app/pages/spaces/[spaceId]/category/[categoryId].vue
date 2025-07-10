@@ -2,13 +2,12 @@
 import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 
-import AllPaiementsLayout from "@/components/Display/AllExpensesDisplay.vue";
 import { fetchCategory } from "@/services/categoryService";
 import { getExpensesByCategory } from "@/services/expenseService";
 
-import type { CategoryType } from "../../../../../../app/types/categoryType";
-import type { GroupType } from "../../../../../../app/types/groupType";
 import { useGroupsStore } from "@/stores/groupStore";
+import type { CategoryType } from "~/types/categoryType";
+import type { GroupType } from "~/types/groupType";
 
 // Props
 const props = defineProps<{

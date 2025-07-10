@@ -1,6 +1,4 @@
-<script setup lang="ts">
-  import FormGroup from "@/components/Display/FormGroup.vue"
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <FormGroup />

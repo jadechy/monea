@@ -1,30 +1,32 @@
-import { getGroupByUser } from "@/services/groupService"
-import type { GroupType } from "../../../app/types/groupType"
-import { defineStore } from "pinia"
-import { computed } from "vue"
-import { useQuery } from "@tanstack/vue-query"
+import { getGroupByUser } from "@/services/groupService";
+import { defineStore } from "pinia";
+import { computed } from "vue";
+import { useQuery } from "@tanstack/vue-query";
+import type { GroupType } from "~/types/groupType";
 
 export const useGroupsStore = defineStore("groups", () => {
   const { data, refetch, isLoading } = useQuery({
     queryKey: ["groups-by-user"],
     queryFn: async () => {
-      return await getGroupByUser()
+      return await getGroupByUser();
     },
     staleTime: 1000 * 60 * 5,
-  })
+  });
 
-  const groups = computed(() => data?.value ?? [])
+  const groups = computed(() => data?.value ?? []);
 
   const groupById = ({ id }: { id?: GroupType["id"] }) => {
-    if (id === undefined) return null
-    return groups.value.find((group) => group.id === Number(id))
-  }
+    if (id === undefined) return null;
+    return groups.value.find((group) => group.id === Number(id));
+  };
   const groupsNotPersonnal = computed(() =>
-    groups.value.filter((group) => group.type !== "personnal"),
-  )
-  const groupsCount = computed(() => groupsNotPersonnal.value.length)
+    groups.value.filter((group) => group.type !== "personnal")
+  );
+  const groupsCount = computed(() => groupsNotPersonnal.value.length);
 
-  const personnalGroup = computed(() => groups.value.find((group) => group.type === "personnal"))
+  const personnalGroup = computed(() =>
+    groups.value.find((group) => group.type === "personnal")
+  );
 
   return {
     // State
@@ -37,5 +39,5 @@ export const useGroupsStore = defineStore("groups", () => {
 
     // Actions
     refetch,
-  }
-})
+  };
+});

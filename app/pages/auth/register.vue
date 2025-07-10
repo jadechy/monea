@@ -1,57 +1,67 @@
 <script setup lang="ts">
-  import router from "@/router"
-  import { Button, DatePicker, Divider, FileUpload, Message, Password } from "primevue"
-  import { Form, type FormSubmitEvent } from "@primevue/forms"
-  import { zodResolver } from "@primevue/forms/resolvers/zod"
-  import { RegisterRequestSchema, type RegisterRequestType } from "../../../../app/types/authType"
-  import FormInput from "@/components/InputComponent/FormInput.vue"
-  import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
-  import { registerAuth } from "@/services/authService"
-  import { useMutation } from "@tanstack/vue-query"
-  import GoogleComponent from "@/components/GoogleComponent.vue"
-  import { useRoute } from "vue-router"
-  import { useForm } from "@primevue/forms/useform"
-  import { ref } from "vue"
+import {
+  Button,
+  DatePicker,
+  Divider,
+  FileUpload,
+  Message,
+  Password,
+} from "primevue";
+import { Form, type FormSubmitEvent } from "@primevue/forms";
+import { zodResolver } from "@primevue/forms/resolvers/zod";
+import { registerAuth } from "@/services/authService";
+import { useMutation } from "@tanstack/vue-query";
+import { useRoute } from "vue-router";
+import { useForm } from "@primevue/forms/useform";
+import { ref } from "vue";
+import {
+  RegisterRequestSchema,
+  type RegisterRequestType,
+} from "~/types/authType";
+import WrapperInput from "~/components/ui-kit/input/WrapperInput.vue";
+import FormInput from "~/components/ui-kit/input/FormInput.vue";
+import GoogleComponent from "~/components/ui-kit/GoogleComponent.vue";
 
-  const route = useRoute()
-  const fileupload = ref()
+const route = useRoute();
+const router = useRouter();
+const fileupload = ref();
 
-  const registerMutation = useMutation({
-    mutationFn: (data: FormData) => registerAuth(data),
-    onSuccess: () => {
-      router.push({ name: "confirm" })
-    },
-  })
+const registerMutation = useMutation({
+  mutationFn: (data: FormData) => registerAuth(data),
+  onSuccess: () => {
+    router.push({ name: "auth-confirm" });
+  },
+});
 
-  const submitRegister = async (form: FormSubmitEvent) => {
-    if (!form.valid) return
+const submitRegister = async (form: FormSubmitEvent) => {
+  if (!form.valid) return;
 
-    const data = Object.entries(form.states).reduce((acc, [key, state]) => {
-      const k = key as keyof RegisterRequestType
-      acc[k] = state.value
-      return acc
-    }, {} as RegisterRequestType)
+  const data = Object.entries(form.states).reduce((acc, [key, state]) => {
+    const k = key as keyof RegisterRequestType;
+    acc[k] = state.value;
+    return acc;
+  }, {} as RegisterRequestType);
 
-    if (data.password !== data.confirmPassword) return
+  if (data.password !== data.confirmPassword) return;
 
-    const invitationToken = route.query.invitationToken as string | undefined
-    if (invitationToken) {
-      data.invitationToken = invitationToken
-    }
-    const uploadedFile = fileupload.value?.files?.[0] || null
-
-    const formData = new FormData()
-    if (uploadedFile) {
-      formData.append("picture", uploadedFile)
-    }
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value as string)
-    })
-    registerMutation.mutate(formData)
+  const invitationToken = route.query.invitationToken as string | undefined;
+  if (invitationToken) {
+    data.invitationToken = invitationToken;
   }
-  const form = useForm({
-    resolver: zodResolver(RegisterRequestSchema),
-  })
+  const uploadedFile = fileupload.value?.files?.[0] || null;
+
+  const formData = new FormData();
+  if (uploadedFile) {
+    formData.append("picture", uploadedFile);
+  }
+  Object.entries(data).forEach(([key, value]) => {
+    formData.append(key, value as string);
+  });
+  registerMutation.mutate(formData);
+};
+const form = useForm({
+  resolver: zodResolver(RegisterRequestSchema),
+});
 </script>
 
 <template>
@@ -77,8 +87,19 @@
       />
     </WrapperInput>
 
-    <FormInput name="email" placeholder="Email" type="email" :form="form" autocomplete="email" />
-    <FormInput name="username" placeholder="Pseudonyme" :form="form" autocomplete="username" />
+    <FormInput
+      name="email"
+      placeholder="Email"
+      type="email"
+      :form="form"
+      autocomplete="email"
+    />
+    <FormInput
+      name="username"
+      placeholder="Pseudonyme"
+      :form="form"
+      autocomplete="username"
+    />
     <FileUpload
       ref="fileupload"
       mode="basic"
@@ -109,7 +130,11 @@
       </Password>
     </WrapperInput>
 
-    <WrapperInput :form="form" name="confirmPassword" placeholder="Confirmation mot de passe">
+    <WrapperInput
+      :form="form"
+      name="confirmPassword"
+      placeholder="Confirmation mot de passe"
+    >
       <Password
         name="confirmPassword"
         placeholder="Confirmation mot de passe"
@@ -135,7 +160,9 @@
     </WrapperInput>
     <div class="flex flex-col items-center gap-0.5">
       <Button type="submit" class="w-fit">S'inscrire</Button>
-      <RouterLink :to="{ name: 'login' }" class="hover:underline">J'ai déjà un compte</RouterLink>
+      <RouterLink :to="{ name: 'auth-login' }" class="hover:underline"
+        >J'ai déjà un compte</RouterLink
+      >
     </div>
   </Form>
 </template>

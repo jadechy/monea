@@ -1,29 +1,22 @@
 <script setup lang="ts">
-  import BaseSection from "@/components/BaseSection.vue"
-  import RemainingBudget from "@/components/RemainingBudget.vue"
-  import SubHeader from "@/components/Header/SubHeader.vue"
-  import { truncateToTenth } from "../../../../../../app/utils/number"
-  import router from "@/router"
-  import { getSpaceColor } from "../../../../../../app/utils/getColor"
-  import type { GroupType } from "../../../../../../app/types/groupType"
-  import { Button } from "primevue"
-  import { computed } from "vue"
-  import { formatDateISO, getCurrentMonthStartDate } from "../../../../../../app/utils/date"
-  import ChartLayout from "@/components/Budget/ChartLayout.vue"
-  import { useQuery } from "@tanstack/vue-query"
-  import { useGroupsStore } from "@/stores/groupStore"
-  import { fetchCategoryByGroup } from "@/services/categoryService"
-  import { useBudget } from "@/composables/useBudget"
-  import { hasEditPermission } from "../../../../../../app/utils/authorization"
+import { Button } from "primevue";
+import { computed } from "vue";
+import ChartLayout from "@/components/Budget/ChartLayout.vue";
+import { useQuery } from "@tanstack/vue-query";
+import { useGroupsStore } from "@/stores/groupStore";
+import { fetchCategoryByGroup } from "@/services/categoryService";
+import { useBudget } from "@/composables/useBudget";
+import type { GroupType } from "~/types/groupType";
 
-  const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
-  const { remainingBudget } = useBudget(space_id)
-  const { data: categories } = useQuery({
-    queryKey: ["categories-by-group", space_id],
-    queryFn: () => fetchCategoryByGroup(space_id),
-  })
-  const { groupById } = useGroupsStore()
-  const group = computed(() => groupById({ id: space_id }))
+const router = useRouter();
+const { space_id } = defineProps<{ space_id: GroupType["id"] }>();
+const { remainingBudget } = useBudget(space_id);
+const { data: categories } = useQuery({
+  queryKey: ["categories-by-group", space_id],
+  queryFn: () => fetchCategoryByGroup(space_id),
+});
+const { groupById } = useGroupsStore();
+const group = computed(() => groupById({ id: space_id }));
 </script>
 
 <template>
@@ -38,7 +31,11 @@
     <section class="flex justify-between">
       <div class="flex gap-5 w-full">
         <RemainingBudget :space_id="group.id" />
-        <RemainingBudget :space_id="group.id" label="Budget initial" initialBudget />
+        <RemainingBudget
+          :space_id="group.id"
+          label="Budget initial"
+          initialBudget
+        />
       </div>
 
       <Button
@@ -46,10 +43,18 @@
         label="Récap des dépenses"
         size="small"
         :class="[getSpaceColor({ color: group?.color })]"
-        @click="router.push({ name: 'forecast_budget_space', params: { id: group?.id } })"
+        @click="
+          router.push({
+            name: 'forecast_budget_space',
+            params: { id: group?.id },
+          })
+        "
       />
     </section>
-    <BaseSection label="Budget du mois par catégories" v-if="categories && categories.length > 0">
+    <BaseSection
+      label="Budget du mois par catégories"
+      v-if="categories && categories.length > 0"
+    >
       <template #header>
         <Button
           v-if="hasEditPermission(group)"
@@ -57,7 +62,12 @@
           label="Modifier les budgets"
           size="small"
           :class="[getSpaceColor({ color: group?.color })]"
-          @click="router.push({ name: 'edit_budget_space', params: { id: group?.id } })"
+          @click="
+            router.push({
+              name: 'edit_budget_space',
+              params: { id: group?.id },
+            })
+          "
         />
       </template>
       <div class="grid gap-2 grid-cols-2 md:grid-cols-3">
@@ -78,8 +88,9 @@
                 remainingBudget.find(
                   (budget) =>
                     budget.category.id === category.id &&
-                    budget.monthStart === formatDateISO(getCurrentMonthStartDate()),
-                )?.amount ?? 0,
+                    budget.monthStart ===
+                      formatDateISO(getCurrentMonthStartDate())
+                )?.amount ?? 0
               )
             }}
             €

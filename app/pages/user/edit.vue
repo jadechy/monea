@@ -1,53 +1,49 @@
 <script setup lang="ts">
-  import { Form, type FormSubmitEvent } from "@primevue/forms"
-  import { Button, FileUpload } from "primevue"
-  import { DatePicker } from "primevue"
-  import { zodResolver } from "@primevue/forms/resolvers/zod"
-  import FormInput from "@/components/InputComponent/FormInput.vue"
-  import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
-  import { UserEditSchema, type UserEditType } from "../../../../app/types/user"
-  import { useAuthStore } from "@/stores/authStore"
-  import { useGroupsStore } from "@/stores/groupStore"
-  import { storeToRefs } from "pinia"
-  import SubHeader from "@/components/Header/SubHeader.vue"
-  import { getSpaceColor } from "../../../../app/utils/getColor"
-  import { convertToLocalDate } from "../../../../app/utils/date"
-  import { useForm } from "@primevue/forms/useform"
-  import { ref } from "vue"
-  const { user, updateUser } = useAuthStore()
+import { Form, type FormSubmitEvent } from "@primevue/forms";
+import { Button, FileUpload } from "primevue";
+import { DatePicker } from "primevue";
+import { zodResolver } from "@primevue/forms/resolvers/zod";
+import { useAuthStore } from "@/stores/authStore";
+import { useGroupsStore } from "@/stores/groupStore";
+import { storeToRefs } from "pinia";
+import SubHeader from "@/components/Header/SubHeader.vue";
+import { useForm } from "@primevue/forms/useform";
+import { ref } from "vue";
+import { UserEditSchema, type UserEditType } from "~/types/user";
+const { user, updateUser } = useAuthStore();
 
-  const { personnalGroup } = storeToRefs(useGroupsStore())
-  const fileupload = ref()
+const { personnalGroup } = storeToRefs(useGroupsStore());
+const fileupload = ref();
 
-  const onFormSubmit = (form: FormSubmitEvent) => {
-    if (!form.valid) return
+const onFormSubmit = (form: FormSubmitEvent) => {
+  if (!form.valid) return;
 
-    const data = Object.entries(form.states).reduce((acc, [key, state]) => {
-      const k = key as keyof UserEditType
-      acc[k] = state.value
-      return acc
-    }, {} as UserEditType)
-    const uploadedFile = fileupload.value?.files?.[0] || null
+  const data = Object.entries(form.states).reduce((acc, [key, state]) => {
+    const k = key as keyof UserEditType;
+    acc[k] = state.value;
+    return acc;
+  }, {} as UserEditType);
+  const uploadedFile = fileupload.value?.files?.[0] || null;
 
-    const formData = new FormData()
-    if (uploadedFile) {
-      formData.append("picture", uploadedFile)
-    }
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "birthday") {
-        formData.append("birthday", convertToLocalDate(value).toISOString())
-      } else {
-        formData.append(key, value as string)
-      }
-    })
-
-    updateUser.mutate(formData)
+  const formData = new FormData();
+  if (uploadedFile) {
+    formData.append("picture", uploadedFile);
   }
+  Object.entries(data).forEach(([key, value]) => {
+    if (key === "birthday" && value) {
+      formData.append("birthday", convertToLocalDate(value).toISOString());
+    } else {
+      formData.append(key, value as string);
+    }
+  });
 
-  const form = useForm({
-    initialValues: user ? user : undefined,
-    resolver: zodResolver(UserEditSchema),
-  })
+  updateUser.mutate(formData);
+};
+
+const form = useForm({
+  initialValues: user ? user : undefined,
+  resolver: zodResolver(UserEditSchema),
+});
 </script>
 
 <template>
@@ -77,8 +73,19 @@
       />
     </WrapperInput>
 
-    <FormInput name="email" placeholder="Email" type="email" :form="form" autocomplete="email" />
-    <FormInput name="username" placeholder="Pseudonyme" :form="form" autocomplete="username" />
+    <FormInput
+      name="email"
+      placeholder="Email"
+      type="email"
+      :form="form"
+      autocomplete="email"
+    />
+    <FormInput
+      name="username"
+      placeholder="Pseudonyme"
+      :form="form"
+      autocomplete="username"
+    />
     <FileUpload
       ref="fileupload"
       mode="basic"

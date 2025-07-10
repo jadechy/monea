@@ -1,16 +1,20 @@
 <script setup lang="ts">
-  import type { GroupType } from "@/types/groupType"
+import type { GroupType } from "@/types/groupType";
 
-  interface Props {
-    group: GroupType
-  }
+interface Props {
+  group: GroupType;
+}
 
-  defineProps<Props>()
+defineProps<Props>();
 </script>
 <template>
   <router-link
-    :to="{ name: 'space', params: { space_id: group.id } }"
-    :class="[`bg-${group.color}-100`, `hover:bg-${group.color}-200`, `text-${group.color}-500`]"
+    :to="{ name: 'spaces-space_id', params: { space_id: group.id } }"
+    :class="[
+      `bg-${group.color}-100`,
+      `hover:bg-${group.color}-200`,
+      `text-${group.color}-500`,
+    ]"
     class="p-2.5 rounded-2xl transition-all text-gray-700"
   >
     <div class="h-32 mb-6 flex justify-center items-center">
