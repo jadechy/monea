@@ -157,6 +157,9 @@ class BudgetController extends AbstractController
         foreach ($uniqueCategories as $category) {
             $categoryId = $category->getId();
             $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($categoryId, $date);
+            if(!$budgetCategory){
+                return $this->json(['error' => 'Budget introuvable'], Response::HTTP_NOT_FOUND);
+            }
 
             $expenses = $this->expenseRepository->findExpensesByCategoryAndDate($categoryId, $date);
             $totalExpenses = array_sum(array_map(fn($e) => $e->getAmount(), $expenses));
@@ -302,7 +305,11 @@ class BudgetController extends AbstractController
 
             if (!empty($expensesByDayCategory[$day])) {
                 foreach ($expensesByDayCategory[$day] as $categoryId => $totalSpent) {
-                    $categoryBudget = $budgetsByDayCategory[$day][$categoryId] ?? 0;
+                    /** @var array<string, array<int, float>> $budgetsByDayCategory */
+                    $categoryBudget = isset($budgetsByDayCategory[$day][$categoryId])
+                        ? $budgetsByDayCategory[$day][$categoryId]
+                        : 0;
+
                     $remainingByCategory = round($categoryBudget - $totalSpent, 2);
 
                     $categories[] = [
@@ -323,8 +330,6 @@ class BudgetController extends AbstractController
         return $this->json($result, 200, [], ['json_encode_options' => JSON_PRETTY_PRINT]);
     }
 
-
-
     public function getBudgetByCategory(int $categoryId): JsonResponse
     {
         $budgetsData = $this->budgetRepository->findBudgetByCategory($categoryId);
@@ -336,7 +341,7 @@ class BudgetController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
-    public function getBudgetByCategoryAndMonth(string $categoryId, string $monthStart): JsonResponse
+    public function getBudgetByCategoryAndMonth(int $categoryId, string $monthStart): JsonResponse
     {
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
 
@@ -384,7 +389,7 @@ class BudgetController extends AbstractController
 
     public function postBudgets(Request $request, SerializerInterface $serializer): JsonResponse
     {
-        /** @var BudgetInputDTO $budgetsData */
+        /** @var BudgetInputDTO $data */
         $data = $serializer->deserialize(
             $request->getContent(),
             BudgetInputDTO::class,

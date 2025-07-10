@@ -16,7 +16,7 @@ class GroupInputDTO
 
     public function __construct() {}
     /**
-     * @param stdClass $data
+     * @param \stdClass $data
      */
     public function fromObject(object $data): self
     {

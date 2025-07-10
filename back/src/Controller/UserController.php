@@ -6,8 +6,6 @@ use App\DTO\UserEditDTO;
 use App\DTO\UserRegisterDTO;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\SerializerInterface;
-
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -15,7 +13,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
 use App\Entity\Member;
 use App\Enum\MemberStatusEnum;
 use App\Repository\GroupInvitationRepository;
@@ -25,9 +22,7 @@ use App\Service\UserSetupService;
 class UserController extends AbstractController
 {
     public function __construct(
-        private UserRepository $userRepository,
         private GroupInvitationRepository $groupInvitationRepository,
-        private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private EntityManagerInterface $em,
         private UserPasswordHasherInterface $passwordHasher,
