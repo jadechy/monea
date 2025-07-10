@@ -49,9 +49,8 @@ class RecurringExpenseService
             if ($date == $baseExpense->getSpentAt()) {
                 continue;
             }
-            $copy = clone $baseExpense;
-            $copy->setSpentAt($date);
-            $copy->setRecurringExpense($recurring);
+            
+            $copy = $baseExpense->cloneAsRecurringInstance($date, $recurring);
             $this->em->persist($copy);
         }
         $this->em->flush();
