@@ -58,13 +58,13 @@ export const BudgetRemainingByMonthSchema = z.record(z.string(), BudgetRemaining
 export type BudgetRemainingValueType = z.infer<typeof BudgetRemainingValueSchema>
 export type BudgetRemainingByMonthType = z.infer<typeof BudgetRemainingByMonthSchema>
 
-export const fetchBudgetRemainingInMonth = (group_id: GroupType["id"], year: string) =>
+export const fetchBudgetRemainingInYear = (group_id: GroupType["id"], year: string) =>
   fetchJson({
     url: `budget/${group_id}/${year}/year/remaining/list`,
     schema: BudgetRemainingByMonthSchema,
   })
 
-export const fetchBudgetRemainingInDay = (group_id: GroupType["id"], month: string) =>
+export const fetchBudgetRemainingInMonth = (group_id: GroupType["id"], month: string) =>
   fetchJson({
     url: `budget/${group_id}/${month}/month/remaining/list`,
     schema: BudgetRemainingByMonthSchema,

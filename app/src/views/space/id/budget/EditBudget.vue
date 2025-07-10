@@ -2,7 +2,7 @@
   import SubHeader from "@/components/Header/SubHeader.vue"
   import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
   import Loading from "@/components/LoadingComponent.vue"
-  import { useBudget } from "@/composables/BudgetForecast/useBudget"
+  import { useBudget } from "@/composables/useBudget"
   import { useGroupsStore } from "@/stores/groupStore"
   import { NewBudgetSchemaResolver, type NewBudgetType } from "@/types/budgetType"
   import type { GroupType } from "@/types/groupType"
