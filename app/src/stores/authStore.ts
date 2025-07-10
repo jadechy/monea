@@ -159,7 +159,7 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
   const updateUser = useMutation({
-    mutationFn: (data: UserEditType) => editUser(data),
+    mutationFn: (data: FormData) => editUser(data),
     onMutate: () => {
       isLoading.value = true
       error.value = null

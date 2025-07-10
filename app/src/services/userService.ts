@@ -2,7 +2,7 @@ import { type UserEditType } from "@/types/user"
 import { patchJson } from "@/utils/apiMethods"
 import { z } from "zod"
 
-export const editUser = (user: UserEditType) =>
+export const editUser = (user: FormData) =>
   patchJson({
     url: `users/edit`,
     body: user,
