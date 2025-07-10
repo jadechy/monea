@@ -17,8 +17,10 @@ use App\Entity\Budget;
 use App\Entity\Category;
 use App\Entity\Groupe;
 use App\Entity\User;
+use App\Entity\Member;
 use App\Enum\ColorEnum;
 use App\Enum\MemberRoleEnum;
+use App\Enum\MemberStatusEnum;
 use App\Repository\BudgetRepository;
 use App\Repository\GroupeRepository;
 use App\Repository\MemberRepository;
@@ -99,8 +101,17 @@ class GroupeController extends AbstractController
             return $this->json(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
         }
 
-
         $this->em->persist($group);
+        $this->em->flush();
+
+        $member = new Member();
+        $member->setRole(MemberRoleEnum::AUTHOR)
+            ->setAddOn(new \DateTimeImmutable())
+            ->setStatus(MemberStatusEnum::ACCEPTED)
+            ->setGroupe($group)
+            ->setIndividual($user);
+
+        $this->em->persist($member);
         $this->em->flush();
 
         return $this->json(['message' => 'Groupe créé avec succès'], Response::HTTP_CREATED);

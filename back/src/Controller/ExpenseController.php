@@ -360,7 +360,30 @@ class ExpenseController extends AbstractController
         }
         if (isset($data->spentAt)) {
             $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
+        };
+        if (isset($data->participants)) {
+            $currentParticipants = $expense->getParticipants();
+            $newParticipants = [];
+
+            foreach ($data->participants as $userDto) {
+                $user = $this->userRepository->find($userDto);
+                if (!$user) {
+                    throw new \Exception("Utilisateur ID {$userDto} non trouvé.");
+                }
+                $newParticipants[] = $user;
+            }
+
+            foreach ($currentParticipants as $existingUser) {
+                if (!in_array($existingUser, $newParticipants, true)) {
+                    $expense->removeParticipant($existingUser);
+                }
+            }
+
+            foreach ($newParticipants as $user) {
+                $expense->addParticipant($user);
+            }
         }
+
         $this->applyDataToExpense($expense, $data, $category, $group, $creator);
         $this->validateExpense($expense);
         $this->em->persist($expense);
