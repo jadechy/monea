@@ -7,21 +7,30 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
-use App\Controller\GroupeController;
-use App\DTO\GroupInputDTO;
-use App\Enum\ColorEnum;
-use App\Enum\GroupTypeEnum;
-use App\Repository\GroupeRepository;
+use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use App\Controller\GroupeController;
+use App\DTO\GroupInputDTO;
+use App\Enum\ColorEnum;
+use App\Enum\GroupTypeEnum;
+use App\Repository\GroupeRepository;
+
 #[ApiResource(
     normalizationContext: ['groups' => ['groupe:read']],
     denormalizationContext: ['groups' => ['groupe:write']],
     operations: [
+        new GetCollection(
+            uriTemplate: '/groupes/list',
+            controller: GroupeController::class . '::getAllGroupesByUser',
+            read: false,
+            name: 'groupes_user',
+            normalizationContext: ['groups' => ['groupe:read']]
+        ),
         new Post(
             uriTemplate: '/groupes',
             controller: GroupeController::class  . '::postGroup',

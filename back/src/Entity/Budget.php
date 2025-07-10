@@ -4,10 +4,14 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
-use App\Controller\BudgetController;
-use App\Repository\BudgetRepository;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Get;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+
+use App\Controller\BudgetController;
+use App\Repository\BudgetRepository;
 
 #[ApiResource(
     operations: [
@@ -18,7 +22,90 @@ use Symfony\Component\Validator\Constraints as Assert;
             deserialize: false,
             read: false,
             validate: false,
-        )
+        ),
+        new Get(
+            uriTemplate: '/budget/{groupeId}/{monthStart}',
+            controller: BudgetController::class . '::getBudget',
+            read: false,
+            name: 'budget_get_total',
+            normalizationContext: ['groups' => ['budget:read']]
+        ),
+        new Get(
+            uriTemplate: '/budget/{groupeId}/{monthStart}/remaining',
+            controller: BudgetController::class . '::getRemainingBudget',
+            read: false,
+            name: 'budget_get_remaining',
+            normalizationContext: ['groups' => ['budget:read']]
+        ),
+        new Get(
+            uriTemplate: '/budget/{categoryId}/{monthStart}/remaining/category',
+            controller: BudgetController::class . '::getRemainingBudgetByCategoryAndMonth',
+            uriVariables: [
+                'categoryId' => new Link(fromClass: null, fromProperty: 'categoryId'),
+                'monthStart' => new Link(fromClass: null, fromProperty: 'monthStart'),
+            ],
+            read: false,
+            name: 'budget_get_remaining_by_category',
+            requirements: [
+                'categoryId' => '\d+',
+                'monthStart' => '\d{4}-\d{2}-\d{2}'
+            ],
+            normalizationContext: ['groups' => ['budget:read']]
+        ),
+        new GetCollection(
+            uriTemplate: '/budget/{groupeId}/{year}/year/remaining/list',
+            controller: BudgetController::class . '::getRemainingBudgetByGroupAndYear',
+            read: false,
+            name: 'budget_get_remaining_by_groupe_and_year',
+            normalizationContext: ['groups' => ['budget:read']]
+        ),
+        new GetCollection(
+            uriTemplate: '/budget/{groupeId}/{month}/month/remaining/list',
+            controller: BudgetController::class . '::getRemainingBudgetByGroupAndMonth',
+            read: false,
+            name: 'budget_get_remaining_by_groupe_and_month',
+            normalizationContext: ['groups' => ['budget:read']]
+        ),
+        new GetCollection(
+            uriTemplate: '/budgets/{groupeId}/{monthStart}/list',
+            controller: BudgetController::class . '::getBudgetByGroupe',
+            read: false,
+            name: 'budget_list',
+            normalizationContext: ['groups' => ['budget:read']]
+        ),
+        new GetCollection(
+            uriTemplate: '/budgets/{groupeId}/{monthStart}/remaining/list',
+            controller: BudgetController::class . '::getRemainingBudgetList',
+            read: false,
+            name: 'budget_remaining_list',
+            normalizationContext: ['groups' => ['budget:read']]
+        ),
+        new Get(
+            uriTemplate: '/budgets/{categoryId}/category',
+            controller: BudgetController::class . '::getBudgetByCategory',
+            uriVariables: [
+                'categoryId' => new Link(fromClass: null, fromProperty: 'categoryId')
+            ],
+            read: false,
+            name: 'budget_category',
+            requirements: ['categoryId' => '\d+'],
+            normalizationContext: ['groups' => ['budget:read']]
+        ),
+        new Get(
+            uriTemplate: '/budgets/{categoryId}/{monthStart}/category',
+            controller: BudgetController::class . '::getBudgetByCategoryAndMonth',
+            uriVariables: [
+                'categoryId' => new Link(fromClass: null, fromProperty: 'categoryId'),
+                'monthStart' => new Link(fromClass: null, fromProperty: 'monthStart'),
+            ],
+            read: false,
+            name: 'budget_category_month',
+            requirements: [
+                'categoryId' => '\d+',
+                'monthStart' => '\d{4}-\d{2}-\d{2}'
+            ],
+            normalizationContext: ['groups' => ['budget:read']],
+        ),
     ]
 )]
 #[ORM\Entity(repositoryClass: BudgetRepository::class)]
