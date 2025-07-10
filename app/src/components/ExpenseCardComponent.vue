@@ -1,6 +1,6 @@
 <template>
   <router-link
-    :to="{ name: 'expense', params: { id: expense.id, space_id: expense.groupe } }"
+    :to="{ name: 'expense', params: { id: expense.id, space_id: groupId } }"
     class="flex shadow px-4 py-3 justify-between w-full rounded-3xl hover:bg-gray-50"
   >
     <div>
@@ -24,12 +24,11 @@
   import placeholder from "@/assets/placeholder_people.jpg"
   import ColoredLabelComponent from "./CategoryLabel.vue"
   import { Chip } from "primevue"
-  import type { ExpenseType } from "@/types/expenseType"
+  import type { ExpenseSingleValueDateType } from "@/types/expenseType"
+  import type { GroupType } from "@/types/groupType"
   export interface ExpenseCardComponentProps {
-    expense: Pick<
-      ExpenseType,
-      "id" | "title" | "category" | "creator" | "amount" | "spentAt" | "groupe"
-    >
+    expense: ExpenseSingleValueDateType
+    groupId: GroupType["id"]
   }
   defineProps<ExpenseCardComponentProps>()
 </script>

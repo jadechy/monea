@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import SubHeader from "@/components/Header/SubHeader.vue"
   import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
-  import Loading from "@/components/Loading.vue"
+  import Loading from "@/components/LoadingComponent.vue"
   import { useBudget } from "@/composables/BudgetForecast/useBudget"
   import { useGroupsStore } from "@/stores/groupStore"
   import { NewBudgetSchemaResolver, type NewBudgetType } from "@/types/budgetType"

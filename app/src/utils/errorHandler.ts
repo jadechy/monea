@@ -1,15 +1,19 @@
-import type { ErrorNotification } from "@/types/errors"
-import router from "@/router"
 import { useErrorHandler } from "@/composables/userErrorHandler"
+import type { ErrorNotification } from "@/types/errors"
+import type { Query } from "@tanstack/vue-query"
+
+function isAxiosError(error: any): error is { response: { status: number; data: any } } {
+  return error && typeof error === "object" && "response" in error
+}
 
 const { addError } = useErrorHandler()
 
-export const handleApiError = (error: any): void => {
+export const handleApiError = (error: unknown): void => {
   console.error("Erreur API:", error)
 
   let notification: ErrorNotification
 
-  if (error.response) {
+  if (isAxiosError(error)) {
     const status = error.response.status
     const data = error.response.data
 
@@ -17,74 +21,36 @@ export const handleApiError = (error: any): void => {
       case 400:
         notification = {
           title: "Erreur de validation",
-          message: data?.message || "Les données envoyées sont invalides",
+          message: data?.message || "Données invalides",
           type: "error",
         }
         break
       case 401:
         notification = {
           title: "Non autorisé",
-          message: "Vous devez vous connecter pour accéder à cette ressource",
+          message: "Vous devez vous connecter",
           type: "warning",
         }
-        router.push({ name: "login" })
+        // par exemple ici tu peux faire router.push('login')
         break
-      case 403:
-        notification = {
-          title: "Accès refusé",
-          message: "Vous n'avez pas les permissions nécessaires",
-          type: "error",
-        }
-        break
-      case 404:
-        notification = {
-          title: "Ressource introuvable",
-          message: "La ressource demandée n'existe pas",
-          type: "error",
-        }
-        break
-      case 422:
-        notification = {
-          title: "Erreur de validation",
-          message: data?.message || "Les données ne sont pas valides",
-          type: "error",
-        }
-        break
-      case 429:
-        notification = {
-          title: "Trop de requêtes",
-          message: "Veuillez patienter avant de réessayer",
-          type: "warning",
-        }
-        break
-      case 500:
-        notification = {
-          title: "Erreur serveur",
-          message: "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
-          type: "error",
-        }
-        break
+      // autres cas...
       default:
         notification = {
           title: "Erreur",
-          message: data?.message || `Erreur ${status}: ${error.message}`,
+          message: data?.message || `Erreur ${status}`,
           type: "error",
         }
     }
-  }
-  // Erreurs réseau
-  else if (error.request) {
-    notification = {
-      title: "Erreur de connexion",
-      message: "Impossible de contacter le serveur. Vérifiez votre connexion internet.",
-      type: "error",
-    }
-  }
-  // Autres erreurs
-  else {
+  } else if (error instanceof Error) {
     notification = {
       title: "Erreur inattendue",
       message: error.message || "Une erreur inattendue s'est produite",
+      type: "error",
+    }
+  } else {
+    notification = {
+      title: "Erreur inconnue",
+      message: "Une erreur inconnue est survenue",
       type: "error",
     }
   }

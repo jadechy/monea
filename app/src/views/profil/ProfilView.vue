@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import CardProfil from "@/components/Profil/CardProfil.vue"
-  import Info from "@/components/Profil/Info.vue"
+  import Info from "@/components/Profil/InfoProfil.vue"
   import router from "@/router"
   import { useAuthStore } from "@/stores/authStore"
   import { useGroupsStore } from "@/stores/groupStore"

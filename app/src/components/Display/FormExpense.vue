@@ -13,12 +13,13 @@
   import { convertToLocalDate } from "@/utils/date"
   import { useExpenseMutation } from "@/composables/useExpenseMutation"
   import { useGroupsStore } from "@/stores/groupStore"
-  import Recurring from "../Expense/Form/Recurring.vue"
+  import Recurring from "../Expense/Form/RecurringFormExpense.vue"
   import type { CategoryType } from "@/types/categoryType"
   import { useQuery } from "@tanstack/vue-query"
   import { getMembersByGroup } from "@/services/memberService"
   import type { UserType } from "@/types/user"
   import BaseSection from "../BaseSection.vue"
+  import { useForm } from "@primevue/forms/useform"
   // Props
   const {
     space_id,
@@ -64,6 +65,7 @@
     )
   }
   // Form
+
   const initialValues = ref()
   watchEffect(() => {
     if (!members.value || !formattedMembers.value) return
@@ -144,6 +146,11 @@
     if (!id) return
     deleteExpenseMutation.mutate()
   }
+  const form = useForm({
+    initialValues: initialValues.value,
+    resolver: zodResolver(NewExpenseSchema),
+  })
+  defineExpose({ form, onFormSubmit, createExpenseMutation, deleteExpenseMutation })
 </script>
 
 <template v-if="group">
@@ -159,16 +166,13 @@
 
   <Form
     v-else
-    v-slot="$form"
-    :initialValues="initialValues"
-    :resolver="zodResolver(NewExpenseSchema)"
+    :form="form"
     @submit="onFormSubmit"
     class="flex flex-col items-center gap-10 lg:w-2/3 mx-auto"
   >
-    {{ $form }}
     <WrapperInput
       name="category"
-      :form="$form"
+      :form="form"
       placeholder="Catégorie"
       v-if="categories && categories.length > 0"
     >
@@ -177,20 +181,20 @@
         :options="categories"
         optionLabel="label"
         class="w-full md:w-56"
-        :labelClass="['capitalize', `text-${$form.category?.value?.color ?? 'gray'}-600`]"
+        :labelClass="['capitalize', `text-${form.states.category?.value?.color ?? 'gray'}-600`]"
       />
     </WrapperInput>
 
-    <FormInput name="title" placeholder="Nom" :form="$form" />
+    <FormInput name="title" placeholder="Nom" :form="form" />
     <div class="flex gap-4 w-full items-end">
-      <WrapperInput :form="$form" name="amount" placeholder="Prix">
+      <WrapperInput :form="form" name="amount" placeholder="Prix">
         <InputNumber class="w-full" name="amount" />
       </WrapperInput>
       <p class="text-3xl font-black mb-1">€</p>
     </div>
 
     <div class="flex justify-between w-full gap-4">
-      <WrapperInput :form="$form" name="author" placeholder="Auteur">
+      <WrapperInput :form="form" name="author" placeholder="Auteur">
         <Select
           name="author"
           :options="formattedMembers"
@@ -199,7 +203,7 @@
           class="w-2/3"
         />
       </WrapperInput>
-      <WrapperInput name="spentAt" :form="$form" placeholder="jj/mm/yyyy">
+      <WrapperInput name="spentAt" :form="form" placeholder="jj/mm/yyyy">
         <DatePicker name="spentAt" showIcon iconDisplay="input" dateFormat="dd/mm/yy" />
       </WrapperInput>
     </div>
@@ -214,11 +218,7 @@
       />
     </BaseSection>
 
-    <Recurring
-      :form="$form"
-      :recurringExpense="expense?.recurring"
-      v-if="group?.type === 'daily'"
-    />
+    <Recurring :form="form" :recurringExpense="expense?.recurring" v-if="group?.type === 'daily'" />
     <div class="flex flex-col gap-3 w-64" v-if="expense">
       <Button :class="[getSpaceColor({ color: group?.color })]" type="submit">
         Modifier la dépense

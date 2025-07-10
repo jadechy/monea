@@ -1,14 +1,9 @@
 import { loginAuth, me } from "@/services/authService"
-import type {
-  LoginRequestType,
-  LoginResponseType,
-  MeType,
-  RegisterRequestType,
-} from "@/types/authType"
+import type { LoginRequestType, LoginResponseType, MeType } from "@/types/authType"
 import { defineStore } from "pinia"
 import { ref, computed, readonly } from "vue"
 import { useGroupsStore } from "./groupStore"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query"
+import { useMutation, useQueryClient } from "@tanstack/vue-query"
 import router from "@/router"
 import type { UserEditType } from "@/types/user"
 import { editUser } from "@/services/userService"

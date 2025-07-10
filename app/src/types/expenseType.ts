@@ -45,22 +45,19 @@ export const NewExpenseSchema = z.object({
   recurring: NewRecurringExpenseSchema.nullable().optional(),
   participants: z.array(UserSchema.shape.id),
 })
-
-export const ExpenseDateSchema = z.record(
-  DateSchema,
-  z.array(
-    ExpenseSchema.pick({
-      amount: true,
-      id: true,
-      title: true,
-      category: true,
-    }).extend({ creator: UserDTOSchema.pick({ picture: true, username: true }) }),
-    {
-      invalid_type_error: "Les dépenses doivent être une liste",
-    },
-  ),
-)
+const ExpenseSingleValueDateSchema = ExpenseSchema.pick({
+  amount: true,
+  id: true,
+  title: true,
+  category: true,
+}).extend({ creator: UserDTOSchema.pick({ picture: true, username: true }) })
+const ExpenseValueDateSchema = z.array(ExpenseSingleValueDateSchema, {
+  invalid_type_error: "Les dépenses doivent être une liste",
+})
+export const ExpenseDateSchema = z.record(DateSchema, ExpenseValueDateSchema)
 
 export type ExpenseType = z.infer<typeof ExpenseSchema>
 export type ExpenseDateType = z.infer<typeof ExpenseDateSchema>
 export type NewExpenseType = z.infer<typeof NewExpenseSchema>
+export type ExpenseValueDateType = z.infer<typeof ExpenseValueDateSchema>
+export type ExpenseSingleValueDateType = z.infer<typeof ExpenseSingleValueDateSchema>
