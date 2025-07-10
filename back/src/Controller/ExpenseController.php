@@ -279,7 +279,7 @@ class ExpenseController extends AbstractController
      */
     public function update(int $id, Request $request, RecurringExpenseService $recurringExpenseService, SerializerInterface $serializer): JsonResponse
     {
-        $expense = $this->em->getRepository(Expense::class)->find($id);
+        $expense = $this->expenseRepository->find($id);
 
         if (!$expense) {
             return $this->json(['error' => 'Dépense introuvable'], Response::HTTP_NOT_FOUND);
@@ -446,8 +446,8 @@ class ExpenseController extends AbstractController
     /** @return array{0: Groupe, 1: User, 2: Category|null} */
     private function validateReferences(?int $groupId, ?int $authorId, ?int $categoryId = null): array
     {
-        $group = $this->em->getRepository(Groupe::class)->find($groupId);
-        $creator = $this->em->getRepository(User::class)->find($authorId);
+        $group = $this->groupeRepository->find($groupId);
+        $creator = $this->userRepository->find($authorId);
 
         if (!$group || !$creator) {
             throw new \InvalidArgumentException('Références groupe ou auteur invalides');
@@ -455,7 +455,7 @@ class ExpenseController extends AbstractController
 
         $category = null;
         if ($categoryId !== null) {
-            $category = $this->em->getRepository(Category::class)->find($categoryId);
+            $category = $this->categoryRepository->find($categoryId);
         }
 
         if (!$category) {

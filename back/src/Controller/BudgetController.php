@@ -6,6 +6,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 use App\DTO\BudgetDTO;
 use App\DTO\BudgetInputDTO;
@@ -17,10 +20,6 @@ use App\Repository\GroupeRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\ExpenseRepository;
 use DateTimeImmutable;
-use DateTimeInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 #[AsController]
 class BudgetController extends AbstractController
@@ -154,6 +153,7 @@ class BudgetController extends AbstractController
             }
         }
         $this->em->flush();
+
         foreach ($uniqueCategories as $category) {
             $categoryId = $category->getId();
             $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($categoryId, $date);
@@ -164,7 +164,6 @@ class BudgetController extends AbstractController
 
             $budgets[] = new BudgetDTO($budgetCategory, $remaining);
         }
-
 
         $json = $this->serializer->serialize($budgets, 'json', ['groups' => ['budget:read']]);
 
@@ -210,7 +209,6 @@ class BudgetController extends AbstractController
 
             $budgetsByMonth[$month] = ($budgetsByMonth[$month] ?? 0) + $amount;
 
-
             $budgetsByMonthCategory[$month][$categoryId] = $amount;
         }
         if (empty($months)) {
@@ -253,8 +251,6 @@ class BudgetController extends AbstractController
     {
         $budgetsData = $this->budgetRepository->findBudgetByGroupAndMonth($groupeId, $month);
         $expensesData = $this->expenseRepository->findExpensesByGroupAndMonth($groupeId, $month);
-
-
 
         $days = [];
         $expensesByDay = [];

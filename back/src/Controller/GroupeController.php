@@ -34,7 +34,6 @@ class GroupeController extends AbstractController
         private MemberRepository $memberRepository,
         private EntityManagerInterface $em,
         private ValidatorInterface $validator,
-
     ) {}
 
     public function getAllGroupesByUser(): JsonResponse
@@ -69,17 +68,17 @@ class GroupeController extends AbstractController
             throw $this->createAccessDeniedException('User not authenticated');
         }
         $group = new Groupe();
-        $group->setName($data->name);
-        $group->setType($data->type);
-        $group->setColor($data->color);
-        $group->setCreatedAt(new \DateTimeImmutable());
-        $group->setPicture("lalaal");
+        $group->setName($data->name)
+            ->setType($data->type)
+            ->setColor($data->color)
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setPicture("lalaal");
         if ($data->categories) {
             foreach ($data->categories as $categoryInput) {
                 $category = new Category();
-                $category->setLabel($categoryInput->label);
-                $category->setColor($categoryInput->color);
-                $category->setGroupe($group);
+                $category->setLabel($categoryInput->label)
+                    ->setColor($categoryInput->color)
+                    ->setGroupe($group);
                 $errors = $this->validator->validate($category);
                 if (count($errors) > 0) {
                     return $this->json(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
@@ -90,9 +89,9 @@ class GroupeController extends AbstractController
         }
 
         $category = new Category();
-        $category->setLabel("default");
-        $category->setColor(ColorEnum::Gray);
-        $category->setGroupe($group);
+        $category->setLabel("default")
+            ->setColor(ColorEnum::Gray)
+            ->setGroupe($group);
         $this->em->persist($category);
         $group->addCategory($category);
 
@@ -136,9 +135,9 @@ class GroupeController extends AbstractController
             throw $this->createAccessDeniedException('Vous ne pouvez modifier que vos groupes');
         }
 
-        $group->setName($data->name ?? $group->getName());
-        $group->setType(isset($data->type) ? $data->type : $group->getType());
-        $group->setColor(isset($data->color) ? $data->color : $group->getColor());
+        $group->setName($data->name ?? $group->getName())
+            ->setType(isset($data->type) ? $data->type : $group->getType())
+            ->setColor(isset($data->color) ? $data->color : $group->getColor());
         $sentCategoryIds = [];
 
         foreach ($data->categories ?? [] as $categoryInput) {
@@ -148,8 +147,8 @@ class GroupeController extends AbstractController
                     fn($c) => $c->getId() === $categoryInput->id
                 )->first();
 
-                $existingCategory->setLabel($categoryInput->label ?? $existingCategory->getLabel());
-                $existingCategory->setColor(
+                $existingCategory->setLabel($categoryInput->label ?? $existingCategory->getLabel())
+                    ->setColor(
                     isset($categoryInput->color)
                         ? $categoryInput->color
                         : $existingCategory->getColor()
@@ -163,11 +162,9 @@ class GroupeController extends AbstractController
             } else {
 
                 $newCategory = new Category();
-                $newCategory->setLabel($categoryInput->label);
-                $newCategory->setColor(
-                    isset($categoryInput->color) ? $categoryInput->color : ColorEnum::Gray
-                );
-                $newCategory->setGroupe($group);
+                $newCategory->setLabel($categoryInput->label)
+                    ->setColor(isset($categoryInput->color) ? $categoryInput->color : ColorEnum::Gray)
+                    ->setGroupe($group);
                 $errors = $this->validator->validate($newCategory);
                 if (count($errors) > 0) {
                     return $this->json(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
@@ -184,7 +181,6 @@ class GroupeController extends AbstractController
             if (!in_array($category->getId(), $sentCategoryIds) && $category->getLabel() !== "default") {
                 $categoryGroup = $category->getGroupe();
 
-
                 $categoryDefault = $categoryGroup->getDefaultCategory();
 
                 if (!$categoryDefault) {
@@ -199,9 +195,9 @@ class GroupeController extends AbstractController
                         $this->em->persist($defaultBudget);
                     } else {
                         $newDefaultBudget = new Budget();
-                        $newDefaultBudget->setAmount($budget->getAmount());
-                        $newDefaultBudget->setCategory($categoryDefault);
-                        $newDefaultBudget->setMonthStart($budget->getMonthStart());
+                        $newDefaultBudget->setAmount($budget->getAmount())
+                            ->setCategory($categoryDefault)
+                            ->setMonthStart($budget->getMonthStart());
                         $this->em->persist($newDefaultBudget);
                     }
                     $this->em->remove($budget);
@@ -268,7 +264,7 @@ class GroupeController extends AbstractController
             $memberDTO = new MemberDTO($member);
             $role = $memberDTO->role->value;
             $status = $memberDTO->status->value;
-            if ($status === 'accepted' && ($role === 'author' || $role === 'member' || $role === 'admin'))
+            if ($status === MemberStatusEnum::ACCEPTED && ($role === MemberRoleEnum::AUTHOR || $role === MemberRoleEnum::MEMBER || $role === MemberRoleEnum::ADMIN))
                 $membersDTO[] = $memberDTO;
         }
 

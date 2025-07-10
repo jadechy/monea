@@ -13,7 +13,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 use App\Entity\Member;
 use App\Entity\User;
-use App\Entity\Groupe;
 use App\Entity\GroupInvitation;
 use App\Enum\MemberRoleEnum;
 use App\Enum\MemberStatusEnum;
@@ -26,7 +25,6 @@ use App\DTO\MemberInputDTO;
 final class MemberController extends AbstractController
 {
     public function __construct(private MemberRepository $memberRepository, private UserRepository $userRepository, private GroupeRepository $groupeRepository, private GroupInvitationRepository $groupInvitationRepository, private EntityManagerInterface $em) {}
-
 
     /**
      * Envoie d'une invitation par mail
