@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { Form, type FormSubmitEvent } from "@primevue/forms"
-  import { Button } from "primevue"
+  import { Button, FileUpload } from "primevue"
   import { DatePicker } from "primevue"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
   import FormInput from "@/components/InputComponent/FormInput.vue"
@@ -12,9 +12,12 @@
   import SubHeader from "@/components/Header/SubHeader.vue"
   import { getSpaceColor } from "@/utils/getColor"
   import { convertToLocalDate } from "@/utils/date"
+  import { useForm } from "@primevue/forms/useform"
+  import { ref } from "vue"
   const { user, updateUser } = useAuthStore()
 
   const { personnalGroup } = storeToRefs(useGroupsStore())
+  const fileupload = ref()
 
   const onFormSubmit = (form: FormSubmitEvent) => {
     if (!form.valid) return
@@ -24,8 +27,27 @@
       acc[k] = state.value
       return acc
     }, {} as UserEditType)
-    updateUser.mutate({ ...data, birthday: convertToLocalDate(data.birthday) })
+    const uploadedFile = fileupload.value?.files?.[0] || null
+
+    const formData = new FormData()
+    if (uploadedFile) {
+      formData.append("picture", uploadedFile)
+    }
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "birthday") {
+        formData.append("birthday", convertToLocalDate(value).toISOString())
+      } else {
+        formData.append(key, value as string)
+      }
+    })
+
+    updateUser.mutate(formData)
   }
+
+  const form = useForm({
+    initialValues: user ? user : undefined,
+    resolver: zodResolver(UserEditSchema),
+  })
 </script>
 
 <template>
@@ -37,16 +59,14 @@
   />
   <Form
     v-if="user"
-    v-slot="$form"
-    :initialValues="user"
-    :resolver="zodResolver(UserEditSchema)"
+    :form="form"
     @submit="onFormSubmit"
     class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
   >
-    <FormInput name="lastname" placeholder="Nom" :form="$form" />
-    <FormInput name="name" placeholder="Prénom" :form="$form" />
+    <FormInput name="lastname" placeholder="Nom" :form="form" />
+    <FormInput name="name" placeholder="Prénom" :form="form" />
 
-    <WrapperInput name="birthday" placeholder="Date de naissance" :form="$form">
+    <WrapperInput name="birthday" placeholder="Date de naissance" :form="form">
       <DatePicker
         dateFormat="dd/mm/yy"
         showIcon
@@ -57,8 +77,15 @@
       />
     </WrapperInput>
 
-    <FormInput name="email" placeholder="Email" type="email" :form="$form" autocomplete="email" />
-    <FormInput name="username" placeholder="Pseudonyme" :form="$form" autocomplete="username" />
+    <FormInput name="email" placeholder="Email" type="email" :form="form" autocomplete="email" />
+    <FormInput name="username" placeholder="Pseudonyme" :form="form" autocomplete="username" />
+    <FileUpload
+      ref="fileupload"
+      mode="basic"
+      name="demo[]"
+      accept="image/*"
+      :maxFileSize="1000000"
+    />
 
     <Button
       type="submit"

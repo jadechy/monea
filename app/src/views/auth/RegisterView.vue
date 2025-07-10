@@ -1,20 +1,23 @@
 <script setup lang="ts">
   import router from "@/router"
-  import { Button, DatePicker, Divider, Message, Password } from "primevue"
+  import { Button, DatePicker, Divider, FileUpload, Message, Password } from "primevue"
   import { Form, type FormSubmitEvent } from "@primevue/forms"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
   import { RegisterRequestSchema, type RegisterRequestType } from "@/types/authType"
   import FormInput from "@/components/InputComponent/FormInput.vue"
   import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
-  import { registerAuth  } from "@/services/authService"
+  import { registerAuth } from "@/services/authService"
   import { useMutation } from "@tanstack/vue-query"
   import GoogleComponent from "@/components/GoogleComponent.vue"
   import { useRoute } from "vue-router"
+  import { useForm } from "@primevue/forms/useform"
+  import { ref } from "vue"
 
   const route = useRoute()
+  const fileupload = ref()
 
   const registerMutation = useMutation({
-    mutationFn: (data: RegisterRequestType) => registerAuth(data),
+    mutationFn: (data: FormData) => registerAuth(data),
     onSuccess: () => {
       router.push({ name: "confirm" })
     },
@@ -35,25 +38,35 @@
     if (invitationToken) {
       data.invitationToken = invitationToken
     }
+    const uploadedFile = fileupload.value?.files?.[0] || null
 
-    registerMutation.mutate(data)
+    const formData = new FormData()
+    if (uploadedFile) {
+      formData.append("picture", uploadedFile)
+    }
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value as string)
+    })
+    registerMutation.mutate(formData)
   }
+  const form = useForm({
+    resolver: zodResolver(RegisterRequestSchema),
+  })
 </script>
 
 <template>
   <h2 class="text-center text-4xl mb-14">Inscription</h2>
   <Form
-    v-slot="$form"
+    :form="form"
     @submit="submitRegister"
-    :resolver="zodResolver(RegisterRequestSchema)"
     class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
   >
     <div class="flex justify-center">
-    <GoogleComponent/>
-  </div>
-    <FormInput name="lastname" placeholder="Nom" :form="$form" />
-    <FormInput name="name" placeholder="Prénom" :form="$form" />
-    <WrapperInput name="birthday" placeholder="Date de naissance" :form="$form">
+      <GoogleComponent />
+    </div>
+    <FormInput name="lastname" placeholder="Nom" :form="form" />
+    <FormInput name="name" placeholder="Prénom" :form="form" />
+    <WrapperInput name="birthday" placeholder="Date de naissance" :form="form">
       <DatePicker
         dateFormat="dd/mm/yy"
         showIcon
@@ -64,10 +77,16 @@
       />
     </WrapperInput>
 
-    <FormInput name="email" placeholder="Email" type="email" :form="$form" autocomplete="email" />
-    <FormInput name="username" placeholder="Pseudonyme" :form="$form" autocomplete="username" />
-
-    <WrapperInput name="password" placeholder="Mot de passe" :form="$form">
+    <FormInput name="email" placeholder="Email" type="email" :form="form" autocomplete="email" />
+    <FormInput name="username" placeholder="Pseudonyme" :form="form" autocomplete="username" />
+    <FileUpload
+      ref="fileupload"
+      mode="basic"
+      name="demo[]"
+      accept="image/*"
+      :maxFileSize="1000000"
+    />
+    <WrapperInput name="password" placeholder="Mot de passe" :form="form">
       <Password
         placeholder="Mot de passe"
         name="password"
@@ -90,7 +109,7 @@
       </Password>
     </WrapperInput>
 
-    <WrapperInput :form="$form" name="confirmPassword" placeholder="Confirmation mot de passe">
+    <WrapperInput :form="form" name="confirmPassword" placeholder="Confirmation mot de passe">
       <Password
         name="confirmPassword"
         placeholder="Confirmation mot de passe"
@@ -106,9 +125,9 @@
         severity="error"
         size="small"
         v-if="
-          $form.confirmPassword?.value &&
-          $form.password?.value &&
-          $form.confirmPassword.value !== $form.password.value
+          form.states.confirmPassword?.value &&
+          form.states.password?.value &&
+          form.states.confirmPassword.value !== form.states.password.value
         "
       >
         Les mots de passe ne correspondent pas
