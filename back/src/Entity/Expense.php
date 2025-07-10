@@ -211,6 +211,16 @@ class Expense
 
         return $this;
     }
+    public function removeAllParticipant(): static
+    {
+        foreach ($this->participants as $participant) {
+            if ($this->participants->removeElement($participant)) {
+                $participant->removeShareExpense($this);
+            }
+        }
+
+        return $this;
+    }
 
     public function getRecurringExpense(): ?RecurringExpense
     {

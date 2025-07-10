@@ -101,8 +101,6 @@ export const UserDTOSchema = UserSchema.pick({
   id: true,
   username: true,
   picture: true,
-  lastname: true,
-  name: true,
 })
 
 export type UserDTOType = z.infer<typeof UserDTOSchema>

@@ -253,10 +253,10 @@ class ExpenseController extends AbstractController
 
             if (isset($data->participants)) {
                 foreach ($data->participants as $userDto) {
-                    $user = $this->userRepository->find($userDto->id);
+                    $user = $this->userRepository->find($userDto);
 
                     if (!$user) {
-                        throw new \Exception("Utilisateur avec l'ID {$userDto->id} non trouvé.");
+                        throw new \Exception("Utilisateur avec l'ID {$userDto} non trouvé.");
                     }
 
                     $expense->addParticipant($user);
@@ -360,15 +360,15 @@ class ExpenseController extends AbstractController
         }
         if (isset($data->spentAt)) {
             $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
-        }
-        if (isset($data->participants)){
+        };
+        if (isset($data->participants)) {
             $currentParticipants = $expense->getParticipants();
             $newParticipants = [];
 
             foreach ($data->participants as $userDto) {
-                $user = $this->userRepository->find($userDto->id);
+                $user = $this->userRepository->find($userDto);
                 if (!$user) {
-                    throw new \Exception("Utilisateur ID {$userDto->id} non trouvé.");
+                    throw new \Exception("Utilisateur ID {$userDto} non trouvé.");
                 }
                 $newParticipants[] = $user;
             }
@@ -383,7 +383,7 @@ class ExpenseController extends AbstractController
                 $expense->addParticipant($user);
             }
         }
-        
+
         $this->applyDataToExpense($expense, $data, $category, $group, $creator);
         $this->validateExpense($expense);
         $this->em->persist($expense);
@@ -399,6 +399,19 @@ class ExpenseController extends AbstractController
         $expense->setCategory($category);
         $expense->setGroupe($group);
         $expense->setCreator($creator);
+
+        if (isset($data->participants)) {
+            foreach ($data->participants as $userId) {
+                $user = $this->userRepository->find($userId);
+                if (!$user) {
+                    throw new \Exception("Utilisateur avec l'ID {$userId} non trouvé.");
+                }
+
+                if (!$expense->getParticipants()->contains($user)) {
+                    $expense->addParticipant($user);
+                }
+            }
+        } else $expense->removeAllParticipant();
     }
 
     private function validateExpense(Expense $expense): void

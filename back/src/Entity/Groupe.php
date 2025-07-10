@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use App\Controller\GroupeController;
 use App\DTO\GroupInputDTO;
@@ -43,7 +44,15 @@ use Symfony\Component\Validator\Constraints as Assert;
             name: 'groupe_delete',
             deserialize: false,
             read: false,
-        )
+        ),
+        new Get(
+            uriTemplate: '/groupes/{id}/members',
+            controller: GroupeController::class  . '::membersByGroup',
+            name: 'groupe_members',
+            deserialize: false,
+            read: false,
+            normalizationContext: ['groups' => ['member:read']]
+        ),
     ]
 )]
 #[ORM\Entity(repositoryClass: GroupeRepository::class)]

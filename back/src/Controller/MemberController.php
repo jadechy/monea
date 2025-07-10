@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 use App\Entity\Member;
 use App\Entity\User;
+use App\Entity\Groupe;
 use App\Entity\GroupInvitation;
 use App\Enum\MemberRoleEnum;
 use App\Enum\MemberStatusEnum;
@@ -26,7 +27,6 @@ final class MemberController extends AbstractController
 {
     public function __construct(private MemberRepository $memberRepository, private UserRepository $userRepository, private GroupeRepository $groupeRepository, private GroupInvitationRepository $groupInvitationRepository, private EntityManagerInterface $em) {}
 
-    // public function addMember(string $userId, string $memberId, int $groupeId): Response {}
 
     /**
      * Envoie d'une invitation par mail
@@ -61,6 +61,8 @@ final class MemberController extends AbstractController
             $this->em->flush();
 
             // Page de notification avec les demandes d'invitation au sein d'un groupe
+            // revoir l'url pas du tout bon + utilisé une base url potentiellement avec les .env
+            // n'utilise jamais 'https://localhost:5173 dans ton code lors de la mise en prod ça va poser des gros soucis
             $baseUrl = 'https://localhost:5173/invitation';
             $invitationLink = $baseUrl . '?userId=' . $userId . '&groupeId=' . $groupeId;
 
@@ -146,14 +148,14 @@ final class MemberController extends AbstractController
 
         $modifMember = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $authorId]);
 
-        if($member->getRole() !== MemberRoleEnum::AUTHOR && $modifMember->getRole() == MemberRoleEnum::AUTHOR){
+        if ($member->getRole() !== MemberRoleEnum::AUTHOR && $modifMember->getRole() == MemberRoleEnum::AUTHOR) {
             throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
         }
 
-        if($member->getRole() !== MemberRoleEnum::AUTHOR && $member->getRole() !== MemberRoleEnum::ADMIN) {
+        if ($member->getRole() !== MemberRoleEnum::AUTHOR && $member->getRole() !== MemberRoleEnum::ADMIN) {
             throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
         }
-            
+
         $modifMember->setRole($data->role);
 
         $this->em->persist($modifMember);
@@ -164,7 +166,6 @@ final class MemberController extends AbstractController
             Response::HTTP_OK,
             []
         );
-        
     }
 
     public function leaveGroup(Request $request, SerializerInterface $serializer)
@@ -199,7 +200,7 @@ final class MemberController extends AbstractController
 
         $modifMember = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $authorId]);
 
-        if($member->getIndividual()->getId() !== $modifMember->getIndividual()->getId()){
+        if ($member->getIndividual()->getId() !== $modifMember->getIndividual()->getId()) {
             throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
         }
 

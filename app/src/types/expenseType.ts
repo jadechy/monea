@@ -43,6 +43,7 @@ export const NewExpenseSchema = z.object({
   authorId: UserSchema.shape.id,
   groupId: GroupSchema.shape.id,
   recurring: NewRecurringExpenseSchema.nullable().optional(),
+  participants: z.array(UserSchema.shape.id),
 })
 
 export const ExpenseDateSchema = z.record(
