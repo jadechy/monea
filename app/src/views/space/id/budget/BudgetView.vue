@@ -13,7 +13,7 @@
   import { useQuery } from "@tanstack/vue-query"
   import { useGroupsStore } from "@/stores/groupStore"
   import { fetchCategoryByGroup } from "@/services/categoryService"
-  import { useBudget } from "@/composables/BudgetForecast/useBudget"
+  import { useBudget } from "@/composables/useBudget"
   import { hasEditPermission } from "@/utils/authorization"
 
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()

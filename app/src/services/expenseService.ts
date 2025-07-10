@@ -41,7 +41,6 @@ export const postExpense = (expense: NewExpenseType) =>
   })
 
 export const patchExpense = (expense_id: ExpenseType["id"], expense: NewExpenseType) => {
-  console.log(expense)
   return patchJson({
     url: `expenses/${expense_id}`,
     body: expense,

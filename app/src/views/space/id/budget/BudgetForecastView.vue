@@ -2,7 +2,7 @@
   import SubHeader from "@/components/Header/SubHeader.vue"
   import type { GroupType } from "@/types/groupType"
   import { computed } from "vue"
-  import Year from "@/components/Budget/BudgetForecast/YearBudget.vue"
+  import Year from "@/components/Budget/BudgetForecast/Year/YearBudget.vue"
   import Month from "@/components/Budget/BudgetForecast/MonthBudget.vue"
   import { useGroupsStore } from "@/stores/groupStore"
 

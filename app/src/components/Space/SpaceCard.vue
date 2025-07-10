@@ -10,11 +10,14 @@
 <template>
   <router-link
     :to="{ name: 'space', params: { space_id: group.id } }"
-    :class="[`bg-${group.color}-100`, `hover:bg-${group.color}-200`]"
+    :class="[`bg-${group.color}-100`, `hover:bg-${group.color}-200`, `text-${group.color}-500`]"
     class="p-2.5 rounded-2xl transition-all text-gray-700"
   >
-    <div class="bg-gray-200 h-32 mb-6" />
-    <div class="flex items-center justify-between" :class="`text-${group.color}-500`">
+    <div class="h-32 mb-6 flex justify-center items-center">
+      <img :src="group.picture" class="w-full h-full" v-if="group.picture" />
+      <p v-else class="pi pi-wallet text-7xl" />
+    </div>
+    <div class="flex items-center justify-between font-semibold">
       <p>{{ group.name }}</p>
       <i class="pi pi-chevron-right"></i>
     </div>
