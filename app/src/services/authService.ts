@@ -15,19 +15,10 @@ export const loginAuth = ({ username, password }: LoginRequestType) =>
     schema: LoginResponseSchema,
   })
 
-export const registerAuth = ({
-  username,
-  password,
-  confirmPassword,
-  name,
-  email,
-  lastname,
-  birthday,
-  invitationToken
-}: RegisterRequestType) =>
+export const registerAuth = (data: FormData) =>
   postJson({
     url: "register",
-    body: { username, password, confirmPassword, name, lastname, email, birthday, invitationToken },
+    body: data,
     schema: RegisterResponseSchema,
   })
 

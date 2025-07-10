@@ -17,7 +17,7 @@
   const fileupload = ref()
 
   const registerMutation = useMutation({
-    mutationFn: (data: RegisterRequestType) => registerAuth(data),
+    mutationFn: (data: FormData) => registerAuth(data),
     onSuccess: () => {
       router.push({ name: "confirm" })
     },
@@ -47,7 +47,7 @@
     Object.entries(data).forEach(([key, value]) => {
       formData.append(key, value as string)
     })
-    registerMutation.mutate(data)
+    registerMutation.mutate(formData)
   }
   const form = useForm({
     resolver: zodResolver(RegisterRequestSchema),
