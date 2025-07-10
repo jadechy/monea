@@ -15,6 +15,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use App\DTO\ExpenseDTO;
 use App\DTO\ExpenseInputDTO;
 use App\DTO\RecurringExpenseInputDTO;
+use App\DTO\UserInputDTO;
 use App\Entity\Category;
 use App\Entity\Expense;
 use App\Entity\Groupe;
@@ -238,6 +239,20 @@ class ExpenseController extends AbstractController
             $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
             $expense->setCreatedAt(new \DateTimeImmutable());
             $expense->setCategory($category);
+
+            if (isset($data->participants)) {
+                foreach ($data->participants as $userDto) {
+                    /** @var UserInputDTO $userDto */
+                    $user = $this->userRepository->find($userDto->id);
+
+                    if (!$user) {
+                        throw new \Exception("Utilisateur non trouvé.");
+                    }
+
+                    $expense->addParticipant($user);
+                }
+            }
+
             $this->validateExpense($expense);
             $this->em->persist($expense);
 
@@ -248,18 +263,6 @@ class ExpenseController extends AbstractController
                     return new JsonResponse([
                         'errors' => (string) $e->getErrors()
                     ], Response::HTTP_BAD_REQUEST);
-                }
-            }
-
-            if (isset($data->participants)) {
-                foreach ($data->participants as $userDto) {
-                    $user = $this->userRepository->find($userDto);
-
-                    if (!$user) {
-                        throw new \Exception("Utilisateur avec l'ID {$userDto} non trouvé.");
-                    }
-
-                    $expense->addParticipant($user);
                 }
             }
 
@@ -276,16 +279,17 @@ class ExpenseController extends AbstractController
      */
     public function update(int $id, Request $request, RecurringExpenseService $recurringExpenseService, SerializerInterface $serializer): JsonResponse
     {
-
         $expense = $this->em->getRepository(Expense::class)->find($id);
 
         if (!$expense) {
             return $this->json(['error' => 'Dépense introuvable'], Response::HTTP_NOT_FOUND);
         }
 
+        $jsonData = json_decode($request->getContent(), false);
+
         try {
             /** @var ExpenseInputDTO $data */
-            $data = $serializer->deserialize($request->getContent(), ExpenseInputDTO::class, 'json');
+            $data = (new ExpenseInputDTO())->fromObject($jsonData);
         } catch (\Exception $e) {
             return $this->json(['error' => 'JSON invalide : ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
@@ -302,6 +306,38 @@ class ExpenseController extends AbstractController
         } catch (\InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
+
+        if (isset($data->spentAt)) {
+            $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
+        };
+
+        if (isset($data->participants)) {
+            $currentParticipants = $expense->getParticipants();
+            $newParticipants = [];
+
+            foreach ($data->participants as $userDto) {
+                /** @var UserInputDTO $userDto */
+                $user = $this->userRepository->find($userDto->id);
+                if (!$user) {
+                    throw new \Exception("Utilisateur non trouvé.");
+                }
+                $newParticipants[] = $user;
+            }
+
+            foreach ($currentParticipants as $existingUser) {
+                if (!in_array($existingUser, $newParticipants, true)) {
+                    $expense->removeParticipant($existingUser);
+                }
+            }
+
+            foreach ($newParticipants as $user) {
+                $expense->addParticipant($user);
+            }
+        }else $expense->removeAllParticipant();
+
+        $this->validateExpense($expense);
+        $this->em->persist($expense);
+
         $recurringData = $data->recurring ?? null;
         $recurringExpense = $expense->getRecurringExpense();
 
@@ -317,7 +353,7 @@ class ExpenseController extends AbstractController
 
             if ($sameFrequency && $sameRepetition && $sameEndDate) {
                 // 🔁 Si la série est identique, on met à jour toutes les dépenses liées à cette récurrence
-                $expensesToUpdate = $this->em->getRepository(Expense::class)->findBy([
+                $expensesToUpdate = $this->expenseRepository->findBy([
                     'recurringExpense' => $recurringExpense
                 ]);
                 foreach ($expensesToUpdate as $exp) {
@@ -327,7 +363,7 @@ class ExpenseController extends AbstractController
             } else {
                 // ♻️ Sinon, on supprime toutes les anciennes dépenses récurrentes (sauf celle en cours)
                 if ($recurringExpense) {
-                    $expensesToDelete = $this->em->getRepository(Expense::class)->findBy([
+                    $expensesToDelete = $this->expenseRepository->findBy([
                         'recurringExpense' => $recurringExpense
                     ]);
                     foreach ($expensesToDelete as $exp) {
@@ -347,7 +383,7 @@ class ExpenseController extends AbstractController
             }
         } else if ($recurringExpense) {
             // Cas où on enlève la récurrence : suppression des dépenses liées sauf la dépense courante
-            $expensesToDelete = $this->em->getRepository(Expense::class)->findBy([
+            $expensesToDelete = $this->expenseRepository->findBy([
                 'recurringExpense' => $recurringExpense
             ]);
             foreach ($expensesToDelete as $exp) {
@@ -358,35 +394,9 @@ class ExpenseController extends AbstractController
             $expense->setRecurringExpense(null);
             $this->em->remove($recurringExpense);
         }
-        if (isset($data->spentAt)) {
-            $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
-        };
-        if (isset($data->participants)) {
-            $currentParticipants = $expense->getParticipants();
-            $newParticipants = [];
-
-            foreach ($data->participants as $userDto) {
-                $user = $this->userRepository->find($userDto);
-                if (!$user) {
-                    throw new \Exception("Utilisateur ID {$userDto} non trouvé.");
-                }
-                $newParticipants[] = $user;
-            }
-
-            foreach ($currentParticipants as $existingUser) {
-                if (!in_array($existingUser, $newParticipants, true)) {
-                    $expense->removeParticipant($existingUser);
-                }
-            }
-
-            foreach ($newParticipants as $user) {
-                $expense->addParticipant($user);
-            }
-        }
-
+        
         $this->applyDataToExpense($expense, $data, $category, $group, $creator);
         $this->validateExpense($expense);
-        $this->em->persist($expense);
         $this->em->flush();
 
         return $this->json(['message' => 'La dépense a bien été enregistrée', 'expense' => $expense], Response::HTTP_OK);
@@ -401,17 +411,28 @@ class ExpenseController extends AbstractController
         $expense->setCreator($creator);
 
         if (isset($data->participants)) {
-            foreach ($data->participants as $userId) {
-                $user = $this->userRepository->find($userId);
-                if (!$user) {
-                    throw new \Exception("Utilisateur avec l'ID {$userId} non trouvé.");
-                }
+            $currentParticipants = $expense->getParticipants();
+            $newParticipants = [];
 
-                if (!$expense->getParticipants()->contains($user)) {
-                    $expense->addParticipant($user);
+            foreach ($data->participants as $userDto) {
+                /** @var UserInputDTO $userDto */
+                $user = $this->userRepository->find($userDto->id);
+                if (!$user) {
+                    throw new \Exception("Utilisateur non trouvé.");
+                }
+                $newParticipants[] = $user;
+            }
+
+            foreach ($currentParticipants as $existingUser) {
+                if (!in_array($existingUser, $newParticipants, true)) {
+                    $expense->removeParticipant($existingUser);
                 }
             }
-        } else $expense->removeAllParticipant();
+
+            foreach ($newParticipants as $user) {
+                $expense->addParticipant($user);
+            }
+        }else $expense->removeAllParticipant();
     }
 
     private function validateExpense(Expense $expense): void

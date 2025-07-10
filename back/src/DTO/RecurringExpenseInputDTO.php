@@ -15,4 +15,15 @@ class RecurringExpenseInputDTO
 
     #[Assert\NotNull]
     public \DateTimeImmutable $endDate;
+
+    public static function fromObject(\stdClass $object): self
+    {
+        $dto = new self();
+        $dto->repetitionCount = (int) $object->repetitionCount;
+        $dto->frequency = RecurringFrequencyEnum::from($object->frequency);
+        $dto->endDate = new \DateTimeImmutable($object->endDate);
+
+        return $dto;
+    }
+
 }
