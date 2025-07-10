@@ -11,13 +11,13 @@ import type { GroupType } from "~/types/groupType";
 
 // Props
 const props = defineProps<{
-  space_id: GroupType["id"];
+  group_id: GroupType["id"];
   category_id: CategoryType["id"];
 }>();
 
 // Group
 const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: props.space_id }));
+const group = computed(() => groupById({ id: props.group_id }));
 
 // Queries
 const { data: category } = useQuery({
@@ -37,8 +37,8 @@ const { data: expenses } = useQuery({
     :group="group"
     :subHeader="{
       label: category?.label ?? 'error',
-      routeName: 'budget_space',
-      params: { space_id: space_id },
+      routeName: 'budget_group',
+      params: { group_id: group_id },
       color: category?.color,
     }"
     :expensesDate="expenses"

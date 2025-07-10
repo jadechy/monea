@@ -18,9 +18,9 @@ import { useQuery } from "@tanstack/vue-query";
 import Day from "./DayBudget.vue";
 import { useGroupsStore } from "@/stores/groupStore";
 
-const { space_id } = defineProps<{ space_id: GroupType["id"] }>();
+const { group_id } = defineProps<{ group_id: GroupType["id"] }>();
 const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: space_id }));
+const group = computed(() => groupById({ id: group_id }));
 const currentDate = ref<Date | null>(null);
 const currentMonth = ref<Date>(getCurrentMonthStartDate());
 
@@ -28,20 +28,20 @@ const currentMonthFormatted = computed(() => formatDateISO(currentMonth.value));
 
 // Query
 const { data: expenses, refetch: refetchExpenses } = useQuery({
-  queryKey: computed(() => ["expenses", space_id, currentMonth.value]),
-  queryFn: () => getMonthlyExpensesByGroup(space_id, currentMonth.value),
-  enabled: computed(() => !!space_id),
+  queryKey: computed(() => ["expenses", group_id, currentMonth.value]),
+  queryFn: () => getMonthlyExpensesByGroup(group_id, currentMonth.value),
+  enabled: computed(() => !!group_id),
 });
 
 const { data: monthData, refetch: refetchBudget } = useQuery({
   queryKey: computed(() => [
     "budget-remaining-in-day",
-    space_id,
+    group_id,
     currentMonthFormatted.value,
   ]),
   queryFn: () =>
-    fetchBudgetRemainingInMonth(space_id, currentMonthFormatted.value),
-  enabled: computed(() => !!space_id),
+    fetchBudgetRemainingInMonth(group_id, currentMonthFormatted.value),
+  enabled: computed(() => !!group_id),
 });
 
 watch(currentMonth, () => {
@@ -63,7 +63,7 @@ watch(currentMonth, () => {
         "
         v-on:year-change="
           (e: any) => {
-            currentMonth = getFirstDayOfYear(new Date(e.year, e.month - 1))
+            currentMonth = getFirstDayOfYear(new Date(e.year, e.month - 1));
           }
         "
         panel-class="border-none shadow rounded-xl "

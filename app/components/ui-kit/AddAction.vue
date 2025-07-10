@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import router from "@/router"
-  import type { RouteProps } from "./Header/BackComponent.vue"
-  import { Button } from "primevue"
-  defineProps<RouteProps>()
+import { Button } from "primevue";
+import type { RouteProps } from "../Header/BackComponent.vue";
+defineProps<RouteProps>();
+const router = useRouter();
 </script>
 
 <template>

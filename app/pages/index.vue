@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import homepage from "~/assets/homepage.jpg";
 import { getSpaceColor } from "../utils/getColor";
-import TestimonialComponent from "~/components/Homepage/TestimonialComponent.vue";
 
 type Average = {
   icon: string;

@@ -12,20 +12,16 @@ import {
   type NewGroupType,
 } from "@/types/groupType";
 import SubHeader from "@/components/Header/SubHeader.vue";
-import ChoiceColor from "~/components/form/Space/ChoiceColor.vue";
-import CategoriesSelection from "@/components/Space/Form/CategoriesSelection.vue";
-import FormInput from "@/components/InputComponent/FormInput.vue";
-import Members from "@/components/Space/Form/MembersForm.vue";
 import type { NewCategoryType } from "@/types/categoryType";
 import { useGroupsStore } from "@/stores/groupStore";
 import { getSpaceColor } from "@/utils/getColor";
 import { useGroupMutation } from "@/composables/useGroupMutation";
 import { useForm } from "@primevue/forms/useform";
 // Props
-const { space_id } = defineProps<{ space_id?: GroupType["id"] }>();
+const { group_id } = defineProps<{ group_id?: GroupType["id"] }>();
 // Store
 const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: space_id }));
+const group = computed(() => groupById({ id: group_id }));
 
 // Const
 const selectedIndex = ref<number | null>(null);
@@ -92,16 +88,16 @@ const form = useForm({
 
 <template>
   <SubHeader
-    :label="group ? group.name : 'Nouveau space'"
+    :label="group ? group.name : 'Nouveau group'"
     :color="group ? group.color : 'gray'"
-    :routeName="group ? 'space' : 'spaces'"
-    :params="group ? { space_id: group.id } : {}"
+    :routeName="group ? 'group' : 'groups'"
+    :params="group ? { group_id: group.id } : {}"
   />
 
   <Form :form="form" @submit="onFormSubmit" class="flex flex-col gap-10">
     <FormInput
       class="w-full lg:w-3/4"
-      placeholder="Nom du space"
+      placeholder="Nom du group"
       name="name"
       :form="form"
       fluid

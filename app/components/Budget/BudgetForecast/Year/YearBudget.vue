@@ -12,18 +12,18 @@ import { ref } from "vue";
 import { watch } from "vue";
 import ItemYearBudget from "./ItemYearBudget.vue";
 // Props
-const { space_id } = defineProps<{ space_id: GroupType["id"] }>();
+const { group_id } = defineProps<{ group_id: GroupType["id"] }>();
 
 // Const
 const selectedCategory = defineModel<CategoryType>("selectedCategory");
 const year = ref<Date>(new Date());
 
 const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: space_id }));
-const { refetch, months } = useBudget(space_id, year);
+const group = computed(() => groupById({ id: group_id }));
+const { refetch, months } = useBudget(group_id, year);
 const { data: categories } = useQuery({
-  queryKey: ["categories-by-group", space_id],
-  queryFn: () => fetchCategoryByGroup(space_id),
+  queryKey: ["categories-by-group", group_id],
+  queryFn: () => fetchCategoryByGroup(group_id),
 });
 watch(year, (newYear) => {
   if (!newYear) return;

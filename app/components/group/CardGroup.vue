@@ -9,7 +9,7 @@ defineProps<Props>();
 </script>
 <template>
   <router-link
-    :to="{ name: 'spaces-space_id', params: { space_id: group.id } }"
+    :to="{ name: 'groups-group_id', params: { group_id: group.id } }"
     :class="[
       `bg-${group.color}-100`,
       `hover:bg-${group.color}-200`,

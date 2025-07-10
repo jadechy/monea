@@ -5,7 +5,6 @@ import BaseSection from "~/components/ui-kit/BaseSection.vue";
 import RemainingBudget from "~/components/ui-kit/RemainingBudget.vue";
 import SubHeader from "@/components/Header/SubHeader.vue";
 import type { TitleComponentProps } from "@/components/Header/TitleComponent.vue";
-import router from "@/router";
 import { formatDayMonth } from "@/utils/date";
 import { getSpaceColor } from "@/utils/getColor";
 import { Button } from "primevue";
@@ -26,6 +25,7 @@ interface Props {
 
 const props = defineProps<Props>();
 const safeExpensesDate = computed(() => props.expensesDate ?? {});
+const router = useRouter();
 </script>
 
 <template>
@@ -37,7 +37,7 @@ const safeExpensesDate = computed(() => props.expensesDate ?? {});
   />
   <div class="flex flex-col gap-10">
     <div class="flex flex-col gap-2 sm:flex-row justify-between items-center">
-      <RemainingBudget :space_id="group.id" :category="category" />
+      <RemainingBudget :group_id="group.id" :category="category" />
       <div v-if="actionButton">
         <Button
           icon="pi pi-eye"
@@ -47,8 +47,8 @@ const safeExpensesDate = computed(() => props.expensesDate ?? {});
           :class="[getSpaceColor({ color: group?.color })]"
           @click="
             router.push({
-              name: 'budget_space',
-              params: { space_id: group.id },
+              name: 'budget_group',
+              params: { group_id: group.id },
             })
           "
         />
@@ -59,7 +59,7 @@ const safeExpensesDate = computed(() => props.expensesDate ?? {});
           size="small"
           :class="[getSpaceColor({ color: group?.color })]"
           @click="
-            router.push({ name: 'edit_space', params: { space_id: group.id } })
+            router.push({ name: 'edit_group', params: { group_id: group.id } })
           "
         />
       </div>
@@ -87,7 +87,7 @@ const safeExpensesDate = computed(() => props.expensesDate ?? {});
     route-name="new_expense"
     :class="[getSpaceColor({ color: group.color })]"
     :params="{
-      space_id: String(group.id),
+      group_id: String(group.id),
     }"
     :query="{
       ...(category ? { category: category.id } : { category: 0 }),

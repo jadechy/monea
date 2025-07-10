@@ -6,15 +6,15 @@ import { getAllExpensesByGroup } from "~/services/expenseService";
 import type { GroupType } from "~/types/groupType";
 
 // Props
-const { space_id } = defineProps<{ space_id: GroupType["id"] }>();
+const { group_id } = defineProps<{ group_id: GroupType["id"] }>();
 // Group
 const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: space_id }));
+const group = computed(() => groupById({ id: group_id }));
 // Query
 const { data: expenses } = useQuery({
-  queryKey: ["expenses-by-group", space_id],
-  queryFn: () => getAllExpensesByGroup(space_id),
-  enabled: !!space_id,
+  queryKey: ["expenses-by-group", group_id],
+  queryFn: () => getAllExpensesByGroup(group_id),
+  enabled: !!group_id,
 });
 </script>
 
@@ -24,7 +24,7 @@ const { data: expenses } = useQuery({
     :group="group"
     :subHeader="{
       label: group?.name ?? 'error',
-      routeName: 'spaces',
+      routeName: 'groups',
       color: group?.color,
     }"
     action-button

@@ -6,7 +6,6 @@ import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { useAuthStore } from "@/stores/authStore";
 import { useGroupsStore } from "@/stores/groupStore";
 import { storeToRefs } from "pinia";
-import SubHeader from "@/components/Header/SubHeader.vue";
 import { useForm } from "@primevue/forms/useform";
 import { ref } from "vue";
 import { UserEditSchema, type UserEditType } from "~/types/user";

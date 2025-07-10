@@ -1,21 +1,21 @@
 <script setup lang="ts">
-  import { InputText } from "primevue"
-  import type { InputTextProps } from "primevue/inputtext"
-  import WrapperInput from "./WrapperInput.vue"
-  import type { useFormReturn } from "@primevue/forms/useform"
+import { InputText } from "primevue";
+import type { InputTextProps } from "primevue/inputtext";
+import WrapperInput from "./WrapperInput.vue";
+import type { useFormReturn } from "@primevue/forms/useform";
 
-  interface Props {
-    name: InputTextProps["name"]
-    required?: InputTextProps["required"]
-    placeholder?: InputTextProps["placeholder"]
-    disabled?: InputTextProps["disabled"]
-    readonly?: InputTextProps["readonly"]
-    type?: InputTextProps["type"]
-    autocomplete?: InputTextProps["autocomplete"]
-    form: useFormReturn
-  }
+interface Props {
+  name: InputTextProps["name"];
+  required?: InputTextProps["required"];
+  placeholder?: InputTextProps["placeholder"];
+  disabled?: InputTextProps["disabled"];
+  readonly?: InputTextProps["readonly"];
+  type?: InputTextProps["type"];
+  autocomplete?: InputTextProps["autocomplete"];
+  form: useFormReturn;
+}
 
-  defineProps<Props>()
+defineProps<Props>();
 </script>
 
 <template>

@@ -9,7 +9,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { GroupType } from "~/types/groupType";
 import type { NewBudgetType } from "~/types/budgetType";
 const router = useRouter();
-export const useBudget = (space_id: GroupType["id"], year?: Ref<Date>) => {
+export const useBudget = (group_id: GroupType["id"], year?: Ref<Date>) => {
   const queryClient = useQueryClient();
   if (!year) {
     year = ref(getCurrentMonthStartDate());
@@ -31,37 +31,37 @@ export const useBudget = (space_id: GroupType["id"], year?: Ref<Date>) => {
   };
   const { data: remainingBudgetInYear, refetch: refetchRemainingBudgetInYear } =
     useQuery({
-      queryKey: ["budgetRemainingInYear", space_id, year],
+      queryKey: ["budgetRemainingInYear", group_id, year],
       queryFn: () =>
         fetchBudgetRemainingInYear(
-          space_id,
+          group_id,
           formatDateISO(getFirstDayOfYear(year.value))
         ),
-      enabled: !!space_id,
+      enabled: !!group_id,
     });
   const { data: budgetList, refetch: refetchBudget } = useQuery({
-    queryKey: ["budgetCategories", space_id, getFirstDayOfMonth(year.value)],
+    queryKey: ["budgetCategories", group_id, getFirstDayOfMonth(year.value)],
     queryFn: () => {
       return fetchAllBudgetCategoriesByGroup(
-        space_id,
+        group_id,
         getFirstDayOfMonth(year.value)
       );
     },
-    enabled: !!space_id,
+    enabled: !!group_id,
   });
   const { data: remainingBudget } = useQuery({
     queryKey: [
       "budgetRemainingCategories",
-      space_id,
+      group_id,
       getFirstDayOfMonth(year.value),
     ],
     queryFn: () => {
       return fetchAllRemainingBudgetCategoriesByGroup(
-        space_id,
+        group_id,
         getFirstDayOfMonth(year.value)
       );
     },
-    enabled: !!space_id,
+    enabled: !!group_id,
   });
 
   const postBudgetsMutation = useMutation({
@@ -71,25 +71,25 @@ export const useBudget = (space_id: GroupType["id"], year?: Ref<Date>) => {
         queryClient.invalidateQueries({
           queryKey: [
             "budgetRemainingCategories",
-            space_id,
+            group_id,
             getFirstDayOfMonth(year.value),
           ],
         }),
         queryClient.invalidateQueries({
           queryKey: [
             "budgetCategories",
-            space_id,
+            group_id,
             getFirstDayOfMonth(year.value),
           ],
         }),
         queryClient.invalidateQueries({
-          queryKey: ["budget", "initial", Number(space_id)],
+          queryKey: ["budget", "initial", Number(group_id)],
         }),
         queryClient.invalidateQueries({
-          queryKey: ["budget", "remaining", Number(space_id)],
+          queryKey: ["budget", "remaining", Number(group_id)],
         }),
       ]);
-      router.push({ name: "budget_space", params: { space_id: space_id } });
+      router.push({ name: "budget_group", params: { group_id: group_id } });
     },
   });
   const getRemainingStyle = (remaining: number) => {

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import SubHeader from "@/components/Header/SubHeader.vue";
 import { useBudget } from "@/composables/useBudget";
 import { useGroupsStore } from "@/stores/groupStore";
 import { Form, type FormInstance, type FormSubmitEvent } from "@primevue/forms";
@@ -15,17 +14,17 @@ import {
 import type { GroupType } from "~/types/groupType";
 
 // Props
-const { space_id } = defineProps<{ space_id: GroupType["id"] }>();
+const { group_id } = defineProps<{ group_id: GroupType["id"] }>();
 
 // Const
 const year = ref<Date>(new Date());
 const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: space_id }));
+const group = computed(() => groupById({ id: group_id }));
 const formRef = ref<FormInstance | null>(null);
 
 // Queries
 const { refetchBudget, postBudgetsMutation, budgetList } = useBudget(
-  space_id,
+  group_id,
   year
 );
 
@@ -79,9 +78,9 @@ const form = useForm({
   <SubHeader
     label="Edition des Budgets"
     :color="group?.color"
-    routeName="budget_space"
+    routeName="budget_group"
     :params="{
-      space_id: space_id,
+      group_id: group_id,
     }"
   />
   <div class="w-full flex justify-center">
@@ -105,8 +104,8 @@ const form = useForm({
       <div
         v-for="category in group.categories"
         :to="{
-          name: 'category_budget_space',
-          params: { space_id: group?.id, category_id: category.id },
+          name: 'category_budget_group',
+          params: { group_id: group?.id, category_id: category.id },
         }"
         class="flex justify-between items-center rounded-full px-4 py-3"
         :key="category.id"

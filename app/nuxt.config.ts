@@ -27,6 +27,18 @@ export default defineNuxtConfig({
   },
   css: ["primeicons/primeicons.css", "~/assets/css/main.css"],
 
+  components: [
+    { path: "~/components", pathPrefix: false },
+    { path: "~/components/ui-kit", pathPrefix: false },
+    { path: "~/components/group", pathPrefix: false },
+    { path: "~/components/profil", pathPrefix: false },
+    { path: "~/components/layout", pathPrefix: false },
+    { path: "~/components/homepage", pathPrefix: false },
+    { path: "~/components/header", pathPrefix: false },
+    { path: "~/components/form", pathPrefix: false },
+    { path: "~/components/expense", pathPrefix: false },
+    { path: "~/components/budget", pathPrefix: false },
+  ],
   vite: {
     plugins: [tailwindcss()],
   },

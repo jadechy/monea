@@ -62,7 +62,7 @@ describe("ExpenseForm.vue", () => {
 
   it("affiche chargement tant que membres non chargés", async () => {
     const wrapper = mount(FormExpense, {
-      props: { space_id: 123 },
+      props: { group_id: 123 },
     });
     expect(wrapper.text()).toContain("Chargement...");
     await flushPromises();
@@ -70,7 +70,7 @@ describe("ExpenseForm.vue", () => {
 
   it("affiche le formulaire et soumet une création de dépense", async () => {
     const wrapper = mount(FormExpense, {
-      props: { space_id: 123 },
+      props: { group_id: 123 },
       global: {
         stubs: [
           "SubHeader",
@@ -216,7 +216,7 @@ describe("ExpenseForm.vue", () => {
     });
 
     const wrapper = mount(FormExpense, {
-      props: { space_id: 123, id: 99 },
+      props: { group_id: 123, id: 99 },
       global: {
         stubs: [
           "SubHeader",

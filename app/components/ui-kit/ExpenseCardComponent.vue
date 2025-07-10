@@ -1,6 +1,6 @@
 <template>
   <router-link
-    :to="{ name: 'expense', params: { id: expense.id, space_id: groupId } }"
+    :to="{ name: 'expense', params: { id: expense.id, group_id: groupId } }"
     class="flex shadow px-4 py-3 justify-between w-full rounded-3xl hover:bg-gray-50"
   >
     <div>
@@ -24,14 +24,14 @@
 </template>
 
 <script setup lang="ts">
-  import ColoredLabelComponent from "./CategoryLabel.vue"
-  import { Chip } from "primevue"
-  import type { ExpenseSingleValueDateType } from "@/types/expenseType"
-  import type { GroupType } from "@/types/groupType"
-  import default_avatar from "@/assets/default_avatar.svg"
-  export interface ExpenseCardComponentProps {
-    expense: ExpenseSingleValueDateType
-    groupId: GroupType["id"]
-  }
-  defineProps<ExpenseCardComponentProps>()
+import ColoredLabelComponent from "./CategoryLabel.vue";
+import { Chip } from "primevue";
+import type { ExpenseSingleValueDateType } from "@/types/expenseType";
+import type { GroupType } from "@/types/groupType";
+import default_avatar from "@/assets/default_avatar.svg";
+export interface ExpenseCardComponentProps {
+  expense: ExpenseSingleValueDateType;
+  groupId: GroupType["id"];
+}
+defineProps<ExpenseCardComponentProps>();
 </script>

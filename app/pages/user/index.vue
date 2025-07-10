@@ -31,7 +31,7 @@ const router = useRouter();
         class="mr-2"
         size="small"
         :class="[getSpaceColor({ color: personnalGroup?.color })]"
-        @click="router.push({ name: 'budget_space' })"
+        @click="router.push({ name: 'budget_group' })"
       />
       <Button
         icon="pi pi-pencil"

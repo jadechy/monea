@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  interface Props {
-    label: string
-    content: string
-    icon: string
-  }
-  defineProps<Props>()
+interface Props {
+  label: string;
+  content: string;
+  icon: string;
+}
+defineProps<Props>();
 </script>
 <template>
   <div class="shadow rounded-lg p-4">

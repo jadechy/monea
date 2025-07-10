@@ -1,12 +1,12 @@
 <script setup lang="ts">
-  import type { ColorType } from "@/types/color"
+import type { ColorType } from "@/types/color";
 
-  interface Props {
-    label: string
-    stat: string
-    color: ColorType
-  }
-  defineProps<Props>()
+interface Props {
+  label: string;
+  stat: string;
+  color: ColorType;
+}
+defineProps<Props>();
 </script>
 <template>
   <div class="flex flex-col items-center gap-0">

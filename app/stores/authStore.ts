@@ -98,7 +98,7 @@ export const useAuthStore = defineStore("auth", () => {
     }
     saveToStorage();
 
-    router.push({ name: "spaces" });
+    router.push({ name: "groups" });
     const groupStore = useGroupsStore();
     await groupStore.refetch();
   };

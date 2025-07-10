@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import BaseSection from "~/components/ui-kit/BaseSection.vue";
-import { defaultCategories } from "@/data/defaultCategories";
 import ColoredLabelComponent from "~/components/ui-kit/CategoryLabel.vue";
-import { ref } from "vue";
 import type { NewCategoryType } from "@/types/categoryType";
 import CategoryForm from "./CategoryForm.vue";
 const model = defineModel<NewCategoryType[]>({ default: [] });

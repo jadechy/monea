@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Button } from "primevue";
 import { computed } from "vue";
-import ChartLayout from "@/components/Budget/ChartLayout.vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useGroupsStore } from "@/stores/groupStore";
 import { fetchCategoryByGroup } from "@/services/categoryService";
@@ -9,30 +8,30 @@ import { useBudget } from "@/composables/useBudget";
 import type { GroupType } from "~/types/groupType";
 
 const router = useRouter();
-const { space_id } = defineProps<{ space_id: GroupType["id"] }>();
-const { remainingBudget } = useBudget(space_id);
+const { group_id } = defineProps<{ group_id: GroupType["id"] }>();
+const { remainingBudget } = useBudget(group_id);
 const { data: categories } = useQuery({
-  queryKey: ["categories-by-group", space_id],
-  queryFn: () => fetchCategoryByGroup(space_id),
+  queryKey: ["categories-by-group", group_id],
+  queryFn: () => fetchCategoryByGroup(group_id),
 });
 const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: space_id }));
+const group = computed(() => groupById({ id: group_id }));
 </script>
 
 <template>
   <SubHeader
     label="Budget du mois"
     :color="group?.color"
-    routeName="space"
-    :params="{ id: space_id }"
+    routeName="group"
+    :params="{ id: group_id }"
   />
 
   <div class="flex flex-col gap-10" v-if="group">
     <section class="flex justify-between">
       <div class="flex gap-5 w-full">
-        <RemainingBudget :space_id="group.id" />
+        <RemainingBudget :group_id="group.id" />
         <RemainingBudget
-          :space_id="group.id"
+          :group_id="group.id"
           label="Budget initial"
           initialBudget
         />
@@ -45,7 +44,7 @@ const group = computed(() => groupById({ id: space_id }));
         :class="[getSpaceColor({ color: group?.color })]"
         @click="
           router.push({
-            name: 'forecast_budget_space',
+            name: 'forecast_budget_group',
             params: { id: group?.id },
           })
         "
@@ -64,7 +63,7 @@ const group = computed(() => groupById({ id: space_id }));
           :class="[getSpaceColor({ color: group?.color })]"
           @click="
             router.push({
-              name: 'edit_budget_space',
+              name: 'edit_budget_group',
               params: { id: group?.id },
             })
           "
@@ -74,8 +73,8 @@ const group = computed(() => groupById({ id: space_id }));
         <router-link
           v-for="(category, i) in categories"
           :to="{
-            name: 'category_budget_space',
-            params: { space_id: group?.id, category_id: category.id },
+            name: 'category_budget_group',
+            params: { group_id: group?.id, category_id: category.id },
           }"
           class="flex justify-between rounded-full px-4 py-3"
           :key="i"
@@ -102,7 +101,7 @@ const group = computed(() => groupById({ id: space_id }));
     <ChartLayout
       v-if="remainingBudget && remainingBudget.length > 0"
       :budgets="remainingBudget"
-      :group_id="space_id"
+      :group_id="group_id"
     />
   </div>
 </template>

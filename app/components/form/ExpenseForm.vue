@@ -26,17 +26,17 @@ import BaseSection from "../ui-kit/BaseSection.vue";
 import { useForm } from "@primevue/forms/useform";
 // Props
 const {
-  space_id,
+  group_id,
   id,
   category: categoryId,
 } = defineProps<{
-  space_id: GroupType["id"];
+  group_id: GroupType["id"];
   id?: ExpenseType["id"];
   category?: CategoryType["id"];
 }>();
 // Store
 const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: space_id }));
+const group = computed(() => groupById({ id: group_id }));
 const { user } = useAuthStore();
 // Const
 const categories = computed(() => {
@@ -51,11 +51,11 @@ const {
   createExpenseMutation,
   updateExpenseMutation,
   deleteExpenseMutation,
-} = useExpenseMutation(space_id, id);
+} = useExpenseMutation(group_id, id);
 const { data: members } = useQuery({
-  queryKey: ["members-by-group", space_id],
-  queryFn: () => getMembersByGroup(space_id),
-  enabled: !!space_id,
+  queryKey: ["members-by-group", group_id],
+  queryFn: () => getMembersByGroup(group_id),
+  enabled: !!group_id,
 });
 type FormattedMembers = {
   label: string;
@@ -180,8 +180,8 @@ defineExpose({
   <SubHeader
     :label="expense ? expense.title : 'Nouveau expense'"
     :color="group?.color"
-    :routeName="expense ? 'expense' : 'space'"
-    :params="expense ? { id: expense.id, space_id } : { space_id }"
+    :routeName="expense ? 'expense' : 'group'"
+    :params="expense ? { id: expense.id, group_id } : { group_id }"
   />
   <div
     v-if="!initialValues || !formattedMembers"

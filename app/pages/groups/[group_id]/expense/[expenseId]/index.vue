@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import SubHeader from "@/components/Header/SubHeader.vue";
 import { computed } from "vue";
 import { Button, Chip } from "primevue";
 import { getExpenseById } from "@/services/expenseService";
@@ -12,12 +11,12 @@ import type { GroupType } from "~/types/groupType";
 // Props
 const props = defineProps<{
   id: ExpenseType["id"];
-  space_id: GroupType["id"];
+  group_id: GroupType["id"];
 }>();
 const router = useRouter();
 // Group
 const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: props.space_id }));
+const group = computed(() => groupById({ id: props.group_id }));
 
 // Query
 const { data: expense } = useQuery({
@@ -31,7 +30,7 @@ const { data: expense } = useQuery({
     v-if="group"
     :label="expense?.title ?? 'error'"
     :color="group.color"
-    routeName="space"
+    routeName="group"
     :params="{ id: group.id }"
   />
   <div class="flex flex-col items-center gap-10" v-if="expense && group">
@@ -71,7 +70,7 @@ const { data: expense } = useQuery({
         @click="
           router.push({
             name: 'edit_expense',
-            params: { id: expense.id, space_id: space_id },
+            params: { id: expense.id, group_id: group_id },
           })
         "
       />
