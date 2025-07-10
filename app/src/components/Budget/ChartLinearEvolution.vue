@@ -6,6 +6,7 @@
   import type { GroupType } from "@/types/groupType"
   import { useQuery } from "@tanstack/vue-query"
   import { useGroupsStore } from "@/stores/groupStore"
+  import type { ChartData } from "chart.js"
 
   // Props
   const { group_id } = defineProps<{ group_id: GroupType["id"] }>()
@@ -23,8 +24,8 @@
   })
 
   // Chart
-  const chartData = ref<{ labels: string[]; datasets: any[] }>({
-    labels,
+  const chartData = ref<ChartData<"line", number[], string>>({
+    labels: [],
     datasets: [],
   })
 

@@ -20,6 +20,7 @@
   import { useGroupsStore } from "@/stores/groupStore"
   import { getSpaceColor } from "@/utils/getColor"
   import { useGroupMutation } from "@/composables/useGroupMutation"
+  import { useForm } from "@primevue/forms/useform"
   // Props
   const { space_id } = defineProps<{ space_id?: GroupType["id"] }>()
   // Store
@@ -67,6 +68,17 @@
   const onDelete = () => {
     deleteGroupMutation.mutate()
   }
+
+  const form = useForm({
+    initialValues:
+      group.value && group.value
+        ? {
+            name: group.value.name ?? "",
+            type: group.value.type,
+          }
+        : {},
+    resolver: zodResolver(NewGroupSchema),
+  })
 </script>
 
 <template>
@@ -77,21 +89,12 @@
     :params="group ? { space_id: group.id } : {}"
   />
 
-  <Form
-    v-slot="$form"
-    :initialValues="{
-      name: group?.name ?? '',
-      type: group?.type,
-    }"
-    :resolver="zodResolver(NewGroupSchema)"
-    @submit="onFormSubmit"
-    class="flex flex-col gap-10"
-  >
+  <Form :form="form" @submit="onFormSubmit" class="flex flex-col gap-10">
     <FormInput
       class="w-full lg:w-3/4"
       placeholder="Nom du space"
       name="name"
-      :form="$form"
+      :form="form"
       fluid
       v-if="group?.type !== 'personnal'"
     />

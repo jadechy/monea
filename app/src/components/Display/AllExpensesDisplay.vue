@@ -57,16 +57,22 @@
         />
       </div>
     </div>
-    <BaseSection
-      v-if="Object.keys(safeExpensesDate).length > 0"
-      v-for="([date, expenses], index) in Object.entries(safeExpensesDate)"
-      :label="formatDayMonth(new Date(date))"
-      :key="index"
-    >
-      <div class="grid gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-        <ExpenseCardComponent v-for="expense in expenses" :key="expense.id" :expense="expense" />
-      </div>
-    </BaseSection>
+    <template v-if="Object.keys(safeExpensesDate).length > 0">
+      <BaseSection
+        v-for="([date, expenses], index) in Object.entries(safeExpensesDate)"
+        :label="formatDayMonth(new Date(date))"
+        :key="index"
+      >
+        <div class="grid gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+          <ExpenseCardComponent
+            :group-id="group.id"
+            v-for="expense in expenses"
+            :key="expense.id"
+            :expense="expense"
+          />
+        </div>
+      </BaseSection>
+    </template>
     <p v-else>Créer votre première dépense !</p>
   </div>
   <AddAction

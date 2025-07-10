@@ -1,11 +1,11 @@
 <script setup lang="ts">
   import { getColor } from "@/utils/getColor"
   import type { DatePickerDateSlotOptions } from "primevue"
-  import type { ExpenseType } from "@/types/expenseType"
+  import type { ExpenseValueDateType } from "@/types/expenseType"
   import type { ColorType } from "@/types/color"
   defineProps<{
     date: DatePickerDateSlotOptions
-    expensesInDay?: ExpenseType[]
+    expensesInDay?: ExpenseValueDateType
     color: ColorType
   }>()
 </script>

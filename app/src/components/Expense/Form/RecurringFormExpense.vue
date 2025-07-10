@@ -1,25 +1,19 @@
 <script setup lang="ts">
-  import BaseSection from "@/components/BaseSection.vue"
   import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
   import { FrequencyEnum, type RecurringExpenseType } from "@/types/recurringExpenseType"
-  import type { FormFieldState } from "@primevue/forms"
+  import type { useFormReturn } from "@primevue/forms/useform"
   import { Card, DatePicker, InputNumber, Select } from "primevue"
   import { ref } from "vue"
   const { recurringExpense, form } = defineProps<{
-    form: {
-      register: (field: string, options: any) => any
-      reset: () => void
-      valid: boolean
-    } & {
-      [key: string]: FormFieldState
-    }
+    form: useFormReturn
     recurringExpense?: RecurringExpenseType | null
   }>()
   const isActif = ref(recurringExpense !== undefined)
+  const { repetitionCount, frequency, endDate, spentAt } = form.states
   const deleteRecurring = () => {
-    form.repetitionCount.value = null
-    form.frequency.value = null
-    form.endDate.value = null
+    repetitionCount.value = null
+    frequency.value = null
+    endDate.value = null
     isActif.value = false
   }
 </script>
@@ -57,7 +51,7 @@
             showIcon
             iconDisplay="input"
             fluid
-            :min-date="form.spentAt ? new Date(form.spentAt.value) : undefined"
+            :min-date="spentAt ? new Date(spentAt.value) : undefined"
             dateFormat="dd/mm/yy"
           />
         </WrapperInput>

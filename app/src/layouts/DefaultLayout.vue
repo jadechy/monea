@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import Header from "@/components/Header/Header.vue"
+  import Header from "@/components/Header/HeaderComponent.vue"
   import Loading from "@/components/Loading.vue"
   import { useGroupsStore } from "@/stores/groupStore"
   import { storeToRefs } from "pinia"

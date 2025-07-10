@@ -2,7 +2,7 @@
   import { InputText } from "primevue"
   import type { InputTextProps } from "primevue/inputtext"
   import WrapperInput from "./WrapperInput.vue"
-  import type { FormFieldState } from "@primevue/forms"
+  import type { useFormReturn } from "@primevue/forms/useform"
 
   interface Props {
     name: InputTextProps["name"]
@@ -12,16 +12,10 @@
     readonly?: InputTextProps["readonly"]
     type?: InputTextProps["type"]
     autocomplete?: InputTextProps["autocomplete"]
-    form: {
-      register: (field: string, options: any) => any
-      reset: () => void
-      valid: boolean
-    } & {
-      [key: string]: FormFieldState
-    }
+    form: useFormReturn
   }
 
-  const props = defineProps<Props>()
+  defineProps<Props>()
 </script>
 
 <template>

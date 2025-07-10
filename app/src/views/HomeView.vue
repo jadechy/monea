@@ -2,7 +2,7 @@
   import router from "@/router"
   import homepage from "../assets/homepage.jpg"
   import { Button } from "primevue"
-  import Testimonial from "@/components/Homepage/Testimonial.vue"
+  import Testimonial from "@/components/Homepage/TestimonialComponent.vue"
   import { getSpaceColor } from "@/utils/getColor"
 
   type Average = {

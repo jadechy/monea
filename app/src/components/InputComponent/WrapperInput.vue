@@ -1,18 +1,12 @@
 <script lang="ts" setup>
-  import type { FormFieldState } from "@primevue/forms"
   import type { InputTextProps } from "primevue/inputtext"
   import { FloatLabel, Message } from "primevue"
+  import type { useFormReturn } from "@primevue/forms/useform"
 
   interface Props {
     name: InputTextProps["name"]
     placeholder?: InputTextProps["placeholder"]
-    form: {
-      register: (field: string, options: any) => any
-      reset: () => void
-      valid: boolean
-    } & {
-      [key: string]: FormFieldState
-    }
+    form: useFormReturn
   }
   defineProps<Props>()
 </script>
@@ -22,8 +16,8 @@
       <slot />
       <label :for="name" class="font-normal text-gray-400">{{ placeholder }}</label>
     </FloatLabel>
-    <Message v-if="name && form[name]?.invalid" severity="error" size="small">
-      {{ form[name].error?.message }}
+    <Message v-if="name && form.states[name]?.invalid" severity="error" size="small">
+      {{ form.states[name].error?.message }}
     </Message>
   </div>
 </template>

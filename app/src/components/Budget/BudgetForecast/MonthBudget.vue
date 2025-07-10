@@ -15,7 +15,7 @@
   import { getMonthlyExpensesByGroup } from "@/services/expenseService"
   import { truncateToTenth } from "@/utils/number"
   import { useQuery } from "@tanstack/vue-query"
-  import Day from "./Day.vue"
+  import Day from "./DayBudget.vue"
   import { useGroupsStore } from "@/stores/groupStore"
 
   const { space_id } = defineProps<{ space_id: GroupType["id"] }>()
@@ -25,7 +25,7 @@
   const currentMonth = ref<Date>(getCurrentMonthStartDate())
 
   const currentMonthFormatted = computed(() => formatDateISO(currentMonth.value))
-  console.log(group)
+
   // Query
   const { data: expenses, refetch: refetchExpenses } = useQuery({
     queryKey: computed(() => ["expenses", space_id, currentMonth.value]),
@@ -88,13 +88,14 @@
 
       <BaseSection
         :label="formatDayMonth(currentDate)"
-        v-if="currentDate && expenses && expenses[formatDateISO(currentDate)]"
+        v-if="group && currentDate && expenses && expenses[formatDateISO(currentDate)]"
       >
         <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           <PaiementCardComponent
             v-for="expense in expenses[formatDateISO(currentDate)]"
             :key="expense.id"
             :expense="expense"
+            :group-id="group?.id"
           />
         </div>
       </BaseSection>
