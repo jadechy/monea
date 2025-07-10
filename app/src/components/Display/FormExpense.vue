@@ -3,7 +3,7 @@
   import { Button, DatePicker, InputNumber, Listbox, Select } from "primevue"
   import { getSpaceColor } from "@/utils/getColor"
   import type { GroupType } from "@/types/groupType"
-  import { computed, onMounted, ref, watchEffect } from "vue"
+  import { computed, ref, watchEffect, type ComputedRef } from "vue"
   import { Form, type FormSubmitEvent } from "@primevue/forms"
   import { NewExpenseSchema, type ExpenseType, type NewExpenseType } from "@/types/expenseType"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
@@ -46,7 +46,11 @@
     queryFn: () => getMembersByGroup(space_id),
     enabled: !!space_id,
   })
-  const formattedMembers = computed(() =>
+  type FormattedMembers = {
+    label: string
+    value: number
+  }
+  const formattedMembers: ComputedRef<FormattedMembers[] | undefined> = computed(() =>
     members.value?.map((member) => ({
       label: member.user.username,
       value: member.user.id,
@@ -62,7 +66,6 @@
   // Form
   const initialValues = ref()
   watchEffect(() => {
-    // Attendez que les données nécessaires soient disponibles
     if (!members.value || !formattedMembers.value) return
 
     if (expense?.value) {
@@ -115,8 +118,9 @@
       spentAt: convertToLocalDate(spentAt.value),
       groupId: group.value.id,
       authorId: author.value.id,
-      participants: participants.value.value,
+      participants: participants.value.map((participant: FormattedMembers) => participant.value),
     }
+    console.log(data)
     if (category && category.value) {
       data["categoryId"] = category.value.id
     }
