@@ -57,6 +57,7 @@ class GroupeController extends AbstractController
     {
         $jsonData = json_decode($request->getContent(), false);
         try {
+            /** @var \stdClass $jsonData */
             $data = (new GroupInputDTO())->fromObject($jsonData);
         } catch (\InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
@@ -120,6 +121,7 @@ class GroupeController extends AbstractController
     {
         $jsonData = json_decode($request->getContent(), false);
         try {
+            /** @var \stdClass $jsonData */
             $data = (new GroupInputDTO())->fromObject($jsonData);
         } catch (\InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
@@ -131,6 +133,10 @@ class GroupeController extends AbstractController
         }
 
         $membre = $this->memberRepository->findOneBy(['groupe' => $group->getId(), 'individual' => $user->getId()]);
+        if(!$membre){
+            return $this->json(['error' => 'Membre introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
         if ($membre->getRole() !== MemberRoleEnum::AUTHOR && $membre->getRole() !== MemberRoleEnum::ADMIN) {
             throw $this->createAccessDeniedException('Vous ne pouvez modifier que vos groupes');
         }

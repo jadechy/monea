@@ -98,7 +98,8 @@ class ExpenseRepository extends ServiceEntityRepository
             ->setParameter('endDate', $endDate);
 
         /** @var Expense[] $results */
-        return $qb->getQuery()->getResult();
+        $results = $qb->getQuery()->getResult();
+        return $results;
     }
 
     /**
