@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use App\DTO\GroupeDTO;
 use App\DTO\GroupInputDTO;
+use App\DTO\MemberDTO;
 use App\Entity\Budget;
 use App\Entity\Category;
 use App\Entity\Groupe;
@@ -233,7 +234,7 @@ class GroupeController extends AbstractController
             return new JsonResponse(['error' => 'Vous n\'êtes pas un membre du groupe.'], Response::HTTP_NOT_FOUND);
         }
 
-        if($member->getRole() !== MemberRoleEnum::AUTHOR){
+        if ($member->getRole() !== MemberRoleEnum::AUTHOR) {
             throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
         }
 
@@ -241,5 +242,30 @@ class GroupeController extends AbstractController
         $this->em->flush();
 
         return new JsonResponse(['message' => 'Groupe supprimé avec succès']);
+    }
+    public function membersByGroup(int $id): JsonResponse
+    {
+        /** @var Groupe */
+        $group = $this->groupeRepository->find($id);
+        if (!$group) {
+            return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $members = $group->getMembers();
+        $membersDTO = [];
+        foreach ($members as $member) {
+            $memberDTO = new MemberDTO($member);
+            $role = $memberDTO->role->value;
+            $status = $memberDTO->status->value;
+            if ($status === 'accepted' && ($role === 'author' || $role === 'member' || $role === 'admin'))
+                $membersDTO[] = $memberDTO;
+        }
+
+        return $this->json(
+            $membersDTO,
+            Response::HTTP_OK,
+            [],
+            ['groups' => ['member:read', 'user:read']]
+        );
     }
 }

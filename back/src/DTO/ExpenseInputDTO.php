@@ -2,6 +2,7 @@
 
 namespace App\DTO;
 
+use App\Repository\UserRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class ExpenseInputDTO
@@ -26,7 +27,7 @@ class ExpenseInputDTO
 
     public ?RecurringExpenseInputDTO $recurring = null;
 
-    /** @var UserInputDTO[] */
+    /** @var int[] */
     public array $participants = [];
 
 
@@ -40,13 +41,7 @@ class ExpenseInputDTO
         $dto->categoryId = $object->categoryId ?? null;
         $dto->spentAt = $object->spentAt ?? null;
         $dto->recurring = $object->recurring ?? null;
-        
-        if (isset($object->participants) && is_array($object->participants)) {
-            $dto->participants = array_map(
-                fn($participant) => UserInputDTO::fromObject($participant),
-                $object->participants
-            );
-        }
+        $dto->participants = $object->participants ?? null;
 
         return $dto;
     }

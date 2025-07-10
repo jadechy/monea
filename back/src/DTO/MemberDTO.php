@@ -7,18 +7,19 @@ use App\Enum\MemberRoleEnum;
 use App\Enum\MemberStatusEnum;
 use DateTimeImmutable;
 use Symfony\Component\Serializer\Annotation\Groups;
+
 class MemberDTO
 {
-    #[Groups(['groupe:read'])]
+    #[Groups(['groupe:read', 'member:read'])]
     public UserDTO $user;
 
-    #[Groups(['groupe:read'])]
+    #[Groups(['groupe:read', 'member:read'])]
     public MemberRoleEnum $role;
 
-    #[Groups(['groupe:read'])]
+    #[Groups(['groupe:read', 'member:read'])]
     public DateTimeImmutable $addOn;
 
-    #[Groups(['groupe:read'])]
+    #[Groups(['groupe:read', 'member:read'])]
     public MemberStatusEnum $status;
 
     public function __construct(Member $member)

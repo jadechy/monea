@@ -10,15 +10,15 @@ class UserDTO
 {
 
     #[Assert\NotBlank]
-    #[Groups(['user:write', 'expense:read', 'groupe:read'])]
+    #[Groups(['user:write', 'expense:read', 'groupe:read', 'user:read'])]
     public int $id;
 
     #[Assert\NotBlank]
-    #[Groups(['user:write', 'expense:read', 'groupe:read', 'array_expense:read'])]
+    #[Groups(['user:write', 'expense:read', 'groupe:read', 'array_expense:read', 'user:read'])]
     public ?string $picture = null;
 
     #[Assert\NotBlank]
-    #[Groups(['user:write', 'expense:read', 'groupe:read', 'array_expense:read'])]
+    #[Groups(['user:write', 'expense:read', 'groupe:read', 'array_expense:read', 'user:read'])]
     public string $username;
 
     #[Assert\NotBlank]

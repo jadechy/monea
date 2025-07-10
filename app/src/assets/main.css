@@ -32,3 +32,21 @@
     border-width: 1.5px !important;
   }
 }
+
+.p-listbox-option {
+  @apply rounded-full shadow hover:bg-gray-200 transition;
+  &.p-listbox-option-selected {
+    @apply bg-gray-800 text-white transition;
+  }
+}
+
+.p-listbox {
+  box-shadow: none;
+  border: none;
+}
+.p-listbox-list-container {
+  overflow: visible;
+}
+.p-listbox-list {
+  @apply gap-3.5;
+}

@@ -1,20 +1,24 @@
 <script setup lang="ts">
   import SubHeader from "@/components/Header/SubHeader.vue"
-  import { Button, DatePicker, InputNumber, Select } from "primevue"
+  import { Button, DatePicker, InputNumber, Listbox, Select } from "primevue"
   import { getSpaceColor } from "@/utils/getColor"
   import type { GroupType } from "@/types/groupType"
-  import { computed } from "vue"
+  import { computed, onMounted, ref, watchEffect } from "vue"
   import { Form, type FormSubmitEvent } from "@primevue/forms"
   import { NewExpenseSchema, type ExpenseType, type NewExpenseType } from "@/types/expenseType"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
   import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
   import FormInput from "@/components/InputComponent/FormInput.vue"
   import { useAuthStore } from "@/stores/authStore"
-  import { convertToLocalDate, formatDateISO } from "@/utils/date"
+  import { convertToLocalDate } from "@/utils/date"
   import { useExpenseMutation } from "@/composables/useExpenseMutation"
   import { useGroupsStore } from "@/stores/groupStore"
   import Recurring from "../Expense/Form/Recurring.vue"
   import type { CategoryType } from "@/types/categoryType"
+  import { useQuery } from "@tanstack/vue-query"
+  import { getMembersByGroup } from "@/services/memberService"
+  import type { UserType } from "@/types/user"
+  import BaseSection from "../BaseSection.vue"
   // Props
   const {
     space_id,
@@ -37,42 +41,81 @@
   // Mutation
   const { expense, createExpenseMutation, updateExpenseMutation, deleteExpenseMutation } =
     useExpenseMutation(space_id, id)
+  const { data: members } = useQuery({
+    queryKey: ["members-by-group", space_id],
+    queryFn: () => getMembersByGroup(space_id),
+    enabled: !!space_id,
+  })
+  const formattedMembers = computed(() =>
+    members.value?.map((member) => ({
+      label: member.user.username,
+      value: member.user.id,
+    })),
+  )
+  const getInitialAuthor = (userAuthorId: UserType["id"]) => {
+    return computed(
+      () =>
+        userAuthorId &&
+        formattedMembers.value?.filter((member) => member.value === userAuthorId)[0],
+    )
+  }
   // Form
-  const initialValues = computed(() => {
+  const initialValues = ref()
+  watchEffect(() => {
+    // Attendez que les données nécessaires soient disponibles
+    if (!members.value || !formattedMembers.value) return
+
     if (expense?.value) {
       const e = expense.value
-      return {
+      initialValues.value = {
         title: e.title,
         amount: e.amount,
         spentAt: new Date(e.spentAt),
-        author: e.creator.id,
+        author: getInitialAuthor(e.creator.id).value,
         category: e.category.label !== "default" ? e.category : null,
         frequency: e.recurring?.frequency ?? null,
         repetitionCount: e.recurring?.repetitionCount ?? null,
         endDate: e.recurring?.endDate ?? null,
+        participants:
+          e.participants
+            ?.map((p) => formattedMembers.value?.find((m) => m.value === p.id))
+            .filter(Boolean) || [],
       }
-    } else
-      return {
+    } else {
+      initialValues.value = {
         title: "",
         amount: null,
         spentAt: new Date(),
-        author: user?.id,
+        author: user && getInitialAuthor(user?.id).value,
         category: categories.value?.find((category) => category.id === Number(categoryId)),
         frequency: null,
         repetitionCount: null,
         endDate: null,
+        participants: [],
       }
+    }
   })
+
   const onFormSubmit = (form: FormSubmitEvent) => {
     if (!form.valid || !group.value) return
-    const { title, amount, spentAt, author, category, frequency, repetitionCount, endDate } =
-      form.states
+    const {
+      title,
+      amount,
+      spentAt,
+      author,
+      category,
+      frequency,
+      repetitionCount,
+      endDate,
+      participants,
+    } = form.states
     const data: NewExpenseType = {
       title: title.value,
       amount: amount.value,
       spentAt: convertToLocalDate(spentAt.value),
       groupId: group.value.id,
       authorId: author.value.id,
+      participants: participants.value.value,
     }
     if (category && category.value) {
       data["categoryId"] = category.value.id
@@ -106,14 +149,19 @@
     :routeName="expense ? 'expense' : 'space'"
     :params="expense ? { id: expense.id, space_id } : { space_id }"
   />
+  <div v-if="!initialValues || !formattedMembers" class="flex justify-center p-8">
+    <p>Chargement...</p>
+  </div>
 
   <Form
+    v-else
     v-slot="$form"
     :initialValues="initialValues"
     :resolver="zodResolver(NewExpenseSchema)"
     @submit="onFormSubmit"
     class="flex flex-col items-center gap-10 lg:w-2/3 mx-auto"
   >
+    {{ $form }}
     <WrapperInput
       name="category"
       :form="$form"
@@ -141,8 +189,8 @@
       <WrapperInput :form="$form" name="author" placeholder="Auteur">
         <Select
           name="author"
-          :options="[user]"
-          optionLabel="name"
+          :options="formattedMembers"
+          optionLabel="label"
           :labelClass="['capitalize']"
           class="w-2/3"
         />
@@ -151,6 +199,17 @@
         <DatePicker name="spentAt" showIcon iconDisplay="input" dateFormat="dd/mm/yy" />
       </WrapperInput>
     </div>
+    <BaseSection label="Participants" class="w-full">
+      <Listbox
+        name="participants"
+        :options="formattedMembers"
+        multiple
+        optionLabel="label"
+        class="w-full"
+        fluid
+      />
+    </BaseSection>
+
     <Recurring
       :form="$form"
       :recurringExpense="expense?.recurring"

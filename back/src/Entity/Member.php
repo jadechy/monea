@@ -52,14 +52,14 @@ use App\DTO\MemberInputDTO;
         deserialize: false,
         read: false,
         normalizationContext: ['groups' => ['member:read']]
-    )
+    ),
 ])]
 #[ORM\Entity(repositoryClass: MemberRepository::class)]
 #[ORM\Table(name: 'MON_MEMBER')]
 class Member
 {
     #[ORM\Column(length: 20, name: 'MBR_ROLE', enumType: MemberRoleEnum::class, nullable: false)]
-    #[Groups(['groupe:read', 'member:read', 'user:read', 'member:write'])]
+    #[Groups(['member:read', 'user:read', 'member:write'])]
     private MemberRoleEnum $role = MemberRoleEnum::MEMBER;
 
     #[ORM\Column(name: 'MBR_ADD_ON', nullable: false)]
@@ -67,19 +67,19 @@ class Member
     private \DateTimeImmutable $addOn;
 
     #[ORM\Column(name: 'MBR_STATUS', enumType: MemberStatusEnum::class)]
-    #[Groups(['groupe:read', 'member:read', 'user:read', 'member:write'])]
+    #[Groups(['member:read', 'user:read', 'member:write'])]
     private MemberStatusEnum $status;
 
     #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'members')]
     #[ORM\JoinColumn(name: 'GRP_ID', referencedColumnName: 'GRP_ID', nullable: false)]
-    #[Groups(['groupe:read', 'member:read', 'user:read', 'member:write'])]
+    #[Groups(['member:read', 'user:read', 'member:write'])]
     private Groupe $groupe;
 
     #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'members')]
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
-    #[Groups(['groupe:read', 'member:read', 'user:read', 'member:write'])]
+    #[Groups(['member:read', 'user:read', 'member:write'])]
     private User $individual;
 
     public function getRole(): MemberRoleEnum
