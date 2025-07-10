@@ -361,19 +361,29 @@ class ExpenseController extends AbstractController
         if (isset($data->spentAt)) {
             $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
         }
-        if (isset($data->participants)) {
+        if (isset($data->participants)){
+            $currentParticipants = $expense->getParticipants();
+            $newParticipants = [];
+
             foreach ($data->participants as $userDto) {
                 $user = $this->userRepository->find($userDto->id);
-
                 if (!$user) {
-                    throw new \Exception("Utilisateur avec l'ID {$userDto->id} non trouvé.");
+                    throw new \Exception("Utilisateur ID {$userDto->id} non trouvé.");
                 }
+                $newParticipants[] = $user;
+            }
 
-                if (!$expense->getParticipants()->contains($user)) {
-                    $expense->addParticipant($user);
+            foreach ($currentParticipants as $existingUser) {
+                if (!in_array($existingUser, $newParticipants, true)) {
+                    $expense->removeParticipant($existingUser);
                 }
             }
+
+            foreach ($newParticipants as $user) {
+                $expense->addParticipant($user);
+            }
         }
+        
         $this->applyDataToExpense($expense, $data, $category, $group, $creator);
         $this->validateExpense($expense);
         $this->em->persist($expense);
