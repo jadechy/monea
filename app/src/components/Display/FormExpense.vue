@@ -122,7 +122,6 @@
       authorId: author.value.id,
       participants: participants.value.map((participant: FormattedMembers) => participant.value),
     }
-    console.log(data)
     if (category && category.value) {
       data["categoryId"] = category.value.id
     }

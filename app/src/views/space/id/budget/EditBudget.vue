@@ -2,7 +2,7 @@
   import SubHeader from "@/components/Header/SubHeader.vue"
   import WrapperInput from "@/components/InputComponent/WrapperInput.vue"
   import Loading from "@/components/LoadingComponent.vue"
-  import { useBudget } from "@/composables/BudgetForecast/useBudget"
+  import { useBudget } from "@/composables/useBudget"
   import { useGroupsStore } from "@/stores/groupStore"
   import { NewBudgetSchemaResolver, type NewBudgetType } from "@/types/budgetType"
   import type { GroupType } from "@/types/groupType"
@@ -10,6 +10,7 @@
   import { getSpaceColor } from "@/utils/getColor"
   import { Form, type FormInstance, type FormSubmitEvent } from "@primevue/forms"
   import { zodResolver } from "@primevue/forms/resolvers/zod"
+  import { useForm } from "@primevue/forms/useform"
   import { Button, DatePicker, InputText } from "primevue"
   import { computed, ref } from "vue"
   import { watch } from "vue"
@@ -63,6 +64,10 @@
   }
 
   const initialValues = computed(() => computeInitialValues())
+  const form = useForm({
+    initialValues: initialValues.value,
+    resolver: zodResolver(NewBudgetSchemaResolver),
+  })
 </script>
 
 <template>
@@ -87,10 +92,8 @@
   <Form
     v-if="budgetList && group?.categories"
     ref="formRef"
-    :initialValues="initialValues"
-    v-slot="$form"
+    :form="form"
     @submit="onFormSubmit"
-    :resolver="zodResolver(NewBudgetSchemaResolver)"
     class="flex justify-center flex-col items-center gap-10"
   >
     <section class="grid gap-2 grid-cols-2 md:grid-cols-3 mt-6 w-full">
@@ -106,7 +109,7 @@
       >
         <p>{{ category.label !== "default" ? category.label : "Autres" }}</p>
         <div class="flex items-center gap-2">
-          <WrapperInput :form="$form" :name="String(category.id)" placeholder="Budget" class="w-24">
+          <WrapperInput :form="form" :name="String(category.id)" placeholder="Budget" class="w-24">
             <InputText :name="String(category.id)" fluid />
           </WrapperInput>
           <p class="text-2xl">€</p>

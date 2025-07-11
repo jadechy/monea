@@ -71,7 +71,7 @@ export const UserSchema = z.object({
     z.date({ message: "La date de création doit être une date valide" }),
   ),
 
-  picture: z.string().optional(),
+  picture: z.string().nullable(),
 
   resetToken: z.string().nullable(),
 
@@ -86,16 +86,6 @@ export const UserEditSchema = UserSchema.pick({
   picture: true,
   birthday: true,
 })
-// .extend({
-//   birthday: z
-//     .string({
-//       message: "La date de naissance est requise",
-//       invalid_type_error: "La date de naissance doit être une date valide",
-//     })
-//     .refine(isAdult, {
-//       message: "Vous devez avoir au moins 18 ans",
-//     }),
-// })
 
 export const UserDTOSchema = UserSchema.pick({
   id: true,

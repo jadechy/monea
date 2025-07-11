@@ -11,7 +11,7 @@
   import type { GroupType } from "@/types/groupType"
   import { DatePicker } from "primevue"
   import { ref, computed, watch } from "vue"
-  import { fetchBudgetRemainingInDay } from "@/services/budgetService"
+  import { fetchBudgetRemainingInMonth } from "@/services/budgetService"
   import { getMonthlyExpensesByGroup } from "@/services/expenseService"
   import { truncateToTenth } from "@/utils/number"
   import { useQuery } from "@tanstack/vue-query"
@@ -35,7 +35,7 @@
 
   const { data: monthData, refetch: refetchBudget } = useQuery({
     queryKey: computed(() => ["budget-remaining-in-day", space_id, currentMonthFormatted.value]),
-    queryFn: () => fetchBudgetRemainingInDay(space_id, currentMonthFormatted.value),
+    queryFn: () => fetchBudgetRemainingInMonth(space_id, currentMonthFormatted.value),
     enabled: computed(() => !!space_id),
   })
 
@@ -72,20 +72,6 @@
           />
         </template>
       </DatePicker>
-      <div class="flex flex-col gap-2 sm:flex-row justify-between items-center" v-if="currentDate">
-        <div class="item block lg:flex w-fit lg:w-1/4 rounded-lg">
-          <p>Budget restant à date</p>
-          <p class="font-bold" v-if="monthData">
-            {{
-              monthData[formatDateISO(currentDate)]
-                ? truncateToTenth(monthData[formatDateISO(currentDate)].remaining)
-                : 0
-            }}€
-          </p>
-        </div>
-        <!-- <RemainingBudget label="Budget restant à date" :space_id="group.id" /> -->
-      </div>
-
       <BaseSection
         :label="formatDayMonth(currentDate)"
         v-if="group && currentDate && expenses && expenses[formatDateISO(currentDate)]"

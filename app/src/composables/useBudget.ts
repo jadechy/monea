@@ -1,12 +1,12 @@
 import {
   fetchAllBudgetCategoriesByGroup,
   fetchAllRemainingBudgetCategoriesByGroup,
-  fetchBudgetRemainingInMonth,
+  fetchBudgetRemainingInYear,
   postBudgets,
-  type BudgetRemainingByMonthType,
+  type BudgetRemainingValueType,
 } from "@/services/budgetService"
 import type { GroupType } from "@/types/groupType"
-import { computed, ref, type Ref } from "vue"
+import { ref, type Ref } from "vue"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query"
 import type { NewBudgetType } from "@/types/budgetType"
 import {
@@ -23,7 +23,7 @@ export const useBudget = (space_id: GroupType["id"], year?: Ref<Date>) => {
     year = ref(getCurrentMonthStartDate())
   }
 
-  const monthLabels: Record<string, string> = {
+  const months: Record<string, string> = {
     "01": "Janvier",
     "02": "Février",
     "03": "Mars",
@@ -37,10 +37,10 @@ export const useBudget = (space_id: GroupType["id"], year?: Ref<Date>) => {
     "11": "Novembre",
     "12": "Décembre",
   }
-  const query = useQuery({
-    queryKey: ["budgetByMonth", space_id, year],
+  const { data: remainingBudgetInYear, refetch: refetchRemainingBudgetInYear } = useQuery({
+    queryKey: ["budgetRemainingInYear", space_id, year],
     queryFn: () =>
-      fetchBudgetRemainingInMonth(space_id, formatDateISO(getFirstDayOfYear(year.value))),
+      fetchBudgetRemainingInYear(space_id, formatDateISO(getFirstDayOfYear(year.value))),
     enabled: !!space_id,
   })
   const { data: budgetList, refetch: refetchBudget } = useQuery({
@@ -56,17 +56,6 @@ export const useBudget = (space_id: GroupType["id"], year?: Ref<Date>) => {
       return fetchAllRemainingBudgetCategoriesByGroup(space_id, getFirstDayOfMonth(year.value))
     },
     enabled: !!space_id,
-  })
-  const yearData = computed(() => {
-    const data = query.data.value
-    if (!data) return {}
-
-    const result: Record<string, BudgetRemainingByMonthType[string]> = {}
-    for (const [monthNumber, label] of Object.entries(monthLabels)) {
-      const key = `${year.value}-${monthNumber}`
-      result[label] = data[key] ?? { remaining: 0, categories: [] }
-    }
-    return result
   })
 
   const postBudgetsMutation = useMutation({
@@ -89,14 +78,19 @@ export const useBudget = (space_id: GroupType["id"], year?: Ref<Date>) => {
       router.push({ name: "budget_space", params: { space_id: space_id } })
     },
   })
-
+  const getRemainingStyle = (remaining: number) => {
+    if (remaining === 0) return "text-dark-700"
+    if (remaining > 0) return "text-green-700"
+    return "text-red-700"
+  }
   return {
-    yearData,
-    refetch: query.refetch,
-    monthLabels,
+    refetch: refetchRemainingBudgetInYear,
+    months,
     postBudgetsMutation,
     remainingBudget,
     budgetList,
     refetchBudget,
+    remainingBudgetInYear,
+    getRemainingStyle,
   }
 }
