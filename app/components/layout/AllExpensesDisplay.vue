@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import AddAction from "~/components/ui-kit/AddAction.vue";
-import type { RouteProps } from "@/components/header-temp/BackComponent.vue";
+import type { RouteProps } from "@/components/header/BackComponent.vue";
 import BaseSection from "~/components/ui-kit/BaseSection.vue";
 import RemainingBudget from "~/components/ui-kit/RemainingBudget.vue";
-import SubHeader from "@/components/header-temp/SubHeader.vue";
-import type { TitleComponentProps } from "@/components/header-temp/TitleComponent.vue";
+import SubHeader from "@/components/header/SubHeader.vue";
+import type { TitleComponentProps } from "@/components/header/TitleComponent.vue";
 import { formatDayMonth } from "@/utils/date";
 import { getSpaceColor } from "@/utils/getColor";
 import { Button } from "primevue";
