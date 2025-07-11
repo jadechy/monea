@@ -19,7 +19,7 @@ const { data: expenses } = useQuery({
 </script>
 
 <template>
-  <AllExpensesLayout
+  <AllExpensesDisplay
     v-if="group"
     :group="group"
     :subHeader="{

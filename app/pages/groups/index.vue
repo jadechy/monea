@@ -2,8 +2,8 @@
 
 <template>
   <div class="mt-5">
-    <PersonalSpace />
-    <AllSpace />
+    <PersonalGroup />
+    <AllGroups />
   </div>
   <AddAction route-name="new_group" />
 </template>

@@ -34,7 +34,7 @@ export default defineNuxtConfig({
     { path: "~/components/profil", pathPrefix: false },
     { path: "~/components/layout", pathPrefix: false },
     { path: "~/components/homepage", pathPrefix: false },
-    { path: "~/components/header", pathPrefix: false },
+    { path: "~/components/header-temp", pathPrefix: false },
     { path: "~/components/form", pathPrefix: false },
     { path: "~/components/expense", pathPrefix: false },
     { path: "~/components/budget", pathPrefix: false },

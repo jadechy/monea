@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { RouteProps } from "./BackComponent.vue";
-import TitleComponent from "./TitleComponent.vue";
+import type { TitleComponentProps } from "./TitleComponent.vue";
+
 defineProps<TitleComponentProps & RouteProps>();
 </script>
 
