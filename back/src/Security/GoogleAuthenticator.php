@@ -2,18 +2,7 @@
 
 namespace App\Security;
 
-use App\Entity\RefreshToken;
-use App\Enum\UserRoleEnum;
-
-use App\Entity\User;
-use App\Repository\UserRepository;
-use App\Service\UserSetupService;
 use Doctrine\ORM\EntityManagerInterface;
-use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
-use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
-use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
-use League\OAuth2\Client\Provider\GoogleUser;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +14,18 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
+use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
+use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
+use League\OAuth2\Client\Provider\GoogleUser;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+
+use App\Entity\User;
+use App\Entity\RefreshToken;
+use App\Enum\UserRoleEnum;
+use App\Repository\UserRepository;
+use App\Service\UserSetupService;
 
 class GoogleAuthenticator extends OAuth2Authenticator
 {

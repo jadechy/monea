@@ -22,15 +22,15 @@ class GroupeRepository extends ServiceEntityRepository
      */
     public function findGroupesByUser(int $userId): array
     {
-        $qb = $this->createQueryBuilder('g')
+        /** @var Groupe[] */
+        return $this->createQueryBuilder('g')
             ->leftJoin('g.members', 'm')
             ->leftJoin('m.individual', 'i')
             ->where('i.id = :userId')
             ->andWhere('m.status = :status')
             ->setParameter('status', MemberStatusEnum::ACCEPTED->value)
-            ->setParameter('userId', $userId);
-        /** @var Groupe[] $result */
-        $result = $qb->getQuery()->getResult();
-        return $result;
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getResult();
     }
 }
