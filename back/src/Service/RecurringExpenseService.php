@@ -2,12 +2,13 @@
 
 namespace App\Service;
 
-use App\DTO\ExpenseInputDTO;
-use App\Entity\Expense;
-use App\Entity\RecurringExpense;
 use App\Exception\RecurringExpenseValidationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+use App\DTO\ExpenseInputDTO;
+use App\Entity\Expense;
+use App\Entity\RecurringExpense;
 
 class RecurringExpenseService
 {
@@ -28,9 +29,9 @@ class RecurringExpenseService
             throw new \InvalidArgumentException('Champs de récurrence manquants');
         };
         $recurring = new RecurringExpense();
-        $recurring->setFrequency($data->recurring->frequency);
-        $recurring->setRepetitionCount($data->recurring->repetitionCount);
-        $recurring->setEndDate($data->recurring->endDate);
+        $recurring->setFrequency($data->recurring->frequency)
+            ->setRepetitionCount($data->recurring->repetitionCount)
+            ->setEndDate($data->recurring->endDate);
         $dates = $this->dateGenerator->generate(
             $baseExpense->getSpentAt(),
             $recurring->getFrequency(),
