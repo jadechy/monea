@@ -19,14 +19,12 @@ const remaining = computed(() =>
   selectedCategoryRef.value
     ? (remainingBudgetInYear?.value?.[yearString.value]?.categories.find(
         (category) => category.id === selectedCategoryRef.value?.id
-      )?.remaining ?? { amount: 0 })
-    : (remainingBudgetInYear?.value?.[yearString.value]?.remaining ?? {
-        amount: 0,
-      })
+      )?.remaining ?? 0)
+    : (remainingBudgetInYear?.value?.[yearString.value]?.remaining.amount ?? 0)
 );
 </script>
 
 <template>
   {{ month[1] }}
-  <p :class="getRemainingStyle(remaining.amount)">{{ remaining.amount }} €</p>
+  <p :class="getRemainingStyle(remaining)">{{ remaining }} €</p>
 </template>

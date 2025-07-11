@@ -1,25 +1,28 @@
-import { ref, type Ref } from "vue";
+import { ref, type Ref, computed } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { NewBudgetType } from "~/types/budgetType";
 import { useBudgetService } from "./services/budgetService";
-export const useBudget = (year?: Ref<Date>) => {
+
+export const useBudget = (year?: Ref<Date | null>) => {
   const router = useRouter();
   const route = useRoute();
-  const { group_id, category_id, expense_id } = route.params as {
+  const { group_id } = route.params as {
     group_id: string;
-    category_id?: string;
-    expense_id?: string;
   };
   const queryClient = useQueryClient();
+
+  // Assurer qu'on a toujours une valeur de date
   if (!year) {
     year = ref(getCurrentMonthStartDate());
   }
+
   const {
     fetchBudgetRemainingInYear,
     fetchAllBudgetCategoriesByGroup,
     fetchAllRemainingBudgetCategoriesByGroup,
     postBudgets,
   } = useBudgetService();
+
   const months: Record<string, string> = {
     "01": "Janvier",
     "02": "Février",
@@ -34,45 +37,49 @@ export const useBudget = (year?: Ref<Date>) => {
     "11": "Novembre",
     "12": "Décembre",
   };
+
+  const currentYearDate = computed(() => {
+    return year?.value ? getFirstDayOfYear(year.value) : new Date();
+  });
+
+  const currentMonthDate = computed(() =>
+    year?.value ? getFirstDayOfMonth(year.value) : new Date()
+  );
+
   const { data: remainingBudgetInYear, refetch: refetchRemainingBudgetInYear } =
     useQuery({
       queryKey: ["budgetRemainingInYear", group_id, year],
       queryFn: () =>
         fetchBudgetRemainingInYear(
           group_id,
-          formatDateISO(getFirstDayOfYear(year.value))
+          formatDateISO(currentYearDate.value)
         ),
-      enabled: !!group_id,
+      enabled: computed(() => !!group_id && !!year?.value),
     });
+
   const { data: budgetList, refetch: refetchBudget } = useQuery({
-    queryKey: ["budgetCategories", group_id, getFirstDayOfMonth(year.value)],
+    queryKey: ["budgetCategories", group_id, currentMonthDate],
     queryFn: () => {
-      return fetchAllBudgetCategoriesByGroup(
-        group_id,
-        getFirstDayOfMonth(year.value)
-      );
+      return fetchAllBudgetCategoriesByGroup(group_id, currentMonthDate.value);
     },
-    enabled: !!group_id,
+    enabled: computed(() => !!group_id && !!year?.value),
   });
-  const { data: remainingBudget } = useQuery({
-    queryKey: [
-      "budgetRemainingCategories",
-      group_id,
-      getFirstDayOfMonth(year.value),
-    ],
-    queryFn: () => {
-      console.log("lla");
-      return fetchAllRemainingBudgetCategoriesByGroup(
+
+  const { data: remainingBudgetCategories } = useQuery({
+    queryKey: ["budgetRemainingCategories", group_id, currentMonthDate],
+    queryFn: () =>
+      fetchAllRemainingBudgetCategoriesByGroup(
         group_id,
-        getFirstDayOfMonth(year.value)
-      );
-    },
-    enabled: !!group_id,
+        currentMonthDate.value
+      ),
+    enabled: computed(() => !!group_id && !!year?.value),
   });
 
   const postBudgetsMutation = useMutation({
     mutationFn: (data: NewBudgetType) => postBudgets(data),
     onSuccess: async () => {
+      if (!year?.value) return;
+
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: [
@@ -95,9 +102,10 @@ export const useBudget = (year?: Ref<Date>) => {
           queryKey: ["budget", "remaining", Number(group_id)],
         }),
       ]);
-      router.push({ name: "budget_group", params: { group_id: group_id } });
+      router.push(`/groups/${group_id}/budget`);
     },
   });
+
   const getRemainingStyle = (remaining: number) => {
     if (remaining === 0) return "text-dark-700";
     if (remaining > 0) return "text-green-700";
@@ -108,7 +116,7 @@ export const useBudget = (year?: Ref<Date>) => {
     refetch: refetchRemainingBudgetInYear,
     months,
     postBudgetsMutation,
-    remainingBudget,
+    remainingBudget: remainingBudgetCategories,
     budgetList,
     refetchBudget,
     remainingBudgetInYear,

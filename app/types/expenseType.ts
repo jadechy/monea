@@ -1,9 +1,12 @@
-import { z } from "zod"
-import { UserDTOSchema, UserSchema } from "./user"
-import { GroupSchema } from "./groupType"
-import { CategorySchema } from "./categoryType"
-import { NewRecurringExpenseSchema, RecurringExpenseSchema } from "./recurringExpenseType"
-import { dateSchema, DateSchema } from "./date"
+import { z } from "zod";
+import { UserDTOSchema, UserSchema } from "./user";
+import { GroupSchema } from "./groupType";
+import { CategorySchema } from "./categoryType";
+import {
+  NewRecurringExpenseSchema,
+  RecurringExpenseSchema,
+} from "./recurringExpenseType";
+import { dateSchema, DateSchema } from "./date";
 
 export const ExpenseSchema = z.object({
   id: z.number({
@@ -30,13 +33,14 @@ export const ExpenseSchema = z.object({
   recurring: RecurringExpenseSchema.nullable(),
   participants: z
     .array(UserDTOSchema, {
-      invalid_type_error: "Les participants doivent être une liste d'utilisateurs",
+      invalid_type_error:
+        "Les participants doivent être une liste d'utilisateurs",
     })
     .optional(),
-})
+});
 
 export const NewExpenseSchema = z.object({
-  categoryId: CategorySchema.shape.id.optional(),
+  categoryId: z.number().optional(),
   title: ExpenseSchema.shape.title,
   amount: ExpenseSchema.shape.amount,
   spentAt: z.date(),
@@ -44,20 +48,22 @@ export const NewExpenseSchema = z.object({
   groupId: GroupSchema.shape.id,
   recurring: NewRecurringExpenseSchema.nullable().optional(),
   participants: z.array(UserSchema.shape.id),
-})
+});
 const ExpenseSingleValueDateSchema = ExpenseSchema.pick({
   amount: true,
   id: true,
   title: true,
   category: true,
-}).extend({ creator: UserDTOSchema.pick({ picture: true, username: true }) })
+}).extend({ creator: UserDTOSchema.pick({ picture: true, username: true }) });
 const ExpenseValueDateSchema = z.array(ExpenseSingleValueDateSchema, {
   invalid_type_error: "Les dépenses doivent être une liste",
-})
-export const ExpenseDateSchema = z.record(DateSchema, ExpenseValueDateSchema)
+});
+export const ExpenseDateSchema = z.record(DateSchema, ExpenseValueDateSchema);
 
-export type ExpenseType = z.infer<typeof ExpenseSchema>
-export type ExpenseDateType = z.infer<typeof ExpenseDateSchema>
-export type NewExpenseType = z.infer<typeof NewExpenseSchema>
-export type ExpenseValueDateType = z.infer<typeof ExpenseValueDateSchema>
-export type ExpenseSingleValueDateType = z.infer<typeof ExpenseSingleValueDateSchema>
+export type ExpenseType = z.infer<typeof ExpenseSchema>;
+export type ExpenseDateType = z.infer<typeof ExpenseDateSchema>;
+export type NewExpenseType = z.infer<typeof NewExpenseSchema>;
+export type ExpenseValueDateType = z.infer<typeof ExpenseValueDateSchema>;
+export type ExpenseSingleValueDateType = z.infer<
+  typeof ExpenseSingleValueDateSchema
+>;

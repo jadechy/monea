@@ -3,7 +3,6 @@ import { useAuthStore } from "@/stores/authStore";
 import { Button, Password } from "primevue";
 import { Form, type FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
-import { useForm } from "@primevue/forms/useform";
 import { LoginRequestSchema } from "~/types/authType";
 import WrapperInput from "~/components/ui-kit/input/WrapperInput.vue";
 import GoogleComponent from "~/components/ui-kit/GoogleComponent.vue";
@@ -17,17 +16,13 @@ const submitLogin = async (form: FormSubmitEvent) => {
     password: form.states.password.value,
   });
 };
-
-const form = useForm({
-  resolver: zodResolver(LoginRequestSchema),
-});
 </script>
 
 <template>
   <h2 class="text-center text-4xl mb-14">Connexion</h2>
 
   <Form
-    :form="form"
+    v-slot="$form"
     @submit="submitLogin"
     :resolver="zodResolver(LoginRequestSchema)"
     class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
@@ -38,11 +33,11 @@ const form = useForm({
     <FormInput
       name="pseudonym"
       placeholder="Ton pseudo"
-      :form="form"
+      :form="$form"
       autocomplete="username"
     />
     <div class="w-full">
-      <WrapperInput :form="form" name="password" placeholder="Mot de passe">
+      <WrapperInput :form="$form" name="password" placeholder="Mot de passe">
         <Password
           fluid
           name="password"

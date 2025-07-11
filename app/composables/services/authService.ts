@@ -11,7 +11,6 @@ import {
 
 export const useAuthService = () => {
   const { $api } = useNuxtApp();
-  console.log($api);
   return {
     login: ({ username, password }: LoginRequestType) =>
       $api.post({

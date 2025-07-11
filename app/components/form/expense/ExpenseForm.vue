@@ -10,7 +10,6 @@ import { convertToLocalDate } from "@/utils/date";
 import { useExpenseMutation } from "@/composables/useExpenseMutation";
 import { useGroupsStore } from "@/stores/groupStore";
 import type { UserType } from "@/types/user";
-import { useForm } from "@primevue/forms/useform";
 // Props
 
 const route = useRoute();
@@ -59,7 +58,6 @@ const getInitialAuthor = (userAuthorId: UserType["id"]) => {
   );
 };
 // Form
-
 const initialValues = ref();
 watchEffect(() => {
   if (!members.value || !formattedMembers.value) return;
@@ -113,15 +111,15 @@ const onFormSubmit = (form: FormSubmitEvent) => {
   const data: NewExpenseType = {
     title: title.value,
     amount: amount.value,
-    spentAt: convertToLocalDate(spentAt.value),
+    spentAt: convertToLocalDate(new Date(spentAt.value)),
     groupId: group.value.id,
-    authorId: author.value.id,
-    participants: participants.value.map(
+    authorId: author.value.value,
+    participants: participants.value?.map(
       (participant: FormattedMembers) => participant.value
     ),
   };
   if (category && category.value) {
-    data["categoryId"] = category.value.id;
+    data["categoryId"] = Number(category.value.id);
   }
   if (
     frequency &&
@@ -145,16 +143,6 @@ const onDelete = () => {
   if (!expense_id) return;
   deleteExpenseMutation.mutate();
 };
-const form = useForm({
-  initialValues: initialValues.value,
-  resolver: zodResolver(NewExpenseSchema),
-});
-defineExpose({
-  form,
-  onFormSubmit,
-  createExpenseMutation,
-  deleteExpenseMutation,
-});
 const baseRoute = `/groups/${group_id}`;
 </script>
 
@@ -162,7 +150,7 @@ const baseRoute = `/groups/${group_id}`;
   <SubHeader
     :label="expense ? expense.title : 'Nouveau expense'"
     :color="group?.color"
-    :to="expense ? `${baseRoute}/expense` : baseRoute"
+    :to="expense ? `${baseRoute}/expense/${expense_id}` : baseRoute"
   />
   <div
     v-if="!initialValues || !formattedMembers"
@@ -171,15 +159,18 @@ const baseRoute = `/groups/${group_id}`;
     <p>Chargement...</p>
   </div>
 
+  <!-- :form="$form"  -->
   <Form
     v-else
-    :form="form"
+    v-slot="$form"
+    :initialValues="initialValues"
+    :resolver="zodResolver(NewExpenseSchema)"
     @submit="onFormSubmit"
     class="flex flex-col items-center gap-10 lg:w-2/3 mx-auto"
   >
     <WrapperInput
       name="category"
-      :form="form"
+      :form="$form"
       placeholder="Catégorie"
       v-if="categories && categories.length > 0"
     >
@@ -190,21 +181,21 @@ const baseRoute = `/groups/${group_id}`;
         class="w-full md:w-56"
         :labelClass="[
           'capitalize',
-          `text-${form.states.category?.value?.color ?? 'gray'}-600`,
+          `text-${$form.category?.value?.color ?? 'gray'}-600`,
         ]"
       />
     </WrapperInput>
 
-    <FormInput name="title" placeholder="Nom" :form="form" />
+    <FormInput name="title" placeholder="Nom" :form="$form" />
     <div class="flex gap-4 w-full items-end">
-      <WrapperInput :form="form" name="amount" placeholder="Prix">
+      <WrapperInput :form="$form" name="amount" placeholder="Prix">
         <InputNumber class="w-full" name="amount" />
       </WrapperInput>
       <p class="text-3xl font-black mb-1">€</p>
     </div>
 
     <div class="flex justify-between w-full gap-4">
-      <WrapperInput :form="form" name="author" placeholder="Auteur">
+      <WrapperInput :form="$form" name="author" placeholder="Auteur">
         <Select
           name="author"
           :options="formattedMembers"
@@ -213,7 +204,7 @@ const baseRoute = `/groups/${group_id}`;
           class="w-2/3"
         />
       </WrapperInput>
-      <WrapperInput name="spentAt" :form="form" placeholder="jj/mm/yyyy">
+      <WrapperInput name="spentAt" :form="$form" placeholder="jj/mm/yyyy">
         <DatePicker
           name="spentAt"
           showIcon
@@ -233,8 +224,8 @@ const baseRoute = `/groups/${group_id}`;
       />
     </BaseSection>
 
-    <Recurring
-      :form="form"
+    <RecurringExpenseFormComponent
+      :form="$form"
       :recurringExpense="expense?.recurring"
       v-if="group?.type === 'daily'"
     />

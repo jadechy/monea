@@ -3,7 +3,6 @@ import { useBudget } from "~/composables/useBudgetMutation";
 import { useGroupsStore } from "@/stores/groupStore";
 import { Form, type FormInstance, type FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
-import { useForm } from "@primevue/forms/useform";
 import { Button, DatePicker, InputText } from "primevue";
 import { computed, ref } from "vue";
 import { watch } from "vue";
@@ -18,17 +17,20 @@ const { group_id } = route.params as {
   group_id: string;
 };
 // Const
-const year = ref<Date>(new Date());
+const year = ref<Date | null>(null);
+onMounted(() => {
+  year.value = new Date();
+});
 const { groupById } = useGroupsStore();
 const group = computed(() => groupById({ id: group_id }));
 const formRef = ref<FormInstance | null>(null);
-
+const { categories } = useCategoryMutation();
 // Queries
 const { refetchBudget, postBudgetsMutation, budgetList } = useBudget(year);
 
 const computeInitialValues = () => {
-  if (!budgetList.value || !group.value?.categories) return {};
-  return group.value.categories.reduce(
+  if (!budgetList.value || !categories.value) return {};
+  return categories.value.reduce(
     (acc, current) => {
       acc[current.id] =
         budgetList.value.find(
@@ -41,7 +43,7 @@ const computeInitialValues = () => {
 };
 
 watch(year, async () => {
-  if (!group.value) return;
+  if (!categories.value) return;
   await refetchBudget();
   if (formRef.value) {
     const newValues = computeInitialValues();
@@ -50,26 +52,22 @@ watch(year, async () => {
 });
 
 const onFormSubmit = (form: FormSubmitEvent) => {
-  if (!form.valid || !group.value) return;
+  if (!form.valid || !categories.value || !year.value) return;
   const budgets: NewBudgetType["budgets"] = Object.entries(form.states).map(
     (e) => ({
       amount: Number(e[1] && e[1]?.value ? e[1].value : 0),
-      monthStart: formatDateISO(getFirstDayOfMonth(year.value)),
+      monthStart: formatDateISO(getFirstDayOfMonth(year.value!)),
       categoryId: Number(e[0]),
     })
   );
   const data: NewBudgetType = {
-    groupId: group.value.id,
+    groupId: Number(group_id),
     budgets: budgets,
   };
   postBudgetsMutation.mutate(data);
 };
 
 const initialValues = computed(() => computeInitialValues());
-const form = useForm({
-  initialValues: initialValues.value,
-  resolver: zodResolver(NewBudgetSchemaResolver),
-});
 </script>
 
 <template>
@@ -87,21 +85,18 @@ const form = useForm({
       input-class="text-center"
     />
   </div>
-
   <Form
-    v-if="budgetList && group?.categories"
+    v-if="budgetList && categories"
     ref="formRef"
-    :form="form"
+    v-slot="$form"
+    :initialValues="initialValues"
+    :resolver="zodResolver(NewBudgetSchemaResolver)"
     @submit="onFormSubmit"
     class="flex justify-center flex-col items-center gap-10"
   >
     <section class="grid gap-2 grid-cols-2 md:grid-cols-3 mt-6 w-full">
       <div
-        v-for="category in group.categories"
-        :to="{
-          name: 'category_budget_group',
-          params: { group_id: group?.id, category_id: category.id },
-        }"
+        v-for="category in categories"
         class="flex justify-between items-center rounded-full px-4 py-3"
         :key="category.id"
         :class="`bg-${category.color}-50 text-${category.color}-800`"
@@ -109,7 +104,7 @@ const form = useForm({
         <p>{{ category.label !== "default" ? category.label : "Autres" }}</p>
         <div class="flex items-center gap-2">
           <WrapperInput
-            :form="form"
+            :form="$form"
             :name="String(category.id)"
             placeholder="Budget"
             class="w-24"
@@ -127,5 +122,5 @@ const form = useForm({
       label="Sauvergarde les budgets"
     />
   </Form>
-  <Loading v-else />
+  <LoadingComponent v-else />
 </template>

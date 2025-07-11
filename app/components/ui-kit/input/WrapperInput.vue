@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import type { InputTextProps } from "primevue/inputtext";
 import { FloatLabel, Message } from "primevue";
-import type { useFormReturn } from "@primevue/forms/useform";
+import type { FormState } from "~/types/formType";
 
 interface Props {
   name: InputTextProps["name"];
   placeholder?: InputTextProps["placeholder"];
-  form: useFormReturn;
+  form: FormState;
 }
 defineProps<Props>();
 </script>
@@ -18,12 +18,8 @@ defineProps<Props>();
         placeholder
       }}</label>
     </FloatLabel>
-    <Message
-      v-if="name && form.states[name]?.invalid"
-      severity="error"
-      size="small"
-    >
-      {{ form.states[name].error?.message }}
+    <Message v-if="name && form[name]?.invalid" severity="error" size="small">
+      {{ form[name].error?.message }}
     </Message>
   </div>
 </template>

@@ -5,7 +5,7 @@ import { useGroupService } from "~/composables/services/groupService";
 
 export const useGroupsStore = defineStore("groups", () => {
   const { getGroupByUser } = useGroupService();
-  const { data, refetch, isLoading } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ["groups-by-user"],
     queryFn: async () => {
       return await getGroupByUser();
@@ -35,7 +35,6 @@ export const useGroupsStore = defineStore("groups", () => {
     // Getters
     groupsCount,
     groupById,
-    isLoading,
 
     // Actions
     refetch,

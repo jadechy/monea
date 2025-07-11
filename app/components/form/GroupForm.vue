@@ -14,7 +14,6 @@ import type { NewCategoryType } from "@/types/categoryType";
 import { useGroupsStore } from "@/stores/groupStore";
 import { getGroupColor as getGroupColor } from "@/utils/getColor";
 import { useGroupMutation } from "@/composables/useGroupMutation";
-import { useForm } from "@primevue/forms/useform";
 // Props
 
 const route = useRoute();
@@ -73,32 +72,31 @@ const onFormSubmit = (form: FormSubmitEvent) => {
 const onDelete = () => {
   deleteGroupMutation.mutate();
 };
-
-const form = useForm({
-  initialValues:
-    group.value && group.value
-      ? {
-          name: group.value.name ?? "",
-          type: group.value.type,
-        }
-      : {},
-  resolver: zodResolver(NewGroupSchema),
-});
+const initialValues =
+  group.value && group.value
+    ? { name: group.value.name ?? "", type: group.value.type }
+    : {};
 </script>
 
 <template>
   <SubHeader
     :label="group ? group.name : 'Nouveau group'"
     :color="group ? group.color : 'gray'"
-    :to="group ? `group/${group.id}` : '/groups'"
+    :to="group ? `/groups/${group.id}` : '/groups'"
   />
 
-  <Form :form="form" @submit="onFormSubmit" class="flex flex-col gap-10">
+  <Form
+    v-slot="$form"
+    @submit="onFormSubmit"
+    :initialValues="initialValues"
+    :resolver="zodResolver(NewGroupSchema)"
+    class="flex flex-col gap-10"
+  >
     <FormInput
       class="w-full lg:w-3/4"
       placeholder="Nom du group"
       name="name"
-      :form="form"
+      :form="$form"
       fluid
       v-if="group?.type !== 'personnal'"
     />

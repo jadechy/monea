@@ -8,10 +8,8 @@ import {
   getFirstDayOfMonth,
   getFirstDayOfYear,
 } from "@/utils/date";
-import type { GroupType } from "@/types/groupType";
 import { DatePicker } from "primevue";
 import { ref, computed, watch } from "vue";
-import { truncateToTenth } from "@/utils/number";
 import { useQuery } from "@tanstack/vue-query";
 import Day from "./DayBudget.vue";
 import { useGroupsStore } from "@/stores/groupStore";

@@ -13,10 +13,10 @@ const group = computed(() => groupById({ id: group_id }));
   <SubHeader
     label="Récap budgets"
     :color="group?.color"
-    :to="`groups/${group_id}/budget/forecast`"
+    :to="`/groups/${group_id}/budget`"
   />
   <div class="flex flex-col gap-10">
-    <Year :group_id="group_id" />
-    <Month :group_id="group_id" />
+    <YearBudget :group_id="group_id" />
+    <MonthBudget :group_id="group_id" />
   </div>
 </template>

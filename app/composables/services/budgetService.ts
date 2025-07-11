@@ -1,6 +1,7 @@
 import {
   AmountSchema,
   BudgetByCategorySchema,
+  type AmountType,
   type BudgetByCategoryType,
   type BudgetType,
   type NewBudgetType,
@@ -11,9 +12,9 @@ import { formatDateISO } from "~/utils/date";
 import { z } from "zod";
 
 const BudgetRemainingValueSchema = z.object({
-  remaining: AmountSchema,
+  remaining: z.number(),
   categories: CategorySchema.extend({
-    remaining: AmountSchema,
+    remaining: z.number(),
   }).array(),
 });
 
@@ -35,11 +36,11 @@ export const useBudgetService = () => {
   const fetchBudgetGroupDateRemaining = (
     group_id: string,
     month: BudgetType["monthStart"]
-  ): Promise<z.infer<typeof AmountSchema>> =>
+  ): Promise<AmountType> =>
     $api.get({
       url: `budget/${group_id}/${formatDateISO(new Date(month))}/remaining`,
       schema: AmountSchema,
-    }) as Promise<z.infer<typeof AmountSchema>>;
+    });
 
   const fetchBudgetCategoryDateRemaining = (
     category_id: string,

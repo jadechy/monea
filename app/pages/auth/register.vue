@@ -9,10 +9,9 @@ import {
 } from "primevue";
 import { Form, type FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
-import { registerAuth } from "~/composables/services/authService";
+import { useAuthService } from "~/composables/services/authService";
 import { useMutation } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
-import { useForm } from "@primevue/forms/useform";
 import { ref } from "vue";
 import {
   RegisterRequestSchema,
@@ -25,9 +24,9 @@ import GoogleComponent from "~/components/ui-kit/GoogleComponent.vue";
 const route = useRoute();
 const router = useRouter();
 const fileupload = ref();
-
+const { register } = useAuthService();
 const registerMutation = useMutation({
-  mutationFn: (data: FormData) => registerAuth(data),
+  mutationFn: (data: FormData) => register(data),
   onSuccess: () => {
     router.push({ name: "auth-confirm" });
   },
@@ -59,24 +58,22 @@ const submitRegister = async (form: FormSubmitEvent) => {
   });
   registerMutation.mutate(formData);
 };
-const form = useForm({
-  resolver: zodResolver(RegisterRequestSchema),
-});
 </script>
 
 <template>
   <h2 class="text-center text-4xl mb-14">Inscription</h2>
   <Form
-    :form="form"
+    v-slot="$form"
+    :resolver="zodResolver(RegisterRequestSchema)"
     @submit="submitRegister"
     class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
   >
     <div class="flex justify-center">
       <GoogleComponent />
     </div>
-    <FormInput name="lastname" placeholder="Nom" :form="form" />
-    <FormInput name="name" placeholder="Prénom" :form="form" />
-    <WrapperInput name="birthday" placeholder="Date de naissance" :form="form">
+    <FormInput name="lastname" placeholder="Nom" :form="$form" />
+    <FormInput name="name" placeholder="Prénom" :form="$form" />
+    <WrapperInput name="birthday" placeholder="Date de naissance" :form="$form">
       <DatePicker
         dateFormat="dd/mm/yy"
         showIcon
@@ -91,13 +88,13 @@ const form = useForm({
       name="email"
       placeholder="Email"
       type="email"
-      :form="form"
+      :form="$form"
       autocomplete="email"
     />
     <FormInput
       name="username"
       placeholder="Pseudonyme"
-      :form="form"
+      :form="$form"
       autocomplete="username"
     />
     <FileUpload
@@ -107,7 +104,7 @@ const form = useForm({
       accept="image/*"
       :maxFileSize="1000000"
     />
-    <WrapperInput name="password" placeholder="Mot de passe" :form="form">
+    <WrapperInput name="password" placeholder="Mot de passe" :form="$form">
       <Password
         placeholder="Mot de passe"
         name="password"
@@ -131,7 +128,7 @@ const form = useForm({
     </WrapperInput>
 
     <WrapperInput
-      :form="form"
+      :form="$form"
       name="confirmPassword"
       placeholder="Confirmation mot de passe"
     >
@@ -150,9 +147,9 @@ const form = useForm({
         severity="error"
         size="small"
         v-if="
-          form.states.confirmPassword?.value &&
-          form.states.password?.value &&
-          form.states.confirmPassword.value !== form.states.password.value
+          $form.confirmPassword?.value &&
+          $form.password?.value &&
+          $form.confirmPassword.value !== $form.password.value
         "
       >
         Les mots de passe ne correspondent pas

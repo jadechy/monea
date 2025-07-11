@@ -36,7 +36,7 @@ export const useExpenseMutation = () => {
   const { data: expense } = useQuery({
     queryKey: ["expense-by-id", expense_id],
     queryFn: () => getExpenseById(expense_id!),
-    enabled: expense_id !== undefined,
+    enabled: !!expense_id,
   });
 
   const createExpenseMutation = useMutation({

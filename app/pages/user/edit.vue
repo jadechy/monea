@@ -6,7 +6,6 @@ import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { useAuthStore } from "@/stores/authStore";
 import { useGroupsStore } from "@/stores/groupStore";
 import { storeToRefs } from "pinia";
-import { useForm } from "@primevue/forms/useform";
 import { ref } from "vue";
 import { UserEditSchema, type UserEditType } from "~/types/user";
 const { user, updateUser } = useAuthStore();
@@ -38,11 +37,6 @@ const onFormSubmit = (form: FormSubmitEvent) => {
 
   updateUser.mutate(formData);
 };
-
-const form = useForm({
-  initialValues: user ? user : undefined,
-  resolver: zodResolver(UserEditSchema),
-});
 </script>
 
 <template>
@@ -50,18 +44,21 @@ const form = useForm({
     v-if="personnalGroup"
     label="Modifier mon profil"
     :color="personnalGroup.color"
-    routeName="profil"
+    to="/user"
   />
   <Form
+    v-slot="$form"
     v-if="user"
-    :form="form"
+    :form="$form"
+    :initialValues="user ? user : undefined"
+    :resolver="zodResolver(UserEditSchema)"
     @submit="onFormSubmit"
     class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
   >
-    <FormInput name="lastname" placeholder="Nom" :form="form" />
-    <FormInput name="name" placeholder="Prénom" :form="form" />
+    <FormInput name="lastname" placeholder="Nom" :form="$form" />
+    <FormInput name="name" placeholder="Prénom" :form="$form" />
 
-    <WrapperInput name="birthday" placeholder="Date de naissance" :form="form">
+    <WrapperInput name="birthday" placeholder="Date de naissance" :form="$form">
       <DatePicker
         dateFormat="dd/mm/yy"
         showIcon
@@ -76,13 +73,13 @@ const form = useForm({
       name="email"
       placeholder="Email"
       type="email"
-      :form="form"
+      :form="$form"
       autocomplete="email"
     />
     <FormInput
       name="username"
       placeholder="Pseudonyme"
-      :form="form"
+      :form="$form"
       autocomplete="username"
     />
     <FileUpload

@@ -45,15 +45,14 @@ const query = () => {
       fn: fetchBudgetGroupDateRemaining(group_id, getCurrentMonthIsoString()),
     };
 };
-const budgetQuery = useQuery({
+const { data: test } = useQuery({
   queryKey: query().key,
   queryFn: () => query().fn,
 });
-const budget = computed(() => budgetQuery.data.value?.amount ?? 0);
 </script>
 <template>
   <div class="item block lg:flex w-fit lg:w-1/4 rounded-lg">
     <p>{{ label }}</p>
-    <p class="font-bold">{{ truncateToTenth(budget) }}€</p>
+    <p class="font-bold">{{ truncateToTenth(test?.amount ?? 100) }}€</p>
   </div>
 </template>

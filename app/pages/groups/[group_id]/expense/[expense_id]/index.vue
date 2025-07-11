@@ -27,7 +27,7 @@ const { expense } = useExpenseMutation();
     v-if="group"
     :label="expense?.title ?? 'error'"
     :color="group.color"
-    :to="`groups/${group_id}`"
+    :to="`/groups/${group_id}`"
   />
   <div class="flex flex-col items-center gap-10" v-if="expense && group">
     <div class="flex flex-col md:flex-row gap-2 justify-between w-full">
@@ -41,7 +41,7 @@ const { expense } = useExpenseMutation();
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
-          <ColoredLabelComponent
+          <CategoryLabel
             v-if="expense.category.label !== 'default'"
             :category="expense.category"
           />
@@ -63,12 +63,7 @@ const { expense } = useExpenseMutation();
         size="small"
         :class="[getGroupColor({ color: group.color })]"
         class="h-fit w-fit"
-        @click="
-          router.push({
-            name: 'edit_expense',
-            params: { id: expense.id, group_id: group_id },
-          })
-        "
+        @click="router.push(`/groups/${group_id}/expense/${expense_id}/edit`)"
       />
     </div>
     <BaseSection

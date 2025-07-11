@@ -1,6 +1,6 @@
 // stores/authStore.ts
 import { defineStore } from "pinia";
-import { ref, computed, readonly } from "vue";
+import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useGroupsStore } from "./groupStore";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
@@ -182,11 +182,11 @@ export const useAuthStore = defineStore("auth", () => {
   });
 
   return {
-    token: readonly(token),
-    refreshToken: readonly(refreshToken),
-    user: readonly(user),
-    isLoading: readonly(isLoading),
-    error: readonly(error),
+    token,
+    refreshToken,
+    user,
+    isLoading,
+    error,
 
     isAuthenticated,
     userInitials,

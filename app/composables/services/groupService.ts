@@ -9,7 +9,6 @@ import { MemberDTOSchema } from "~/types/memberType";
 
 export const FetchGroupByUserSchema = GroupSchema.extend({
   members: MemberDTOSchema.array().optional(),
-  categories: CategorySchema.array().optional(),
 });
 
 export type FetchGroupByUserType = GroupType & {

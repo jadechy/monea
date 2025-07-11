@@ -26,12 +26,8 @@ const { categories } = useCategoryMutation();
   <div class="flex flex-col gap-10" v-if="group">
     <section class="flex justify-between">
       <div class="flex gap-5 w-full">
-        <RemainingBudget :group_id="group.id" />
-        <RemainingBudget
-          :group_id="group.id"
-          label="Budget initial"
-          initialBudget
-        />
+        <RemainingBudget />
+        <RemainingBudget label="Budget initial" initialBudget />
       </div>
 
       <Button
@@ -39,12 +35,7 @@ const { categories } = useCategoryMutation();
         label="Récap des dépenses"
         size="small"
         :class="[getGroupColor({ color: group?.color })]"
-        @click="
-          router.push({
-            name: 'forecast_budget_group',
-            params: { id: group?.id },
-          })
-        "
+        @click="router.push(`/groups/${group_id}/budget/forecast`)"
       />
     </section>
     <BaseSection
@@ -58,12 +49,7 @@ const { categories } = useCategoryMutation();
           label="Modifier les budgets"
           size="small"
           :class="[getGroupColor({ color: group?.color })]"
-          @click="
-            router.push({
-              name: 'edit_budget_group',
-              params: { id: group?.id },
-            })
-          "
+          @click="router.push(`/groups/${group_id}/budget/edit`)"
         />
       </template>
       <div class="grid gap-2 grid-cols-2 md:grid-cols-3">

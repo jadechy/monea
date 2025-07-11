@@ -243,7 +243,7 @@ class ExpenseController extends AbstractController
             if (isset($data->participants)) {
                 foreach ($data->participants as $userDto) {
                     /** @var UserInputDTO $userDto */
-                    $user = $this->userRepository->find($userDto->id);
+                    $user = $this->userRepository->find($userDto);
 
                     if (!$user) {
                         throw new \Exception("Utilisateur non trouvé.");
@@ -333,7 +333,7 @@ class ExpenseController extends AbstractController
             foreach ($newParticipants as $user) {
                 $expense->addParticipant($user);
             }
-        }else $expense->removeAllParticipant();
+        } else $expense->removeAllParticipant();
 
         $this->validateExpense($expense);
         $this->em->persist($expense);
@@ -394,7 +394,7 @@ class ExpenseController extends AbstractController
             $expense->setRecurringExpense(null);
             $this->em->remove($recurringExpense);
         }
-        
+
         $this->applyDataToExpense($expense, $data, $category, $group, $creator);
         $this->validateExpense($expense);
         $this->em->flush();
@@ -432,7 +432,7 @@ class ExpenseController extends AbstractController
             foreach ($newParticipants as $user) {
                 $expense->addParticipant($user);
             }
-        }else $expense->removeAllParticipant();
+        } else $expense->removeAllParticipant();
     }
 
     private function validateExpense(Expense $expense): void

@@ -3,8 +3,6 @@ import BaseSection from "~/components/ui-kit/BaseSection.vue";
 import { useBudget } from "~/composables/useBudgetMutation";
 import { useGroupsStore } from "@/stores/groupStore";
 import type { CategoryType } from "@/types/categoryType";
-import type { GroupType } from "@/types/groupType";
-import { useQuery } from "@tanstack/vue-query";
 import { DatePicker, Select } from "primevue";
 import { computed } from "vue";
 import { ref } from "vue";

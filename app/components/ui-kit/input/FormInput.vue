@@ -2,7 +2,7 @@
 import { InputText } from "primevue";
 import type { InputTextProps } from "primevue/inputtext";
 import WrapperInput from "./WrapperInput.vue";
-import type { useFormReturn } from "@primevue/forms/useform";
+import type { FormState } from "~/types/formType";
 
 interface Props {
   name: InputTextProps["name"];
@@ -12,7 +12,7 @@ interface Props {
   readonly?: InputTextProps["readonly"];
   type?: InputTextProps["type"];
   autocomplete?: InputTextProps["autocomplete"];
-  form: useFormReturn;
+  form: FormState;
 }
 
 defineProps<Props>();

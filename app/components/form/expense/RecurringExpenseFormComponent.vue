@@ -3,15 +3,15 @@ import {
   FrequencyEnum,
   type RecurringExpenseType,
 } from "@/types/recurringExpenseType";
-import type { useFormReturn } from "@primevue/forms/useform";
 import { Card, DatePicker, InputNumber, Select } from "primevue";
 import { ref } from "vue";
+import type { FormState } from "~/types/formType";
 const { recurringExpense, form } = defineProps<{
-  form: useFormReturn;
+  form: FormState;
   recurringExpense?: RecurringExpenseType | null;
 }>();
 const isActif = ref(recurringExpense !== undefined);
-const { repetitionCount, frequency, endDate, spentAt } = form.states;
+const { repetitionCount, frequency, endDate, spentAt } = form;
 const deleteRecurring = () => {
   repetitionCount.value = null;
   frequency.value = null;
