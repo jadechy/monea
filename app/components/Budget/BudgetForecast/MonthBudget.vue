@@ -1,0 +1,95 @@
+<script setup lang="ts">
+import BaseSection from "~/components/ui-kit/BaseSection.vue";
+import PaiementCardComponent from "~/components/ui-kit/ExpenseCardComponent.vue";
+import {
+  formatDateISO,
+  formatDayMonth,
+  getCurrentMonthStartDate,
+  getFirstDayOfMonth,
+  getFirstDayOfYear,
+} from "@/utils/date";
+import { DatePicker } from "primevue";
+import { ref, computed, watch } from "vue";
+import { useQuery } from "@tanstack/vue-query";
+import Day from "./DayBudget.vue";
+import { useGroupsStore } from "@/stores/groupStore";
+import { useBudgetService } from "~/composables/services/budgetService";
+
+const { group_id } = defineProps<{ group_id: string }>();
+const { groupById } = useGroupsStore();
+const group = computed(() => groupById({ id: group_id }));
+const currentDate = ref<Date | null>(null);
+const currentMonth = ref<Date>(getCurrentMonthStartDate());
+
+const currentMonthFormatted = computed(() => formatDateISO(currentMonth.value));
+const { fetchBudgetRemainingInMonth } = useBudgetService();
+// Query
+const {
+  expensesByMonthAndGroup: expenses,
+  refetchByMonthAndGroup: refetchExpenses,
+} = useExpenseMutation();
+const { data: monthData, refetch: refetchBudget } = useQuery({
+  queryKey: computed(() => [
+    "budget-remaining-in-day",
+    group_id,
+    currentMonthFormatted.value,
+  ]),
+  queryFn: () =>
+    fetchBudgetRemainingInMonth(group_id, currentMonthFormatted.value),
+  enabled: computed(() => !!group_id),
+});
+
+watch(currentMonth, () => {
+  refetchExpenses();
+  refetchBudget();
+});
+</script>
+
+<template>
+  <BaseSection label="Les dépenses passés et futurs">
+    <div class="flex flex-col gap-10">
+      <DatePicker
+        v-model="currentDate"
+        inline
+        v-on:month-change="
+          (e) => {
+            currentMonth = getFirstDayOfMonth(new Date(e.year, e.month - 1));
+          }
+        "
+        v-on:year-change="
+          (e: any) => {
+            currentMonth = getFirstDayOfYear(new Date(e.year, e.month - 1));
+          }
+        "
+        panel-class="border-none shadow rounded-xl "
+        class="w-full"
+      >
+        <template #date="slotProps" v-if="expenses">
+          <Day
+            :date="slotProps.date"
+            :expensesInDay="expenses['2025-05-05']"
+            :color="group?.color ?? 'gray'"
+          />
+        </template>
+      </DatePicker>
+      <BaseSection
+        :label="formatDayMonth(currentDate)"
+        v-if="
+          group &&
+          currentDate &&
+          expenses &&
+          expenses[formatDateISO(currentDate)]
+        "
+      >
+        <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <PaiementCardComponent
+            v-for="expense in expenses[formatDateISO(currentDate)]"
+            :key="expense.id"
+            :expense="expense"
+            :group-id="group?.id"
+          />
+        </div>
+      </BaseSection>
+    </div>
+  </BaseSection>
+</template>
