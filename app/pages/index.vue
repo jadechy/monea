@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import homepage from "~/assets/homepage.jpg";
-import { getSpaceColor } from "../utils/getColor";
+import { getGroupColor } from "../utils/getColor";
 
 type Average = {
   icon: string;
@@ -48,12 +48,12 @@ const router = useRouter();
           <Button
             label="Se connecter"
             @click="router.push({ name: 'auth-login' })"
-            :class="[getSpaceColor({ color: 'pink' })]"
+            :class="[getGroupColor({ color: 'pink' })]"
           />
           <Button
             label="Créer un compte gratuitement"
             @click="router.push({ name: 'auth-register' })"
-            :class="[getSpaceColor({ color: 'pink' })]"
+            :class="[getGroupColor({ color: 'pink' })]"
           />
         </div>
       </div>

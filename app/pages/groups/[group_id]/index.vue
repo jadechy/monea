@@ -2,12 +2,12 @@
 import { useGroupsStore } from "@/stores/groupStore";
 import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
-import { getAllExpensesByGroup } from "~/services/expenseService";
-import type { GroupType } from "~/types/groupType";
+import AllExpensesDisplay from "~/components/layout/AllExpensesDisplay.vue";
+import { getAllExpensesByGroup } from "~/composables/services/expenseService";
 
 // Props
-const { group_id } = defineProps<{ group_id: GroupType["id"] }>();
-// Group
+const route = useRoute();
+const group_id = route.params.group_id as string;
 const { groupById } = useGroupsStore();
 const group = computed(() => groupById({ id: group_id }));
 // Query
@@ -24,7 +24,7 @@ const { data: expenses } = useQuery({
     :group="group"
     :subHeader="{
       label: group?.name ?? 'error',
-      routeName: 'groups',
+      to: '/groups',
       color: group?.color,
     }"
     action-button

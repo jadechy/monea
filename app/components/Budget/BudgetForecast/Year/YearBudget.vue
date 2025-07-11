@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BaseSection from "~/components/ui-kit/BaseSection.vue";
 import { useBudget } from "@/composables/useBudget";
-import { fetchCategoryByGroup } from "@/services/categoryService";
+import { fetchCategoryByGroup } from "~/composables/services/categoryService";
 import { useGroupsStore } from "@/stores/groupStore";
 import type { CategoryType } from "@/types/categoryType";
 import type { GroupType } from "@/types/groupType";

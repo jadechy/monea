@@ -5,5 +5,5 @@
     <PersonalGroup />
     <AllGroups />
   </div>
-  <AddAction route-name="new_group" />
+  <AddAction to="/groups/new" />
 </template>

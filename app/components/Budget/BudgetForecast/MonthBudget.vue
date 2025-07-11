@@ -11,8 +11,8 @@ import {
 import type { GroupType } from "@/types/groupType";
 import { DatePicker } from "primevue";
 import { ref, computed, watch } from "vue";
-import { fetchBudgetRemainingInMonth } from "@/services/budgetService";
-import { getMonthlyExpensesByGroup } from "@/services/expenseService";
+import { fetchBudgetRemainingInMonth } from "~/composables/services/budgetService";
+import { getMonthlyExpensesByGroup } from "~/composables/services/expenseService";
 import { truncateToTenth } from "@/utils/number";
 import { useQuery } from "@tanstack/vue-query";
 import Day from "./DayBudget.vue";

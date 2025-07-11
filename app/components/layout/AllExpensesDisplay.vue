@@ -1,19 +1,14 @@
 <script setup lang="ts">
-import AddAction from "~/components/ui-kit/AddAction.vue";
-import type { RouteProps } from "@/components/header/BackComponent.vue";
-import BaseSection from "~/components/ui-kit/BaseSection.vue";
-import RemainingBudget from "~/components/ui-kit/RemainingBudget.vue";
-import SubHeader from "@/components/header/SubHeader.vue";
-import type { TitleComponentProps } from "@/components/header/TitleComponent.vue";
 import { formatDayMonth } from "@/utils/date";
-import { getSpaceColor } from "@/utils/getColor";
+import { getGroupColor } from "@/utils/getColor";
 import { Button } from "primevue";
 import type { ExpenseDateType } from "@/types/expenseType";
-import ExpenseCardComponent from "~/components/ui-kit/ExpenseCardComponent.vue";
 import type { GroupType } from "@/types/groupType";
 import { computed } from "vue";
 import type { CategoryType } from "@/types/categoryType";
 import { hasEditPermission } from "@/utils/authorization";
+import type { TitleComponentProps } from "../header/TitleComponent.vue";
+import type { RouteProps } from "../header/BackComponent.vue";
 interface Props {
   group: GroupType;
   haveCategory?: boolean;
@@ -22,6 +17,7 @@ interface Props {
   expensesDate?: ExpenseDateType;
   category?: CategoryType;
 }
+const route = useRoute();
 
 const props = defineProps<Props>();
 const safeExpensesDate = computed(() => props.expensesDate ?? {});
@@ -32,7 +28,7 @@ const router = useRouter();
   <SubHeader
     :label="subHeader.label"
     :color="subHeader?.color"
-    :routeName="subHeader.routeName"
+    :to="subHeader.to"
     :params="subHeader.params"
   />
   <div class="flex flex-col gap-10">
@@ -44,23 +40,16 @@ const router = useRouter();
           label="Budget"
           class="mr-2"
           size="small"
-          :class="[getSpaceColor({ color: group?.color })]"
-          @click="
-            router.push({
-              name: 'budget_group',
-              params: { group_id: group.id },
-            })
-          "
+          :class="[getGroupColor({ color: group?.color })]"
+          @click="router.push(`${route.path}/budget`)"
         />
         <Button
           v-if="hasEditPermission(group)"
           icon="pi pi-pencil"
           label="Edition"
           size="small"
-          :class="[getSpaceColor({ color: group?.color })]"
-          @click="
-            router.push({ name: 'edit_group', params: { group_id: group.id } })
-          "
+          :class="[getGroupColor({ color: group?.color })]"
+          @click="router.push(`${route.path}/edit`)"
         />
       </div>
     </div>
@@ -84,11 +73,8 @@ const router = useRouter();
   </div>
   <AddAction
     v-if="group && group.userRole !== 'viewer' && group.userRole !== 'banned'"
-    route-name="new_expense"
-    :class="[getSpaceColor({ color: group.color })]"
-    :params="{
-      group_id: String(group.id),
-    }"
+    :to="`${route.path}/expense/new`"
+    :class="[getGroupColor({ color: group.color })]"
     :query="{
       ...(category ? { category: category.id } : { category: 0 }),
     }"

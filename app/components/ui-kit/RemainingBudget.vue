@@ -5,7 +5,7 @@ import {
   fetchBudgetCategoryDateRemaining,
   fetchBudgetGroup,
   fetchBudgetGroupDateRemaining,
-} from "@/services/budgetService";
+} from "~/composables/services/budgetService";
 import { computed } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import type { GroupType } from "@/types/groupType";

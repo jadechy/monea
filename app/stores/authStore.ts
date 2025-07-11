@@ -1,17 +1,17 @@
-import { loginAuth, me } from "@/services/authService";
+// stores/authStore.ts
 import { defineStore } from "pinia";
 import { ref, computed, readonly } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useGroupsStore } from "./groupStore";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
-import { editUser } from "@/services/userService";
-import { useRoute } from "vue-router";
+import { editUser } from "~/composables/services/userService";
+import { useAuthService } from "~/composables/services/authService";
 import type {
   LoginRequestType,
   LoginResponseType,
   MeType,
 } from "~/types/authType";
-const API_URL = import.meta.env.VITE_API_URL;
-
+import { refreshToken as refreshTokenService } from "~/composables/services/refreshTokenService";
 export interface AuthResponse {
   token: string;
   user: MeType;
@@ -20,12 +20,15 @@ export interface AuthResponse {
 
 export const useAuthStore = defineStore("auth", () => {
   const router = useRouter();
+  const route = useRoute();
+
   const token = ref<string | null>(null);
   const refreshToken = ref<string | null>(null);
   const user = ref<MeType | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
-  const route = useRoute();
+
+  const { login, me } = useAuthService();
 
   const isAuthenticated = computed(() => !!token.value);
   const userInitials = computed(() => {
@@ -42,6 +45,7 @@ export const useAuthStore = defineStore("auth", () => {
   const USER_KEY = "auth_user";
 
   const initAuth = () => {
+    if (!process.client) return;
     try {
       const savedToken = localStorage.getItem(TOKEN_KEY);
       const savedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
@@ -62,21 +66,25 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const saveToStorage = () => {
-    if (token.value) {
-      localStorage.setItem(TOKEN_KEY, token.value);
-    }
-    if (refreshToken.value) {
-      localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken.value);
-    }
-    if (user.value) {
-      localStorage.setItem(USER_KEY, JSON.stringify(user.value));
+    if (process.client) {
+      if (token.value) {
+        localStorage.setItem(TOKEN_KEY, token.value);
+      }
+      if (refreshToken.value) {
+        localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken.value);
+      }
+      if (user.value) {
+        localStorage.setItem(USER_KEY, JSON.stringify(user.value));
+      }
     }
   };
 
   const clearStorage = () => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
+    if (process.client) {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+    }
   };
 
   const clearAuth = () => {
@@ -85,7 +93,11 @@ export const useAuthStore = defineStore("auth", () => {
     user.value = null;
     error.value = null;
     clearStorage();
+    if (process.client) {
+      router.push("/auth/login");
+    }
   };
+
   const authSuccess = async (res: LoginResponseType) => {
     token.value = res.token;
     if (res.refresh_token) {
@@ -106,7 +118,7 @@ export const useAuthStore = defineStore("auth", () => {
   const queryClient = useQueryClient();
 
   const loginMutation = useMutation({
-    mutationFn: (params: LoginRequestType) => loginAuth(params),
+    mutationFn: (params: LoginRequestType) => login(params),
     onMutate: () => {
       isLoading.value = true;
       error.value = null;
@@ -130,37 +142,22 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
+  // Méthode refresh indépendante utilisant le service commun
   const refreshAuthToken = async () => {
     if (!refreshToken.value) {
       throw new Error("Pas de refresh token disponible");
     }
-
     try {
-      const response = await fetch(`${API_URL}/api/token/refresh`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ refresh_token: refreshToken.value }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Impossible de rafraîchir le token");
-      }
-
-      const data: AuthResponse = await response.json();
-
-      token.value = data.token;
-      if (data.refreshToken) {
-        refreshToken.value = data.refreshToken;
-      }
+      const newToken = await refreshTokenService(refreshToken.value);
+      token.value = newToken;
       saveToStorage();
-      return data.token;
+      return newToken;
     } catch (err) {
       clearAuth();
       throw err;
     }
   };
+
   const updateUser = useMutation({
     mutationFn: (data: FormData) => editUser(data),
     onMutate: () => {
@@ -185,6 +182,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   return {
     token: readonly(token),
+    refreshToken: readonly(refreshToken),
     user: readonly(user),
     isLoading: readonly(isLoading),
     error: readonly(error),

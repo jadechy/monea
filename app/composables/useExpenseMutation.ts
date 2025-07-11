@@ -1,21 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import router from "@/router";
 import {
   getExpenseById,
   postExpense,
   patchExpense,
   deleteExpense,
-} from "@/services/expenseService";
-import type {
-  NewExpenseType,
-  ExpenseType,
-} from "../../../app/types/expenseType";
-import type { GroupType } from "../../../app/types/groupType";
+} from "~/composables/services/expenseService";
+import type { NewExpenseType } from "~/types/expenseType";
 
-export const useExpenseMutation = (
-  groupId: GroupType["id"],
-  expenseId?: ExpenseType["id"]
-) => {
+export const useExpenseMutation = (groupId: string, expenseId?: string) => {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const invalidateQueries = async () => {
     await Promise.all([

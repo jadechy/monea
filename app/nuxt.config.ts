@@ -5,6 +5,11 @@ import { MyPreset } from "./themes/mytheme";
 export default defineNuxtConfig({
   compatibilityDate: "2025-05-15",
   devtools: { enabled: true },
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.VITE_API_URL || "http://localhost:3000",
+    },
+  },
   modules: [
     "@nuxt/eslint",
     "@nuxt/image",

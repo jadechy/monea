@@ -1,8 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
-import router from "@/router";
-import type { GroupType, NewGroupType } from "../../../app/types/groupType";
-import { deleteGroup, editGroup, postGroup } from "@/services/groupService";
+import {
+  deleteGroup,
+  editGroup,
+  postGroup,
+} from "~/composables/services/groupService";
 import type { ComputedRef } from "vue";
+import type { GroupType, NewGroupType } from "~/types/groupType";
 
 export const useGroupMutation = (
   group: ComputedRef<GroupType | undefined | null>
@@ -13,7 +16,7 @@ export const useGroupMutation = (
       queryClient.invalidateQueries({ queryKey: ["groups-by-user"] }),
     ]);
   };
-
+  const router = useRouter();
   const createGroupMutation = useMutation({
     mutationFn: (data: NewGroupType) => postGroup(data),
     onSuccess: async () => {

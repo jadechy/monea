@@ -1,6 +1,6 @@
 <template>
   <router-link
-    :to="{ name: 'expense', params: { id: expense.id, group_id: groupId } }"
+    :to="`${route.path}/expense/${expense.id}`"
     class="flex shadow px-4 py-3 justify-between w-full rounded-3xl hover:bg-gray-50"
   >
     <div>
@@ -34,4 +34,5 @@ export interface ExpenseCardComponentProps {
   groupId: GroupType["id"];
 }
 defineProps<ExpenseCardComponentProps>();
+const route = useRoute();
 </script>

@@ -9,7 +9,7 @@ import {
 } from "primevue";
 import { Form, type FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
-import { registerAuth } from "@/services/authService";
+import { registerAuth } from "~/composables/services/authService";
 import { useMutation } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 import { useForm } from "@primevue/forms/useform";

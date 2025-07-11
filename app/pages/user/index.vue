@@ -30,14 +30,14 @@ const router = useRouter();
         label="Budget"
         class="mr-2"
         size="small"
-        :class="[getSpaceColor({ color: personnalGroup?.color })]"
+        :class="[getGroupColor({ color: personnalGroup?.color })]"
         @click="router.push({ name: 'budget_group' })"
       />
       <Button
         icon="pi pi-pencil"
         label="Edition"
         size="small"
-        :class="[getSpaceColor({ color: personnalGroup?.color })]"
+        :class="[getGroupColor({ color: personnalGroup?.color })]"
         @click="router.push({ name: 'profil_edit' })"
       />
     </div>

@@ -3,12 +3,14 @@ import { Button } from "primevue";
 import { computed } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useGroupsStore } from "@/stores/groupStore";
-import { fetchCategoryByGroup } from "@/services/categoryService";
+import { fetchCategoryByGroup } from "~/composables/services/categoryService";
 import { useBudget } from "@/composables/useBudget";
-import type { GroupType } from "~/types/groupType";
 
 const router = useRouter();
-const { group_id } = defineProps<{ group_id: GroupType["id"] }>();
+const route = useRoute();
+const { group_id } = route.params as {
+  group_id: string;
+};
 const { remainingBudget } = useBudget(group_id);
 const { data: categories } = useQuery({
   queryKey: ["categories-by-group", group_id],
@@ -22,8 +24,7 @@ const group = computed(() => groupById({ id: group_id }));
   <SubHeader
     label="Budget du mois"
     :color="group?.color"
-    routeName="group"
-    :params="{ id: group_id }"
+    :to="`groups/${group_id}`"
   />
 
   <div class="flex flex-col gap-10" v-if="group">
@@ -41,7 +42,7 @@ const group = computed(() => groupById({ id: group_id }));
         icon="pi pi-eye"
         label="Récap des dépenses"
         size="small"
-        :class="[getSpaceColor({ color: group?.color })]"
+        :class="[getGroupColor({ color: group?.color })]"
         @click="
           router.push({
             name: 'forecast_budget_group',
@@ -60,7 +61,7 @@ const group = computed(() => groupById({ id: group_id }));
           icon="pi pi-pencil"
           label="Modifier les budgets"
           size="small"
-          :class="[getSpaceColor({ color: group?.color })]"
+          :class="[getGroupColor({ color: group?.color })]"
           @click="
             router.push({
               name: 'edit_budget_group',
@@ -72,10 +73,7 @@ const group = computed(() => groupById({ id: group_id }));
       <div class="grid gap-2 grid-cols-2 md:grid-cols-3">
         <router-link
           v-for="(category, i) in categories"
-          :to="{
-            name: 'category_budget_group',
-            params: { group_id: group?.id, category_id: category.id },
-          }"
+          :to="`/groups/${group_id}/category/${category.id}`"
           class="flex justify-between rounded-full px-4 py-3"
           :key="i"
           :class="`bg-${category.color}-50 hover:bg-${category.color}-100 text-${category.color}-800`"

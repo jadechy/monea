@@ -8,17 +8,17 @@ import { zodResolver } from "@primevue/forms/resolvers/zod";
 import {
   GroupTypeEnum,
   NewGroupSchema,
-  type GroupType,
   type NewGroupType,
 } from "@/types/groupType";
-import SubHeader from "@/components/Header/SubHeader.vue";
 import type { NewCategoryType } from "@/types/categoryType";
 import { useGroupsStore } from "@/stores/groupStore";
-import { getSpaceColor } from "@/utils/getColor";
+import { getGroupColor as getGroupColor } from "@/utils/getColor";
 import { useGroupMutation } from "@/composables/useGroupMutation";
 import { useForm } from "@primevue/forms/useform";
 // Props
-const { group_id } = defineProps<{ group_id?: GroupType["id"] }>();
+
+const route = useRoute();
+const group_id = route.params.group_id as string;
 // Store
 const { groupById } = useGroupsStore();
 const group = computed(() => groupById({ id: group_id }));
@@ -90,8 +90,7 @@ const form = useForm({
   <SubHeader
     :label="group ? group.name : 'Nouveau group'"
     :color="group ? group.color : 'gray'"
-    :routeName="group ? 'group' : 'groups'"
-    :params="group ? { group_id: group.id } : {}"
+    :to="group ? `group/${group.id}` : '/groups'"
   />
 
   <Form :form="form" @submit="onFormSubmit" class="flex flex-col gap-10">
@@ -103,7 +102,7 @@ const form = useForm({
       fluid
       v-if="group?.type !== 'personnal'"
     />
-    <Members v-if="group?.type !== 'personnal'" />
+    <MembersForm v-if="group?.type !== 'personnal'" />
 
     <BaseSection label="Type de groupe" v-if="group?.type !== 'personnal'">
       <RadioButtonGroup name="type" class="flex flex-wrap gap-4">
@@ -141,7 +140,7 @@ const form = useForm({
 
     <div class="flex flex-col gap-3 w-64 self-center" v-if="group">
       <Button
-        :class="[getSpaceColor({ color: group?.color })]"
+        :class="[getGroupColor({ color: group?.color })]"
         type="submit"
         label="Modifier le groupe"
       />
@@ -150,14 +149,14 @@ const form = useForm({
         v-if="group.type !== 'personnal' && group.userRole === 'author'"
         variant="outlined"
         @click="onDelete()"
-        :class="getSpaceColor({ color: group?.color, outlined: true })"
+        :class="getGroupColor({ color: group?.color, outlined: true })"
         label="Supprimer le groupe"
       />
     </div>
     <div v-else class="flex justify-center">
       <Button
         class="w-64"
-        :class="[getSpaceColor({ color: 'gray' })]"
+        :class="[getGroupColor({ color: 'gray' })]"
         type="submit"
         label="Créer le groupe"
       />

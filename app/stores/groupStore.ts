@@ -1,8 +1,7 @@
-import { getGroupByUser } from "@/services/groupService";
+import { getGroupByUser } from "~/composables/services/groupService";
 import { defineStore } from "pinia";
 import { computed } from "vue";
 import { useQuery } from "@tanstack/vue-query";
-import type { GroupType } from "~/types/groupType";
 
 export const useGroupsStore = defineStore("groups", () => {
   const { data, refetch, isLoading } = useQuery({
@@ -15,7 +14,7 @@ export const useGroupsStore = defineStore("groups", () => {
 
   const groups = computed(() => data?.value ?? []);
 
-  const groupById = ({ id }: { id?: GroupType["id"] }) => {
+  const groupById = ({ id }: { id?: string }) => {
     if (id === undefined) return null;
     return groups.value.find((group) => group.id === Number(id));
   };

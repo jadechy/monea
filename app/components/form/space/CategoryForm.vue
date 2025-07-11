@@ -2,7 +2,6 @@
 import { ref, watch } from "vue";
 import { Dialog, FloatLabel, InputText, Button } from "primevue";
 import BaseSection from "~/components/ui-kit/BaseSection.vue";
-import ChoiceColor from "../NewSpace/ChoiceColor.vue";
 import { ColorSchema } from "@/types/color";
 import type { NewCategoryType } from "@/types/categoryType";
 

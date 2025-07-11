@@ -3,13 +3,13 @@ import {
   fetchAllRemainingBudgetCategoriesByGroup,
   fetchBudgetRemainingInYear,
   postBudgets,
-} from "@/services/budgetService";
+} from "~/composables/services/budgetService";
 import { ref, type Ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { GroupType } from "~/types/groupType";
 import type { NewBudgetType } from "~/types/budgetType";
 const router = useRouter();
-export const useBudget = (group_id: GroupType["id"], year?: Ref<Date>) => {
+export const useBudget = (group_id: string, year?: Ref<Date>) => {
   const queryClient = useQueryClient();
   if (!year) {
     year = ref(getCurrentMonthStartDate());

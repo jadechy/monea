@@ -1,16 +1,15 @@
 <script setup lang="ts">
-  import Tabs from "primevue/tabs"
-  import TabList from "primevue/tablist"
-  import Tab from "primevue/tab"
-  import TabPanels from "primevue/tabpanels"
-  import TabPanel from "primevue/tabpanel"
-  import ChartCategory from "./ChartCategory.vue"
-  import type { BudgetByCategoryType } from "@/types/budgetType"
-  import { formatDateISO, getCurrentMonthStartDate } from "@/utils/date"
-  import ChartCategoryBalance from "./ChartCategoryBalance.vue"
-  import ChartLinearEvolution from "./ChartLinearEvolution.vue"
-  import type { GroupType } from "@/types/groupType"
-  defineProps<{ budgets: BudgetByCategoryType[]; group_id: GroupType["id"] }>()
+import Tabs from "primevue/tabs";
+import TabList from "primevue/tablist";
+import Tab from "primevue/tab";
+import TabPanels from "primevue/tabpanels";
+import TabPanel from "primevue/tabpanel";
+import ChartCategory from "./ChartCategory.vue";
+import type { BudgetByCategoryType } from "@/types/budgetType";
+import { formatDateISO, getCurrentMonthStartDate } from "@/utils/date";
+import ChartCategoryBalance from "./ChartCategoryBalance.vue";
+import ChartLinearEvolution from "./ChartLinearEvolution.vue";
+defineProps<{ budgets: BudgetByCategoryType[]; group_id: string }>();
 </script>
 
 <template>
@@ -25,7 +24,8 @@
         <ChartCategory
           :budgets="
             budgets.filter(
-              (budget) => budget.monthStart === formatDateISO(getCurrentMonthStartDate()),
+              (budget) =>
+                budget.monthStart === formatDateISO(getCurrentMonthStartDate())
             )
           "
         />

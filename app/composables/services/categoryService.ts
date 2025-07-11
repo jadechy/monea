@@ -1,13 +1,14 @@
 import { CategorySchema, type CategoryType } from "~/types/categoryType";
-import type { GroupType } from "~/types/groupType";
 
-export const fetchCategory = (categoryId: CategoryType["id"]) =>
+export const fetchCategory = (categoryId: string): Promise<CategoryType> =>
   fetchJson({
     url: `categories/${categoryId}`,
     schema: CategorySchema,
   });
 
-export const fetchCategoryByGroup = (groupeId: GroupType["id"]) =>
+export const fetchCategoryByGroup = (
+  groupeId: string
+): Promise<CategoryType[]> =>
   fetchJson({
     url: `categories/${groupeId}/list`,
     schema: CategorySchema.array(),

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { Button, Chip } from "primevue";
-import { getExpenseById } from "@/services/expenseService";
+import { getExpenseById } from "~/composables/services/expenseService";
 import default_avatar from "@/assets/default_avatar.svg";
 import { useQuery } from "@tanstack/vue-query";
 import { useGroupsStore } from "@/stores/groupStore";
@@ -65,7 +65,7 @@ const { data: expense } = useQuery({
         icon="pi pi-pencil"
         label="Edition"
         size="small"
-        :class="[getSpaceColor({ color: group.color })]"
+        :class="[getGroupColor({ color: group.color })]"
         class="h-fit w-fit"
         @click="
           router.push({

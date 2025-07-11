@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from "primevue";
-import type { RouteProps } from "../Header/BackComponent.vue";
+import type { RouteProps } from "../header/BackComponent.vue";
 defineProps<RouteProps>();
 const router = useRouter();
 </script>
@@ -11,6 +11,6 @@ const router = useRouter();
     icon="pi pi-plus"
     aria-label="Filter"
     class="fixed bottom-4 right-4"
-    @click="router.push({ name: routeName, params: params, query: query })"
+    @click="router.push(to)"
   />
 </template>

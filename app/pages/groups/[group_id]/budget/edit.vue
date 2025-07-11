@@ -126,7 +126,7 @@ const form = useForm({
       </div>
     </section>
     <Button
-      :class="[getSpaceColor({ color: group?.color })]"
+      :class="[getGroupColor({ color: group?.color })]"
       type="submit"
       class="w-64"
       label="Sauvergarde les budgets"

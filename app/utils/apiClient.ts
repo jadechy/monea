@@ -1,8 +1,6 @@
 import { useAuthStore } from "~/stores/authStore";
 import { z } from "zod";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 type Method = "GET" | "POST" | "PATCH" | "DELETE";
 
 export interface RequestParams<T extends z.ZodTypeAny> {
@@ -22,8 +20,9 @@ export const requestJson = async <T extends z.ZodTypeAny>({
   options = {},
   contentType = "application/json",
 }: RequestParams<T>): Promise<z.infer<T>> => {
+  const config = useRuntimeConfig();
   const authStore = useAuthStore();
-
+  const API_URL = config.public.apiBase;
   const makeRequest = async (token: string | null) => {
     const headers: HeadersInit = {
       "Content-Type": contentType,

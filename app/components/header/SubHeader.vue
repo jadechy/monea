@@ -8,7 +8,7 @@ defineProps<TitleComponentProps & RouteProps>();
 <template>
   <div class="mb-5">
     <TitleComponent :label="label ?? 'erorr'" :color="color" />
-    <BackComponent :routeName="routeName" :params="params" />
+    <BackComponent :to="to" />
   </div>
 </template>
 

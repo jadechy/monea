@@ -96,7 +96,7 @@ const form = useForm({
     <Button
       type="submit"
       class="w-64"
-      :class="[getSpaceColor({ color: personnalGroup?.color })]"
+      :class="[getGroupColor({ color: personnalGroup?.color })]"
       label="Enregistrer les modifications"
     />
   </Form>

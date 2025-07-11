@@ -1,39 +1,27 @@
 <script setup lang="ts">
-import SubHeader from "@/components/Header/SubHeader.vue";
 import { Button, DatePicker, InputNumber, Listbox, Select } from "primevue";
-import { getSpaceColor } from "@/utils/getColor";
-import type { GroupType } from "@/types/groupType";
+import { getGroupColor } from "@/utils/getColor";
 import { computed, ref, watchEffect, type ComputedRef } from "vue";
 import { Form, type FormSubmitEvent } from "@primevue/forms";
-import {
-  NewExpenseSchema,
-  type ExpenseType,
-  type NewExpenseType,
-} from "@/types/expenseType";
+import { NewExpenseSchema, type NewExpenseType } from "@/types/expenseType";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
-import WrapperInput from "@/components/InputComponent/WrapperInput.vue";
-import FormInput from "@/components/InputComponent/FormInput.vue";
 import { useAuthStore } from "~/stores/authStore";
 import { convertToLocalDate } from "@/utils/date";
 import { useExpenseMutation } from "@/composables/useExpenseMutation";
 import { useGroupsStore } from "@/stores/groupStore";
-import Recurring from "../Expense/Form/RecurringFormExpense.vue";
-import type { CategoryType } from "@/types/categoryType";
 import { useQuery } from "@tanstack/vue-query";
-import { getMembersByGroup } from "@/services/memberService";
+import { getMembersByGroup } from "~/composables/services/memberService";
 import type { UserType } from "@/types/user";
 import BaseSection from "../ui-kit/BaseSection.vue";
 import { useForm } from "@primevue/forms/useform";
 // Props
-const {
-  group_id,
-  id,
-  category: categoryId,
-} = defineProps<{
-  group_id: GroupType["id"];
-  id?: ExpenseType["id"];
-  category?: CategoryType["id"];
-}>();
+
+const route = useRoute();
+const { group_id, category_id, expense_id } = route.params as {
+  group_id: string;
+  category_id?: string;
+  expense_id?: string;
+};
 // Store
 const { groupById } = useGroupsStore();
 const group = computed(() => groupById({ id: group_id }));
@@ -51,7 +39,7 @@ const {
   createExpenseMutation,
   updateExpenseMutation,
   deleteExpenseMutation,
-} = useExpenseMutation(group_id, id);
+} = useExpenseMutation(group_id, expense_id);
 const { data: members } = useQuery({
   queryKey: ["members-by-group", group_id],
   queryFn: () => getMembersByGroup(group_id),
@@ -106,7 +94,7 @@ watchEffect(() => {
       spentAt: new Date(),
       author: user && getInitialAuthor(user?.id).value,
       category: categories.value?.find(
-        (category) => category.id === Number(categoryId)
+        (category) => category.id === Number(category_id)
       ),
       frequency: null,
       repetitionCount: null,
@@ -156,12 +144,12 @@ const onFormSubmit = (form: FormSubmitEvent) => {
       endDate: endDate.value,
     };
   } else data["recurring"] = null;
-  id && expense
+  expense_id && expense
     ? updateExpenseMutation.mutate(data)
     : createExpenseMutation.mutate(data);
 };
 const onDelete = () => {
-  if (!id) return;
+  if (!expense_id) return;
   deleteExpenseMutation.mutate();
 };
 const form = useForm({
@@ -174,14 +162,14 @@ defineExpose({
   createExpenseMutation,
   deleteExpenseMutation,
 });
+const baseRoute = `/groups/${group_id}`;
 </script>
 
 <template v-if="group">
   <SubHeader
     :label="expense ? expense.title : 'Nouveau expense'"
     :color="group?.color"
-    :routeName="expense ? 'expense' : 'group'"
-    :params="expense ? { id: expense.id, group_id } : { group_id }"
+    :to="expense ? `${baseRoute}/expense` : baseRoute"
   />
   <div
     v-if="!initialValues || !formattedMembers"
@@ -258,20 +246,20 @@ defineExpose({
       v-if="group?.type === 'daily'"
     />
     <div class="flex flex-col gap-3 w-64" v-if="expense">
-      <Button :class="[getSpaceColor({ color: group?.color })]" type="submit">
+      <Button :class="[getGroupColor({ color: group?.color })]" type="submit">
         Modifier la dépense
       </Button>
       <Button
         variant="outlined"
         @click="onDelete()"
-        :class="getSpaceColor({ color: group?.color, outlined: true })"
+        :class="getGroupColor({ color: group?.color, outlined: true })"
       >
         Supprimer la dépense
       </Button>
     </div>
     <Button
       class="w-64"
-      :class="[getSpaceColor({ color: group?.color })]"
+      :class="[getGroupColor({ color: group?.color })]"
       type="submit"
       v-else
     >

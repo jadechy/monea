@@ -51,7 +51,7 @@ export const getColor = ({
   selected: `bg-${color}-${selected}`,
 });
 
-export const getSpaceColor = ({
+export const getGroupColor = ({
   color = "gray",
   outlined,
 }: {

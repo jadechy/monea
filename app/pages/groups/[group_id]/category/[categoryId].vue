@@ -2,8 +2,8 @@
 import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 
-import { fetchCategory } from "@/services/categoryService";
-import { getExpensesByCategory } from "@/services/expenseService";
+import { fetchCategory } from "~/composables/services/categoryService";
+import { getExpensesByCategory } from "~/composables/services/expenseService";
 
 import { useGroupsStore } from "@/stores/groupStore";
 import type { CategoryType } from "~/types/categoryType";
