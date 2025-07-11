@@ -4,7 +4,6 @@ import { ref, computed, readonly } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useGroupsStore } from "./groupStore";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
-import { editUser } from "~/composables/services/userService";
 import { useAuthService } from "~/composables/services/authService";
 import type {
   LoginRequestType,
@@ -12,6 +11,7 @@ import type {
   MeType,
 } from "~/types/authType";
 import { refreshToken as refreshTokenService } from "~/composables/services/refreshTokenService";
+import { useUserService } from "~/composables/services/userService";
 export interface AuthResponse {
   token: string;
   user: MeType;
@@ -29,6 +29,7 @@ export const useAuthStore = defineStore("auth", () => {
   const error = ref<string | null>(null);
 
   const { login, me } = useAuthService();
+  const { editUser } = useUserService();
 
   const isAuthenticated = computed(() => !!token.value);
   const userInitials = computed(() => {

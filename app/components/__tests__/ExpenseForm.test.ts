@@ -1,4 +1,4 @@
-import FormExpense from "~/components/form/ExpenseForm.vue";
+import FormExpense from "~/components/form/expense/ExpenseForm.vue";
 import { useExpenseMutation } from "@/composables/useExpenseMutation";
 import type { ExpenseType, NewExpenseType } from "@/types/expenseType";
 import { formatDateISO } from "@/utils/date";

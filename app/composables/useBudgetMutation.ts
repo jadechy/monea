@@ -1,20 +1,25 @@
-import {
-  fetchAllBudgetCategoriesByGroup,
-  fetchAllRemainingBudgetCategoriesByGroup,
-  fetchBudgetRemainingInYear,
-  postBudgets,
-} from "~/composables/services/budgetService";
 import { ref, type Ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { GroupType } from "~/types/groupType";
 import type { NewBudgetType } from "~/types/budgetType";
-const router = useRouter();
-export const useBudget = (group_id: string, year?: Ref<Date>) => {
+import { useBudgetService } from "./services/budgetService";
+export const useBudget = (year?: Ref<Date>) => {
+  const router = useRouter();
+  const route = useRoute();
+  const { group_id, category_id, expense_id } = route.params as {
+    group_id: string;
+    category_id?: string;
+    expense_id?: string;
+  };
   const queryClient = useQueryClient();
   if (!year) {
     year = ref(getCurrentMonthStartDate());
   }
-
+  const {
+    fetchBudgetRemainingInYear,
+    fetchAllBudgetCategoriesByGroup,
+    fetchAllRemainingBudgetCategoriesByGroup,
+    postBudgets,
+  } = useBudgetService();
   const months: Record<string, string> = {
     "01": "Janvier",
     "02": "Février",
@@ -56,6 +61,7 @@ export const useBudget = (group_id: string, year?: Ref<Date>) => {
       getFirstDayOfMonth(year.value),
     ],
     queryFn: () => {
+      console.log("lla");
       return fetchAllRemainingBudgetCategoriesByGroup(
         group_id,
         getFirstDayOfMonth(year.value)
@@ -97,6 +103,7 @@ export const useBudget = (group_id: string, year?: Ref<Date>) => {
     if (remaining > 0) return "text-green-700";
     return "text-red-700";
   };
+
   return {
     refetch: refetchRemainingBudgetInYear,
     months,

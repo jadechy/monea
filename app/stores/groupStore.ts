@@ -1,9 +1,10 @@
-import { getGroupByUser } from "~/composables/services/groupService";
 import { defineStore } from "pinia";
 import { computed } from "vue";
 import { useQuery } from "@tanstack/vue-query";
+import { useGroupService } from "~/composables/services/groupService";
 
 export const useGroupsStore = defineStore("groups", () => {
+  const { getGroupByUser } = useGroupService();
   const { data, refetch, isLoading } = useQuery({
     queryKey: ["groups-by-user"],
     queryFn: async () => {

@@ -4,9 +4,17 @@ export type EditUserResponseType = {
   message: string;
 };
 
-export const editUser = (user: FormData): Promise<EditUserResponseType> =>
-  patchJson({
-    url: `users/edit`,
-    body: user,
-    schema: z.object({ message: z.string() }),
-  });
+export const useUserService = () => {
+  const { $api } = useNuxtApp();
+
+  const editUser = (user: FormData): Promise<EditUserResponseType> =>
+    $api.patch({
+      url: `users/edit`,
+      body: user,
+      schema: z.object({ message: z.string() }),
+    });
+
+  return {
+    editUser,
+  };
+};

@@ -33,7 +33,7 @@ const router = useRouter();
   />
   <div class="flex flex-col gap-10">
     <div class="flex flex-col gap-2 sm:flex-row justify-between items-center">
-      <RemainingBudget :group_id="group.id" :category="category" />
+      <RemainingBudget :category="category" />
       <div v-if="actionButton">
         <Button
           icon="pi pi-eye"
@@ -41,7 +41,7 @@ const router = useRouter();
           class="mr-2"
           size="small"
           :class="[getGroupColor({ color: group?.color })]"
-          @click="router.push(`${route.path}/budget`)"
+          @click="router.push(`/groups/${group.id}/budget`)"
         />
         <Button
           v-if="hasEditPermission(group)"
@@ -49,7 +49,7 @@ const router = useRouter();
           label="Edition"
           size="small"
           :class="[getGroupColor({ color: group?.color })]"
-          @click="router.push(`${route.path}/edit`)"
+          @click="router.push(`/groups/${group.id}/edit`)"
         />
       </div>
     </div>

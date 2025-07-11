@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import BaseSection from "~/components/ui-kit/BaseSection.vue";
-import { useBudget } from "@/composables/useBudget";
-import { fetchCategoryByGroup } from "~/composables/services/categoryService";
+import { useBudget } from "~/composables/useBudgetMutation";
 import { useGroupsStore } from "@/stores/groupStore";
 import type { CategoryType } from "@/types/categoryType";
 import type { GroupType } from "@/types/groupType";
@@ -12,7 +11,7 @@ import { ref } from "vue";
 import { watch } from "vue";
 import ItemYearBudget from "./ItemYearBudget.vue";
 // Props
-const { group_id } = defineProps<{ group_id: GroupType["id"] }>();
+const { group_id } = defineProps<{ group_id: string }>();
 
 // Const
 const selectedCategory = defineModel<CategoryType>("selectedCategory");
@@ -20,11 +19,8 @@ const year = ref<Date>(new Date());
 
 const { groupById } = useGroupsStore();
 const group = computed(() => groupById({ id: group_id }));
-const { refetch, months } = useBudget(group_id, year);
-const { data: categories } = useQuery({
-  queryKey: ["categories-by-group", group_id],
-  queryFn: () => fetchCategoryByGroup(group_id),
-});
+const { refetch, months } = useBudget(year);
+const { categories } = useCategoryMutation();
 watch(year, (newYear) => {
   if (!newYear) return;
   refetch();

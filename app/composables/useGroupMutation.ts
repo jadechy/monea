@@ -1,15 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
-import {
-  deleteGroup,
-  editGroup,
-  postGroup,
-} from "~/composables/services/groupService";
+
 import type { ComputedRef } from "vue";
 import type { GroupType, NewGroupType } from "~/types/groupType";
+import { useGroupService } from "./services/groupService";
 
 export const useGroupMutation = (
   group: ComputedRef<GroupType | undefined | null>
 ) => {
+  const { postGroup, editGroup, deleteGroup } = useGroupService();
   const queryClient = useQueryClient();
   const invalidateQueries = async () => {
     await Promise.all([

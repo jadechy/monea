@@ -1,30 +1,26 @@
 <script setup lang="ts">
 import { Button } from "primevue";
 import { computed } from "vue";
-import { useQuery } from "@tanstack/vue-query";
 import { useGroupsStore } from "@/stores/groupStore";
-import { fetchCategoryByGroup } from "~/composables/services/categoryService";
-import { useBudget } from "@/composables/useBudget";
+import { useBudget } from "~/composables/useBudgetMutation";
 
 const router = useRouter();
 const route = useRoute();
 const { group_id } = route.params as {
   group_id: string;
 };
-const { remainingBudget } = useBudget(group_id);
-const { data: categories } = useQuery({
-  queryKey: ["categories-by-group", group_id],
-  queryFn: () => fetchCategoryByGroup(group_id),
-});
+const { remainingBudget } = useBudget();
+
 const { groupById } = useGroupsStore();
 const group = computed(() => groupById({ id: group_id }));
+const { categories } = useCategoryMutation();
 </script>
 
 <template>
   <SubHeader
     label="Budget du mois"
     :color="group?.color"
-    :to="`groups/${group_id}`"
+    :to="`/groups/${group_id}`"
   />
 
   <div class="flex flex-col gap-10" v-if="group">

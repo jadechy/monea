@@ -7,60 +7,70 @@ import {
   type ExpenseType,
   type NewExpenseType,
 } from "~/types/expenseType";
-import { formatDateISO } from "~/utils/date"; // si ce helper existe
+import { formatDateISO } from "~/utils/date";
 
-export const getExpenseById = (id: string): Promise<ExpenseType> =>
-  fetchJson({
-    url: `expenses/${id}`,
-    schema: ExpenseSchema,
-  });
+export const useExpenseService = () => {
+  const { $api } = useNuxtApp();
 
-export const getAllExpensesByGroup = (
-  group_id: string
-): Promise<ExpenseDateType> =>
-  fetchJson({
-    url: `expenses/groupe/${group_id}/list`,
-    schema: ExpenseDateSchema,
-  });
+  const getExpenseById = (id: string): Promise<ExpenseType> =>
+    $api.get({
+      url: `expenses/${id}`,
+      schema: ExpenseSchema,
+    });
 
-export const getMonthlyExpensesByGroup = (
-  group_id: string,
-  month: Date
-): Promise<ExpenseDateType> =>
-  fetchJson({
-    url: `expenses/groupe/${group_id}/mois/${formatDateISO(month)}/list`,
-    schema: ExpenseDateSchema,
-  });
+  const getAllExpensesByGroup = (group_id: string): Promise<ExpenseDateType> =>
+    $api.get({
+      url: `expenses/groupe/${group_id}/list`,
+      schema: ExpenseDateSchema,
+    });
 
-export const getExpensesByCategory = (
-  category_id: CategoryType["id"]
-): Promise<ExpenseDateType> =>
-  fetchJson({
-    url: `expenses/category/${category_id}/list`,
-    schema: ExpenseDateSchema,
-  });
+  const getMonthlyExpensesByGroup = (
+    group_id: string,
+    month: Date
+  ): Promise<ExpenseDateType> =>
+    $api.get({
+      url: `expenses/groupe/${group_id}/mois/${formatDateISO(month)}/list`,
+      schema: ExpenseDateSchema,
+    });
 
-export const postExpense = (
-  expense: NewExpenseType
-): Promise<{ message: string }> =>
-  postJson({
-    url: "expenses",
-    body: expense,
-    schema: z.object({ message: z.string() }),
-  });
+  const getExpensesByCategory = (
+    category_id: string
+  ): Promise<ExpenseDateType> =>
+    $api.get({
+      url: `expenses/category/${category_id}/list`,
+      schema: ExpenseDateSchema,
+    });
 
-export const patchExpense = (
-  expense_id: string,
-  expense: NewExpenseType
-): Promise<{ message: string }> =>
-  patchJson({
-    url: `expenses/${expense_id}`,
-    body: expense,
-    schema: z.object({ message: z.string() }),
-  });
+  const postExpense = (expense: NewExpenseType): Promise<{ message: string }> =>
+    $api.post({
+      url: "expenses",
+      body: expense,
+      schema: z.object({ message: z.string() }),
+    });
 
-export const deleteExpense = (expense_id: string): Promise<unknown> =>
-  deleteJson({
-    url: `expenses/${expense_id}`,
-    schema: z.any(),
-  });
+  const patchExpense = (
+    expense_id: string,
+    expense: NewExpenseType
+  ): Promise<{ message: string }> =>
+    $api.patch({
+      url: `expenses/${expense_id}`,
+      body: expense,
+      schema: z.object({ message: z.string() }),
+    });
+
+  const deleteExpense = (expense_id: string): Promise<unknown> =>
+    $api.delete({
+      url: `expenses/${expense_id}`,
+      schema: z.any(),
+    });
+
+  return {
+    getExpenseById,
+    getAllExpensesByGroup,
+    getMonthlyExpensesByGroup,
+    getExpensesByCategory,
+    postExpense,
+    patchExpense,
+    deleteExpense,
+  };
+};

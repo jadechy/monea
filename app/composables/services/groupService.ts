@@ -17,31 +17,42 @@ export type FetchGroupByUserType = GroupType & {
   categories?: Array<z.infer<typeof CategorySchema>>;
 };
 
-export const getGroupByUser = (): Promise<FetchGroupByUserType[]> =>
-  fetchJson({
-    url: `groupes/list`,
-    schema: FetchGroupByUserSchema.array(),
-  });
+export const useGroupService = () => {
+  const { $api } = useNuxtApp();
 
-export const postGroup = (group: NewGroupType): Promise<{ message: string }> =>
-  postJson({
-    url: "groupes",
-    body: group,
-    schema: z.object({ message: z.string() }),
-  });
+  const getGroupByUser = (): Promise<FetchGroupByUserType[]> =>
+    $api.get({
+      url: `groupes/list`,
+      schema: FetchGroupByUserSchema.array(),
+    });
 
-export const editGroup = (
-  groupId: GroupType["id"],
-  group: NewGroupType
-): Promise<{ message: string }> =>
-  patchJson({
-    url: `groupes/${groupId}`,
-    body: group,
-    schema: z.object({ message: z.string() }),
-  });
+  const postGroup = (group: NewGroupType): Promise<{ message: string }> =>
+    $api.post({
+      url: "groupes",
+      body: group,
+      schema: z.object({ message: z.string() }),
+    });
 
-export const deleteGroup = (groupId: GroupType["id"]): Promise<unknown> =>
-  deleteJson({
-    url: `groupes/${groupId}`,
-    schema: z.any(),
-  });
+  const editGroup = (
+    groupId: GroupType["id"],
+    group: NewGroupType
+  ): Promise<{ message: string }> =>
+    $api.patch({
+      url: `groupes/${groupId}`,
+      body: group,
+      schema: z.object({ message: z.string() }),
+    });
+
+  const deleteGroup = (groupId: GroupType["id"]): Promise<unknown> =>
+    $api.delete({
+      url: `groupes/${groupId}`,
+      schema: z.any(),
+    });
+
+  return {
+    getGroupByUser,
+    postGroup,
+    editGroup,
+    deleteGroup,
+  };
+};

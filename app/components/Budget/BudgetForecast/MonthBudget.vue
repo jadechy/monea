@@ -11,28 +11,25 @@ import {
 import type { GroupType } from "@/types/groupType";
 import { DatePicker } from "primevue";
 import { ref, computed, watch } from "vue";
-import { fetchBudgetRemainingInMonth } from "~/composables/services/budgetService";
-import { getMonthlyExpensesByGroup } from "~/composables/services/expenseService";
 import { truncateToTenth } from "@/utils/number";
 import { useQuery } from "@tanstack/vue-query";
 import Day from "./DayBudget.vue";
 import { useGroupsStore } from "@/stores/groupStore";
+import { useBudgetService } from "~/composables/services/budgetService";
 
-const { group_id } = defineProps<{ group_id: GroupType["id"] }>();
+const { group_id } = defineProps<{ group_id: string }>();
 const { groupById } = useGroupsStore();
 const group = computed(() => groupById({ id: group_id }));
 const currentDate = ref<Date | null>(null);
 const currentMonth = ref<Date>(getCurrentMonthStartDate());
 
 const currentMonthFormatted = computed(() => formatDateISO(currentMonth.value));
-
+const { fetchBudgetRemainingInMonth } = useBudgetService();
 // Query
-const { data: expenses, refetch: refetchExpenses } = useQuery({
-  queryKey: computed(() => ["expenses", group_id, currentMonth.value]),
-  queryFn: () => getMonthlyExpensesByGroup(group_id, currentMonth.value),
-  enabled: computed(() => !!group_id),
-});
-
+const {
+  expensesByMonthAndGroup: expenses,
+  refetchByMonthAndGroup: refetchExpenses,
+} = useExpenseMutation();
 const { data: monthData, refetch: refetchBudget } = useQuery({
   queryKey: computed(() => [
     "budget-remaining-in-day",

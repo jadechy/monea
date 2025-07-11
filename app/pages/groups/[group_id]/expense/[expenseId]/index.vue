@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { Button, Chip } from "primevue";
-import { getExpenseById } from "~/composables/services/expenseService";
 import default_avatar from "@/assets/default_avatar.svg";
 import { useQuery } from "@tanstack/vue-query";
 import { useGroupsStore } from "@/stores/groupStore";
@@ -9,20 +8,18 @@ import type { ExpenseType } from "~/types/expenseType";
 import type { GroupType } from "~/types/groupType";
 
 // Props
-const props = defineProps<{
-  id: ExpenseType["id"];
-  group_id: GroupType["id"];
-}>();
+const route = useRoute();
+const { group_id, category_id, expense_id } = route.params as {
+  group_id: string;
+  category_id?: string;
+  expense_id?: string;
+};
 const router = useRouter();
 // Group
 const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: props.group_id }));
+const group = computed(() => groupById({ id: group_id }));
 
-// Query
-const { data: expense } = useQuery({
-  queryKey: ["expense-by-id", props.id],
-  queryFn: () => getExpenseById(props.id),
-});
+const { expense } = useExpenseMutation();
 </script>
 
 <template>
@@ -30,8 +27,7 @@ const { data: expense } = useQuery({
     v-if="group"
     :label="expense?.title ?? 'error'"
     :color="group.color"
-    routeName="group"
-    :params="{ id: group.id }"
+    :to="`groups/${group_id}`"
   />
   <div class="flex flex-col items-center gap-10" v-if="expense && group">
     <div class="flex flex-col md:flex-row gap-2 justify-between w-full">

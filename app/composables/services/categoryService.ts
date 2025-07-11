@@ -1,15 +1,23 @@
 import { CategorySchema, type CategoryType } from "~/types/categoryType";
+import { z } from "zod";
 
-export const fetchCategory = (categoryId: string): Promise<CategoryType> =>
-  fetchJson({
-    url: `categories/${categoryId}`,
-    schema: CategorySchema,
-  });
+export const useCategoryService = () => {
+  const { $api } = useNuxtApp();
 
-export const fetchCategoryByGroup = (
-  groupeId: string
-): Promise<CategoryType[]> =>
-  fetchJson({
-    url: `categories/${groupeId}/list`,
-    schema: CategorySchema.array(),
-  });
+  const fetchCategory = (categoryId: string): Promise<CategoryType> =>
+    $api.get({
+      url: `categories/${categoryId}`,
+      schema: CategorySchema,
+    });
+
+  const fetchCategoryByGroup = (groupId: string): Promise<CategoryType[]> =>
+    $api.get({
+      url: `categories/${groupId}/list`,
+      schema: CategorySchema.array(),
+    });
+
+  return {
+    fetchCategory,
+    fetchCategoryByGroup,
+  };
+};

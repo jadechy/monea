@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from "vue";
 import Chart from "primevue/chart";
-import {
-  formatDayMonth,
-  getCurrentMonthStartDate,
-  getDaysOfCurrentMonth,
-} from "@/utils/date";
-import { getMonthlyExpensesByGroup } from "~/composables/services/expenseService";
-import { useQuery } from "@tanstack/vue-query";
+import { formatDayMonth, getDaysOfCurrentMonth } from "@/utils/date";
 import { useGroupsStore } from "@/stores/groupStore";
 import type { ChartData } from "chart.js";
 
@@ -21,11 +15,7 @@ const days = getDaysOfCurrentMonth();
 const labels = days.map((d) => formatDayMonth(d));
 
 // Query
-const { data: expenses } = useQuery({
-  queryKey: ["expenses-monthly-group", group_id],
-  queryFn: () =>
-    getMonthlyExpensesByGroup(group_id, getCurrentMonthStartDate()),
-});
+const { expensesByMonthAndGroup: expenses } = useExpenseMutation();
 
 // Chart
 const chartData = ref<ChartData<"line", number[], string>>({

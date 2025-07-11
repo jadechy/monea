@@ -42,7 +42,7 @@ export const useBudgetService = () => {
     }) as Promise<z.infer<typeof AmountSchema>>;
 
   const fetchBudgetCategoryDateRemaining = (
-    category_id: CategoryType["id"],
+    category_id: string,
     month: BudgetType["monthStart"]
   ): Promise<z.infer<typeof AmountSchema>> =>
     $api.get({

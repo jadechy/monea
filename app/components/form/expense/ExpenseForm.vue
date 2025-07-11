@@ -9,10 +9,7 @@ import { useAuthStore } from "~/stores/authStore";
 import { convertToLocalDate } from "@/utils/date";
 import { useExpenseMutation } from "@/composables/useExpenseMutation";
 import { useGroupsStore } from "@/stores/groupStore";
-import { useQuery } from "@tanstack/vue-query";
-import { getMembersByGroup } from "~/composables/services/memberService";
 import type { UserType } from "@/types/user";
-import BaseSection from "../ui-kit/BaseSection.vue";
 import { useForm } from "@primevue/forms/useform";
 // Props
 
@@ -39,12 +36,8 @@ const {
   createExpenseMutation,
   updateExpenseMutation,
   deleteExpenseMutation,
-} = useExpenseMutation(group_id, expense_id);
-const { data: members } = useQuery({
-  queryKey: ["members-by-group", group_id],
-  queryFn: () => getMembersByGroup(group_id),
-  enabled: !!group_id,
-});
+} = useExpenseMutation();
+const { members } = useMemberMutation();
 type FormattedMembers = {
   label: string;
   value: number;

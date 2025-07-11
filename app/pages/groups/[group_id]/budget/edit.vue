@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useBudget } from "@/composables/useBudget";
+import { useBudget } from "~/composables/useBudgetMutation";
 import { useGroupsStore } from "@/stores/groupStore";
 import { Form, type FormInstance, type FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
@@ -11,11 +11,12 @@ import {
   NewBudgetSchemaResolver,
   type NewBudgetType,
 } from "~/types/budgetType";
-import type { GroupType } from "~/types/groupType";
 
 // Props
-const { group_id } = defineProps<{ group_id: GroupType["id"] }>();
-
+const route = useRoute();
+const { group_id } = route.params as {
+  group_id: string;
+};
 // Const
 const year = ref<Date>(new Date());
 const { groupById } = useGroupsStore();
@@ -23,10 +24,7 @@ const group = computed(() => groupById({ id: group_id }));
 const formRef = ref<FormInstance | null>(null);
 
 // Queries
-const { refetchBudget, postBudgetsMutation, budgetList } = useBudget(
-  group_id,
-  year
-);
+const { refetchBudget, postBudgetsMutation, budgetList } = useBudget(year);
 
 const computeInitialValues = () => {
   if (!budgetList.value || !group.value?.categories) return {};
@@ -78,10 +76,7 @@ const form = useForm({
   <SubHeader
     label="Edition des Budgets"
     :color="group?.color"
-    routeName="budget_group"
-    :params="{
-      group_id: group_id,
-    }"
+    :to="`/groups/${group_id}/budget`"
   />
   <div class="w-full flex justify-center">
     <DatePicker
