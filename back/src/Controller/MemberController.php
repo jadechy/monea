@@ -13,7 +13,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 use App\Entity\Member;
 use App\Entity\User;
-use App\Entity\Groupe;
 use App\Entity\GroupInvitation;
 use App\Enum\MemberRoleEnum;
 use App\Enum\MemberStatusEnum;

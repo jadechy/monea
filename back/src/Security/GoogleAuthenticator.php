@@ -4,6 +4,7 @@ namespace App\Security;
 
 use App\Entity\RefreshToken;
 use App\Enum\UserRoleEnum;
+use Symfony\Component\Filesystem\Filesystem;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -14,6 +15,7 @@ use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use League\OAuth2\Client\Provider\GoogleUser;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -111,9 +113,16 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 $user->setRoles([UserRoleEnum::USER]);
                 $user->setPlainPassword('password123');
                 $user->setPassword('password123');
-                $user->setPicture($googleUser->getAvatar());
                 $user->setCreatedAt(new \DateTimeImmutable());
                 $user->setBirthday(new \DateTimeImmutable('2003-09-21'));
+                $avatarUrl = $googleUser->getAvatar();
+                if ($avatarUrl) {
+                    $localFilename = $this->downloadUserAvatar($avatarUrl);
+                    if ($localFilename) {
+                        $user->setPicture($localFilename);
+                    }
+                }
+
                 $errorsUser = $this->validator->validate($user);
                 if (count($errorsUser) > 0) {
                     throw new \RuntimeException('Erreur lors de la validation de l’utilisateur : ' . (string) $errorsUser);
@@ -168,5 +177,43 @@ class GoogleAuthenticator extends OAuth2Authenticator
         return new JsonResponse([
             'message' => $message,
         ]);
+    }
+
+
+    /**
+     * Télécharge l'image d'avatar et la stocke localement.
+     * Retourne le nom du fichier local ou null si erreur.
+     */
+    private function downloadUserAvatar(string $url): ?string
+    {
+        try {
+            $httpClient = HttpClient::create();
+            $response = $httpClient->request('GET', $url);
+
+            if ($response->getStatusCode() !== 200) {
+                return null;
+            }
+
+            $content = $response->getContent();
+            $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+            if (!$ext) {
+                $ext = 'jpg';
+            }
+
+            $filename = uniqid('user_avatar_') . '.' . $ext;
+
+            $uploadDir = __DIR__ . '/../../public/uploads/user/';
+
+            $filesystem = new Filesystem();
+            if (!$filesystem->exists($uploadDir)) {
+                $filesystem->mkdir($uploadDir, 0755);
+            }
+
+            file_put_contents($uploadDir . $filename, $content);
+
+            return "/uploads/user/" . $filename;
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }

@@ -7,15 +7,12 @@ const { user } = useAuthStore();
 const { groupsCount, personnalGroup } = storeToRefs(useGroupsStore());
 const router = useRouter();
 const { clearAuth } = useAuthStore();
-const config = useRuntimeConfig();
-const API_URL = config.public.apiBase;
-console.log(API_URL);
 </script>
 
 <template>
   <div class="flex flex-col justify-center items-center" v-if="user">
     <img
-      :src="user.picture ? `${API_URL}${user.picture}` : default_avatar"
+      :src="user.picture ?? default_avatar"
       class="rounded-full w-32 h-32 bg-gray-100"
     />
     <p class="text-sm mt-3">
