@@ -1,4 +1,9 @@
 import { z } from "zod";
+import {
+  UserUploadResponseSchema,
+  type UserEditType,
+  type UserUploadResponseType,
+} from "~/types/user";
 
 export type EditUserResponseType = {
   message: string;
@@ -7,14 +12,22 @@ export type EditUserResponseType = {
 export const useUserService = () => {
   const { $api } = useNuxtApp();
 
-  const editUser = (user: FormData): Promise<EditUserResponseType> =>
+  const editUser = (user: UserEditType): Promise<EditUserResponseType> =>
     $api.patch({
       url: `users/edit`,
       body: user,
       schema: z.object({ message: z.string() }),
     });
 
+  const uploadFile = (user: FormData): Promise<UserUploadResponseType> =>
+    $api.upload({
+      url: `users/picture`,
+      body: user,
+      schema: UserUploadResponseSchema,
+    });
+
   return {
     editUser,
+    uploadFile,
   };
 };

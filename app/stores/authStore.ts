@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useGroupsStore } from "./groupStore";
-import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { useAuthService } from "~/composables/services/authService";
 import type {
   LoginRequestType,
@@ -12,6 +12,7 @@ import type {
 } from "~/types/authType";
 import { refreshToken as refreshTokenService } from "~/composables/services/refreshTokenService";
 import { useUserService } from "~/composables/services/userService";
+import type { UserEditType } from "~/types/user";
 export interface AuthResponse {
   token: string;
   user: MeType;
@@ -29,7 +30,7 @@ export const useAuthStore = defineStore("auth", () => {
   const error = ref<string | null>(null);
 
   const { login, me } = useAuthService();
-  const { editUser } = useUserService();
+  const { editUser, uploadFile } = useUserService();
 
   const isAuthenticated = computed(() => !!token.value);
   const userInitials = computed(() => {
@@ -98,19 +99,24 @@ export const useAuthStore = defineStore("auth", () => {
       router.push("/auth/login");
     }
   };
+  const { data: userData, refetch: refetchMe } = useQuery({
+    queryKey: ["me"],
+    queryFn: me,
+    enabled: !!user.value?.id,
+  });
+  watch(userData, (newData) => {
+    if (newData) {
+      user.value = newData;
+    }
+  });
 
   const authSuccess = async (res: LoginResponseType) => {
     token.value = res.token;
     if (res.refresh_token) {
       refreshToken.value = res.refresh_token;
     }
-
-    const resMe = await me();
-    if (resMe) {
-      user.value = resMe;
-    }
+    await refetchMe();
     saveToStorage();
-
     router.push({ name: "groups" });
     const groupStore = useGroupsStore();
     await groupStore.refetch();
@@ -143,7 +149,6 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
-  // Méthode refresh indépendante utilisant le service commun
   const refreshAuthToken = async () => {
     if (!refreshToken.value) {
       throw new Error("Pas de refresh token disponible");
@@ -160,24 +165,36 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const updateUser = useMutation({
-    mutationFn: (data: FormData) => editUser(data),
+    mutationFn: (data: UserEditType) => editUser(data),
     onMutate: () => {
       isLoading.value = true;
       error.value = null;
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: ["profil", "me"] });
-
-      const resMe = await me();
-      if (resMe) {
-        user.value = resMe;
-      }
-
+      queryClient.invalidateQueries({ queryKey: ["profil"] });
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+      await refetchMe();
       saveToStorage();
       router.push({ name: "profil" });
     },
     onSettled: () => {
       isLoading.value = false;
+    },
+  });
+  const uploadPicture = useMutation({
+    mutationFn: async (file: File) => {
+      const form = new FormData();
+      form.append("picture", file);
+      return uploadFile(form);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["me"] });
+      await refetchMe();
+      saveToStorage();
+    },
+    onError: (error) => {
+      console.error("Upload failed", error);
+      alert("Erreur lors de l'upload");
     },
   });
 
@@ -196,6 +213,7 @@ export const useAuthStore = defineStore("auth", () => {
     loginGoogle,
     refreshAuthToken,
     updateUser,
+    uploadPicture,
 
     clearAuth,
   };

@@ -54,7 +54,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ),
         new Delete(),
         new Post(
-            uriTemplate: '/user/picture',
+            uriTemplate: '/users/picture',
             controller: UserController::class . '::uploadPicture',
             // security: "is_granted('ROLE_USER')",
             deserialize: false,
@@ -193,6 +193,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:me'])]
     private \DateTimeImmutable $birthday;
 
+    #[Groups(['user:me'])]
     #[ORM\Column(length: 255, nullable: true, unique: true, name: 'USR_GOOGLE_ID')]
     private ?string $googleId = null;
 

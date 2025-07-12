@@ -1,18 +1,10 @@
 <script setup lang="ts">
-import {
-  Button,
-  DatePicker,
-  Divider,
-  FileUpload,
-  Message,
-  Password,
-} from "primevue";
+import { Button, DatePicker, Divider, Message, Password } from "primevue";
 import { Form, type FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { useAuthService } from "~/composables/services/authService";
 import { useMutation } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
-import { ref } from "vue";
 import {
   RegisterRequestSchema,
   type RegisterRequestType,
@@ -20,13 +12,13 @@ import {
 import WrapperInput from "~/components/ui-kit/input/WrapperInput.vue";
 import FormInput from "~/components/ui-kit/input/FormInput.vue";
 import GoogleComponent from "~/components/ui-kit/GoogleComponent.vue";
+import type { UserEditType } from "~/types/user";
 
 const route = useRoute();
 const router = useRouter();
-const fileupload = ref();
 const { register } = useAuthService();
 const registerMutation = useMutation({
-  mutationFn: (data: FormData) => register(data),
+  mutationFn: (data: UserEditType) => register(data),
   onSuccess: () => {
     router.push({ name: "auth-confirm" });
   },
@@ -47,16 +39,8 @@ const submitRegister = async (form: FormSubmitEvent) => {
   if (invitationToken) {
     data.invitationToken = invitationToken;
   }
-  const uploadedFile = fileupload.value?.files?.[0] || null;
 
-  const formData = new FormData();
-  if (uploadedFile) {
-    formData.append("picture", uploadedFile);
-  }
-  Object.entries(data).forEach(([key, value]) => {
-    formData.append(key, value as string);
-  });
-  registerMutation.mutate(formData);
+  registerMutation.mutate(data);
 };
 </script>
 
@@ -96,13 +80,6 @@ const submitRegister = async (form: FormSubmitEvent) => {
       placeholder="Pseudonyme"
       :form="$form"
       autocomplete="username"
-    />
-    <FileUpload
-      ref="fileupload"
-      mode="basic"
-      name="demo[]"
-      accept="image/*"
-      :maxFileSize="1000000"
     />
     <WrapperInput name="password" placeholder="Mot de passe" :form="$form">
       <Password
