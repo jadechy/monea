@@ -43,6 +43,7 @@ export default defineNuxtConfig({
     { path: "~/components/form", pathPrefix: false },
     { path: "~/components/expense", pathPrefix: false },
     { path: "~/components/budget", pathPrefix: false },
+    { path: "~/components/savings", pathPrefix: false },
   ],
   vite: {
     plugins: [tailwindcss()],

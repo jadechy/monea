@@ -6,6 +6,7 @@ import { storeToRefs } from "pinia";
 const { user } = useAuthStore();
 const { groupsCount, personnalGroup } = storeToRefs(useGroupsStore());
 const router = useRouter();
+const { clearAuth } = useAuthStore();
 </script>
 
 <template>
@@ -40,6 +41,10 @@ const router = useRouter();
         :class="[getGroupColor({ color: personnalGroup?.color })]"
         @click="router.push({ name: 'profil_edit' })"
       />
+
+      <p @click="(clearAuth(), router.push({ name: 'auth-login' }))">
+        Deconnexion
+      </p>
     </div>
   </div>
   <div class="grid grid-cols-3 gap-4 mt-12" v-if="personnalGroup">
