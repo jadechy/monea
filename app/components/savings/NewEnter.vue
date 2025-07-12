@@ -1,19 +1,19 @@
 <script lang="ts" setup>
 import type { FormModel } from "~/pages/savings/index.vue";
-
-defineProps<{ form: FormModel; type: "exits" | "enters" }>();
+export type CategoryForm = "exits" | "enters";
+defineProps<{ form: FormModel; category: CategoryForm }>();
 </script>
 
 <template>
   <Card>
     <template #title
-      >{{ type === "exits" ? "Sortie" : "Entrée" }} d'argent</template
+      >{{ category === "exits" ? "Sortie" : "Entrée" }} d'argent</template
     >
     <template #content>
       <div class="flex flex-col gap-14 sm:gap-8 mt-3">
         <div
           class="flex gap-8 justify-between sm:flex-row flex-col"
-          v-for="(current, i) in form[type]"
+          v-for="(current, i) in form[category]"
           :key="i"
         >
           <div class="flex gap-6">
@@ -32,7 +32,7 @@ defineProps<{ form: FormModel; type: "exits" | "enters" }>();
 
           <Button
             class="h-fit"
-            v-if="i === form[type].length - 1"
+            v-if="i === form[category].length - 1"
             :disabled="
               !(
                 current.name &&
@@ -40,9 +40,9 @@ defineProps<{ form: FormModel; type: "exits" | "enters" }>();
                 current.value !== null
               )
             "
-            @click="form[type].push({ name: null, value: null })"
+            @click="form[category].push({ name: null, value: null })"
             icon="pi pi-plus"
-            :aria-label="`add ${type}`"
+            :aria-label="`add ${category}`"
           />
         </div>
       </div>

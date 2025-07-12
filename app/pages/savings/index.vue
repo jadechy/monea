@@ -3,8 +3,6 @@ import { ref, computed } from "vue";
 import DatePicker from "primevue/calendar";
 import FloatLabel from "primevue/floatlabel";
 
-import { useGeneratedMonths } from "@/composables/useGeneratedMonths";
-
 type InputData = {
   name: string | null;
   value: number | null;
@@ -62,6 +60,11 @@ const savings = computed(() => {
   }
   return savings;
 });
+const { exportFormToExcel } = useExcelFormSavingsExport({
+  form: form.value,
+  months: months.value,
+  savings: savings.value,
+});
 </script>
 
 <template>
@@ -91,11 +94,17 @@ const savings = computed(() => {
     </FloatLabel>
   </div>
   <div class="flex flex-col lg:flex-row gap-10 mt-6">
-    <NewEnter :form="form" type="enters" />
-    <NewEnter :form="form" type="exits" />
+    <NewEnter :form="form" category="enters" />
+    <NewEnter :form="form" category="exits" />
   </div>
-
-  <Accordion :value="0" class="shadow-sm mt-10">
+  <div class="flex justify-end mt-14">
+    <Button
+      @click="async () => await exportFormToExcel()"
+      icon="pi pi-file-export"
+      label="Exporter via Excel"
+    />
+  </div>
+  <Accordion :value="0" class="shadow-sm mt-3">
     <AccordionPanel
       v-for="(month, monthIndex) in months"
       :key="monthIndex"
@@ -106,14 +115,14 @@ const savings = computed(() => {
         <div
           class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3"
         >
-          <RowSavings type="enters" :form="form" />
-          <RowSavings type="exits" :form="form" />
+          <RowSavings category="enters" :form="form" />
+          <RowSavings category="exits" :form="form" />
         </div>
         <p
           v-if="!isNaN(savings[monthIndex])"
           class="mt-4 text-center font-bold text-xl"
         >
-          Epargne : {{ savings[monthIndex] }}
+          Epargne : {{ savings[monthIndex] }} €
         </p>
       </AccordionContent>
     </AccordionPanel>

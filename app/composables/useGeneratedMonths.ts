@@ -1,8 +1,7 @@
-// composables/useGeneratedMonths.ts
 import { computed } from "vue";
 import type { FormModel } from "~/pages/savings/index.vue";
 
-export function useGeneratedMonths({ form }: { form: Ref<FormModel> }) {
+export const useGeneratedMonths = ({ form }: { form: Ref<FormModel> }) => {
   const months = computed(() => {
     const start = form.value.start;
     const end = form.value.end;
@@ -26,4 +25,4 @@ export function useGeneratedMonths({ form }: { form: Ref<FormModel> }) {
   });
 
   return { months };
-}
+};

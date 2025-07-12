@@ -1,19 +1,22 @@
 <script lang="ts" setup>
 import type { FormModel } from "~/pages/savings/index.vue";
+import type { CategoryForm } from "./NewEnter.vue";
 
-defineProps<{ form: FormModel; type: "exits" | "enters" }>();
+defineProps<{ form: FormModel; category: CategoryForm }>();
 </script>
 
 <template>
   <div
     class="item rounded shadow-sm h-fit"
-    v-for="(current, i) in form[type].filter((e) => e.name && e.value != null)"
-    :key="type + '-' + i"
+    v-for="(current, i) in form[category].filter(
+      (e) => e.name && e.value != null
+    )"
+    :key="category + '-' + i"
   >
     <div class="flex gap-2 items-center">
       <Tag
-        :severity="type === 'enters' ? 'success' : 'danger'"
-        :value="type === 'enters' ? 'Entrée' : 'Sortie'"
+        :severity="category === 'enters' ? 'success' : 'danger'"
+        :value="category === 'enters' ? 'Entrée' : 'Sortie'"
       />
       <p>{{ current.name }}</p>
     </div>
