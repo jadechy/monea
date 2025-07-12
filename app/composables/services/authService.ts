@@ -8,6 +8,7 @@ import {
   type RefreshToken,
   type RegisterResponseType,
 } from "~/types/authType";
+import type { UserEditType } from "~/types/user";
 
 export const useAuthService = () => {
   const { $api } = useNuxtApp();
@@ -19,7 +20,7 @@ export const useAuthService = () => {
         schema: LoginResponseSchema,
       }) as Promise<LoginResponseType>,
 
-    register: (data: FormData) =>
+    register: (data: UserEditType) =>
       $api.post({
         url: "register",
         body: data,

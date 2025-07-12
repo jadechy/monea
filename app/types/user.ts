@@ -1,14 +1,14 @@
-import { z } from "zod"
+import { z } from "zod";
 const isAdult = (date: Date | string) => {
-  if (typeof date === "string") date = new Date(date)
-  const now = new Date()
-  const age = now.getFullYear() - date.getFullYear()
+  if (typeof date === "string") date = new Date(date);
+  const now = new Date();
+  const age = now.getFullYear() - date.getFullYear();
   const hasHadBirthdayThisYear =
     now.getMonth() > date.getMonth() ||
-    (now.getMonth() === date.getMonth() && now.getDate() >= date.getDate())
+    (now.getMonth() === date.getMonth() && now.getDate() >= date.getDate());
 
-  return hasHadBirthdayThisYear ? age >= 18 : age > 18
-}
+  return hasHadBirthdayThisYear ? age >= 18 : age > 18;
+};
 export const UserSchema = z.object({
   id: z.number({
     message: "L'identifiant est requis",
@@ -18,8 +18,12 @@ export const UserSchema = z.object({
     .string({
       message: "Le nom d'utilisateur est requis",
     })
-    .min(3, { message: "Le nom d'utilisateur doit contenir au moins 3 caractères" })
-    .max(50, { message: "Le nom d'utilisateur ne doit pas dépasser 50 caractères" }),
+    .min(3, {
+      message: "Le nom d'utilisateur doit contenir au moins 3 caractères",
+    })
+    .max(50, {
+      message: "Le nom d'utilisateur ne doit pas dépasser 50 caractères",
+    }),
 
   name: z
     .string({
@@ -41,12 +45,12 @@ export const UserSchema = z.object({
 
   birthday: z.preprocess(
     (val) => {
-      if (typeof val === "string" || val instanceof Date) return new Date(val)
-      return val
+      if (typeof val === "string" || val instanceof Date) return new Date(val);
+      return val;
     },
     z.date().refine(isAdult, {
       message: "Vous devez avoir au moins 18 ans",
-    }),
+    })
   ),
 
   password: z.string({
@@ -63,21 +67,23 @@ export const UserSchema = z.object({
   createdAt: z.preprocess(
     (val) => {
       if (typeof val === "string" || val instanceof Date) {
-        const d = new Date(val)
-        return isNaN(d.getTime()) ? undefined : d
+        const d = new Date(val);
+        return isNaN(d.getTime()) ? undefined : d;
       }
-      return undefined
+      return undefined;
     },
-    z.date({ message: "La date de création doit être une date valide" }),
+    z.date({ message: "La date de création doit être une date valide" })
   ),
 
   picture: z.string().nullable(),
-
   resetToken: z.string().nullable(),
-
   invitationToken: z.string().optional(),
-})
+  googleId: z.string().optional(),
+});
 
+export const UserUploadResponseSchema = z.object({
+  picture: z.string(),
+});
 export const UserEditSchema = UserSchema.pick({
   username: true,
   lastname: true,
@@ -85,14 +91,15 @@ export const UserEditSchema = UserSchema.pick({
   email: true,
   picture: true,
   birthday: true,
-})
+});
 
 export const UserDTOSchema = UserSchema.pick({
   id: true,
   username: true,
   picture: true,
-})
+});
 
-export type UserDTOType = z.infer<typeof UserDTOSchema>
-export type UserType = z.infer<typeof UserSchema>
-export type UserEditType = z.infer<typeof UserEditSchema>
+export type UserDTOType = z.infer<typeof UserDTOSchema>;
+export type UserType = z.infer<typeof UserSchema>;
+export type UserEditType = z.infer<typeof UserEditSchema>;
+export type UserUploadResponseType = z.infer<typeof UserUploadResponseSchema>;

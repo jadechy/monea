@@ -6,12 +6,10 @@ import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { useAuthStore } from "@/stores/authStore";
 import { useGroupsStore } from "@/stores/groupStore";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
 import { UserEditSchema, type UserEditType } from "~/types/user";
 const { user, updateUser } = useAuthStore();
 
 const { personnalGroup } = storeToRefs(useGroupsStore());
-const fileupload = ref();
 
 const onFormSubmit = (form: FormSubmitEvent) => {
   if (!form.valid) return;
@@ -21,21 +19,7 @@ const onFormSubmit = (form: FormSubmitEvent) => {
     acc[k] = state.value;
     return acc;
   }, {} as UserEditType);
-  const uploadedFile = fileupload.value?.files?.[0] || null;
-
-  const formData = new FormData();
-  if (uploadedFile) {
-    formData.append("picture", uploadedFile);
-  }
-  Object.entries(data).forEach(([key, value]) => {
-    if (key === "birthday" && value) {
-      formData.append("birthday", convertToLocalDate(value).toISOString());
-    } else {
-      formData.append(key, value as string);
-    }
-  });
-
-  updateUser.mutate(formData);
+  updateUser.mutate({ ...data, birthday: convertToLocalDate(data.birthday) });
 };
 </script>
 
@@ -81,13 +65,6 @@ const onFormSubmit = (form: FormSubmitEvent) => {
       placeholder="Pseudonyme"
       :form="$form"
       autocomplete="username"
-    />
-    <FileUpload
-      ref="fileupload"
-      mode="basic"
-      name="demo[]"
-      accept="image/*"
-      :maxFileSize="1000000"
     />
 
     <Button
