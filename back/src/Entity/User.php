@@ -56,7 +56,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Post(
             uriTemplate: '/users/picture',
             controller: UserController::class . '::uploadPicture',
-            // security: "is_granted('ROLE_USER')",
+            security: "is_granted('ROLE_USER')",
             deserialize: false,
             read: false,
             write: false,

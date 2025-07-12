@@ -6,6 +6,10 @@ import {
   type NewGroupType,
 } from "~/types/groupType";
 import { MemberDTOSchema } from "~/types/memberType";
+import {
+  UserUploadResponseSchema,
+  type UserUploadResponseType,
+} from "~/types/user";
 
 export const FetchGroupByUserSchema = GroupSchema.extend({
   members: MemberDTOSchema.array().optional(),
@@ -47,11 +51,21 @@ export const useGroupService = () => {
       url: `groupes/${groupId}`,
       schema: z.any(),
     });
+  const uploadFile = (
+    groupId: number,
+    user: FormData
+  ): Promise<UserUploadResponseType> =>
+    $api.upload({
+      url: `groupes/${groupId}/picture`,
+      body: user,
+      schema: UserUploadResponseSchema,
+    });
 
   return {
     getGroupByUser,
     postGroup,
     editGroup,
     deleteGroup,
+    uploadFile,
   };
 };

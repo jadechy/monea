@@ -82,7 +82,7 @@ export const UserSchema = z.object({
 });
 
 export const UserUploadResponseSchema = z.object({
-  photo: z.string(),
+  picture: z.string(),
 });
 export const UserEditSchema = UserSchema.pick({
   username: true,

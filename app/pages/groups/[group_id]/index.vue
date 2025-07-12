@@ -14,8 +14,6 @@ const { expenses } = useExpenseMutation();
 
 <template>
   <AllExpensesDisplay
-    v-if="group"
-    :group="group"
     :subHeader="{
       label: group?.name ?? 'error',
       to: '/groups',

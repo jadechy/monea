@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import Button from "primevue/button";
 import Dialog from "primevue/dialog";
-import { defineExpose } from "vue";
+import Button from "primevue/button";
 import type { FileUploadSelectEvent } from "primevue";
-const { uploadPicture } = useAuthStore();
+
+const { uploadFn } = defineProps<{
+  header?: string;
+  uploadFn: (file: File) => Promise<unknown>;
+}>();
+
 const visible = ref(false);
 const selectedFile = ref<File | null>(null);
 const previewUrl = ref<string | null>(null);
+
 const open = () => {
   visible.value = true;
 };
@@ -15,6 +20,7 @@ const open = () => {
 const close = () => {
   visible.value = false;
   selectedFile.value = null;
+  previewUrl.value = null;
 };
 
 const onSelect = (event: FileUploadSelectEvent) => {
@@ -25,29 +31,26 @@ const onSelect = (event: FileUploadSelectEvent) => {
   }
 };
 
-const submit = () => {
-  if (!selectedFile.value) {
-    alert("Veuillez choisir un fichier.");
-    return;
-  }
-  uploadPicture.mutate(selectedFile.value);
+const submit = async () => {
+  if (!selectedFile.value) return;
+  await uploadFn(selectedFile.value);
   close();
 };
 
-defineExpose({ open });
+defineExpose({ open, close });
 </script>
 
 <template>
   <Dialog
     v-model:visible="visible"
     modal
-    header="Modifier la photo de profil"
+    :header="header || 'Téléverser une image'"
     :style="{ width: '30rem' }"
   >
     <div class="flex justify-center items-center gap-10">
       <FileUpload
         ref="uploader"
-        name="profile"
+        name="image"
         :customUpload="true"
         accept="image/*"
         mode="basic"

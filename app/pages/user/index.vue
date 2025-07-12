@@ -3,12 +3,12 @@ import { useAuthStore } from "@/stores/authStore";
 import { useGroupsStore } from "@/stores/groupStore";
 import default_avatar from "@/assets/default_avatar.svg";
 import { storeToRefs } from "pinia";
-import type ProfilePictureDialog from "~/components/profil/ProfilePictureDialog.vue";
+import type ImageUploadDialog from "~/components/ui-kit/ImageUploadDialog.vue";
 const { user } = storeToRefs(useAuthStore());
 const { groupsCount, personnalGroup } = storeToRefs(useGroupsStore());
 const router = useRouter();
-const { clearAuth } = useAuthStore();
-const dialogRef = ref<InstanceType<typeof ProfilePictureDialog> | null>(null);
+const { clearAuth, uploadPicture } = useAuthStore();
+const dialogRef = ref<InstanceType<typeof ImageUploadDialog> | null>(null);
 </script>
 
 <template>
@@ -82,5 +82,9 @@ const dialogRef = ref<InstanceType<typeof ProfilePictureDialog> | null>(null);
     />
   </div>
 
-  <ProfilePictureDialog ref="dialogRef" />
+  <ImageUploadDialog
+    ref="uploadRef"
+    :uploadFn="(file) => uploadPicture.mutateAsync(file)"
+    header="Modifier la photo de profil"
+  />
 </template>

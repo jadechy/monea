@@ -24,6 +24,8 @@ use App\Enum\MemberStatusEnum;
 use App\Repository\BudgetRepository;
 use App\Repository\GroupeRepository;
 use App\Repository\MemberRepository;
+use App\Service\FileUploader;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[AsController]
 class GroupeController extends AbstractController
@@ -73,7 +75,6 @@ class GroupeController extends AbstractController
         $group->setType($data->type);
         $group->setColor($data->color);
         $group->setCreatedAt(new \DateTimeImmutable());
-        $group->setPicture("lalaal");
         if ($data->categories) {
             foreach ($data->categories as $categoryInput) {
                 $category = new Category();
@@ -278,5 +279,43 @@ class GroupeController extends AbstractController
             [],
             ['groups' => ['member:read', 'user:read']]
         );
+    }
+
+    public function uploadCoverGroup(int $id, Request $request, FileUploader $uploader): JsonResponse
+    {
+        $group = $this->groupeRepository->find($id);
+
+        if (!$group) {
+            return $this->json(['error' => 'Groupe introuvable'], Response::HTTP_NOT_FOUND);
+        }
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+
+        /** @var UploadedFile $file */
+        $file = $request->files->get('picture');
+
+
+        if (!$file) {
+            return new JsonResponse(['error' => 'No file provided'], 400);
+        }
+        if ($user->getPicture()) {
+            $oldPath = $uploader->getTargetDirectory() . '/' . basename($group->getPicture());
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+        }
+        if (!in_array($file->getMimeType(), ['image/jpeg', 'image/png'])) {
+            return new JsonResponse(['error' => 'Format non supporté'], 400);
+        }
+        if ($file->getSize() > 7 * 1024 * 1024) {
+            return new JsonResponse(['error' => 'Fichier trop volumineux'], 400);
+        }
+        $filename = $uploader->upload($file, '/group');
+        $group->setPicture('/uploads/group/' . $filename);
+        $this->em->flush();
+
+        return new JsonResponse(['picture' => $group->getPicture()]);
     }
 }

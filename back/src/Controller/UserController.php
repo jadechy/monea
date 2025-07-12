@@ -168,6 +168,6 @@ class UserController extends AbstractController
         $user->setPicture('/uploads/user/' . $filename);
         $em->flush();
 
-        return new JsonResponse(['photo' => $user->getPicture()]);
+        return new JsonResponse(['picture' => $user->getPicture()]);
     }
 }

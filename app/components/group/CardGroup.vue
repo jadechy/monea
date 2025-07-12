@@ -17,8 +17,12 @@ defineProps<Props>();
     ]"
     class="p-2.5 rounded-2xl transition-all text-gray-700"
   >
-    <div class="h-32 mb-6 flex justify-center items-center">
-      <img :src="group.picture" class="w-full h-full" v-if="group.picture" />
+    <div class="h-38 mb-4 flex justify-center items-center">
+      <img
+        :src="group.picture"
+        class="w-full h-full object-cover rounded-xl"
+        v-if="group.picture"
+      />
       <p v-else class="pi pi-wallet text-7xl" />
     </div>
     <div class="flex items-center justify-between font-semibold">
