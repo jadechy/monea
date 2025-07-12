@@ -14,16 +14,10 @@ const router = useRouter();
 <template>
   <header class="flex justify-between lg:px-10 px-5 mt-5 items-center">
     <h1 class="font-extrabold text-4xl mb-1.5">Monéa</h1>
-    <nav class="md:flex gap-4 hidden" v-if="personnalGroup">
+    <nav class="md:flex gap-4 hidden">
       <RouterLink :to="{ name: 'groups' }">Accueil</RouterLink>
-      <RouterLink
-        :to="{ name: 'group', params: { group_id: personnalGroup.id } }"
-        >Egroup personnel</RouterLink
-      >
-      <RouterLink :to="{ name: 'profil' }">Profil</RouterLink>
-      <p @click="(authStore.clearAuth(), router.push({ name: 'login' }))">
-        Deconnexion
-      </p>
+      <RouterLink :to="{ name: 'savings' }">Calcul épargne</RouterLink>
+      <RouterLink :to="{ name: 'user' }">Profil</RouterLink>
     </nav>
     <Button
       icon="pi pi-bars"
@@ -34,15 +28,8 @@ const router = useRouter();
     <Drawer v-model:visible="visible" header="Drawer" position="right">
       <nav class="flex flex-col gap-2">
         <RouterLink :to="{ name: 'groups' }">Accueil</RouterLink>
-        <RouterLink
-          :to="{ name: 'group', params: { group_id: personnalGroup.id } }"
-          v-if="personnalGroup"
-          >Egroup personnel</RouterLink
-        >
-        <RouterLink :to="{ name: 'profil' }">Profil</RouterLink>
-        <p @click="(authStore.clearAuth(), router.push({ name: 'login' }))">
-          Deconnexion
-        </p>
+        <RouterLink :to="{ name: 'savings' }">Calcul épargne</RouterLink>
+        <RouterLink :to="{ name: 'user' }">Profil</RouterLink>
       </nav>
     </Drawer>
   </header>
