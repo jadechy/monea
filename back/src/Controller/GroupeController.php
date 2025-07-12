@@ -130,11 +130,8 @@ class GroupeController extends AbstractController
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException('User not authenticated');
         }
-
-        $membre = $this->memberRepository->findOneBy(['groupe' => $group->getId(), 'individual' => $user->getId()]);
-        if ($membre->getRole() !== MemberRoleEnum::AUTHOR && $membre->getRole() !== MemberRoleEnum::ADMIN) {
-            throw $this->createAccessDeniedException('Vous ne pouvez modifier que vos groupes');
-        }
+        
+        $this->denyAccessUnlessGranted('modifier', $group);
 
         $group->setName($data->name ?? $group->getName());
         $group->setType(isset($data->type) ? $data->type : $group->getType());
