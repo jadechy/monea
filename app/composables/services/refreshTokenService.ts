@@ -1,6 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL || process.env.API_URL || "";
-
 export const refreshToken = async (refreshToken: string): Promise<string> => {
+  const config = useRuntimeConfig();
+  const API_URL = config.public.apiBase || "";
   const response = await fetch(`${API_URL}/api/token/refresh`, {
     method: "POST",
     headers: {

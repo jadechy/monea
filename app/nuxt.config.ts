@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
     public: {
-      apiBase: process.env.VITE_API_URL || "http://localhost:3000",
+      apiBase: process.env.NUXT_PUBLIC_API_URL,
     },
   },
   modules: [

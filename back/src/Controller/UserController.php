@@ -13,13 +13,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Entity\Member;
 use App\Enum\MemberStatusEnum;
 use App\Repository\GroupInvitationRepository;
+use App\Service\FileUploader;
 use App\Service\UserSetupService;
+use Symfony\Component\HttpFoundation\Request;
 
 #[AsController]
 class UserController extends AbstractController
@@ -133,5 +136,38 @@ class UserController extends AbstractController
         $this->em->flush();
 
         return $this->json(['message' => 'Utilisateur mis à jour avec succès']);
+    }
+    public function uploadPicture(Request $request, FileUploader $uploader, EntityManagerInterface $em): JsonResponse
+    {
+
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+        /** @var UploadedFile $file */
+        $file = $request->files->get('picture');
+
+
+        if (!$file) {
+            return new JsonResponse(['error' => 'No file provided'], 400);
+        }
+        if ($user->getPicture()) {
+            $oldPath = $uploader->getTargetDirectory() . '/' . basename($user->getPicture());
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+        }
+        if (!in_array($file->getMimeType(), ['image/jpeg', 'image/png'])) {
+            return new JsonResponse(['error' => 'Format non supporté'], 400);
+        }
+        if ($file->getSize() > 7 * 1024 * 1024) {
+            return new JsonResponse(['error' => 'Fichier trop volumineux'], 400);
+        }
+        $filename = $uploader->upload($file, '/user');
+        $user->setPicture('/uploads/user/' . $filename);
+        $em->flush();
+
+        return new JsonResponse(['photo' => $user->getPicture()]);
     }
 }

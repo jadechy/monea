@@ -16,14 +16,14 @@ class FileUploader
         private LoggerInterface  $logger,
     ) {}
 
-    public function upload(UploadedFile $file, string $folder = '/img/uploads'): string
+    public function upload(UploadedFile $file, string $folder): string
     {
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = strtolower($this->slugger->slug($originalFilename));
         $fileName = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
 
         try {
-            $file->move($this->targetDirectory . $folder, $fileName);
+            $file->move($this->targetDirectory . '/uploads' . $folder, $fileName);
         } catch (FileException $e) {
             $this->logger->error('An error occurred while uploading the file: ' . $e->getMessage());
         }

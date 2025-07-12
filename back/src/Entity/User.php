@@ -53,6 +53,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
             denormalizationContext: ['groups' => ['user:write']],
         ),
         new Delete(),
+        new Post(
+            uriTemplate: '/user/picture',
+            controller: UserController::class . '::uploadPicture',
+            // security: "is_granted('ROLE_USER')",
+            deserialize: false,
+            read: false,
+            write: false,
+            validate: false,
+            inputFormats: ['multipart' => ['multipart/form-data']],
+            outputFormats: ['json' => ['application/json']],
+        )
     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']]

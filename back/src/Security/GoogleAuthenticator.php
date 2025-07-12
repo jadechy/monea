@@ -35,6 +35,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
     private RefreshTokenManagerInterface $refreshTokenManager;
     private UserSetupService $userSetupService;
     private ValidatorInterface $validator;
+    private string $urlClient;
 
 
     public function __construct(
@@ -45,8 +46,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         RefreshTokenManagerInterface $refreshTokenManager,
         UserSetupService $userSetupService,
         ValidatorInterface $validator,
-
-
+        string $urlClient
     ) {
         $this->clientRegistry = $clientRegistry;
         $this->entityManager = $entityManager;
@@ -55,6 +55,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         $this->refreshTokenManager = $refreshTokenManager;
         $this->userSetupService = $userSetupService;
         $this->validator = $validator;
+        $this->urlClient = $urlClient;
     }
 
     /**
@@ -136,6 +137,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+
         $user = $token->getUser();
 
         if (!$user instanceof User) {
@@ -150,7 +152,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         $this->refreshTokenManager->save($refreshToken);
 
 
-        return new RedirectResponse('http://localhost:5173/oauth/callback?'    . http_build_query([
+        return new RedirectResponse("{$this->urlClient}/oauth/callback?"    . http_build_query([
             'token' => $jwtToken,
             'refresh_token' => $refreshToken->getRefreshToken(),
         ]));
