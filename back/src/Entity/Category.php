@@ -3,14 +3,30 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Enum\ColorEnum;
-use App\Repository\CategoryRepository;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource]
+use App\Enum\ColorEnum;
+use App\Repository\CategoryRepository;
+use App\Controller\CategoryController;
+
+#[ApiResource(operations: [
+    new GetCollection(
+        uriTemplate: '/categories/{groupeId}/list',
+        controller: CategoryController::class . '::getCategoryByGroup',
+        uriVariables: [
+            'groupeId' => new Link(fromClass: null, fromProperty: 'groupeId')
+        ],
+        read: false,
+        name: 'category_list_group',
+        requirements: ['groupeId' => '\d+'],
+        normalizationContext: ['groups' => ['category:read']]
+    ),
+])]
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ORM\Table(name: 'MON_CATEGORY')]
 class Category

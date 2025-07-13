@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-buster
+FROM php:8.2-fpm-bullseye
 ARG TIMEZONE
 
 # Copier la configuration PHP

@@ -41,7 +41,6 @@ export default defineNuxtConfig({
     { path: "~/components/homepage", pathPrefix: false },
     { path: "~/components/header", pathPrefix: false },
     { path: "~/components/form", pathPrefix: false },
-    { path: "~/components/expense", pathPrefix: false },
     { path: "~/components/budget", pathPrefix: false },
     { path: "~/components/savings", pathPrefix: false },
   ],
