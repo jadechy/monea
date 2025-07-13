@@ -11,8 +11,13 @@ const { group_id } = route.params as {
 };
 const { remainingBudget } = useBudget();
 
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
+const { group } = storeToRefs(useGroupsStore());
+useSeo({
+  title: `Budget du groupe ${group.value?.name}`,
+  description: `Gérez le budget mensuel et par catégorie du groupe ${group.value?.name}.`,
+  image: group.value?.picture ?? undefined,
+});
+
 const { categories } = useCategoryMutation();
 </script>
 
@@ -20,7 +25,7 @@ const { categories } = useCategoryMutation();
   <SubHeader
     label="Budget du mois"
     :color="group?.color"
-    :to="`/groups/${group_id}`"
+    :to="`/groups/${group?.id}`"
   />
 
   <div class="flex flex-col gap-10" v-if="group">

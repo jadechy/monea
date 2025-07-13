@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import { useQuery } from "@tanstack/vue-query";
-import { computed } from "vue";
-
 import { useGroupsStore } from "@/stores/groupStore";
-import type { CategoryType } from "~/types/categoryType";
-import type { GroupType } from "~/types/groupType";
 
 // Props
 const route = useRoute();
@@ -15,8 +10,7 @@ const { group_id, category_id, expense_id } = route.params as {
 };
 
 // Group
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
+const { group } = storeToRefs(useGroupsStore());
 const { category } = useCategoryMutation();
 const { expensesByCategory: expenses } = useExpenseMutation();
 // Queries

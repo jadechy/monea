@@ -5,8 +5,7 @@ const route = useRoute();
 const { group_id } = route.params as {
   group_id: string;
 };
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
+const { group } = storeToRefs(useGroupsStore());
 </script>
 
 <template>

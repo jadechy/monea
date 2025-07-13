@@ -21,8 +21,7 @@ const year = ref<Date | null>(null);
 onMounted(() => {
   year.value = new Date();
 });
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
+const { group } = storeToRefs(useGroupsStore());
 const formRef = ref<FormInstance | null>(null);
 const { categories } = useCategoryMutation();
 // Queries

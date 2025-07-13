@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useGroupsStore } from "@/stores/groupStore";
-import { computed } from "vue";
 import AllExpensesDisplay from "~/components/layout/AllExpensesDisplay.vue";
+const { group } = storeToRefs(useGroupsStore());
+useSeo({
+  title: `Dépenses du groupe ${group.value?.name}`,
+  description: `Consultez et gérez les dépenses du groupe ${group.value?.name}.`,
+  image: group.value?.picture ?? undefined,
+});
 
-// Props
-const route = useRoute();
-const group_id = route.params.group_id as string;
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
 // Query
 const { expenses } = useExpenseMutation();
 </script>
