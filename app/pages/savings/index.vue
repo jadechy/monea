@@ -62,30 +62,26 @@ const { exportFormToExcel } = useExcelFormSavingsExport({
 </script>
 
 <template>
-  <div class="flex gap-8 mt-6">
-    <FloatLabel>
-      <DatePicker
-        v-model="form.start"
-        dateFormat="dd/mm/yy"
-        showIcon
-        fluid
-        class="w-full"
-        iconDisplay="input"
-      />
-      <label for="start">Date de début</label>
-    </FloatLabel>
+  <div class="flex gap-8 mt-6 w-full md:max-w-3/4">
+    <DatePicker
+      v-model="form.start"
+      dateFormat="dd/mm/yy"
+      showIcon
+      fluid
+      class="w-full"
+      iconDisplay="input"
+      placeholder="Date de début"
+    />
 
-    <FloatLabel>
-      <DatePicker
-        v-model="form.end"
-        dateFormat="dd/mm/yy"
-        showIcon
-        fluid
-        class="w-full"
-        iconDisplay="input"
-      />
-      <label for="end">Date de fin</label>
-    </FloatLabel>
+    <DatePicker
+      v-model="form.end"
+      dateFormat="dd/mm/yy"
+      showIcon
+      fluid
+      class="w-full"
+      iconDisplay="input"
+      placeholder="Date de fin"
+    />
   </div>
   <div class="flex flex-col lg:flex-row gap-10 mt-6">
     <NewEnter :form="form" category="enters" />

@@ -67,7 +67,9 @@ const onFormSubmit = (form: FormSubmitEvent) => {
 };
 
 const onDelete = () => {
-  deleteGroupMutation.mutate();
+  if (confirm("Es-tu sûr de vouloir supprimer le groupe ?")) {
+    deleteGroupMutation.mutate();
+  }
 };
 const initialValues =
   group.value && group.value

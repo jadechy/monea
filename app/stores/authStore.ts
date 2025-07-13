@@ -1,4 +1,3 @@
-// stores/authStore.ts
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
@@ -30,7 +29,7 @@ export const useAuthStore = defineStore("auth", () => {
   const error = ref<string | null>(null);
 
   const { login, me } = useAuthService();
-  const { editUser, uploadFile } = useUserService();
+  const { editUser, uploadFile, deleteUser } = useUserService();
 
   const isAuthenticated = computed(() => !!token.value);
   const userInitials = computed(() => {
@@ -175,7 +174,7 @@ export const useAuthStore = defineStore("auth", () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
       await refetchMe();
       saveToStorage();
-      router.push({ name: "profil" });
+      router.push("/user");
     },
     onSettled: () => {
       isLoading.value = false;
@@ -197,6 +196,16 @@ export const useAuthStore = defineStore("auth", () => {
       alert("Erreur lors de l'upload");
     },
   });
+  const deleteUserMutation = useMutation({
+    mutationFn: () => deleteUser(),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["me"] });
+      clearAuth();
+    },
+    onSettled: () => {
+      isLoading.value = false;
+    },
+  });
 
   return {
     token,
@@ -216,5 +225,6 @@ export const useAuthStore = defineStore("auth", () => {
     uploadPicture,
 
     clearAuth,
+    deleteUserMutation,
   };
 });
