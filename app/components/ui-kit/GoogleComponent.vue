@@ -7,8 +7,8 @@ const handleClick = () => {
 
 <template>
   <img
-    @click="handleClick"
     :src="logo"
     class="h-16 shadow rounded-xl w-fit py-4 px-6 hover:bg-gray-100 transition"
-  />
+    @click="handleClick"
+  >
 </template>

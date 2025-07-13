@@ -56,23 +56,23 @@ const router = useRouter();
         <div class="flex gap-3">
           <Button
             label="Se connecter"
-            @click="router.push({ name: 'auth-login' })"
             :class="[getGroupColor({ color: 'pink' })]"
+            @click="router.push({ name: 'auth-login' })"
           />
           <Button
             label="Créer un compte gratuitement"
-            @click="router.push({ name: 'auth-register' })"
             :class="[getGroupColor({ color: 'pink' })]"
+            @click="router.push({ name: 'auth-register' })"
           />
         </div>
       </div>
-      <img class="w-1/2 h-full rounded" :src="homepage" />
+      <img class="w-1/2 h-full rounded" :src="homepage" >
     </section>
     <section class="flex justify-center gap-5 my-20">
       <div
-        class="w-48 flex flex-col items-center"
         v-for="(average, i) in averages"
         :key="i"
+        class="w-48 flex flex-col items-center"
       >
         <p
           class="text-6xl text-center mb-3 pi text-gray-700"

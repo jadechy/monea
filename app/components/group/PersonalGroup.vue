@@ -5,7 +5,7 @@
     class="item text-gray-700 hover"
   >
     <p>Egroup personnel</p>
-    <i class="pi pi-chevron-right"></i>
+    <i class="pi pi-chevron-right"/>
   </router-link>
 </template>
 

@@ -1,12 +1,11 @@
-import {
-  AmountSchema,
-  BudgetByCategorySchema,
-  type AmountType,
-  type BudgetByCategoryType,
-  type BudgetType,
-  type NewBudgetType,
+import { AmountSchema, BudgetByCategorySchema } from "~/types/budgetType";
+import type {
+  AmountType,
+  BudgetByCategoryType,
+  BudgetType,
+  NewBudgetType,
 } from "~/types/budgetType";
-import { CategorySchema, type CategoryType } from "~/types/categoryType";
+import { CategorySchema } from "~/types/categoryType";
 import { formatDateISO } from "~/utils/date";
 
 import { z } from "zod";

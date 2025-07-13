@@ -7,11 +7,11 @@ defineProps<{ form: FormModel; category: CategoryForm }>();
 
 <template>
   <div
-    class="item rounded shadow-sm h-fit"
     v-for="(current, i) in form[category].filter(
       (e) => e.name && e.value != null
     )"
     :key="category + '-' + i"
+    class="item rounded shadow-sm h-fit"
   >
     <div class="flex gap-2 items-center">
       <Tag

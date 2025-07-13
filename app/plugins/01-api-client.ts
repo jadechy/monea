@@ -1,7 +1,7 @@
 // plugins/api-client.ts
 import { defineNuxtPlugin } from "#app";
 import { useAuthStore } from "~/stores/authStore";
-import { z } from "zod";
+import type { z } from "zod";
 import { refreshToken as refreshTokenService } from "~/composables/services/refreshTokenService";
 
 type Method = "GET" | "POST" | "PATCH" | "DELETE" | "UPLOAD";

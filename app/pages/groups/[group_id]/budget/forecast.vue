@@ -23,6 +23,6 @@ useSeo({
   />
   <div class="flex flex-col gap-10">
     <YearBudget :group_id="group_id" />
-    <MonthBudget :group_id="group_id" />
+    <MonthBudget :group-id="group_id" />
   </div>
 </template>

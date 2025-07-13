@@ -1,12 +1,11 @@
 <script setup lang="ts">
     import { Button } from "primevue";
-    import { Form, type FormSubmitEvent } from "@primevue/forms";
+    import { Form  } from "@primevue/forms";
+import type {FormSubmitEvent} from "@primevue/forms";
     import { useAuthService } from "~/composables/services/authService";
     import { useRoute } from "vue-router";
     import { useMutation } from "@tanstack/vue-query";
-    import {
-        type ResetRequestType,
-    } from "~/types/authType";
+    import type {ResetRequestType} from "~/types/authType";
 
     const route = useRoute();
     const router = useRouter();
@@ -41,17 +40,17 @@
 
     <Form
     v-slot="$form"
-    @submit="submitReset"
-    class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center">
+    class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
+    @submit="submitReset">
 
     <WrapperInput :form="$form" name="password" placeholder="Nouveau mot de passe">
         <Password
         name="password"
         class="w-full"
-        toggleMask
+        toggle-mask
         fluid
         :feedback="false"
-        :inputProps="{ autocomplete: 'new-password' }"
+        :input-props="{ autocomplete: 'new-password' }"
         />
         <template #footer>
           <Divider />
@@ -68,10 +67,10 @@
         <Password
         name="passwordConfirm"
         class="w-full"
-        toggleMask
+        toggle-mask
         fluid
         :feedback="false"
-        :inputProps="{ autocomplete: 'new-password' }"
+        :input-props="{ autocomplete: 'new-password' }"
         />
         <template #footer>
           <Divider />
@@ -86,7 +85,8 @@
 
     <div class="flex flex-col items-center gap-0.5">
       <Button type="submit" class="w-fit">Enregistrer</Button>
-      <RouterLink :to="{ name: 'auth-login' }"
+      <RouterLink
+:to="{ name: 'auth-login' }"
         class="hover:underline" >Déjà un compte</RouterLink
       >
       <RouterLink :to="{ name: 'auth-register' }" class="hover:underline"

@@ -1,4 +1,5 @@
-import { CategorySchema, type CategoryType } from "~/types/categoryType";
+import { CategorySchema  } from "~/types/categoryType";
+import type {CategoryType} from "~/types/categoryType";
 import { z } from "zod";
 
 export const useCategoryService = () => {

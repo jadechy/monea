@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { Button, DatePicker, Divider, Message, Password } from "primevue";
-import { Form, type FormSubmitEvent } from "@primevue/forms";
+import { Form  } from "@primevue/forms";
+import type {FormSubmitEvent} from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { useAuthService } from "~/composables/services/authService";
 import { useMutation } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
 import {
-  RegisterRequestSchema,
-  type RegisterRequestType,
+  RegisterRequestSchema
+  
 } from "~/types/authType";
+import type {RegisterRequestType} from "~/types/authType";
 import WrapperInput from "~/components/ui-kit/input/WrapperInput.vue";
 import FormInput from "~/components/ui-kit/input/FormInput.vue";
 import GoogleComponent from "~/components/ui-kit/GoogleComponent.vue";
@@ -58,8 +60,8 @@ useSeo({
   <Form
     v-slot="$form"
     :resolver="zodResolver(RegisterRequestSchema)"
-    @submit="submitRegister"
     class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
+    @submit="submitRegister"
   >
     <div class="flex justify-center">
       <GoogleComponent />
@@ -68,12 +70,12 @@ useSeo({
     <FormInput name="name" placeholder="Prénom" :form="$form" />
     <WrapperInput name="birthday" placeholder="Date de naissance" :form="$form">
       <DatePicker
-        dateFormat="dd/mm/yy"
-        showIcon
+        date-format="dd/mm/yy"
+        show-icon
         fluid
         name="birthday"
         class="w-full"
-        iconDisplay="input"
+        icon-display="input"
       />
     </WrapperInput>
 
@@ -94,10 +96,10 @@ useSeo({
       <Password
         placeholder="Mot de passe"
         name="password"
-        toggleMask
+        toggle-mask
         fluid
         class="w-full"
-        :inputProps="{
+        :input-props="{
           autocomplete: 'new-password',
         }"
       >
@@ -124,19 +126,19 @@ useSeo({
         fluid
         class="w-full"
         :feedback="false"
-        toggleMask
-        :inputProps="{
+        toggle-mask
+        :input-props="{
           autocomplete: 'new-password',
         }"
       />
       <Message
-        severity="error"
-        size="small"
         v-if="
           $form.confirmPassword?.value &&
           $form.password?.value &&
           $form.confirmPassword.value !== $form.password.value
         "
+        severity="error"
+        size="small"
       >
         Les mots de passe ne correspondent pas
       </Message>

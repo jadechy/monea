@@ -21,7 +21,7 @@ const { expenses } = useExpenseMutation();
 
 <template>
   <AllExpensesDisplay
-    :subHeader="{
+    :sub-header="{
       label: group?.name ?? 'error',
       to: '/groups',
       color: group?.color,

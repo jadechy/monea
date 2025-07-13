@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/authStore";
 import { Button, Password } from "primevue";
-import { Form, type FormSubmitEvent } from "@primevue/forms";
+import { Form  } from "@primevue/forms";
+import type {FormSubmitEvent} from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { LoginRequestSchema } from "~/types/authType";
 import WrapperInput from "~/components/ui-kit/input/WrapperInput.vue";
@@ -31,9 +32,9 @@ useSeo({
 
   <Form
     v-slot="$form"
-    @submit="submitLogin"
     :resolver="zodResolver(LoginRequestSchema)"
     class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
+    @submit="submitLogin"
   >
     <div class="flex justify-center">
       <GoogleComponent />
@@ -50,9 +51,9 @@ useSeo({
           fluid
           name="password"
           class="w-full"
-          toggleMask
+          toggle-mask
           :feedback="false"
-          :inputProps="{ autocomplete: 'current-password' }"
+          :input-props="{ autocomplete: 'current-password' }"
         />
       </WrapperInput>
       <RouterLink

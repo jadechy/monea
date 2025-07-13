@@ -19,15 +19,15 @@ defineProps<Props>();
   >
     <div class="h-38 mb-4 flex justify-center items-center">
       <img
+        v-if="group.picture"
         :src="group.picture"
         class="w-full h-full object-cover rounded-xl"
-        v-if="group.picture"
-      />
+      >
       <p v-else class="pi pi-wallet text-7xl" />
     </div>
     <div class="flex items-center justify-between font-semibold">
       <p>{{ group.name }}</p>
-      <i class="pi pi-chevron-right"></i>
+      <i class="pi pi-chevron-right"/>
     </div>
   </router-link>
 </template>

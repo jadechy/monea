@@ -1,10 +1,12 @@
 <script setup lang="ts" ssr="false">
-import { Form, type FormSubmitEvent } from "@primevue/forms";
+import { Form  } from "@primevue/forms";
+import type {FormSubmitEvent} from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { useAuthStore } from "@/stores/authStore";
 import { useGroupsStore } from "@/stores/groupStore";
 import { storeToRefs } from "pinia";
-import { UserEditSchema, type UserEditType } from "~/types/user";
+import { UserEditSchema  } from "~/types/user";
+import type {UserEditType} from "~/types/user";
 const { updateUser, deleteUserMutation } = useAuthStore();
 const { user } = storeToRefs(useAuthStore());
 
@@ -45,10 +47,10 @@ const handleDelete = () => {
     <template v-if="user">
       <Form
         v-slot="$form"
-        :initialValues="user"
+        :initial-values="user"
         :resolver="zodResolver(UserEditSchema)"
-        @submit="onFormSubmit"
         class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
+        @submit="onFormSubmit"
       >
         <FormInput name="lastname" placeholder="Nom" :form="$form" />
         <FormInput name="name" placeholder="Prénom" :form="$form" />
@@ -59,12 +61,12 @@ const handleDelete = () => {
           :form="$form"
         >
           <DatePicker
-            dateFormat="dd/mm/yy"
-            showIcon
+            date-format="dd/mm/yy"
+            show-icon
             fluid
             name="birthday"
             class="w-full"
-            iconDisplay="input"
+            icon-display="input"
           />
         </WrapperInput>
 
@@ -91,11 +93,11 @@ const handleDelete = () => {
           <Button
             variant="outlined"
             class="w-64"
-            @click="handleDelete"
             :class="[
               getGroupColor({ color: personnalGroup?.color, outlined: true }),
             ]"
             label="Supprimer mon compte"
+            @click="handleDelete"
           />
         </div>
       </Form>

@@ -25,12 +25,12 @@ useSeo({
   <AllExpensesDisplay
     v-if="group && category"
     :group="group"
-    :subHeader="{
+    :sub-header="{
       label: category?.label ?? 'error',
       to: `/groups/${group_id}/budget`,
       color: category?.color,
     }"
-    :expensesDate="expenses"
+    :expenses-date="expenses"
     :category="category"
   />
 </template>
