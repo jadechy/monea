@@ -19,8 +19,7 @@ class ExpenseInputDTO
     #[Assert\NotBlank]
     public int $groupId;
 
-    #[Assert\NotBlank]
-    public int $categoryId;
+    public ?int $categoryId = null;
 
     #[Assert\NotBlank]
     public int $authorId;
@@ -39,13 +38,13 @@ class ExpenseInputDTO
         $dto->authorId = $object->authorId ?? null;
         $dto->categoryId = $object->categoryId ?? null;
         $dto->spentAt = $object->spentAt ?? null;
-        
+
         if (isset($object->recurring) && $object->recurring instanceof \stdClass) {
             $dto->recurring = RecurringExpenseInputDTO::fromObject($object->recurring);
         } else {
             $dto->recurring = null;
         }
-        
+
         $dto->participants = $object->participants ?? null;
 
         return $dto;

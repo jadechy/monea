@@ -13,7 +13,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 use App\Entity\Member;
 use App\Entity\User;
-use App\Entity\Groupe;
 use App\Entity\GroupInvitation;
 use App\Enum\MemberRoleEnum;
 use App\Enum\MemberStatusEnum;
@@ -25,6 +24,8 @@ use App\DTO\MemberInputDTO;
 
 final class MemberController extends AbstractController
 {
+    private string $urlClient;
+
     public function __construct(private MemberRepository $memberRepository, private UserRepository $userRepository, private GroupeRepository $groupeRepository, private GroupInvitationRepository $groupInvitationRepository, private EntityManagerInterface $em) {}
 
 
@@ -61,9 +62,7 @@ final class MemberController extends AbstractController
             $this->em->flush();
 
             // Page de notification avec les demandes d'invitation au sein d'un groupe
-            // revoir l'url pas du tout bon + utilisé une base url potentiellement avec les .env
-            // n'utilise jamais 'https://localhost:5173 dans ton code lors de la mise en prod ça va poser des gros soucis
-            $baseUrl = 'https://localhost:5173/invitation';
+            $baseUrl = "{$this->urlClient}/invitation";
             $invitationLink = $baseUrl . '?userId=' . $userId . '&groupeId=' . $groupeId;
 
             $email = (new Email())
@@ -86,7 +85,7 @@ final class MemberController extends AbstractController
             $this->em->persist($invitation);
             $this->em->flush();
 
-            $registerLink = 'https://localhost:5173/auth/register?invitationToken=' . $invitation->getToken();
+            $registerLink = "{$this->urlClient}/auth/register?invitationToken=" . $invitation->getToken();
 
             $email = (new Email())
                 ->from('invitation@monea.fr')

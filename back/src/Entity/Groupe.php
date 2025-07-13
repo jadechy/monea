@@ -53,6 +53,17 @@ use Symfony\Component\Validator\Constraints as Assert;
             read: false,
             normalizationContext: ['groups' => ['member:read']]
         ),
+        new Post(
+            uriTemplate: '/groupes/{id}/picture',
+            controller: GroupeController::class . '::uploadCoverGroup',
+            security: "is_granted('ROLE_USER')",
+            deserialize: false,
+            read: false,
+            write: false,
+            validate: false,
+            inputFormats: ['multipart' => ['multipart/form-data']],
+            outputFormats: ['json' => ['application/json']],
+        )
     ]
 )]
 #[ORM\Entity(repositoryClass: GroupeRepository::class)]
@@ -248,7 +259,8 @@ class Groupe
     }
     public function getPicture(): ?string
     {
-        return $this->picture;
+        $picture = 'http://localhost:8000' . $this->picture;
+        return $picture;
     }
 
     public function setPicture(string $picture): static

@@ -4,8 +4,12 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+  upload_directory: "%kernel.project_dir%/public/uploads/profile"
+  url_client: "%env(URL_CLIENT)%"
 services:
+  App\Service\FileUploader:
+    arguments:
+      $targetDirectory: "%upload_directory%"
   # default configuration for services in *this* file
   _defaults:
     autowire: true # Automatically injects dependencies in your services.
@@ -34,3 +38,7 @@ services:
           event: lexik_jwt_authentication.on_jwt_created,
           method: onJWTCreated,
         }
+
+  App\Security\GoogleAuthenticator:
+    arguments:
+      $urlClient: "%env(URL_CLIENT)%"

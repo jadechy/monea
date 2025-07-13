@@ -8,10 +8,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
 use App\DTO\CategoryDTO;
-use App\Entity\Category;
 use App\Repository\CategoryRepository;
 use App\Repository\GroupeRepository;
-use Doctrine\ORM\EntityManagerInterface;
 
 #[AsController]
 class CategoryController extends AbstractController
