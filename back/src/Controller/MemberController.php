@@ -23,6 +23,8 @@ use App\DTO\MemberInputDTO;
 
 final class MemberController extends AbstractController
 {
+    private string $urlClient;
+
     public function __construct(private MemberRepository $memberRepository, private UserRepository $userRepository, private GroupeRepository $groupeRepository, private EntityManagerInterface $em, private SerializerInterface $serializer) {}
 
     /**
@@ -63,10 +65,8 @@ final class MemberController extends AbstractController
             $this->em->flush();
 
             // Page de notification avec les demandes d'invitation au sein d'un groupe
-            // revoir l'url pas du tout bon + utilisé une base url potentiellement avec les .env
-            // n'utilise jamais 'https://localhost:5173 dans ton code lors de la mise en prod ça va poser des gros soucis
-            $baseUrl = 'https://localhost:5173/invitation';
             /** @var int $userId */
+            $baseUrl = "{$this->urlClient}/invitation";
             $invitationLink = $baseUrl . '?userId=' . $userId . '&groupeId=' . $groupeId;
 
             $email = (new Email())
@@ -90,7 +90,7 @@ final class MemberController extends AbstractController
             $this->em->persist($invitation);
             $this->em->flush();
 
-            $registerLink = 'https://localhost:5173/auth/register?invitationToken=' . $invitation->getToken();
+            $registerLink = "{$this->urlClient}/auth/register?invitationToken=" . $invitation->getToken();
 
             $email = (new Email())
                 ->from('invitation@monea.fr')
@@ -111,7 +111,7 @@ final class MemberController extends AbstractController
         $response = $request->query->getBoolean('response', false);
 
         $member = $this->memberRepository->findOneBy(['groupe' => $groupeId, 'individual' => $authorId]);
-        if(!$member){
+        if (!$member) {
             return $this->json(['error' => 'Membre introuvable'], Response::HTTP_NOT_FOUND);
         }
 

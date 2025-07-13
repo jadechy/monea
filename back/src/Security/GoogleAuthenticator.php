@@ -2,7 +2,9 @@
 
 namespace App\Security;
 
+
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +16,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
@@ -36,6 +39,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
     private RefreshTokenManagerInterface $refreshTokenManager;
     private UserSetupService $userSetupService;
     private ValidatorInterface $validator;
+    private string $urlClient;
 
 
     public function __construct(
@@ -46,8 +50,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         RefreshTokenManagerInterface $refreshTokenManager,
         UserSetupService $userSetupService,
         ValidatorInterface $validator,
-
-
+        string $urlClient
     ) {
         $this->clientRegistry = $clientRegistry;
         $this->entityManager = $entityManager;
@@ -56,6 +59,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         $this->refreshTokenManager = $refreshTokenManager;
         $this->userSetupService = $userSetupService;
         $this->validator = $validator;
+        $this->urlClient = $urlClient;
     }
 
     /**
@@ -111,9 +115,16 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 $user->setRoles([UserRoleEnum::USER]);
                 $user->setPlainPassword('password123');
                 $user->setPassword('password123');
-                $user->setPicture($googleUser->getAvatar());
                 $user->setCreatedAt(new \DateTimeImmutable());
                 $user->setBirthday(new \DateTimeImmutable('2003-09-21'));
+                $avatarUrl = $googleUser->getAvatar();
+                if ($avatarUrl) {
+                    $localFilename = $this->downloadUserAvatar($avatarUrl);
+                    if ($localFilename) {
+                        $user->setPicture($localFilename);
+                    }
+                }
+
                 $errorsUser = $this->validator->validate($user);
                 if (count($errorsUser) > 0) {
                     throw new \RuntimeException('Erreur lors de la validation de l’utilisateur : ' . (string) $errorsUser);
@@ -137,6 +148,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+
         $user = $token->getUser();
 
         if (!$user instanceof User) {
@@ -151,7 +163,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         $this->refreshTokenManager->save($refreshToken);
 
 
-        return new RedirectResponse('http://localhost:5173/oauth/callback?'    . http_build_query([
+        return new RedirectResponse("{$this->urlClient}/oauth/callback?"    . http_build_query([
             'token' => $jwtToken,
             'refresh_token' => $refreshToken->getRefreshToken(),
         ]));
@@ -167,5 +179,43 @@ class GoogleAuthenticator extends OAuth2Authenticator
         return new JsonResponse([
             'message' => $message,
         ]);
+    }
+
+
+    /**
+     * Télécharge l'image d'avatar et la stocke localement.
+     * Retourne le nom du fichier local ou null si erreur.
+     */
+    private function downloadUserAvatar(string $url): ?string
+    {
+        try {
+            $httpClient = HttpClient::create();
+            $response = $httpClient->request('GET', $url);
+
+            if ($response->getStatusCode() !== 200) {
+                return null;
+            }
+
+            $content = $response->getContent();
+            $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+            if (!$ext) {
+                $ext = 'jpg';
+            }
+
+            $filename = uniqid('user_avatar_') . '.' . $ext;
+
+            $uploadDir = __DIR__ . '/../../public/uploads/user/';
+
+            $filesystem = new Filesystem();
+            if (!$filesystem->exists($uploadDir)) {
+                $filesystem->mkdir($uploadDir, 0755);
+            }
+
+            file_put_contents($uploadDir . $filename, $content);
+
+            return "/uploads/user/" . $filename;
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }

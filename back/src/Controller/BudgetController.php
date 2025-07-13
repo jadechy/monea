@@ -157,7 +157,7 @@ class BudgetController extends AbstractController
         foreach ($uniqueCategories as $category) {
             $categoryId = $category->getId();
             $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($categoryId, $date);
-            if(!$budgetCategory){
+            if (!$budgetCategory) {
                 return $this->json(['error' => 'Budget introuvable'], Response::HTTP_NOT_FOUND);
             }
 
