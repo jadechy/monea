@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import DatePicker from "primevue/calendar";
-import FloatLabel from "primevue/floatlabel";
 
 type InputData = {
   name: string | null;

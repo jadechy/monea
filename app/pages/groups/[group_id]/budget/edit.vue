@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { useBudget } from "~/composables/useBudgetMutation";
 import { useGroupsStore } from "@/stores/groupStore";
-import { Form   } from "@primevue/forms";
-import type {FormInstance, FormSubmitEvent} from "@primevue/forms";
+import { Form } from "@primevue/forms";
+import type { FormInstance, FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { Button, DatePicker, InputText } from "primevue";
-import { computed, ref, watch  } from "vue";
-import {
-  NewBudgetSchemaResolver
-  
-} from "~/types/budgetType";
-import type {NewBudgetType} from "~/types/budgetType";
+import { computed, ref, watch } from "vue";
+import { NewBudgetSchemaResolver } from "~/types/budgetType";
+import type { NewBudgetType } from "~/types/budgetType";
 import { useSeo } from "~/composables/useSeo";
 
 // Props

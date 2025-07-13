@@ -1,26 +1,26 @@
 <script setup lang="ts">
-  import { Button } from "primevue";
-  import { Form  } from "@primevue/forms";
-import type {FormSubmitEvent} from "@primevue/forms";
-  import FormInput from "~/components/ui-kit/input/FormInput.vue";
-  import { useAuthService } from "~/composables/services/authService";
-  import { useMutation } from "@tanstack/vue-query";
-  import type {ForgotRequestType} from "~/types/authType";
+import { Button } from "primevue";
+import { Form } from "@primevue/forms";
+import type { FormSubmitEvent } from "@primevue/forms";
+import FormInput from "~/components/ui-kit/input/FormInput.vue";
+import { useAuthService } from "~/composables/services/authService";
+import { useMutation } from "@tanstack/vue-query";
+import type { ForgotRequestType } from "~/types/authType";
 
-  const router = useRouter();
-  const { forgot } = useAuthService();
-  const forgotMutation = useMutation({
-    mutationFn: (data: ForgotRequestType) => forgot(data),
-    onSuccess: () => {
-      router.push({ name: "auth-reset" });
-    },
-  });
+const router = useRouter();
+const { forgot } = useAuthService();
+const forgotMutation = useMutation({
+  mutationFn: (data: ForgotRequestType) => forgot(data),
+  onSuccess: () => {
+    router.push({ name: "auth-reset" });
+  },
+});
 
-  const submitForgot = async (form: FormSubmitEvent) => {
+const submitForgot = async (form: FormSubmitEvent) => {
   if (!form.valid) return;
-    const email = form.states.email.value;
-    forgotMutation.mutate({ email });
-  };
+  const email = form.states.email.value;
+  forgotMutation.mutate({ email });
+};
 </script>
 
 <template>
@@ -31,7 +31,6 @@ import type {FormSubmitEvent} from "@primevue/forms";
     class="flex flex-col md:w-1/2 mx-5 md:mx-auto gap-6 items-center"
     @submit="submitForgot"
   >
-
     <FormInput
       name="email"
       placeholder="Ton email"
@@ -41,12 +40,12 @@ import type {FormSubmitEvent} from "@primevue/forms";
 
     <div class="flex flex-col items-center gap-0.5">
       <Button type="submit" class="w-fit">Envoyer un mail</Button>
-      <RouterLink
-:to="{ name: 'auth-login' }"
-        class="hover:underline">Déjà un compte</RouterLink
+      <RouterLink :to="{ name: 'auth-login' }" class="hover:underline"
+        >Déjà un compte</RouterLink
       >
       <RouterLink :to="{ name: 'auth-register' }" class="hover:underline"
-        >Pas encore de compte</RouterLink>
+        >Pas encore de compte</RouterLink
+      >
     </div>
   </Form>
 </template>

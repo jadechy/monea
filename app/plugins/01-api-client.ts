@@ -1,4 +1,3 @@
-// plugins/api-client.ts
 import { defineNuxtPlugin } from "#app";
 import { useAuthStore } from "~/stores/authStore";
 import type { z } from "zod";
@@ -37,7 +36,6 @@ export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig();
   const API_URL = config.public.apiBase;
 
-  // Pour accéder au store au moment de l'exécution (et pas à l'import)
   const getAuthStore = () => useAuthStore();
 
   const requestJson = async <T extends z.ZodTypeAny>({
@@ -75,9 +73,8 @@ export default defineNuxtPlugin((nuxtApp) => {
           authStore.clearAuth();
           throw new Error("Pas de refresh token, déconnexion");
         }
-        // Rafraîchir token via service indépendant
         const newToken = await refreshTokenService(authStore.refreshToken);
-        authStore.token = newToken; // Met à jour le token dans le store
+        authStore.token = newToken;
         res = await makeRequest(newToken);
 
         if (res.status === 401) {
@@ -172,12 +169,10 @@ export default defineNuxtPlugin((nuxtApp) => {
   };
   const requestFormData = async <T extends z.ZodTypeAny>({
     url,
-    method,
     schema,
     body,
     options = {},
   }: RequestParams<T>): Promise<z.infer<T>> => {
-    // body DOIT être un FormData
     if (!(body instanceof FormData)) {
       throw new Error("Le body doit être un FormData pour UPLOAD.");
     }
@@ -186,15 +181,14 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     const makeRequest = async (token: string | null) => {
       const headers: HeadersInit = {
-        // ne PAS définir Content-Type ici !
         ...(options.headers ?? {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       };
 
       return fetch(`${API_URL}/api/${url}`, {
-        method: "POST", // toujours POST pour un upload
+        method: "POST",
         headers,
-        body, // FormData transmis tel quel
+        body,
         ...options,
       });
     };

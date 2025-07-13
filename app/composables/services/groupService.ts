@@ -1,17 +1,10 @@
 import { z } from "zod";
 import type { CategorySchema } from "~/types/categoryType";
-import {
-  GroupSchema
-  
-  
-} from "~/types/groupType";
-import type {GroupType, NewGroupType} from "~/types/groupType";
+import { GroupSchema } from "~/types/groupType";
+import type { GroupType, NewGroupType } from "~/types/groupType";
 import { MemberDTOSchema } from "~/types/memberType";
-import {
-  UserUploadResponseSchema
-  
-} from "~/types/user";
-import type {UserUploadResponseType} from "~/types/user";
+import { UserUploadResponseSchema } from "~/types/user";
+import type { UserUploadResponseType } from "~/types/user";
 
 export const FetchGroupByUserSchema = GroupSchema.extend({
   members: MemberDTOSchema.array().optional(),

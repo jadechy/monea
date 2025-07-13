@@ -1,13 +1,11 @@
 import { useQuery } from "@tanstack/vue-query";
-
 import { useCategoryService } from "./services/categoryService";
 
 export const useCategoryMutation = () => {
   const route = useRoute();
-  const { group_id, category_id, expense_id } = route.params as {
+  const { group_id, category_id } = route.params as {
     group_id: string;
     category_id?: string;
-    expense_id?: string;
   };
   const { fetchCategoryByGroup, fetchCategory } = useCategoryService();
 

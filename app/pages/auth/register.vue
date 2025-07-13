@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { Button, DatePicker, Divider, Message, Password } from "primevue";
-import { Form  } from "@primevue/forms";
-import type {FormSubmitEvent} from "@primevue/forms";
+import { Form } from "@primevue/forms";
+import type { FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { useAuthService } from "~/composables/services/authService";
 import { useMutation } from "@tanstack/vue-query";
 import { useRoute } from "vue-router";
-import {
-  RegisterRequestSchema
-  
-} from "~/types/authType";
-import type {RegisterRequestType} from "~/types/authType";
+import { RegisterRequestSchema } from "~/types/authType";
+import type { RegisterRequestType } from "~/types/authType";
 import WrapperInput from "~/components/ui-kit/input/WrapperInput.vue";
 import FormInput from "~/components/ui-kit/input/FormInput.vue";
 import GoogleComponent from "~/components/ui-kit/GoogleComponent.vue";

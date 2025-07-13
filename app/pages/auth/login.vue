@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/authStore";
 import { Button, Password } from "primevue";
-import { Form  } from "@primevue/forms";
-import type {FormSubmitEvent} from "@primevue/forms";
+import { Form } from "@primevue/forms";
+import type { FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { LoginRequestSchema } from "~/types/authType";
 import WrapperInput from "~/components/ui-kit/input/WrapperInput.vue";
@@ -29,7 +29,6 @@ useSeo({
 
 <template>
   <h2 class="text-center text-4xl mb-14">Connexion</h2>
-
   <Form
     v-slot="$form"
     :resolver="zodResolver(LoginRequestSchema)"

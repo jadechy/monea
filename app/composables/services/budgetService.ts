@@ -95,12 +95,12 @@ export const useBudgetService = () => {
       schema: BudgetRemainingByMonthSchema,
     }) as Promise<BudgetRemainingByMonthType>;
 
-  const postBudgets = (body: NewBudgetType): Promise<any> =>
+  const postBudgets = (body: NewBudgetType): Promise<void> =>
     $api.post({
       url: `budgets/edit`,
       body,
-      schema: z.any(),
-    }) as Promise<any>;
+      schema: z.void(),
+    });
 
   return {
     fetchBudgetGroupDateRemaining,
