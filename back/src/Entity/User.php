@@ -43,6 +43,22 @@ use Symfony\Component\Serializer\Annotation\Groups;
             deserialize: false,
             normalizationContext: ['groups' => ['user:me']],
         ),
+        new Post(
+            uriTemplate: '/forgot',
+            controller: UserController::class  . '::forgot',
+            name: 'forgot',
+            read: false,
+            deserialize: true,
+            normalizationContext: ['groups' => ['user:read']],
+        ),
+        new Post(
+            uriTemplate: '/reset',
+            controller: UserController::class  . '::reset',
+            name: 'reset',
+            read: false,
+            deserialize: true,
+            normalizationContext: ['groups' => ['user:read']],
+        ),
         new Patch(
             uriTemplate: '/users/edit',
             controller: UserController::class  . '::updateUser',

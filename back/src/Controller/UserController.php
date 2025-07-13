@@ -14,6 +14,9 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Uid\Uuid;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -27,6 +30,8 @@ use Symfony\Component\HttpFoundation\Request;
 #[AsController]
 class UserController extends AbstractController
 {
+    private string $urlClient;
+
     public function __construct(
         private UserRepository $userRepository,
         private GroupInvitationRepository $groupInvitationRepository,
@@ -169,5 +174,72 @@ class UserController extends AbstractController
         $em->flush();
 
         return new JsonResponse(['picture' => $user->getPicture()]);
+    }
+
+    public function forgot(Request $request, MailerInterface $mailer): Response
+    {
+        $data = json_decode($request->getContent());
+
+        if (!$data || !isset($data->email)) {
+            return new JsonResponse(['message' => 'Email manquant ou JSON invalide.'], 400);
+        }
+
+        $email = $data->email;
+
+        $user = $this->userRepository->findOneBy(['email' => $email]);
+        if (!$user) {
+            return new JsonResponse(['error' => 'Aucun utilisateur trouvé avec cette email'], 400);
+        }
+
+        $resetToken = Uuid::v4();
+        $user->setResetToken($resetToken);
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        // Page de reset de mot de passe
+        $baseUrl = "http://localhost:3000/reset";
+        $resetLink = $baseUrl . '?token=' . $resetToken;
+
+        $email = (new Email())
+            ->from('contact@monea.fr')
+            ->to($user->getEmail())
+            ->subject('Réinitialisation de votre mot de passe')
+            ->html($this->renderView('emails/forgot.html.twig', [
+                'user' => $user,
+                'resetLink' => $resetLink,
+            ]));
+        $mailer->send($email);
+
+        return $this->json(['message' => 'Un email de réinitialisation de mot de passe a été envoyé.']);
+    }
+
+    public function reset(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent());
+        if (!$data || !isset($data->resetToken)) {
+            return new JsonResponse(['message' => 'Token manquant ou JSON invalide.'], 400);
+        }
+
+        $user = $this->userRepository->findOneBy(['resetToken' => $data->resetToken]);
+
+        if (!$user) {
+            throw $this->createNotFoundException('Jeton de réinitialisation invalide.');
+        }
+   
+        /** @var string $password */
+        $password = $data->password;
+        $repeatPassword = $data->repeatPassword;
+
+        if ($password !== $repeatPassword) {
+            return $this->json(['error' => 'Les mots de passe ne correspondent pas.']);
+        }
+
+        $user->setPlainPassword($password);
+        $user->setResetToken(null);
+
+        $this->em->flush();
+
+        return $this->json(['message' => 'Votre mot de passe a été réinitialisé avec succès']);
     }
 }

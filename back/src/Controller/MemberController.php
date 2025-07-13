@@ -62,7 +62,7 @@ final class MemberController extends AbstractController
             $this->em->flush();
 
             // Page de notification avec les demandes d'invitation au sein d'un groupe
-            $baseUrl = "{$this->urlClient}/invitation";
+            $baseUrl = "http://localhost:3000/invitation";
             $invitationLink = $baseUrl . '?userId=' . $userId . '&groupeId=' . $groupeId;
 
             $email = (new Email())
