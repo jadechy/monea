@@ -16,8 +16,7 @@ import { useGroupsStore } from "@/stores/groupStore";
 import { useBudgetService } from "~/composables/services/budgetService";
 
 const { group_id } = defineProps<{ group_id: string }>();
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
+const { group } = storeToRefs(useGroupsStore());
 const currentDate = ref<Date | null>(null);
 const currentMonth = ref<Date>(getCurrentMonthStartDate());
 

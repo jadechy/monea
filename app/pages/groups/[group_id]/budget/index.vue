@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Button } from "primevue";
-import { computed } from "vue";
 import { useGroupsStore } from "@/stores/groupStore";
 import { useBudget } from "~/composables/useBudgetMutation";
+import { useSeo } from "~/composables/useSeo";
 
 const router = useRouter();
 const route = useRoute();
@@ -11,8 +11,14 @@ const { group_id } = route.params as {
 };
 const { remainingBudget } = useBudget();
 
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
+const { group } = storeToRefs(useGroupsStore());
+useSeo({
+  title: `Suivi du budget du groupe ${group.value?.name}`,
+  description: `Visualisez, gérez et optimisez le budget mensuel et les dépenses par catégorie du groupe ${group.value?.name}. Gardez le contrôle sur vos finances partagées.`,
+  ogTitle: `Budget du groupe ${group.value?.name}`,
+  ogDescription: `Suivi complet du budget du groupe ${group.value?.name} : répartition par catégorie, dépenses mensuelles et gestion partagée des finances.`,
+  image: group.value?.picture ?? undefined,
+});
 const { categories } = useCategoryMutation();
 </script>
 
@@ -20,7 +26,7 @@ const { categories } = useCategoryMutation();
   <SubHeader
     label="Budget du mois"
     :color="group?.color"
-    :to="`/groups/${group_id}`"
+    :to="`/groups/${group?.id}`"
   />
 
   <div class="flex flex-col gap-10" v-if="group">

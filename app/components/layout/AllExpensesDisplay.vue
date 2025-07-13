@@ -19,9 +19,7 @@ interface Props {
 }
 
 const route = useRoute();
-const group_id = route.params.group_id as string;
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
+const { group } = storeToRefs(useGroupsStore());
 const dialogRef = ref<InstanceType<typeof ImageUploadDialog> | null>(null);
 
 const props = defineProps<Props>();

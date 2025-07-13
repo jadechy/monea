@@ -1,4 +1,12 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useSeo } from "~/composables/useSeo";
+
+const { user } = useAuthStore();
+useSeo({
+  title: `Groupes de ${user?.name} - Vos comptes partagés`,
+  description: `Retrouvez tous les groupes de ${user?.name}, suivez vos dépenses, budgets et prévisions.`,
+});
+</script>
 
 <template>
   <div class="mt-5">

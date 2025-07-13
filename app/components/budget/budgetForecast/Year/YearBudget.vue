@@ -4,19 +4,15 @@ import { useBudget } from "~/composables/useBudgetMutation";
 import { useGroupsStore } from "@/stores/groupStore";
 import type { CategoryType } from "@/types/categoryType";
 import { DatePicker, Select } from "primevue";
-import { computed } from "vue";
 import { ref } from "vue";
 import { watch } from "vue";
 import ItemYearBudget from "./ItemYearBudget.vue";
-// Props
-const { group_id } = defineProps<{ group_id: string }>();
 
 // Const
 const selectedCategory = defineModel<CategoryType>("selectedCategory");
 const year = ref<Date>(new Date());
 
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
+const { group } = storeToRefs(useGroupsStore());
 const { refetch, months } = useBudget(year);
 const { categories } = useCategoryMutation();
 watch(year, (newYear) => {
@@ -57,7 +53,6 @@ watch(year, (newYear) => {
     >
       <div v-for="(month, i) in Object.entries(months)" :key="i" class="item">
         <ItemYearBudget
-          :group-id="group?.id"
           :month="month"
           :year="year"
           :selected-category="selectedCategory"

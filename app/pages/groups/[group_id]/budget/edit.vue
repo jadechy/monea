@@ -10,6 +10,7 @@ import {
   NewBudgetSchemaResolver,
   type NewBudgetType,
 } from "~/types/budgetType";
+import { useSeo } from "~/composables/useSeo";
 
 // Props
 const route = useRoute();
@@ -21,10 +22,16 @@ const year = ref<Date | null>(null);
 onMounted(() => {
   year.value = new Date();
 });
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
+const { group } = storeToRefs(useGroupsStore());
 const formRef = ref<FormInstance | null>(null);
 const { categories } = useCategoryMutation();
+useSeo({
+  title: `Modifier le budget du groupe ${group.value?.name}`,
+  description: `Ajustez les montants par catégorie, modifiez les plafonds mensuels et gérez les priorités budgétaires du groupe ${group.value?.name}.`,
+  ogTitle: `Édition du budget - ${group.value?.name}`,
+  ogDescription: `Modifiez le budget partagé du groupe ${group.value?.name} : ajustez les catégories, maîtrisez vos dépenses et anticipez les imprévus.`,
+  image: group.value?.picture ?? undefined,
+});
 // Queries
 const { refetchBudget, postBudgetsMutation, budgetList } = useBudget(year);
 

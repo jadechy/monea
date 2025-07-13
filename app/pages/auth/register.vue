@@ -42,6 +42,14 @@ const submitRegister = async (form: FormSubmitEvent) => {
 
   registerMutation.mutate(data);
 };
+useSeo({
+  title: "Créer un compte - Monéa",
+  description:
+    "Inscrivez-vous sur Monéa pour commencer à gérer facilement vos budgets et vos dépenses.",
+  ogTitle: "Création de compte Monéa",
+  ogDescription:
+    "Rejoignez Monéa et prenez le contrôle de vos finances en quelques clics.",
+});
 </script>
 
 <template>

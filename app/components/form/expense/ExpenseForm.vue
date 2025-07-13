@@ -19,8 +19,7 @@ const { group_id, category_id, expense_id } = route.params as {
   expense_id?: string;
 };
 // Store
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
+const { group } = storeToRefs(useGroupsStore());
 const { user } = useAuthStore();
 // Const
 const categories = computed(() => {

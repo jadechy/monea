@@ -8,7 +8,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserDTO
 {
-
     #[Assert\NotBlank]
     #[Groups(['user:write', 'expense:read', 'groupe:read', 'user:read'])]
     public int $id;

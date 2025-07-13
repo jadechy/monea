@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import { useGroupsStore } from "@/stores/groupStore";
-import { computed } from "vue";
-import AllExpensesDisplay from "~/components/layout/AllExpensesDisplay.vue";
-
-// Props
-const route = useRoute();
-const group_id = route.params.group_id as string;
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
+import { useSeo } from "~/composables/useSeo";
+const { group } = storeToRefs(useGroupsStore());
+watch(
+  () => group.value,
+  (val) => {
+    if (val) {
+      useSeo({
+        title: `Dépenses du groupe ${val.name}`,
+        description: `Consultez et gérez les dépenses du groupe ${val.name}.`,
+        image: val.picture ?? undefined,
+      });
+    }
+  },
+  { immediate: true }
+);
 // Query
 const { expenses } = useExpenseMutation();
 </script>

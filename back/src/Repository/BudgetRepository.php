@@ -22,15 +22,15 @@ class BudgetRepository extends ServiceEntityRepository
      */
     public function findBudgetByCategoryAndDate(int $categoryId, DateTimeImmutable $date): ?Budget
     {
-        $qb = $this->createQueryBuilder('b')
+        /** @var Budget|null */
+        return $this->createQueryBuilder('b')
             ->leftJoin('b.category', 'c')
             ->where('c.id = :catId')
             ->andWhere('b.monthStart = :date')
             ->setParameter('catId', $categoryId)
-            ->setParameter('date', $date);
-        /** @var Budget|null $result */
-        $result = $qb->getQuery()->getOneOrNullResult();
-        return $result;
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
@@ -38,14 +38,13 @@ class BudgetRepository extends ServiceEntityRepository
      */
     public function findBudgetByCategory(int $categoryId): array
     {
-        $qb = $this->createQueryBuilder('b')
+        /** @var Budget[]  */
+        return $this->createQueryBuilder('b')
             ->leftJoin('b.category', 'c')
             ->where('c.id = :categoryId')
-            ->setParameter('categoryId', $categoryId);
-
-        /** @var Budget[] $results */
-        $results = $qb->getQuery()->getResult();
-        return $results;
+            ->setParameter('categoryId', $categoryId)
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -56,10 +55,10 @@ class BudgetRepository extends ServiceEntityRepository
         $startDate = (new \DateTimeImmutable())->setDate((int)$year->format('Y'), 1, 1)->setTime(0, 0);
         $endDate = $startDate->modify('+1 year');
 
-
         $qb = $this->createQueryBuilder('b');
 
-        $qb->select('b')
+        /** @var Budget[] */
+        return $qb->select('b')
             ->leftJoin('b.category', 'c')
             ->leftJoin('c.groupe', 'g')
             ->where('g.id = :groupeId')
@@ -68,11 +67,9 @@ class BudgetRepository extends ServiceEntityRepository
             ->orderBy('b.monthStart', 'ASC')
             ->setParameter('groupeId', $groupeId)
             ->setParameter('startDate', $startDate)
-            ->setParameter('endDate', $endDate);
-
-        /** @var Budget[] $results */
-        $results = $qb->getQuery()->getResult();
-        return $results;
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -83,10 +80,10 @@ class BudgetRepository extends ServiceEntityRepository
         $startDate = $month;
         $endDate = $startDate->modify('+1 month');
 
-
         $qb = $this->createQueryBuilder('b');
 
-        $qb->select('b')
+        /** @var Budget[] */
+        return $qb->select('b')
             ->leftJoin('b.category', 'c')
             ->leftJoin('c.groupe', 'g')
             ->where('g.id = :groupeId')
@@ -95,11 +92,9 @@ class BudgetRepository extends ServiceEntityRepository
             ->orderBy('b.monthStart', 'ASC')
             ->setParameter('groupeId', $groupeId)
             ->setParameter('startDate', $startDate)
-            ->setParameter('endDate', $endDate);
-
-        /** @var Budget[] $results */
-        $results = $qb->getQuery()->getResult();
-        return $results;
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -111,7 +106,8 @@ class BudgetRepository extends ServiceEntityRepository
 
         $qb = $this->createQueryBuilder('b');
 
-        $qb->leftJoin('b.category', 'c')
+        /** @var Budget|null */
+        return $qb->leftJoin('b.category', 'c')
             ->leftJoin('c.groupe', 'g')
             ->where('g.id = :groupeId')
             ->andWhere('b.monthStart >= :startDate')
@@ -122,11 +118,8 @@ class BudgetRepository extends ServiceEntityRepository
             ->setParameter('endDate', $endDate)
             ->setParameter('categoryLabel', 'default')
             ->orderBy('b.monthStart', 'ASC')
-            ->setMaxResults(1);
-
-
-        /** @var Budget|null $result */
-        $result = $qb->getQuery()->getOneOrNullResult();
-        return $result;
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }
