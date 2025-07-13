@@ -13,6 +13,7 @@ import WrapperInput from "~/components/ui-kit/input/WrapperInput.vue";
 import FormInput from "~/components/ui-kit/input/FormInput.vue";
 import GoogleComponent from "~/components/ui-kit/GoogleComponent.vue";
 import type { UserEditType } from "~/types/user";
+import { useSeo } from "~/composables/useSeo";
 
 const route = useRoute();
 const router = useRouter();

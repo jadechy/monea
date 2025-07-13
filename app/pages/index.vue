@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import homepage from "~/assets/homepage.jpg";
 import { getGroupColor } from "../utils/getColor";
+import { useSeo } from "~/composables/useSeo";
 
 type Average = {
   icon: string;
