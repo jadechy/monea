@@ -9,4 +9,4 @@ COPY . .
 EXPOSE 3000
 
 # Installer les dépendances et lancer vite en une seule commande
-CMD ["npm run dev"]
+CMD ["sh", "-c", "npm run dev"]

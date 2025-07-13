@@ -4,7 +4,7 @@ services:
       context: ./app
       dockerfile: Dockerfile
     ports:
-      - "5173:5173"
+      - "3000:3000"
     volumes:
       - ./app:/app
     depends_on:
@@ -23,6 +23,8 @@ services:
       - vendor-data:/var/www/html/vendor
     depends_on:
       db:
+        condition: service_healthy
+      mailer:
         condition: service_healthy
     networks:
       - monea
@@ -59,7 +61,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    restart: always
+    # restart: always
     ports:
       - "8081:80"
     env_file:
@@ -99,6 +101,21 @@ services:
   #   volumes:
   #     - matomo_data:/var/www/html
 
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - monea
+    healthcheck:
+      test: ["CMD", "true"]
+      interval: 10s
+      timeout: 5s
+      retries: 1
 volumes:
   db-data:
   vendor-data:

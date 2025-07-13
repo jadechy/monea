@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
 import Chart from "primevue/chart";
 import { formatDayMonth, getDaysOfCurrentMonth } from "@/utils/date";
 import { useGroupsStore } from "@/stores/groupStore";
 import type { ChartData } from "chart.js";
-
-// Props
 
 // Const
 const { group } = storeToRefs(useGroupsStore());

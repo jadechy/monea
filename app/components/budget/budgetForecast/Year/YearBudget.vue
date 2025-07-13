@@ -7,8 +7,6 @@ import { DatePicker, Select } from "primevue";
 import { ref } from "vue";
 import { watch } from "vue";
 import ItemYearBudget from "./ItemYearBudget.vue";
-// Props
-const { group_id } = defineProps<{ group_id: string }>();
 
 // Const
 const selectedCategory = defineModel<CategoryType>("selectedCategory");

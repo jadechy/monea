@@ -2,10 +2,7 @@
 
 namespace App\DTO;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
-use App\Controller\GroupeController;
 use App\Entity\Groupe;
 use App\Enum\ColorEnum;
 use App\Enum\GroupTypeEnum;
@@ -15,15 +12,6 @@ use App\Enum\MemberRoleEnum;
 use App\Enum\MemberStatusEnum;
 use DateTimeImmutable;
 
-#[ApiResource(operations: [
-    new GetCollection(
-        uriTemplate: '/groupes/list',
-        controller: GroupeController::class . '::getAllGroupesByUser',
-        read: false,
-        name: 'groupes_user',
-        normalizationContext: ['groups' => ['groupe:read']]
-    ),
-])]
 class GroupeDTO
 {
     #[Groups(['groupe:read'])]

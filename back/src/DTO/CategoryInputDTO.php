@@ -9,6 +9,10 @@ class CategoryInputDTO
     public ?int $id = null;
     public string $label;
     public ColorEnum $color;
+
+    /**
+     * @param \stdClass $data
+     */
     public function __construct(object $data)
     {
         $this->id = isset($data->id) ? (int) $data->id : null;

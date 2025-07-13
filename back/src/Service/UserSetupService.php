@@ -2,6 +2,10 @@
 
 namespace App\Service;
 
+use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 use App\Entity\User;
 use App\Entity\Groupe;
 use App\Entity\Category;
@@ -10,9 +14,6 @@ use App\Enum\ColorEnum;
 use App\Enum\GroupTypeEnum;
 use App\Enum\MemberRoleEnum;
 use App\Enum\MemberStatusEnum;
-use DateTimeImmutable;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserSetupService
 {
@@ -28,11 +29,10 @@ class UserSetupService
     public function setupUser(User $user): ?array
     {
         $group = new Groupe();
-        $group->setName("Espace personnel");
-        $group->setType(GroupTypeEnum::PERSONNAL);
-        $group->setCreatedAt(new \DateTimeImmutable());
-        $group->setColor(ColorEnum::Pink);
-        $group->setPicture('');
+        $group->setName("Espace personnel")
+            ->setType(GroupTypeEnum::PERSONNAL)
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setColor(ColorEnum::Pink);
         $errorsGroup = $this->validator->validate($group);
         if (count($errorsGroup) > 0) {
             return ['error' => (string) $errorsGroup];
@@ -40,11 +40,11 @@ class UserSetupService
         $this->em->persist($group);
 
         $member = new Member();
-        $member->setGroupe($group);
-        $member->setStatus(MemberStatusEnum::ACCEPTED);
-        $member->setRole(MemberRoleEnum::AUTHOR);
-        $member->setIndividual($user);
-        $member->setAddOn(new DateTimeImmutable());
+        $member->setGroupe($group)
+            ->setStatus(MemberStatusEnum::ACCEPTED)
+            ->setRole(MemberRoleEnum::AUTHOR)
+            ->setIndividual($user)
+            ->setAddOn(new DateTimeImmutable());
         $errorsMember = $this->validator->validate($member);
         if (count($errorsMember) > 0) {
             return ['error' => (string) $errorsMember];
@@ -52,9 +52,9 @@ class UserSetupService
         $this->em->persist($member);
 
         $defaultCategory = new Category();
-        $defaultCategory->setLabel("default");
-        $defaultCategory->setColor(ColorEnum::Gray);
-        $defaultCategory->setGroupe($group);
+        $defaultCategory->setLabel("default")
+            ->setColor(ColorEnum::Gray)
+            ->setGroupe($group);
         $errorsCategory = $this->validator->validate($defaultCategory);
         if (count($errorsCategory) > 0) {
             return ['error' => (string) $errorsCategory];

@@ -19,26 +19,28 @@ use App\Enum\MemberStatusEnum;
 use App\Repository\MemberRepository;
 use App\Repository\UserRepository;
 use App\Repository\GroupeRepository;
-use App\Repository\GroupInvitationRepository;
 use App\DTO\MemberInputDTO;
 
 final class MemberController extends AbstractController
 {
     private string $urlClient;
 
-    public function __construct(private MemberRepository $memberRepository, private UserRepository $userRepository, private GroupeRepository $groupeRepository, private GroupInvitationRepository $groupInvitationRepository, private EntityManagerInterface $em) {}
-
+    public function __construct(private MemberRepository $memberRepository, private UserRepository $userRepository, private GroupeRepository $groupeRepository, private EntityManagerInterface $em, private SerializerInterface $serializer) {}
 
     /**
      * Envoie d'une invitation par mail
      */
     public function sendInvitation(Request $request, MailerInterface $mailer): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-        $groupeId = !empty($data['groupeId']) ? $data['groupeId'] : null;
-        $userId = !empty($data['userId']) ? $data['userId'] : null;
-        $mail = !empty($data['mail']) ? $data['mail'] : null;
-        $role = !empty($data['role']) ? $data['role'] : null;
+        /** @var \stdClass $data */
+        $data = json_decode($request->getContent(), false);
+
+        /** @var int $groupeId */
+        $groupeId = !empty($data->groupeId) ? $data->groupeId : null;
+        $userId = !empty($data->userId) ? $data->userId : null;
+        $mail = !empty($data->mail) ? $data->mail : null;
+        /** @var string $role */
+        $role = !empty($data->role) ? $data->role : null;
 
         if (!$groupeId) {
             return new JsonResponse(['error' => 'Groupe ID is missing'], 400);
@@ -50,18 +52,20 @@ final class MemberController extends AbstractController
         }
 
         if ($userId) {
+            /** @var User $user */
             $user = $this->userRepository->find($userId);
 
             $member = new Member();
-            $member->setRole(MemberRoleEnum::from($role));
-            $member->setAddOn(new \DateTimeImmutable());
-            $member->setStatus(MemberStatusEnum::PENDING);
-            $member->setGroupe($groupe);
-            $member->setIndividual($user);
+            $member->setRole(MemberRoleEnum::from($role))
+                ->setAddOn(new \DateTimeImmutable())
+                ->setStatus(MemberStatusEnum::PENDING)
+                ->setGroupe($groupe)
+                ->setIndividual($user);
             $this->em->persist($member);
             $this->em->flush();
 
             // Page de notification avec les demandes d'invitation au sein d'un groupe
+            /** @var int $userId */
             $baseUrl = "{$this->urlClient}/invitation";
             $invitationLink = $baseUrl . '?userId=' . $userId . '&groupeId=' . $groupeId;
 
@@ -76,12 +80,13 @@ final class MemberController extends AbstractController
             $mailer->send($email);
         }
 
+        /** @var string $mail */
         if ($mail) {
             $invitation = new GroupInvitation();
-            $invitation->setEmail($mail);
-            $invitation->setUsed(false);
-            $invitation->setGroupe($groupe);
-            $invitation->setRole(MemberRoleEnum::from($role));
+            $invitation->setEmail($mail)
+                ->setUsed(false)
+                ->setGroupe($groupe)
+                ->setRole(MemberRoleEnum::from($role));
             $this->em->persist($invitation);
             $this->em->flush();
 
@@ -106,6 +111,9 @@ final class MemberController extends AbstractController
         $response = $request->query->getBoolean('response', false);
 
         $member = $this->memberRepository->findOneBy(['groupe' => $groupeId, 'individual' => $authorId]);
+        if (!$member) {
+            return $this->json(['error' => 'Membre introuvable'], Response::HTTP_NOT_FOUND);
+        }
 
         $member->setStatus($response ? MemberStatusEnum::ACCEPTED : MemberStatusEnum::REFUSED);
 
@@ -115,11 +123,11 @@ final class MemberController extends AbstractController
         return new JsonResponse(['message' => 'Réponse enregistrée']);
     }
 
-    public function updateMemberRole(Request $request, SerializerInterface $serializer): JsonResponse
+    public function updateMemberRole(Request $request): JsonResponse
     {
         try {
             /** @var MemberInputDTO $data */
-            $data = $serializer->deserialize($request->getContent(), MemberInputDTO::class, 'json');
+            $data = $this->serializer->deserialize($request->getContent(), MemberInputDTO::class, 'json');
         } catch (\Exception $e) {
             return $this->json(['error' => 'JSON invalide : ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
@@ -146,6 +154,9 @@ final class MemberController extends AbstractController
         }
 
         $modifMember = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $authorId]);
+        if (!$modifMember) {
+            return new JsonResponse(['error' => 'Membre introuvable'], Response::HTTP_NOT_FOUND);
+        }
 
         if ($member->getRole() !== MemberRoleEnum::AUTHOR && $modifMember->getRole() == MemberRoleEnum::AUTHOR) {
             throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
@@ -167,11 +178,11 @@ final class MemberController extends AbstractController
         );
     }
 
-    public function leaveGroup(Request $request, SerializerInterface $serializer)
+    public function leaveGroup(Request $request): JsonResponse
     {
         try {
             /** @var MemberInputDTO $data */
-            $data = $serializer->deserialize($request->getContent(), MemberInputDTO::class, 'json');
+            $data = $this->serializer->deserialize($request->getContent(), MemberInputDTO::class, 'json');
         } catch (\Exception $e) {
             return $this->json(['error' => 'JSON invalide : ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
@@ -198,6 +209,9 @@ final class MemberController extends AbstractController
         }
 
         $modifMember = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $authorId]);
+        if (!$modifMember) {
+            return new JsonResponse(['error' => 'Membre introuvable'], Response::HTTP_NOT_FOUND);
+        }
 
         if ($member->getIndividual()->getId() !== $modifMember->getIndividual()->getId()) {
             throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');

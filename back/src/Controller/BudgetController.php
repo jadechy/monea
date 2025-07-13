@@ -6,6 +6,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 use App\DTO\BudgetDTO;
 use App\DTO\BudgetInputDTO;
@@ -17,9 +20,6 @@ use App\Repository\GroupeRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\ExpenseRepository;
 use DateTimeImmutable;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 #[AsController]
 class BudgetController extends AbstractController
@@ -153,9 +153,13 @@ class BudgetController extends AbstractController
             }
         }
         $this->em->flush();
+
         foreach ($uniqueCategories as $category) {
             $categoryId = $category->getId();
             $budgetCategory = $this->budgetRepository->findBudgetByCategoryAndDate($categoryId, $date);
+            if (!$budgetCategory) {
+                return $this->json(['error' => 'Budget introuvable'], Response::HTTP_NOT_FOUND);
+            }
 
             $expenses = $this->expenseRepository->findExpensesByCategoryAndDate($categoryId, $date);
             $totalExpenses = array_sum(array_map(fn($e) => $e->getAmount(), $expenses));
@@ -163,7 +167,6 @@ class BudgetController extends AbstractController
 
             $budgets[] = new BudgetDTO($budgetCategory, $remaining);
         }
-
 
         $json = $this->serializer->serialize($budgets, 'json', ['groups' => ['budget:read']]);
 
@@ -209,7 +212,6 @@ class BudgetController extends AbstractController
 
             $budgetsByMonth[$month] = ($budgetsByMonth[$month] ?? 0) + $amount;
 
-
             $budgetsByMonthCategory[$month][$categoryId] = $amount;
         }
         if (empty($months)) {
@@ -252,8 +254,6 @@ class BudgetController extends AbstractController
     {
         $budgetsData = $this->budgetRepository->findBudgetByGroupAndMonth($groupeId, $month);
         $expensesData = $this->expenseRepository->findExpensesByGroupAndMonth($groupeId, $month);
-
-
 
         $days = [];
         $expensesByDay = [];
@@ -305,7 +305,11 @@ class BudgetController extends AbstractController
 
             if (!empty($expensesByDayCategory[$day])) {
                 foreach ($expensesByDayCategory[$day] as $categoryId => $totalSpent) {
-                    $categoryBudget = $budgetsByDayCategory[$day][$categoryId] ?? 0;
+                    /** @var array<string, array<int, float>> $budgetsByDayCategory */
+                    $categoryBudget = isset($budgetsByDayCategory[$day][$categoryId])
+                        ? $budgetsByDayCategory[$day][$categoryId]
+                        : 0;
+
                     $remainingByCategory = round($categoryBudget - $totalSpent, 2);
 
                     $categories[] = [
@@ -326,8 +330,6 @@ class BudgetController extends AbstractController
         return $this->json($result, 200, [], ['json_encode_options' => JSON_PRETTY_PRINT]);
     }
 
-
-
     public function getBudgetByCategory(int $categoryId): JsonResponse
     {
         $budgetsData = $this->budgetRepository->findBudgetByCategory($categoryId);
@@ -339,7 +341,7 @@ class BudgetController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
-    public function getBudgetByCategoryAndMonth(string $categoryId, string $monthStart): JsonResponse
+    public function getBudgetByCategoryAndMonth(int $categoryId, string $monthStart): JsonResponse
     {
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
 
@@ -387,7 +389,7 @@ class BudgetController extends AbstractController
 
     public function postBudgets(Request $request, SerializerInterface $serializer): JsonResponse
     {
-        /** @var BudgetInputDTO $budgetsData */
+        /** @var BudgetInputDTO $data */
         $data = $serializer->deserialize(
             $request->getContent(),
             BudgetInputDTO::class,
