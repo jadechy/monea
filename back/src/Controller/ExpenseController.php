@@ -20,7 +20,7 @@ use App\Entity\Category;
 use App\Entity\Expense;
 use App\Entity\Groupe;
 use App\Entity\User;
-use App\Enum\MemberRoleEnum;
+use App\Voter\CreateExpenseSubject;
 use App\Exception\RecurringExpenseValidationException;
 use App\Repository\GroupeRepository;
 use App\Repository\ExpenseRepository;
@@ -223,55 +223,54 @@ class ExpenseController extends AbstractController
 
         $membre = $this->memberRepository->findOneBy(['groupe' => $group, 'individual' => $creator]);
         if (!$membre) {
-            throw $this->createAccessDeniedException('Vous ne pouvez pas créer une dépense car vous ne faites pas partie de ce groupe');
+            return $this->json(['error' => 'Membre introuvable'], Response::HTTP_NOT_FOUND);
+        }
+        
+        $expense = new Expense();
+
+        $this->denyAccessUnlessGranted('creer', new CreateExpenseSubject($group, $creator));
+
+        /** @var string */
+        $title = $data->title;
+        /** @var float */
+        $amount = $data->amount;
+        $expense->setTitle($title)
+            ->setGroupe($group)
+            ->setAmount($amount)
+            ->setCreator($creator)
+            ->setSpentAt(new \DateTimeImmutable($data->spentAt))
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setCategory($category);
+
+        if (isset($data->participants)) {
+            foreach ($data->participants as $userDto) {
+                /** @var UserInputDTO $userDto */
+                $user = $this->userRepository->find($userDto->id);
+
+                if (!$user) {
+                    throw new \Exception("Utilisateur non trouvé.");
+                }
+
+                $expense->addParticipant($user);
+            }
         }
 
-        if ($membre->getRole() !== MemberRoleEnum::VIEWER) {
-            $expense = new Expense();
-            /** @var string */
-            $title = $data->title;
-            /** @var float */
-            $amount = $data->amount;
-            $expense->setTitle($title);
-            $expense->setGroupe($group);
-            $expense->setAmount($amount);
-            $expense->setCreator($creator);
-            $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
-            $expense->setCreatedAt(new \DateTimeImmutable());
-            $expense->setCategory($category);
+        $this->validateExpense($expense);
+        $this->em->persist($expense);
 
-            if (isset($data->participants)) {
-                foreach ($data->participants as $userDto) {
-                    /** @var UserInputDTO $userDto */
-                    $user = $this->userRepository->find($userDto);
-
-                    if (!$user) {
-                        throw new \Exception("Utilisateur non trouvé.");
-                    }
-
-                    $expense->addParticipant($user);
-                }
+        if (isset($data->recurring)) {
+            try {
+                $recurringExpenseService->createSeries($expense, $data);
+            } catch (RecurringExpenseValidationException $e) {
+                return new JsonResponse([
+                    'errors' => (string) $e->getErrors()
+                ], Response::HTTP_BAD_REQUEST);
             }
-
-            $this->validateExpense($expense);
-            $this->em->persist($expense);
-
-            if (isset($data->recurring)) {
-                try {
-                    $recurringExpenseService->createSeries($expense, $data);
-                } catch (RecurringExpenseValidationException $e) {
-                    return new JsonResponse([
-                        'errors' => (string) $e->getErrors()
-                    ], Response::HTTP_BAD_REQUEST);
-                }
-            }
-
-            $this->em->flush();
-
-            return $this->json(['message' => 'La dépense a bien été enregistrée', 'id' => $expense->getId()], Response::HTTP_CREATED);
-        } else {
-            throw $this->createAccessDeniedException('Vous ne pouvez pas créer une dépense');
         }
+
+        $this->em->flush();
+
+        return $this->json(['message' => 'La dépense a bien été enregistrée', 'id' => $expense->getId()], Response::HTTP_CREATED);
     }
 
     /**
@@ -333,7 +332,7 @@ class ExpenseController extends AbstractController
             foreach ($newParticipants as $user) {
                 $expense->addParticipant($user);
             }
-        } else $expense->removeAllParticipant();
+        }else $expense->removeAllParticipant();
 
         $this->validateExpense($expense);
         $this->em->persist($expense);
@@ -394,7 +393,7 @@ class ExpenseController extends AbstractController
             $expense->setRecurringExpense(null);
             $this->em->remove($recurringExpense);
         }
-
+        
         $this->applyDataToExpense($expense, $data, $category, $group, $creator);
         $this->validateExpense($expense);
         $this->em->flush();
@@ -432,7 +431,7 @@ class ExpenseController extends AbstractController
             foreach ($newParticipants as $user) {
                 $expense->addParticipant($user);
             }
-        } else $expense->removeAllParticipant();
+        }else $expense->removeAllParticipant();
     }
 
     private function validateExpense(Expense $expense): void
