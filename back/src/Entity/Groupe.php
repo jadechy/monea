@@ -18,6 +18,7 @@ use App\Controller\GroupeController;
 use App\DTO\GroupInputDTO;
 use App\Enum\ColorEnum;
 use App\Enum\GroupTypeEnum;
+use App\Enum\MemberRoleEnum;
 use App\Repository\GroupeRepository;
 
 #[ApiResource(
@@ -217,8 +218,6 @@ class Groupe
         return $this;
     }
 
-
-
     /**
      * @return Collection<int, Member>
      */
@@ -235,6 +234,17 @@ class Groupe
         }
 
         return $this;
+    }
+
+    public function getAuthor(): ?string
+    {
+        foreach ($this->members as $member) {
+            if ($member->getRole() === MemberRoleEnum::AUTHOR) {
+                return $member->getIndividual()->getUsername();
+            }
+        }
+
+        return null;
     }
 
     /**

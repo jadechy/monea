@@ -11,8 +11,9 @@ export const GroupSchema = z.object({
   type: GroupTypeEnum,
   picture: z.string().max(255).nullable(),
   color: ColorSchema,
-  userStatus: MemberStatusEnum,
-  userRole: MemberRoleEnum,
+  userStatus: MemberStatusEnum.optional(),
+  userRole: MemberRoleEnum.optional(),
+  author: z.string().max(255).nullable(),
 })
 
 export const NewGroupSchema = GroupSchema.pick({

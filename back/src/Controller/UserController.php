@@ -140,6 +140,7 @@ class UserController extends AbstractController
 
         return $this->json(['message' => 'Utilisateur mis à jour avec succès']);
     }
+    
     public function uploadPicture(Request $request, FileUploader $uploader, EntityManagerInterface $em): JsonResponse
     {
 
