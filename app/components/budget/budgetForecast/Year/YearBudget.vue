@@ -53,7 +53,6 @@ watch(year, (newYear) => {
     >
       <div v-for="(month, i) in Object.entries(months)" :key="i" class="item">
         <ItemYearBudget
-          :group-id="group?.id"
           :month="month"
           :year="year"
           :selected-category="selectedCategory"

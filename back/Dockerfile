@@ -1,52 +1,60 @@
-FROM php:8.2-fpm-bullseye
-ARG TIMEZONE
+# Étape 1 : Récupérer Composer depuis une image officielle
+FROM composer:2 as composer
 
-# Copier la configuration PHP
-COPY php.ini /usr/local/etc/php/conf.d/docker-php-config.ini
+# Étape 2 : Image principale PHP allégée
+FROM php:8.2-fpm-alpine
 
-# Mise à jour et installation des dépendances requises
-RUN apt-get update && apt-get install -y \
-    gnupg \
-    g++ \
-    procps \
-    openssl \
+ARG TIMEZONE=Europe/Paris
+
+# Install des dépendances système
+RUN apk add --no-cache \
+    bash \
     git \
     unzip \
-    zlib1g-dev \
+    icu-dev \
     libzip-dev \
-    libfreetype6-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    oniguruma-dev \
     libpng-dev \
-    libjpeg-dev \
-    libicu-dev  \
-    libonig-dev \
-    libxslt1-dev \
-    acl \
-    ffmpeg \  
+    libxml2-dev \
+    libxslt-dev \  
+    ffmpeg \
+    tzdata \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+        pdo \
+        pdo_mysql \
+        zip \
+        xsl \
+        gd \
+        intl \
+        opcache \
+        exif \
+        mbstring \
+    && cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
+    && echo "${TIMEZONE}" > /etc/timezone \
+    && rm -rf /var/cache/apk/* \ 
     && echo 'alias sf="php bin/console"' >> ~/.bashrc
 
-# Configuration de GD avec support pour JPEG et FreeType
-RUN docker-php-ext-configure gd --with-jpeg --with-freetype 
+# Copier la config PHP
+COPY php.ini /usr/local/etc/php/conf.d/docker-php-config.ini
 
-# Installation des extensions PHP
-RUN docker-php-ext-install \
-    pdo pdo_mysql zip xsl gd intl opcache exif mbstring
+# Copier Composer depuis le 1er stage
+COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
-# Configuration du fuseau horaire
-RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} > /etc/timezone \
-    && printf '[PHP]\ndate.timezone = "%s"\n' ${TIMEZONE} > /usr/local/etc/php/conf.d/tzone.ini \
-    && date
-
-# Installation de Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer 
-
+# Répertoire de travail
 WORKDIR /var/www/html
-COPY . .  
 
+# Copier uniquement le nécessaire
+COPY . .
 
+# Préparation des dossiers nécessaires
 RUN mkdir -p var/log \
     && chown -R www-data:www-data var/log
+
+# Script d’entrée
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-CMD ["php-fpm"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
