@@ -4,7 +4,7 @@ import { useBudget } from "~/composables/useBudgetMutation";
 import { useGroupsStore } from "@/stores/groupStore";
 import type { CategoryType } from "@/types/categoryType";
 import { DatePicker, Select } from "primevue";
-import { ref, watch  } from "vue";
+import { ref, watch } from "vue";
 import ItemYearBudget from "./ItemYearBudget.vue";
 
 // Const
@@ -23,6 +23,11 @@ watch(year, (newYear) => {
   <BaseSection label="Budget restant mois par mois">
     <template #header>
       <Select
+        v-if="
+          categories &&
+          categories.filter((category) => category.label !== 'default').length >
+            0
+        "
         v-model="selectedCategory"
         editable
         show-clear
