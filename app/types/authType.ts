@@ -64,11 +64,6 @@ export const MeSchema = UserSchema.pick({
 });
 export type MeType = z.infer<typeof MeSchema>;
 
-// export const ForgotSchema = z.object({
-//   email: UserSchema.shape.email,
-// });
-// export type ForgotType = z.infer<typeof ForgotSchema>;
-
 // ** Forgot **
 /// Request
 export const ForgotRequestSchema = z.object({
@@ -80,6 +75,20 @@ export type ForgotRequestType = z.infer<typeof ForgotRequestSchema>;
 /// Response
 export const ForgotResponseSchema = z.object({ message: z.string() });
 export type ForgotResponseType = z.infer<typeof ForgotResponseSchema>;
+
+// ** Reset **
+/// Request
+export const ResetRequestSchema = z.object({
+  password: UserSchema.shape.password,
+  repeatPassword: UserSchema.shape.password,
+  resetToken: UserSchema.shape.resetToken,
+});
+
+export type ResetRequestType = z.infer<typeof ResetRequestSchema>;
+
+/// Response
+export const ResetResponseSchema = z.object({ message: z.string() });
+export type ResetResponseType = z.infer<typeof ResetResponseSchema>;
 
 // ** Refresh token **
 export type RefreshToken = { refresh_token: string };

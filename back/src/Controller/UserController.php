@@ -19,6 +19,7 @@ use Symfony\Component\Uid\Uuid;
 use App\Entity\User;
 use App\Entity\Member;
 use App\Enum\MemberStatusEnum;
+use App\Repository\UserRepository;
 use App\Repository\GroupInvitationRepository;
 use App\Service\FileUploader;
 use App\Service\UserSetupService;
@@ -34,7 +35,8 @@ class UserController extends AbstractController
         private ValidatorInterface $validator,
         private EntityManagerInterface $em,
         private UserPasswordHasherInterface $passwordHasher,
-        private UserSetupService $userSetupService
+        private UserSetupService $userSetupService,
+        private UserRepository $userRepository
     ) {}
 
     public function register(UserRegisterDto $input): JsonResponse
@@ -194,8 +196,8 @@ class UserController extends AbstractController
         $this->em->flush();
 
         // Page de reset de mot de passe
-        $baseUrl = "http://localhost:3000/reset";
-        $resetLink = $baseUrl . '?token=' . $resetToken;
+        $baseUrl = "http://localhost:3000/auth/reset";
+        $resetLink = $baseUrl . '?resetToken=' . $resetToken;
 
         $email = (new Email())
             ->from('contact@monea.fr')

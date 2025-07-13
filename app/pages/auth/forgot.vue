@@ -4,18 +4,16 @@
   import FormInput from "~/components/ui-kit/input/FormInput.vue";
   import { useAuthService } from "~/composables/services/authService";
   import { useMutation } from "@tanstack/vue-query";
-  import { useRoute } from "vue-router";
   import {
-  type ForgotRequestType,
-} from "~/types/authType";
+    type ForgotRequestType,
+  } from "~/types/authType";
 
-  const route = useRoute();
   const router = useRouter();
   const { forgot } = useAuthService();
   const forgotMutation = useMutation({
     mutationFn: (data: ForgotRequestType) => forgot(data),
     onSuccess: () => {
-      router.push({ name: "auth-confirm" });
+      router.push({ name: "auth-reset" });
     },
   });
 
@@ -45,7 +43,7 @@
     <div class="flex flex-col items-center gap-0.5">
       <Button type="submit" class="w-fit">Envoyer un mail</Button>
       <RouterLink :to="{ name: 'auth-login' }"
-        ><Button size="small">Déjà un compte</Button></RouterLink
+        class="hover:underline">Déjà un compte</RouterLink
       >
       <RouterLink :to="{ name: 'auth-register' }" class="hover:underline"
         >Pas encore de compte</RouterLink>
