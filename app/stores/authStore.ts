@@ -46,7 +46,7 @@ export const useAuthStore = defineStore("auth", () => {
   const USER_KEY = "auth_user";
 
   const initAuth = () => {
-    if (!process.client) return;
+    if (!import.meta.client) return;
     try {
       const savedToken = localStorage.getItem(TOKEN_KEY);
       const savedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
@@ -67,7 +67,7 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const saveToStorage = () => {
-    if (process.client) {
+    if (import.meta.client) {
       if (token.value) {
         localStorage.setItem(TOKEN_KEY, token.value);
       }
@@ -81,7 +81,7 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const clearStorage = () => {
-    if (process.client) {
+    if (import.meta.client) {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(REFRESH_TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
@@ -94,7 +94,7 @@ export const useAuthStore = defineStore("auth", () => {
     user.value = null;
     error.value = null;
     clearStorage();
-    if (process.client) {
+    if (import.meta.client) {
       router.push("/auth/login");
     }
   };

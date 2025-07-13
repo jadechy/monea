@@ -1,9 +1,6 @@
 import { z } from "zod";
-import {
-  UserUploadResponseSchema,
-  type UserEditType,
-  type UserUploadResponseType,
-} from "~/types/user";
+import { UserUploadResponseSchema } from "~/types/user";
+import type { UserEditType, UserUploadResponseType } from "~/types/user";
 
 export type EditUserResponseType = {
   message: string;

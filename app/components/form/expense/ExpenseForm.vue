@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { Button, DatePicker, InputNumber, Listbox, Select } from "primevue";
 import { getGroupColor } from "@/utils/getColor";
-import { computed, ref, watchEffect, type ComputedRef } from "vue";
-import { Form, type FormSubmitEvent } from "@primevue/forms";
-import { NewExpenseSchema, type NewExpenseType } from "@/types/expenseType";
+import type { ComputedRef } from "vue";
+import { Form } from "@primevue/forms";
+import type { FormSubmitEvent } from "@primevue/forms";
+import { NewExpenseSchema } from "@/types/expenseType";
+import type { NewExpenseType } from "@/types/expenseType";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { useAuthStore } from "~/stores/authStore";
 import { convertToLocalDate } from "@/utils/date";
-import { useExpenseMutation } from "@/composables/useExpenseMutation";
 import { useGroupsStore } from "@/stores/groupStore";
 import type { UserType } from "@/types/user";
 // Props
@@ -47,15 +48,15 @@ const formattedMembers: ComputedRef<FormattedMembers[] | undefined> = computed(
       value: member.user.id,
     }))
 );
-const getInitialAuthor = (userAuthorId: UserType["id"]) => {
-  return computed(
+const getInitialAuthor = (userAuthorId: UserType["id"]) =>
+  computed(
     () =>
       userAuthorId &&
       formattedMembers.value?.filter(
         (member) => member.value === userAuthorId
       )[0]
   );
-};
+
 const onDelete = () => {
   if (!expense_id) return;
   if (confirm("Es-tu sûr de vouloir supprimer la dépense ?")) {
@@ -140,9 +141,8 @@ const onFormSubmit = (form: FormSubmitEvent) => {
       endDate: endDate.value,
     };
   } else data["recurring"] = null;
-  expense_id && expense
-    ? updateExpenseMutation.mutate(data)
-    : createExpenseMutation.mutate(data);
+  if (expense_id && expense) updateExpenseMutation.mutate(data);
+  else createExpenseMutation.mutate(data);
 };
 
 const baseRoute = `/groups/${group_id}`;
@@ -165,23 +165,23 @@ const baseRoute = `/groups/${group_id}`;
   <Form
     v-else
     v-slot="$form"
-    :initialValues="initialValues"
+    :initial-values="initialValues"
     :resolver="zodResolver(NewExpenseSchema)"
-    @submit="onFormSubmit"
     class="flex flex-col items-center gap-10 lg:w-2/3 mx-auto"
+    @submit="onFormSubmit"
   >
     <WrapperInput
+      v-if="categories && categories.length > 0"
       name="category"
       :form="$form"
       placeholder="Catégorie"
-      v-if="categories && categories.length > 0"
     >
       <Select
         name="category"
         :options="categories"
-        optionLabel="label"
+        option-label="label"
         class="w-full md:w-56"
-        :labelClass="[
+        :label-class="[
           'capitalize',
           `text-${$form.category?.value?.color ?? 'gray'}-600`,
         ]"
@@ -201,17 +201,17 @@ const baseRoute = `/groups/${group_id}`;
         <Select
           name="author"
           :options="formattedMembers"
-          optionLabel="label"
-          :labelClass="['capitalize']"
+          option-label="label"
+          :label-class="['capitalize']"
           class="w-2/3"
         />
       </WrapperInput>
       <WrapperInput name="spentAt" :form="$form" placeholder="jj/mm/yyyy">
         <DatePicker
           name="spentAt"
-          showIcon
-          iconDisplay="input"
-          dateFormat="dd/mm/yy"
+          show-icon
+          icon-display="input"
+          date-format="dd/mm/yy"
         />
       </WrapperInput>
     </div>
@@ -220,34 +220,34 @@ const baseRoute = `/groups/${group_id}`;
         name="participants"
         :options="formattedMembers"
         multiple
-        optionLabel="label"
+        option-label="label"
         class="w-full"
         fluid
       />
     </BaseSection>
 
     <RecurringExpenseFormComponent
-      :form="$form"
-      :recurringExpense="expense?.recurring"
       v-if="group?.type === 'daily'"
+      :form="$form"
+      :recurring-expense="expense?.recurring"
     />
-    <div class="flex flex-col gap-3 w-64" v-if="expense">
+    <div v-if="expense" class="flex flex-col gap-3 w-64">
       <Button :class="[getGroupColor({ color: group?.color })]" type="submit">
         Modifier la dépense
       </Button>
       <Button
         variant="outlined"
-        @click="onDelete()"
         :class="getGroupColor({ color: group?.color, outlined: true })"
+        @click="onDelete()"
       >
         Supprimer la dépense
       </Button>
     </div>
     <Button
+      v-else
       class="w-64"
       :class="[getGroupColor({ color: group?.color })]"
       type="submit"
-      v-else
     >
       Créer la dépense
     </Button>

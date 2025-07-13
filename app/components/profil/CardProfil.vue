@@ -9,7 +9,7 @@ defineProps<Props>();
 <template>
   <div class="shadow rounded-lg p-4">
     <div class="flex gap-1 items-center text-lg font-semibold">
-      <i class="pi stroke-2 mr-2" :class="[icon]"></i>
+      <i class="pi stroke-2 mr-2" :class="[icon]"/>
       <p>{{ label }}</p>
     </div>
     <p>{{ content }}</p>

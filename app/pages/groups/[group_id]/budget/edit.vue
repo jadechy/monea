@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { useBudget } from "~/composables/useBudgetMutation";
 import { useGroupsStore } from "@/stores/groupStore";
-import { Form, type FormInstance, type FormSubmitEvent } from "@primevue/forms";
+import { Form } from "@primevue/forms";
+import type { FormInstance, FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { Button, DatePicker, InputText } from "primevue";
-import { computed, ref } from "vue";
-import { watch } from "vue";
-import {
-  NewBudgetSchemaResolver,
-  type NewBudgetType,
-} from "~/types/budgetType";
+import { computed, ref, watch } from "vue";
+import { NewBudgetSchemaResolver } from "~/types/budgetType";
+import type { NewBudgetType } from "~/types/budgetType";
 import { useSeo } from "~/composables/useSeo";
 
 // Props
@@ -87,7 +85,7 @@ const initialValues = computed(() => computeInitialValues());
     <DatePicker
       v-model="year"
       view="month"
-      dateFormat="mm/yy"
+      date-format="mm/yy"
       class="w-64 mt-3"
       input-class="text-center"
     />
@@ -96,16 +94,16 @@ const initialValues = computed(() => computeInitialValues());
     v-if="budgetList && categories"
     ref="formRef"
     v-slot="$form"
-    :initialValues="initialValues"
+    :initial-values="initialValues"
     :resolver="zodResolver(NewBudgetSchemaResolver)"
-    @submit="onFormSubmit"
     class="flex justify-center flex-col items-center gap-10"
+    @submit="onFormSubmit"
   >
     <section class="grid gap-2 grid-cols-2 md:grid-cols-3 mt-6 w-full">
       <div
         v-for="category in categories"
-        class="flex justify-between items-center rounded-full px-4 py-3"
         :key="category.id"
+        class="flex justify-between items-center rounded-full px-4 py-3"
         :class="`bg-${category.color}-50 text-${category.color}-800`"
       >
         <p>{{ category.label !== "default" ? category.label : "Autres" }}</p>

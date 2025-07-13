@@ -30,14 +30,13 @@ useSeo({
     :color="group.color"
     :to="`/groups/${group_id}`"
   />
-  <div class="flex flex-col items-center gap-10" v-if="expense && group">
+  <div v-if="expense && group" class="flex flex-col items-center gap-10">
     <div class="flex flex-col md:flex-row gap-2 justify-between w-full">
       <div class="flex flex-col gap-2">
         <div class="flex gap-3 items-end">
           <p class="font-bold text-4xl">{{ expense.amount }} €</p>
           <p v-if="expense.spentAt">
-            <i class="pi pi-calendar mr-1"></i
-            >{{ formatDayMonth(new Date(expense.spentAt)) }}
+            <i class="pi pi-calendar mr-1"/>{{ formatDayMonth(new Date(expense.spentAt)) }}
           </p>
         </div>
 
@@ -51,9 +50,9 @@ useSeo({
             :image="expense.creator.picture ?? default_avatar"
           />
           <Chip
+            v-if="expense.recurring"
             icon="pi pi-replay"
             label="Dépense récurrente"
-            v-if="expense.recurring"
           />
         </div>
       </div>
@@ -68,9 +67,9 @@ useSeo({
       />
     </div>
     <BaseSection
+      v-if="expense.participants"
       label="Participants"
       class="w-full"
-      v-if="expense.participants"
     >
       <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <PeopleComponent

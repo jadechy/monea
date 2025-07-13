@@ -22,7 +22,7 @@ useSeo({
 
 <template>
   <ClientOnly>
-    <div class="flex flex-col justify-center items-center" v-if="user">
+    <div v-if="user" class="flex flex-col justify-center items-center">
       <div class="relative">
         <img
           :src="user.picture ?? default_avatar"
@@ -64,7 +64,7 @@ useSeo({
         />
       </div>
     </div>
-    <div class="grid grid-cols-3 gap-4 mt-12" v-if="personnalGroup">
+    <div v-if="personnalGroup" class="grid grid-cols-3 gap-4 mt-12">
       <InfoProfil
         label="groupes membres"
         :stat="`${groupsCount}`"
@@ -95,16 +95,16 @@ useSeo({
     <div class="flex justify-center mt-10">
       <Button
         label="Deconnexion"
-        @click="(clearAuth(), router.push({ name: 'auth-login' }))"
         severity="danger"
         variant="outlined"
+        @click="(clearAuth(), router.push({ name: 'auth-login' }))"
       />
     </div>
 
     <ImageUploadDialog
       ref="dialogRef"
-      :uploadFn="(file) => uploadPicture.mutateAsync(file)"
-      header="Modifier la photo de profil"
+      :upload-fn="(file) => uploadPicture.mutateAsync(file)"
+      label="Modifier la photo de profil"
     />
   </ClientOnly>
 </template>

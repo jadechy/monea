@@ -3,7 +3,6 @@ import { formatDayMonth } from "@/utils/date";
 import { getGroupColor } from "@/utils/getColor";
 import { Button } from "primevue";
 import type { ExpenseDateType } from "@/types/expenseType";
-import type { GroupType } from "@/types/groupType";
 import { computed } from "vue";
 import type { CategoryType } from "@/types/categoryType";
 import { hasEditPermission } from "@/utils/authorization";
@@ -35,7 +34,7 @@ const { uploadCoverGroupMutation } = useGroupMutation(group);
     :to="subHeader.to"
     :params="subHeader.params"
   />
-  <div class="flex flex-col gap-10" v-if="group">
+  <div v-if="group" class="flex flex-col gap-10">
     <div class="flex flex-col gap-2 sm:flex-row justify-between items-center">
       <RemainingBudget :category="category" />
       <div v-if="actionButton">
@@ -66,21 +65,21 @@ const { uploadCoverGroupMutation } = useGroupMutation(group);
       </div>
       <ImageUploadDialog
         ref="dialogRef"
-        :uploadFn="(file) => uploadCoverGroupMutation.mutateAsync(file)"
-        header="Modifier la cover du groupe."
+        :upload-fn="(file) => uploadCoverGroupMutation.mutateAsync(file)"
+        label="Modifier la cover du groupe."
       />
     </div>
     <template v-if="Object.keys(safeExpensesDate).length > 0">
       <BaseSection
         v-for="([date, expenses], index) in Object.entries(safeExpensesDate)"
-        :label="formatDayMonth(new Date(date))"
         :key="index"
+        :label="formatDayMonth(new Date(date))"
       >
         <div class="grid gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
           <ExpenseCardComponent
-            :group-id="group.id"
             v-for="expense in expenses"
             :key="expense.id"
+            :group-id="group.id"
             :expense="expense"
           />
         </div>

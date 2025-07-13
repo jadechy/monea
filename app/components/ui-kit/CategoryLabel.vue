@@ -26,7 +26,7 @@ withDefaults(defineProps<Props>(), {
         category.label !== "default" ? category.label : "Créer une catégorie"
       }}
     </p>
-    <div class="flex gap-4" v-if="$slots.add">
+    <div v-if="$slots.add" class="flex gap-4">
       <slot name="add" />
     </div>
   </div>

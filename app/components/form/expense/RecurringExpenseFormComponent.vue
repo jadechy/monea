@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import {
-  FrequencyEnum,
-  type RecurringExpenseType,
-} from "@/types/recurringExpenseType";
+import { FrequencyEnum } from "@/types/recurringExpenseType";
+import type { RecurringExpenseType } from "@/types/recurringExpenseType";
 import { Card, DatePicker, InputNumber, Select } from "primevue";
 import { ref } from "vue";
 import type { FormState } from "~/types/formType";
-const { recurringExpense, form } = defineProps<{
+const { recurringExpense = null, form } = defineProps<{
   form: FormState;
   recurringExpense?: RecurringExpenseType | null;
 }>();
@@ -21,9 +19,9 @@ const deleteRecurring = () => {
 </script>
 
 <template>
-  <div class="item hover" @click="isActif = true" v-if="!isActif">
+  <div v-if="!isActif" class="item hover" @click="isActif = true">
     <p>Créer une récurrence</p>
-    <i class="pi pi-arrow-right"></i>
+    <i class="pi pi-arrow-right" />
   </div>
   <Card v-else class="w-full">
     <template #content>
@@ -47,7 +45,7 @@ const deleteRecurring = () => {
             name="frequency"
             :options="FrequencyEnum.options"
             class="w-full"
-            labelClass="capitalize"
+            label-class="capitalize"
             fluid
           />
         </WrapperInput>
@@ -60,18 +58,18 @@ const deleteRecurring = () => {
         >
           <DatePicker
             name="endDate"
-            showIcon
-            iconDisplay="input"
+            show-icon
+            icon-display="input"
             fluid
             :min-date="spentAt ? new Date(spentAt.value) : undefined"
-            dateFormat="dd/mm/yy"
+            date-format="dd/mm/yy"
           />
         </WrapperInput>
       </div>
     </template>
     <template #footer>
       <p class="item hover w-fit mx-auto mt-12" @click="deleteRecurring">
-        <i class="pi pi-times-circle mr-2"></i>Supprimer la récurrence
+        <i class="pi pi-times-circle mr-2" />Supprimer la récurrence
       </p>
     </template>
   </Card>

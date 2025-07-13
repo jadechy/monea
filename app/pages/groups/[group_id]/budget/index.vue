@@ -29,11 +29,11 @@ const { categories } = useCategoryMutation();
     :to="`/groups/${group?.id}`"
   />
 
-  <div class="flex flex-col gap-10" v-if="group">
+  <div v-if="group" class="flex flex-col gap-10">
     <section class="flex justify-between">
       <div class="flex gap-5 w-full">
         <RemainingBudget />
-        <RemainingBudget label="Budget initial" initialBudget />
+        <RemainingBudget label="Budget initial" initial-budget />
       </div>
 
       <Button
@@ -45,8 +45,8 @@ const { categories } = useCategoryMutation();
       />
     </section>
     <BaseSection
-      label="Budget du mois par catégories"
       v-if="categories && categories.length > 0"
+      label="Budget du mois par catégories"
     >
       <template #header>
         <Button
@@ -61,9 +61,9 @@ const { categories } = useCategoryMutation();
       <div class="grid gap-2 grid-cols-2 md:grid-cols-3">
         <router-link
           v-for="(category, i) in categories"
+          :key="i"
           :to="`/groups/${group_id}/category/${category.id}`"
           class="flex justify-between rounded-full px-4 py-3"
-          :key="i"
           :class="`bg-${category.color}-50 hover:bg-${category.color}-100 text-${category.color}-800`"
         >
           <p>{{ category.label !== "default" ? category.label : "Autres" }}</p>
