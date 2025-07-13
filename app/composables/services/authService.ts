@@ -2,9 +2,12 @@ import {
   LoginResponseSchema,
   MeSchema,
   RegisterResponseSchema,
+  ForgotResponseSchema,
   type LoginRequestType,
   type LoginResponseType,
   type MeType,
+  type ForgotRequestType,
+  type ForgotResponseType,
   type RefreshToken,
   type RegisterResponseType,
 } from "~/types/authType";
@@ -32,5 +35,12 @@ export const useAuthService = () => {
         url: "me",
         schema: MeSchema,
       }) as Promise<MeType>,
+    
+    forgot: ({ email }: ForgotRequestType) =>
+      $api.post({
+        url: "forgot",
+        body: {email},
+        schema: ForgotResponseSchema,
+      }) as Promise<ForgotResponseType>,
   };
 };
