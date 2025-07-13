@@ -1,0 +1,126 @@
+services:
+  frontend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app:/app
+    depends_on:
+      - backend
+    networks:
+      - monea
+
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+      args:
+        TIMEZONE: Europe/Paris
+    volumes:
+      - ./back:/var/www/html
+      - vendor-data:/var/www/html/vendor
+    depends_on:
+      db:
+        condition: service_healthy
+      mailer:
+        condition: service_healthy
+    networks:
+      - monea
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - ./back:/var/www/html
+    depends_on:
+      - backend
+    networks:
+      - monea
+
+  db:
+    image: mysql:8.0
+    platform: linux/x86_64
+    restart: always
+    env_file:
+      - ./back/.env.local
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - monea
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    # restart: always
+    ports:
+      - "8081:80"
+    env_file:
+      - ./back/.env.local
+    depends_on:
+      - db
+    networks:
+      - monea
+
+  # matomo_db:
+  #   image: mysql:8.0
+  #   container_name: matomo-db
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: matomo
+  #     MYSQL_USER: matomo
+  #     MYSQL_PASSWORD: matomo
+  #   volumes:
+  #     - matomo_db_data:/var/lib/mysql
+
+  # matomo:
+  #   image: matomo
+  #   container_name: matomo
+  #   restart: always
+  #   ports:
+  #     - "8080:80"
+  #   environment:
+  #     MATOMO_DATABASE_HOST: matomo_db
+  #     MATOMO_DATABASE_ADAPTER: MYSQLI
+  #     MATOMO_DATABASE_TABLES_PREFIX: matomo_
+  #     MATOMO_DATABASE_USERNAME: matomo
+  #     MATOMO_DATABASE_PASSWORD: matomo
+  #     MATOMO_DATABASE_DBNAME: matomo
+  #   depends_on:
+  #     - matomo_db
+  #   volumes:
+  #     - matomo_data:/var/www/html
+
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - monea
+    healthcheck:
+      test: ["CMD", "true"]
+      interval: 10s
+      timeout: 5s
+      retries: 1
+volumes:
+  db-data:
+  vendor-data:
+  # matomo_db_data:
+  # matomo_data:
+
+networks:
+  monea:
