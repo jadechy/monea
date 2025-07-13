@@ -1,0 +1,47 @@
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copier les fichiers de configuration
+COPY package*.json ./
+COPY nuxt.config.ts ./
+COPY tsconfig.json ./
+
+# Installer les dépendances
+RUN npm ci --only=production
+
+# Copier le code source
+COPY . .
+
+# Build l'application SSR
+RUN npm run build
+
+# === Image de production ===
+FROM node:18-alpine AS runtime
+
+# Créer un utilisateur non-root
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nuxt -u 1001
+
+WORKDIR /app
+
+# Copier les fichiers nécessaires depuis le builder
+COPY --from=builder --chown=nuxt:nodejs /app/.output /app/.output
+COPY --from=builder --chown=nuxt:nodejs /app/package*.json /app/
+
+# Installer seulement les dépendances de production
+RUN npm ci --only=production && npm cache clean --force
+
+USER nuxt
+
+EXPOSE 3000
+
+ENV NODE_ENV=production
+ENV NUXT_HOST=0.0.0.0
+ENV NUXT_PORT=3000
+
+# Health check script
+COPY --chown=nuxt:nodejs healthcheck.js /app/
+RUN chmod +x /app/healthcheck.js
+
+CMD ["node", ".output/server/index.mjs"]
