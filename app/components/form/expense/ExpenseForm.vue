@@ -56,6 +56,12 @@ const getInitialAuthor = (userAuthorId: UserType["id"]) => {
       )[0]
   );
 };
+const onDelete = () => {
+  if (!expense_id) return;
+  if (confirm("Es-tu sûr de vouloir supprimer la dépense ?")) {
+    deleteExpenseMutation.mutate();
+  }
+};
 // Form
 const initialValues = ref();
 watchEffect(() => {
@@ -138,10 +144,7 @@ const onFormSubmit = (form: FormSubmitEvent) => {
     ? updateExpenseMutation.mutate(data)
     : createExpenseMutation.mutate(data);
 };
-const onDelete = () => {
-  if (!expense_id) return;
-  deleteExpenseMutation.mutate();
-};
+
 const baseRoute = `/groups/${group_id}`;
 </script>
 

@@ -26,8 +26,15 @@ export const useUserService = () => {
       schema: UserUploadResponseSchema,
     });
 
+  const deleteUser = (): Promise<{ message: string } | null> =>
+    $api.delete({
+      url: `users`,
+      schema: z.object({ message: z.string() }).or(z.null()),
+    });
+
   return {
     editUser,
     uploadFile,
+    deleteUser,
   };
 };
