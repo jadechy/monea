@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useSeo } from "~/composables/useSeo";
+
 useSeo({
   title: "Créer un groupe - Gestion de dépenses partagées",
   description:

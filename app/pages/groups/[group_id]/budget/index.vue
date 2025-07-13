@@ -2,6 +2,7 @@
 import { Button } from "primevue";
 import { useGroupsStore } from "@/stores/groupStore";
 import { useBudget } from "~/composables/useBudgetMutation";
+import { useSeo } from "~/composables/useSeo";
 
 const router = useRouter();
 const route = useRoute();

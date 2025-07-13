@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useSeo } from "~/composables/useSeo";
+
 // Store
 const { group } = storeToRefs(useGroupsStore());
 

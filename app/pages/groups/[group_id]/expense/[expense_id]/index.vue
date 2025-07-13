@@ -2,12 +2,12 @@
 import { Button, Chip } from "primevue";
 import default_avatar from "@/assets/default_avatar.svg";
 import { useGroupsStore } from "@/stores/groupStore";
+import { useSeo } from "~/composables/useSeo";
 
 // Props
 const route = useRoute();
-const { group_id, category_id, expense_id } = route.params as {
+const { group_id, expense_id } = route.params as {
   group_id: string;
-  category_id?: string;
   expense_id?: string;
 };
 const router = useRouter();

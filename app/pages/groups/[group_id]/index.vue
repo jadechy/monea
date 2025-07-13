@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useGroupsStore } from "@/stores/groupStore";
-import AllExpensesDisplay from "~/components/layout/AllExpensesDisplay.vue";
+import { useSeo } from "~/composables/useSeo";
 const { group } = storeToRefs(useGroupsStore());
 watch(
   () => group.value,

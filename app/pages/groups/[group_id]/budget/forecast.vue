@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import { useGroupsStore } from "@/stores/groupStore";
+import { useSeo } from "~/composables/useSeo";
 const route = useRoute();
 const { group_id } = route.params as {
   group_id: string;

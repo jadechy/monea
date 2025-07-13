@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { useGroupsStore } from "@/stores/groupStore";
+import { useSeo } from "~/composables/useSeo";
 
 // Props
 const route = useRoute();
-const { group_id, category_id, expense_id } = route.params as {
+const { group_id } = route.params as {
   group_id: string;
-  category_id?: string;
-  expense_id?: string;
 };
 
 // Group

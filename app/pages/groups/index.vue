@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useSeo } from "~/composables/useSeo";
+
 const { user } = useAuthStore();
 useSeo({
   title: `Groupes de ${user?.name} - Vos comptes partagés`,

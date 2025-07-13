@@ -10,6 +10,7 @@ import {
   NewBudgetSchemaResolver,
   type NewBudgetType,
 } from "~/types/budgetType";
+import { useSeo } from "~/composables/useSeo";
 
 // Props
 const route = useRoute();
