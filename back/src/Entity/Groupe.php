@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use App\Controller\GroupeController;
 use App\DTO\GroupInputDTO;
@@ -16,7 +17,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-
 
 #[ApiResource(
     normalizationContext: ['groups' => ['groupe:read']],
@@ -38,7 +38,32 @@ use Symfony\Component\Validator\Constraints as Assert;
             deserialize: true,
             read: false,
         ),
-        new Delete()
+        new Delete(
+            uriTemplate: '/groupes/{id}',
+            controller: GroupeController::class  . '::deleteGroup',
+            name: 'groupe_delete',
+            deserialize: false,
+            read: false,
+        ),
+        new Get(
+            uriTemplate: '/groupes/{id}/members',
+            controller: GroupeController::class  . '::membersByGroup',
+            name: 'groupe_members',
+            deserialize: false,
+            read: false,
+            normalizationContext: ['groups' => ['member:read']]
+        ),
+        new Post(
+            uriTemplate: '/groupes/{id}/picture',
+            controller: GroupeController::class . '::uploadCoverGroup',
+            security: "is_granted('ROLE_USER')",
+            deserialize: false,
+            read: false,
+            write: false,
+            validate: false,
+            inputFormats: ['multipart' => ['multipart/form-data']],
+            outputFormats: ['json' => ['application/json']],
+        )
     ]
 )]
 #[ORM\Entity(repositoryClass: GroupeRepository::class)]
@@ -68,7 +93,7 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private \DateTimeImmutable $createdAt;
 
-    #[ORM\Column(length: 15, name: 'GRP_TYPE', enumType: GroupTypeEnum::class, type: "string")]
+    #[ORM\Column(length: 15, name: 'GRP_TYPE', enumType: GroupTypeEnum::class)]
     #[Assert\NotNull(
         message: 'Le groupe doit être défini.'
     )]
@@ -89,18 +114,10 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $members;
 
-    #[ORM\ManyToOne(inversedBy: 'groupes')]
-    #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
-    #[Assert\NotNull(
-        message: 'Le créateur doit être défini.'
-    )]
-    #[Groups(['groupe:read', 'groupe:write'])]
-    private User $creator;
-
     /**
      * @var Collection<int, Category>
      */
-    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'groupe',  cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'groupe', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['groupe:read', 'groupe:write'])]
     private Collection $categories;
 
@@ -118,11 +135,18 @@ class Groupe
     #[Groups(['groupe:read', 'groupe:write'])]
     private ColorEnum $color;
 
+    /**
+     * @var Collection<int, GroupInvitation>
+     */
+    #[ORM\OneToMany(targetEntity: GroupInvitation::class, mappedBy: 'groupe', cascade: ['persist', 'remove'])]
+    private Collection $groupInvitations;
+
     public function __construct()
     {
         $this->expenses = new ArrayCollection();
         $this->members = new ArrayCollection();
         $this->categories = new ArrayCollection();
+        $this->groupInvitations = new ArrayCollection();
     }
 
     public function getId(): int
@@ -204,20 +228,6 @@ class Groupe
         return $this;
     }
 
-
-
-    public function getCreator(): User
-    {
-        return $this->creator;
-    }
-
-    public function setCreator(User $creator): static
-    {
-        $this->creator = $creator;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Category>
      */
@@ -249,7 +259,8 @@ class Groupe
     }
     public function getPicture(): ?string
     {
-        return $this->picture;
+        $picture = 'http://localhost:8000' . $this->picture;
+        return $picture;
     }
 
     public function setPicture(string $picture): static
@@ -267,6 +278,24 @@ class Groupe
     public function setColor(ColorEnum $color): static
     {
         $this->color = $color;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupInvitation>
+     */
+    public function getGroupInvitations(): Collection
+    {
+        return $this->groupInvitations;
+    }
+
+    public function addGroupInvitation(GroupInvitation $groupInvitation): static
+    {
+        if (!$this->groupInvitations->contains($groupInvitation)) {
+            $this->groupInvitations->add($groupInvitation);
+            $groupInvitation->setGroupe($this);
+        }
 
         return $this;
     }

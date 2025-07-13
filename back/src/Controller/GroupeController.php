@@ -2,23 +2,30 @@
 
 namespace App\Controller;
 
-use App\DTO\GroupeDTO;
-use App\DTO\GroupInputDTO;
-use App\Entity\Budget;
-use App\Entity\Category;
-use App\Entity\Groupe;
-use App\Entity\User;
-use App\Enum\ColorEnum;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-use App\Repository\BudgetRepository;
-use App\Repository\GroupeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+use App\DTO\GroupeDTO;
+use App\DTO\GroupInputDTO;
+use App\DTO\MemberDTO;
+use App\Entity\Budget;
+use App\Entity\Category;
+use App\Entity\Groupe;
+use App\Entity\User;
+use App\Entity\Member;
+use App\Enum\ColorEnum;
+use App\Enum\MemberRoleEnum;
+use App\Enum\MemberStatusEnum;
+use App\Repository\BudgetRepository;
+use App\Repository\GroupeRepository;
+use App\Repository\MemberRepository;
+use App\Service\FileUploader;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[AsController]
 class GroupeController extends AbstractController
@@ -26,6 +33,7 @@ class GroupeController extends AbstractController
     public function __construct(
         private BudgetRepository $budgetRepository,
         private GroupeRepository $groupeRepository,
+        private MemberRepository $memberRepository,
         private EntityManagerInterface $em,
         private ValidatorInterface $validator,
 
@@ -42,7 +50,7 @@ class GroupeController extends AbstractController
         $groupesData = $this->groupeRepository->findGroupesByUser($user->getId());
 
         $groupes = array_map(
-            fn($groupe) => new GroupeDTO($groupe),
+            fn($groupe) => new GroupeDTO($groupe, $user),
             $groupesData
         );
         return $this->json($groupes, Response::HTTP_OK, [], ['groups' => ['groupe:read']]);
@@ -66,9 +74,7 @@ class GroupeController extends AbstractController
         $group->setName($data->name);
         $group->setType($data->type);
         $group->setColor($data->color);
-        $group->setCreator($user);
         $group->setCreatedAt(new \DateTimeImmutable());
-        $group->setPicture("lalaal");
         if ($data->categories) {
             foreach ($data->categories as $categoryInput) {
                 $category = new Category();
@@ -96,12 +102,22 @@ class GroupeController extends AbstractController
             return $this->json(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
         }
 
-
         $this->em->persist($group);
+        $this->em->flush();
+
+        $member = new Member();
+        $member->setRole(MemberRoleEnum::AUTHOR)
+            ->setAddOn(new \DateTimeImmutable())
+            ->setStatus(MemberStatusEnum::ACCEPTED)
+            ->setGroupe($group)
+            ->setIndividual($user);
+
+        $this->em->persist($member);
         $this->em->flush();
 
         return $this->json(['message' => 'Groupe créé avec succès'], Response::HTTP_CREATED);
     }
+
     public function editGroup(Request $request, Groupe $group): JsonResponse
     {
         $jsonData = json_decode($request->getContent(), false);
@@ -115,7 +131,9 @@ class GroupeController extends AbstractController
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException('User not authenticated');
         }
-        if ($group->getCreator() !== $user) {
+
+        $membre = $this->memberRepository->findOneBy(['groupe' => $group->getId(), 'individual' => $user->getId()]);
+        if ($membre->getRole() !== MemberRoleEnum::AUTHOR && $membre->getRole() !== MemberRoleEnum::ADMIN) {
             throw $this->createAccessDeniedException('Vous ne pouvez modifier que vos groupes');
         }
 
@@ -207,5 +225,97 @@ class GroupeController extends AbstractController
         $this->em->flush();
 
         return $this->json(['message' => 'Groupe modifié avec succès'], Response::HTTP_OK);
+    }
+
+    public function deleteGroup(int $id): JsonResponse
+    {
+        $groupe = $this->groupeRepository->find($id);
+
+        if (!$groupe) {
+            return $this->json(['error' => 'Groupe introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+
+        $member = $this->memberRepository->findOneBy(['groupe' => $groupe, 'individual' => $user]);
+        if (!$member) {
+            return new JsonResponse(['error' => 'Vous n\'êtes pas un membre du groupe.'], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($member->getRole() !== MemberRoleEnum::AUTHOR) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
+        }
+
+        $this->em->remove($groupe);
+        $this->em->flush();
+
+        return new JsonResponse(['message' => 'Groupe supprimé avec succès']);
+    }
+    public function membersByGroup(int $id): JsonResponse
+    {
+        /** @var Groupe */
+        $group = $this->groupeRepository->find($id);
+        if (!$group) {
+            return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $members = $group->getMembers();
+        $membersDTO = [];
+        foreach ($members as $member) {
+            $memberDTO = new MemberDTO($member);
+            $role = $memberDTO->role->value;
+            $status = $memberDTO->status->value;
+            if ($status === 'accepted' && ($role === 'author' || $role === 'member' || $role === 'admin'))
+                $membersDTO[] = $memberDTO;
+        }
+
+        return $this->json(
+            $membersDTO,
+            Response::HTTP_OK,
+            [],
+            ['groups' => ['member:read', 'user:read']]
+        );
+    }
+
+    public function uploadCoverGroup(int $id, Request $request, FileUploader $uploader): JsonResponse
+    {
+        $group = $this->groupeRepository->find($id);
+
+        if (!$group) {
+            return $this->json(['error' => 'Groupe introuvable'], Response::HTTP_NOT_FOUND);
+        }
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+
+        /** @var UploadedFile $file */
+        $file = $request->files->get('picture');
+
+
+        if (!$file) {
+            return new JsonResponse(['error' => 'No file provided'], 400);
+        }
+        if ($user->getPicture()) {
+            $oldPath = $uploader->getTargetDirectory() . '/' . basename($group->getPicture());
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+        }
+        if (!in_array($file->getMimeType(), ['image/jpeg', 'image/png'])) {
+            return new JsonResponse(['error' => 'Format non supporté'], 400);
+        }
+        if ($file->getSize() > 7 * 1024 * 1024) {
+            return new JsonResponse(['error' => 'Fichier trop volumineux'], 400);
+        }
+        $filename = $uploader->upload($file, '/group');
+        $group->setPicture('/uploads/group/' . $filename);
+        $this->em->flush();
+
+        return new JsonResponse(['picture' => $group->getPicture()]);
     }
 }

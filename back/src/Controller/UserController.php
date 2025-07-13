@@ -4,29 +4,37 @@ namespace App\Controller;
 
 use App\DTO\UserEditDTO;
 use App\DTO\UserRegisterDTO;
-use App\Entity\Category;
-use App\Entity\Groupe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
 
-use App\Entity\User;
-use App\Enum\ColorEnum;
-use App\Enum\GroupTypeEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
+use App\Entity\User;
+use App\Repository\UserRepository;
+use App\Entity\Member;
+use App\Enum\MemberStatusEnum;
+use App\Repository\GroupInvitationRepository;
+use App\Service\FileUploader;
+use App\Service\UserSetupService;
+use Symfony\Component\HttpFoundation\Request;
 
 #[AsController]
 class UserController extends AbstractController
 {
     public function __construct(
+        private UserRepository $userRepository,
+        private GroupInvitationRepository $groupInvitationRepository,
+        private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private EntityManagerInterface $em,
-        private UserPasswordHasherInterface $passwordHasher
-
-
+        private UserPasswordHasherInterface $passwordHasher,
+        private UserSetupService $userSetupService
     ) {}
 
     public function register(UserRegisterDto $input): JsonResponse
@@ -49,26 +57,33 @@ class UserController extends AbstractController
         $user->setRoles(["ROLE_USER"]);
         $user->setBirthday($input->birthday);
 
-
         $hashedPassword = $this->passwordHasher->hashPassword($user, $input->password);
         $user->setPassword($hashedPassword);
-
+        $errorsUser = $this->validator->validate($user);
+        if (count($errorsUser) > 0) {
+            return $this->json(['errors' => (string) $errorsUser], Response::HTTP_BAD_REQUEST);
+        }
         $this->em->persist($user);
 
-        $group = new Groupe();
-        $group->setName("Espace personnel");
-        $group->setType(GroupTypeEnum::PERSONNAL);
-        $group->setCreator($user);
-        $group->setCreatedAt(new \DateTimeImmutable());
-        $group->setColor(ColorEnum::Pink);
-        $group->setPicture('');
+        $error = $this->userSetupService->setupUser($user);
+        if ($error) {
+            return $this->json($error, Response::HTTP_BAD_REQUEST);
+        }
 
-        $this->em->persist($group);
-        $defaultCategory = new Category();
-        $defaultCategory->setLabel("default");
-        $defaultCategory->setColor(ColorEnum::Gray);
-        $defaultCategory->setGroupe($group);
-        $this->em->persist($defaultCategory);
+        if ($input->invitationToken) {
+            $invitation = $this->groupInvitationRepository->findOneBy(['token' => $input->invitationToken, 'used' => false]);
+            if (!$invitation) {
+                return new JsonResponse(['error' => 'Invitation invalide ou déjà utilisée'], Response::HTTP_BAD_REQUEST);
+            }
+            $member = new Member();
+            $member->setIndividual($user);
+            $member->setGroupe($invitation->getGroupe());
+            $member->setAddOn(new \DateTimeImmutable());
+            $member->setStatus(MemberStatusEnum::PENDING);
+            $member->setRole($invitation->getRole());
+            $invitation->setUsed(true);
+            $this->em->persist($member);
+        }
         $this->em->flush();
 
         return $this->json(['message' => 'Utilisateur créé avec succès'], Response::HTTP_CREATED);
@@ -121,5 +136,38 @@ class UserController extends AbstractController
         $this->em->flush();
 
         return $this->json(['message' => 'Utilisateur mis à jour avec succès']);
+    }
+    public function uploadPicture(Request $request, FileUploader $uploader, EntityManagerInterface $em): JsonResponse
+    {
+
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+        /** @var UploadedFile $file */
+        $file = $request->files->get('picture');
+
+
+        if (!$file) {
+            return new JsonResponse(['error' => 'No file provided'], 400);
+        }
+        if ($user->getPicture()) {
+            $oldPath = $uploader->getTargetDirectory() . '/' . basename($user->getPicture());
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+        }
+        if (!in_array($file->getMimeType(), ['image/jpeg', 'image/png'])) {
+            return new JsonResponse(['error' => 'Format non supporté'], 400);
+        }
+        if ($file->getSize() > 7 * 1024 * 1024) {
+            return new JsonResponse(['error' => 'Fichier trop volumineux'], 400);
+        }
+        $filename = $uploader->upload($file, '/user');
+        $user->setPicture('/uploads/user/' . $filename);
+        $em->flush();
+
+        return new JsonResponse(['picture' => $user->getPicture()]);
     }
 }

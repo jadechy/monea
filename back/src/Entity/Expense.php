@@ -211,6 +211,16 @@ class Expense
 
         return $this;
     }
+    public function removeAllParticipant(): static
+    {
+        foreach ($this->participants as $participant) {
+            if ($this->participants->removeElement($participant)) {
+                $participant->removeShareExpense($this);
+            }
+        }
+
+        return $this;
+    }
 
     public function getRecurringExpense(): ?RecurringExpense
     {
@@ -237,4 +247,24 @@ class Expense
 
         return $this;
     }
+
+    public function cloneAsRecurringInstance(\DateTimeImmutable $spentAt, RecurringExpense $recurring): self
+    {
+        $copy = new self();
+        $copy->setTitle($this->getTitle());
+        $copy->setAmount($this->getAmount());
+        $copy->setGroupe($this->getGroupe());
+        $copy->setCreator($this->getCreator());
+        $copy->setCategory($this->getCategory());
+        $copy->setCreatedAt(new \DateTimeImmutable());
+        $copy->setSpentAt($spentAt);
+        $copy->setRecurringExpense($recurring);
+
+        foreach ($this->getParticipants() as $participant) {
+            $copy->addParticipant($participant);
+        }
+
+        return $copy;
+    }
+
 }

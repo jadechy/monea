@@ -50,7 +50,6 @@ class UserFixtures extends Fixture
             $group = new Groupe();
             $group->setName("Espace personnel");
             $group->setType(GroupTypeEnum::PERSONNAL);
-            $group->setCreator($user);
             $group->setCreatedAt(new \DateTimeImmutable());
             $group->setColor(ColorEnum::Pink);
             $group->setPicture('');

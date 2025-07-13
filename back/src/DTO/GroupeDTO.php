@@ -10,6 +10,9 @@ use App\Entity\Groupe;
 use App\Enum\ColorEnum;
 use App\Enum\GroupTypeEnum;
 use App\DTO\MemberDTO;
+use App\Entity\User;
+use App\Enum\MemberRoleEnum;
+use App\Enum\MemberStatusEnum;
 use DateTimeImmutable;
 
 #[ApiResource(operations: [
@@ -41,22 +44,22 @@ class GroupeDTO
     #[Groups(['groupe:read'])]
     public ColorEnum $color;
 
-    /** @var ExpenseDTO[] */
     #[Groups(['groupe:read'])]
+    public MemberRoleEnum $userRole;
+
+    #[Groups(['groupe:read'])]
+    public MemberStatusEnum $userStatus;
+
+    /** @var ExpenseDTO[] */
     public array $expenses;
 
     /** @var MemberDTO[] */
-    #[Groups(['groupe:read'])]
     public array $members;
 
-    #[Groups(['groupe:read'])]
-    public UserDTO $creator;
-
     /** @var CategoryDTO[] */
-    #[Groups(['groupe:read'])]
     public array $categories;
 
-    public function __construct(Groupe $groupe)
+    public function __construct(Groupe $groupe, User $currentUser)
     {
         $this->id = $groupe->getId();
         $this->name = $groupe->getName();
@@ -65,18 +68,18 @@ class GroupeDTO
         $this->picture = $groupe->getPicture();
         $this->color = $groupe->getColor();
 
-
-
         foreach ($groupe->getExpenses() as $expense) {
             $this->expenses[] = new ExpenseDTO($expense);
         }
 
         foreach ($groupe->getMembers() as $member) {
-            $this->members[] = new MemberDTO($member);
+            $dto = new MemberDTO($member);
+            $this->members[] = $dto;
+            if ($member->getIndividual()->getId() === $currentUser->getId()) {
+                $this->userRole = $member->getRole();
+                $this->userStatus = $member->getStatus();
+            }
         }
-
-
-        $this->creator = new UserDTO($groupe->getCreator());
 
         foreach ($groupe->getCategories() as $category) {
             $this->categories[] = new CategoryDTO($category);

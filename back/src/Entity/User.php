@@ -53,6 +53,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
             denormalizationContext: ['groups' => ['user:write']],
         ),
         new Delete(),
+        new Post(
+            uriTemplate: '/users/picture',
+            controller: UserController::class . '::uploadPicture',
+            security: "is_granted('ROLE_USER')",
+            deserialize: false,
+            read: false,
+            write: false,
+            validate: false,
+            inputFormats: ['multipart' => ['multipart/form-data']],
+            outputFormats: ['json' => ['application/json']],
+        )
     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']]
@@ -153,13 +164,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $members;
 
     /**
-     * @var Collection<int, Groupe>
-     */
-    #[ORM\OneToMany(targetEntity: Groupe::class, mappedBy: 'creator')]
-    #[Groups(['user:read', 'user:write'])]
-    private Collection $groupes;
-
-    /**
      * @var Collection<int, Expense>
      */
     #[ORM\ManyToMany(targetEntity: Expense::class, inversedBy: 'participants')]
@@ -189,6 +193,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:me'])]
     private \DateTimeImmutable $birthday;
 
+    #[Groups(['user:me'])]
     #[ORM\Column(length: 255, nullable: true, unique: true, name: 'USR_GOOGLE_ID')]
     private ?string $googleId = null;
 
@@ -197,7 +202,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->expenses = new ArrayCollection();
         $this->members = new ArrayCollection();
-        $this->groupes = new ArrayCollection();
         $this->shareExpenses = new ArrayCollection();
     }
 
@@ -368,27 +372,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-
-    /**
-     * @return Collection<int, Groupe>
-     */
-    public function getGroupes(): Collection
-    {
-        return $this->groupes;
-    }
-
-    public function addGroupe(Groupe $groupe): static
-    {
-        if (!$this->groupes->contains($groupe)) {
-            $this->groupes->add($groupe);
-            $groupe->setCreator($this);
-        }
-
-        return $this;
-    }
-
-
-
     /**
      * @return Collection<int, Expense>
      */
@@ -415,7 +398,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPicture(): ?string
     {
-        return $this->picture;
+        $picture = 'http://localhost:8000' . $this->picture;
+        return $picture;
     }
 
     public function setPicture(?string $picture): static

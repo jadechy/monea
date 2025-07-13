@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-use DateTimeImmutable;
+use App\Repository\UserRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class ExpenseInputDTO
@@ -19,13 +19,16 @@ class ExpenseInputDTO
     #[Assert\NotBlank]
     public int $groupId;
 
-    #[Assert\NotBlank]
-    public int $categoryId;
+    public ?int $categoryId = null;
 
     #[Assert\NotBlank]
     public int $authorId;
 
     public ?RecurringExpenseInputDTO $recurring = null;
+
+    /** @var int[] */
+    public array $participants = [];
+
     public static function fromObject(\stdClass $object): self
     {
         $dto = new self();
@@ -35,7 +38,14 @@ class ExpenseInputDTO
         $dto->authorId = $object->authorId ?? null;
         $dto->categoryId = $object->categoryId ?? null;
         $dto->spentAt = $object->spentAt ?? null;
-        $dto->recurring = $object->recurring ?? null;
+
+        if (isset($object->recurring) && $object->recurring instanceof \stdClass) {
+            $dto->recurring = RecurringExpenseInputDTO::fromObject($object->recurring);
+        } else {
+            $dto->recurring = null;
+        }
+
+        $dto->participants = $object->participants ?? null;
 
         return $dto;
     }
