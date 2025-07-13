@@ -1,5 +1,14 @@
 <script setup lang="ts">
 // Props
+const { group } = storeToRefs(useGroupsStore());
+
+useSeo({
+  title: `Modifier d'une dépense dans ${group.value?.name}`,
+  description: `Éditez d'une dépense dans le groupe ${group.value?.name}.`,
+  ogTitle: `Édition dépense `,
+  ogDescription: `Page d'édition de d'une dépense dans le groupe ${group.value?.name}.`,
+  image: group.value?.picture ?? undefined,
+});
 </script>
 
 <template>

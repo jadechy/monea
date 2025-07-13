@@ -13,12 +13,19 @@ const { group_id, category_id, expense_id } = route.params as {
 const { group } = storeToRefs(useGroupsStore());
 const { category } = useCategoryMutation();
 const { expensesByCategory: expenses } = useExpenseMutation();
+useSeo({
+  title: `Dépenses de la catégorie "${category.value?.label}"`,
+  description: `Consultez toutes les dépenses enregistrées dans la catégorie "${category.value?.label}" pour suivre précisément votre budget au sein du groupe ${group.value?.name}.`,
+  ogTitle: `Suivi des dépenses - ${category.value?.label}`,
+  ogDescription: `Visualisez et analysez les dépenses liées à la catégorie "${category.value?.label}" du groupe ${group.value?.name}. Gérez votre budget efficacement.`,
+});
+console.log(category);
 // Queries
 </script>
 
 <template>
   <AllExpensesDisplay
-    v-if="group"
+    v-if="group && category"
     :group="group"
     :subHeader="{
       label: category?.label ?? 'error',

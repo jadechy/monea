@@ -13,8 +13,14 @@ const { group_id, category_id, expense_id } = route.params as {
 const router = useRouter();
 // Group
 const { group } = storeToRefs(useGroupsStore());
-
 const { expense } = useExpenseMutation();
+useSeo({
+  title: `Créer une dépense dans ${group.value?.name}`,
+  description: `Ajoutez une nouvelle dépense au groupe ${group.value?.name} pour mieux gérer votre budget.`,
+  ogTitle: `Nouvelle dépense - ${group.value?.name}`,
+  ogDescription: `Page de création d'une dépense pour le groupe ${group.value?.name}.`,
+  image: group.value?.picture ?? undefined,
+});
 </script>
 
 <template>
