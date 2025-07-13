@@ -14,6 +14,7 @@ use App\Enum\ColorEnum;
 use App\Enum\GroupTypeEnum;
 use App\Enum\MemberRoleEnum;
 use App\Enum\MemberStatusEnum;
+
 class UserSetupService
 {
     public function __construct(
@@ -31,8 +32,7 @@ class UserSetupService
         $group->setName("Espace personnel")
             ->setType(GroupTypeEnum::PERSONNAL)
             ->setCreatedAt(new \DateTimeImmutable())
-            ->setColor(ColorEnum::Pink)
-            ->setPicture('');
+            ->setColor(ColorEnum::Pink);
         $errorsGroup = $this->validator->validate($group);
         if (count($errorsGroup) > 0) {
             return ['error' => (string) $errorsGroup];

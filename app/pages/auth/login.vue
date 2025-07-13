@@ -16,6 +16,14 @@ const submitLogin = async (form: FormSubmitEvent) => {
     password: form.states.password.value,
   });
 };
+useSeo({
+  title: "Connexion - Monéa",
+  description:
+    "Connectez-vous à Monéa pour accéder à vos comptes et gérer vos finances en toute simplicité.",
+  ogTitle: "Connexion à Monéa",
+  ogDescription:
+    "Accédez à votre compte Monéa et gérez vos budgets et dépenses facilement.",
+});
 </script>
 
 <template>

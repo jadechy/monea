@@ -12,6 +12,8 @@
   "dependencies": {
     "@nuxt/eslint": "^1.5.2",
     "@nuxt/image": "^1.10.0",
+    "@nuxtjs/robots": "^5.4.0",
+    "@nuxtjs/sitemap": "^7.4.3",
     "@pinia/nuxt": "^0.11.1",
     "@primeuix/themes": "^1.2.1",
     "@primevue/forms": "^4.3.6",
@@ -27,6 +29,7 @@
     "tailwindcss": "^4.1.11",
     "tailwindcss-primeui": "^0.6.1",
     "vue": "^3.5.17",
+    "vue-matomo": "^4.2.0",
     "vue-router": "^4.5.1",
     "zod": "^3.25.56"
   },

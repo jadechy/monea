@@ -94,7 +94,7 @@ class UserController extends AbstractController
 
         return $user;
     }
-    
+
     public function updateUser(UserEditDTO $input): JsonResponse
     {
         $user = $this->getUser();

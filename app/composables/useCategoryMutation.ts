@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import { useQuery } from "@tanstack/vue-query";
 
 import { useCategoryService } from "./services/categoryService";
 
@@ -10,7 +10,6 @@ export const useCategoryMutation = () => {
     expense_id?: string;
   };
   const { fetchCategoryByGroup, fetchCategory } = useCategoryService();
-  const queryClient = useQueryClient();
 
   const { data: categories } = useQuery({
     queryKey: ["categories-by-group", group_id],

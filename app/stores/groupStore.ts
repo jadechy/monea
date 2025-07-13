@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/vue-query";
 import { useGroupService } from "~/composables/services/groupService";
 
 export const useGroupsStore = defineStore("groups", () => {
+  const route = useRoute();
+  const group_id = computed(() => route.params.group_id as string | undefined);
   const { getGroupByUser } = useGroupService();
   const { data, refetch } = useQuery({
     queryKey: ["groups-by-user"],
@@ -15,10 +17,10 @@ export const useGroupsStore = defineStore("groups", () => {
 
   const groups = computed(() => data?.value ?? []);
 
-  const groupById = ({ id }: { id?: string }) => {
-    if (id === undefined) return null;
-    return groups.value.find((group) => group.id === Number(id));
-  };
+  const group = computed(() => {
+    if (group_id.value === undefined) return undefined;
+    return groups.value.find((group) => group.id === Number(group_id.value));
+  });
   const groupsNotPersonnal = computed(() =>
     groups.value.filter((group) => group.type !== "personnal")
   );
@@ -34,7 +36,7 @@ export const useGroupsStore = defineStore("groups", () => {
     personnalGroup,
     // Getters
     groupsCount,
-    groupById,
+    group,
 
     // Actions
     refetch,

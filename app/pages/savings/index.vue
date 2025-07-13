@@ -13,26 +13,20 @@ export type FormModel = {
   enters: InputData[];
   exits: InputData[];
 };
-const form = ref<FormModel>({
-  start: new Date("2024-01-01"),
-  end: new Date("2024-06-30"),
-  enters: [
-    { name: "Salaire", value: 2500 },
-    { name: "Vente", value: 300 },
-  ],
-  exits: [
-    { name: "Loyer", value: 800 },
-    { name: "Courses", value: 250 },
-    { name: "Abonnement", value: 30 },
-  ],
+useSeo({
+  title: "Prévision d’épargne mois par mois",
+  description:
+    "Estimez facilement votre épargne potentielle en entrant vos revenus et dépenses. Visualisez un tableau mois par mois pour mieux gérer votre budget.",
+  ogTitle: "Prévision d’épargne mois par mois",
+  ogDescription:
+    "Visualisez votre épargne potentielle mois par mois avec Monea. Entrez vos revenus et dépenses pour un meilleur suivi de votre budget.",
 });
-
-// const form = ref<FormModel>({
-//   start: undefined,
-//   end: undefined,
-//   enters: [{ name: null, value: null }],
-//   exits: [{ name: null, value: null }],
-// });
+const form = ref<FormModel>({
+  start: undefined,
+  end: undefined,
+  enters: [{ name: null, value: null }],
+  exits: [{ name: null, value: null }],
+});
 
 const { months } = useGeneratedMonths({
   form: form,
@@ -97,7 +91,7 @@ const { exportFormToExcel } = useExcelFormSavingsExport({
     <NewEnter :form="form" category="enters" />
     <NewEnter :form="form" category="exits" />
   </div>
-  <div class="flex justify-end mt-14">
+  <div class="flex justify-end mt-14" v-if="months.length > 0">
     <Button
       @click="async () => await exportFormToExcel()"
       icon="pi pi-file-export"

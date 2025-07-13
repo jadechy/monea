@@ -5,6 +5,7 @@ namespace App\DTO;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Entity\Expense;
 use DateTimeImmutable;
+
 class ExpenseDTO
 {
     #[Groups(['expense:read', 'array_expense:read'])]

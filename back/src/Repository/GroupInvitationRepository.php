@@ -15,5 +15,4 @@ class GroupInvitationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, GroupInvitation::class);
     }
-
 }

@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from "vue";
 import Chart from "primevue/chart";
 import { formatDayMonth, getDaysOfCurrentMonth } from "@/utils/date";
 import { useGroupsStore } from "@/stores/groupStore";
 import type { ChartData } from "chart.js";
 
-// Props
-const { group_id } = defineProps<{ group_id: string }>();
-
 // Const
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
+const { group } = storeToRefs(useGroupsStore());
 const days = getDaysOfCurrentMonth();
 const labels = days.map((d) => formatDayMonth(d));
 

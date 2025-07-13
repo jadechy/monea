@@ -1,25 +1,26 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import { Button, Chip } from "primevue";
 import default_avatar from "@/assets/default_avatar.svg";
-import { useQuery } from "@tanstack/vue-query";
 import { useGroupsStore } from "@/stores/groupStore";
-import type { ExpenseType } from "~/types/expenseType";
-import type { GroupType } from "~/types/groupType";
+import { useSeo } from "~/composables/useSeo";
 
 // Props
 const route = useRoute();
-const { group_id, category_id, expense_id } = route.params as {
+const { group_id, expense_id } = route.params as {
   group_id: string;
-  category_id?: string;
   expense_id?: string;
 };
 const router = useRouter();
 // Group
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
-
+const { group } = storeToRefs(useGroupsStore());
 const { expense } = useExpenseMutation();
+useSeo({
+  title: `Créer une dépense dans ${group.value?.name}`,
+  description: `Ajoutez une nouvelle dépense au groupe ${group.value?.name} pour mieux gérer votre budget.`,
+  ogTitle: `Nouvelle dépense - ${group.value?.name}`,
+  ogDescription: `Page de création d'une dépense pour le groupe ${group.value?.name}.`,
+  image: group.value?.picture ?? undefined,
+});
 </script>
 
 <template>

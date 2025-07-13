@@ -8,6 +8,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_URL,
+      baseUrl: process.env.NUXT_PUBLIC_BASE_URL,
     },
   },
   modules: [
@@ -15,7 +16,30 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@pinia/nuxt",
     "@primevue/nuxt-module",
+    "@nuxtjs/sitemap",
+    "@nuxtjs/robots",
   ],
+  site: {
+    url: process.env.NUXT_PUBLIC_BASE_URL,
+    name: "Monéa",
+  },
+  sitemap: {
+    autoLastmod: true,
+    defaults: {
+      changefreq: "monthly",
+      priority: 0.7,
+    },
+    exclude: [
+      "/auth/**",
+      "/terms",
+      "/privacy",
+      "/oauth/**",
+      /^\/middleware/,
+      /^\/NotFoundView$/,
+    ],
+    sources: ["/api/__sitemap__/urls"],
+  },
+
   primevue: {
     options: {
       theme: {

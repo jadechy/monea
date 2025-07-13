@@ -9,6 +9,15 @@ const { groupsCount, personnalGroup } = storeToRefs(useGroupsStore());
 const router = useRouter();
 const { clearAuth, uploadPicture } = useAuthStore();
 const dialogRef = ref<InstanceType<typeof ImageUploadDialog> | null>(null);
+useSeo({
+  title: "Mon profil",
+  description:
+    "Consultez et modifiez les informations de votre profil utilisateur pour personnaliser votre expérience sur MonApp.",
+  ogTitle: "Profil utilisateur",
+  ogDescription:
+    "Gérez vos informations personnelles et paramètres de compte depuis votre profil Monea.",
+  image: user.value?.picture ?? undefined,
+});
 </script>
 
 <template>

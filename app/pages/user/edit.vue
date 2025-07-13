@@ -21,6 +21,15 @@ const onFormSubmit = (form: FormSubmitEvent) => {
   }, {} as UserEditType);
   updateUser.mutate({ ...data, birthday: convertToLocalDate(data.birthday) });
 };
+useSeo({
+  title: "Modifier mon compte",
+  description:
+    "Mettez à jour vos informations personnelles, paramètres de sécurité et préférences de compte sur Monéa.",
+  ogTitle: "Édition de compte",
+  ogDescription:
+    "Personnalisez et sécurisez votre compte utilisateur en modifiant vos informations sur Monéa.",
+  image: user?.picture ?? undefined,
+});
 </script>
 
 <template>

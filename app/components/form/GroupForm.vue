@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { Form, type FormSubmitEvent } from "@primevue/forms";
 import { Button, RadioButton, RadioButtonGroup } from "primevue";
-import { computed, ref, watch } from "vue";
 import { ColorSchema } from "@/types/color";
-import BaseSection from "~/components/ui-kit/BaseSection.vue";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import {
   GroupTypeEnum,
@@ -19,8 +17,7 @@ import { useGroupMutation } from "@/composables/useGroupMutation";
 const route = useRoute();
 const group_id = route.params.group_id as string;
 // Store
-const { groupById } = useGroupsStore();
-const group = computed(() => groupById({ id: group_id }));
+const { group } = storeToRefs(useGroupsStore());
 
 // Const
 const selectedIndex = ref<number | null>(null);
