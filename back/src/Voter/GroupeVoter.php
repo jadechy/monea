@@ -10,6 +10,9 @@ use App\Enum\MemberRoleEnum;
 use App\Enum\MemberStatusEnum;
 use App\Repository\MemberRepository;
 
+/**
+ * @extends Voter<string, mixed>
+ */
 class GroupeVoter extends Voter
 {
     final public const MODIFIER = 'modifier';

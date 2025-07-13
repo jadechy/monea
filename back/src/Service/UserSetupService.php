@@ -24,7 +24,7 @@ class UserSetupService
 
     /**
      * Initialise les entités liées à un nouvel utilisateur
-     * @return array|null Retourne un tableau d'erreur s'il y en a, sinon null
+     * @return array<string, string>|null Retourne un tableau d'erreur s'il y en a, sinon null
      */
     public function setupUser(User $user): ?array
     {

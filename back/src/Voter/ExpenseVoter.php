@@ -12,6 +12,9 @@ use App\Enum\MemberRoleEnum;
 use App\Enum\MemberStatusEnum;
 use App\Voter\CreateExpenseSubject;
 
+/**
+ * @extends Voter<string, mixed>
+ */
 class ExpenseVoter extends Voter
 {
     final public const CREER = 'creer';
@@ -25,7 +28,7 @@ class ExpenseVoter extends Voter
             return false;
         }
         
-        if ($attribute === self::CREER && $subject instanceof CreateExpenseSubject) {
+        if ($subject instanceof CreateExpenseSubject) {
             return true;
         }
 
@@ -41,17 +44,14 @@ class ExpenseVoter extends Voter
             return false;
         }
         
-        /** 
-        * @var Expense
-        */
-        $expense = $subject;
         return match ($attribute) {
-            self::CREER => $this->peutCreer($subject, $user),
+            /** @var CreateExpenseSubject $subject */
+            self::CREER => $this->peutCreer($subject),
             default => throw new \LogicException('This code should not be reached!'),
         };
     }
 
-    private function peutCreer(CreateExpenseSubject $subject, User $user): bool
+    private function peutCreer(CreateExpenseSubject $subject): bool
     {
         $member = $this->memberRepository->findOneBy([
             'groupe' => $subject->groupe,
