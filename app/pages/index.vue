@@ -20,6 +20,14 @@ const averages: Average[] = [
     label: "Vue mensuelle / annuelle",
   },
 ];
+useSeo({
+  title: "Bienvenue sur Monéa - Gérez facilement vos finances",
+  description:
+    "Monéa vous aide à gérer vos dépenses, suivre votre budget et économiser intelligemment. Commencez dès aujourd’hui !",
+  ogTitle: "MonApp - Gestion facile et intuitive de vos finances",
+  ogDescription:
+    "Découvrez Monéa, la solution pour suivre vos dépenses, gérer vos budgets et atteindre vos objectifs financiers.",
+});
 const router = useRouter();
 </script>
 

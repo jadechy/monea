@@ -18,7 +18,6 @@ useSeo({
   ogTitle: `Suivi des dépenses - ${category.value?.label}`,
   ogDescription: `Visualisez et analysez les dépenses liées à la catégorie "${category.value?.label}" du groupe ${group.value?.name}. Gérez votre budget efficacement.`,
 });
-console.log(category);
 // Queries
 </script>
 
