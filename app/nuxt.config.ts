@@ -17,6 +17,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@primevue/nuxt-module",
     "@nuxtjs/sitemap",
+    "@nuxtjs/robots",
   ],
   site: {
     url: process.env.NUXT_PUBLIC_BASE_URL,
@@ -38,6 +39,7 @@ export default defineNuxtConfig({
     ],
     sources: ["/api/__sitemap__/urls"],
   },
+
   primevue: {
     options: {
       theme: {
