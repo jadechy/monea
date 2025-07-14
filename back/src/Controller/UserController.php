@@ -29,8 +29,6 @@ use Symfony\Component\HttpFoundation\Request;
 #[AsController]
 class UserController extends AbstractController
 {
-    private string $urlClient;
-
     public function __construct(
         private GroupInvitationRepository $groupInvitationRepository,
         private ValidatorInterface $validator,
@@ -144,9 +142,8 @@ class UserController extends AbstractController
 
     public function delete(): JsonResponse
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
-
         if (!$user) {
             return $this->json(['error' => 'Utilisateur non authentifié'], Response::HTTP_UNAUTHORIZED);
         }
@@ -181,10 +178,8 @@ class UserController extends AbstractController
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException('User not authenticated');
         }
-        /** @var UploadedFile $file */
+       
         $file = $request->files->get('picture');
-
-
         if (!$file) {
             return new JsonResponse(['error' => 'No file provided'], 400);
         }
@@ -194,6 +189,8 @@ class UserController extends AbstractController
                 unlink($oldPath);
             }
         }
+
+        /** @var UploadedFile $file */
         if (!in_array($file->getMimeType(), ['image/jpeg', 'image/png'])) {
             return new JsonResponse(['error' => 'Format non supporté'], 400);
         }
@@ -209,14 +206,13 @@ class UserController extends AbstractController
 
     public function forgot(Request $request, MailerInterface $mailer): Response
     {
+        /** @var object|null $data */
         $data = json_decode($request->getContent());
-
         if (!$data || !isset($data->email)) {
             return new JsonResponse(['message' => 'Email manquant ou JSON invalide.'], 400);
         }
 
         $email = $data->email;
-
         $user = $this->userRepository->findOneBy(['email' => $email]);
         if (!$user) {
             return new JsonResponse(['error' => 'Aucun utilisateur trouvé avec cette email'], 400);
@@ -247,6 +243,7 @@ class UserController extends AbstractController
 
     public function reset(Request $request): JsonResponse
     {
+        /** @var object{resetToken: string, password: string, repeatPassword: string}|null $data */
         $data = json_decode($request->getContent());
         if (!$data || !isset($data->resetToken)) {
             return new JsonResponse(['message' => 'Token manquant ou JSON invalide.'], 400);
