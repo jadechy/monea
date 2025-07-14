@@ -2,15 +2,12 @@
 
 namespace App\Voter;
 
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-
 use App\Entity\User;
-use App\Entity\Expense;
-use App\Repository\MemberRepository;
 use App\Enum\MemberRoleEnum;
 use App\Enum\MemberStatusEnum;
-use App\Voter\CreateExpenseSubject;
+use App\Repository\MemberRepository;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 /**
  * @extends Voter<string, mixed>
@@ -19,20 +16,11 @@ class ExpenseVoter extends Voter
 {
     final public const CREER = 'creer';
 
-    public function __construct(private MemberRepository $memberRepository){}
+    public function __construct(private MemberRepository $memberRepository) {}
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        // Si l'attribute n'est pas un de ceux supporté, retourne faux
-        if (!in_array($attribute, [self::CREER])) {
-            return false;
-        }
-        
-        if ($subject instanceof CreateExpenseSubject) {
-            return true;
-        }
-
-        return false;
+        return $attribute === self::CREER && $subject instanceof CreateExpenseSubject;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -40,15 +28,23 @@ class ExpenseVoter extends Voter
         $user = $token->getUser();
 
         if (!$user instanceof User) {
-            // l'utilisateur doit être connecté
+            // L'utilisateur doit être connecté
             return false;
         }
-        
+
         return match ($attribute) {
-            /** @var CreateExpenseSubject $subject */
-            self::CREER => $this->peutCreer($subject),
+            self::CREER => $this->handleCreer($subject),
             default => throw new \LogicException('This code should not be reached!'),
         };
+    }
+
+    /**
+     * @param mixed $subject
+     */
+    private function handleCreer(mixed $subject): bool
+    {
+        \assert($subject instanceof CreateExpenseSubject);
+        return $this->peutCreer($subject);
     }
 
     private function peutCreer(CreateExpenseSubject $subject): bool
@@ -63,10 +59,10 @@ class ExpenseVoter extends Voter
         }
 
         return $member->getStatus() === MemberStatusEnum::ACCEPTED &&
-           !in_array($member->getRole(), [
-               MemberRoleEnum::VIEWER,
-               MemberRoleEnum::ANONYME,
-               MemberRoleEnum::BANNED,
-           ]);
+            !in_array($member->getRole(), [
+                MemberRoleEnum::VIEWER,
+                MemberRoleEnum::ANONYME,
+                MemberRoleEnum::BANNED,
+            ]);
     }
 }
