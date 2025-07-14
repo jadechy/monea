@@ -57,9 +57,16 @@ class GroupeController extends AbstractController
 
     public function postGroup(Request $request): JsonResponse
     {
+        /** 
+         * @var object{
+         *     name: string,
+         *     type: int|string,
+         *     color: int|string,
+         *     categories?: array<object{id?: int, label: string, color: string}>
+         * } $jsonData 
+         */
         $jsonData = json_decode($request->getContent(), false);
         try {
-            /** @var \stdClass $jsonData */
             $data = (new GroupInputDTO())->fromObject($jsonData);
         } catch (\InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
@@ -120,9 +127,16 @@ class GroupeController extends AbstractController
 
     public function editGroup(Request $request, Groupe $group): JsonResponse
     {
+        /** 
+         * @phpstan-var object{
+         *     name: string,
+         *     type: int|string,
+         *     color: int|string,
+         *     categories?: array<object{id?: int, label: string, color: string}>
+         * } $jsonData 
+         */
         $jsonData = json_decode($request->getContent(), false);
         try {
-            /** @var \stdClass $jsonData */
             $data = (new GroupInputDTO())->fromObject($jsonData);
         } catch (\InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
