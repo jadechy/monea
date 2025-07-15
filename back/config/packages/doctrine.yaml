@@ -36,7 +36,7 @@ when@test:
 when@prod:
   doctrine:
     dbal:
-      url: "%database_url%"
+      url: "%env(resolve:DATABASE_URL)%"
     orm:
       auto_generate_proxy_classes: false
       proxy_dir: "%kernel.build_dir%/doctrine/orm/Proxies"
