@@ -1,0 +1,1 @@
+const r=({color:e,bg:$=100,text:t=500,hover:g=200,selected:b=50})=>({bg:`bg-${e}-${$}`,hover:`hover:bg-${e}-${g}`,text:`text-${e}-${t}`,selected:`bg-${e}-${b}`}),s=({color:e="gray",outlined:$})=>$?`hover:border-${e}-700! text-${e}-800 border-${e}-600!`:`bg-${e}-600 hover:bg-${e}-700 text-${e}-50 bg-${e}-500 border-${e}-600`;export{r as a,s as g};
