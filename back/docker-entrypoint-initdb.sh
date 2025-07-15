@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
+MYSQL_PASSWORD_FILE=/run/secrets/mysql_password
+
+MYSQL_ROOT_PASSWORD=$(cat $MYSQL_ROOT_PASSWORD_FILE)
+MYSQL_PASSWORD=$(cat $MYSQL_PASSWORD_FILE)
+
+mysql -uroot -p"$MYSQL_ROOT_PASSWORD" <<-EOSQL
+    CREATE DATABASE IF NOT EXISTS app_db;
+    CREATE USER IF NOT EXISTS 'app_user'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
+    GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'%';
+    FLUSH PRIVILEGES;
+EOSQL
