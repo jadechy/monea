@@ -46,7 +46,7 @@ services:
     platform: linux/x86_64
     restart: always
     env_file:
-      - ./back/.env.local
+      - ./back/.env.dev.local
     volumes:
       - db-data:/var/lib/mysql
     ports:
@@ -65,7 +65,7 @@ services:
     ports:
       - "8081:80"
     env_file:
-      - ./back/.env.local
+      - ./back/.env.dev.local
     depends_on:
       - db
     networks:
