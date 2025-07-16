@@ -48,7 +48,11 @@ services:
   App\Security\GoogleAuthenticator:
     arguments:
       $urlClient: "%env(URL_CLIENT)%"
-  
+
   App\Controller\MemberController:
+    arguments:
+      $urlClient: "%env(URL_CLIENT)%"
+
+  App\Controller\UserController:
     arguments:
       $urlClient: "%env(URL_CLIENT)%"
