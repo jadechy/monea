@@ -4,7 +4,7 @@ const config = useRuntimeConfig();
 const router = useRouter();
 
 const handleClick = () => {
-  router.push(`/${config.public.apiBase}/connect/google`);
+  window.location.href = `https://${config.public.apiBase}/connect/google`;
 };
 </script>
 
