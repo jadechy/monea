@@ -54,6 +54,10 @@ composer require doctrine/doctrine-fixtures-bundle
 php bin/console doctrine:migrations:migrate --no-interaction || true
 php bin/console doctrine:fixtures:load --no-interaction || true
 chown -R www-data:www-data var
+RUN mkdir -p /var/www/html/public/uploads && \
+    chown -R www-data:www-data /var/www/html/public/uploads && \
+    chmod -R 775 /var/www/html/public/uploads
+
 
 # Lancer php-fpm en foreground
 exec php-fpm
