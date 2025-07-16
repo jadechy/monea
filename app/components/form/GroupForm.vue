@@ -95,7 +95,10 @@ const initialValues =
       :form="$form"
       fluid
     />
-    <MembersForm v-if="group?.type !== 'personnal'" />
+    <MembersForm
+      v-if="group?.id && group?.type !== 'personnal'"
+      :group="group"
+    />
 
     <BaseSection v-if="group?.type !== 'personnal'" label="Type de groupe">
       <RadioButtonGroup name="type" class="flex flex-wrap gap-4">
