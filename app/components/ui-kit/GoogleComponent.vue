@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import logo from "../assets/google_logo.webp";
 const config = useRuntimeConfig();
-const router = useRouter();
 
 const handleClick = () => {
-  window.location.href = `https://${config.public.apiBase}/connect/google`;
+  window.location.href = `${config.public.apiBase}/connect/google`;
 };
 </script>
 
