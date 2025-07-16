@@ -11,8 +11,8 @@ if [ ! -f bin/console ]; then
 fi
 
 
-if [ -f .env.local ]; then
-  export $(grep -v '^#' .env.local | xargs)
+if [ -f .env.dev.local ]; then
+  export $(grep -v '^#' .env.dev.local | xargs)
 fi
 
 if [ -z "$JWT_PASSPHRASE" ]; then

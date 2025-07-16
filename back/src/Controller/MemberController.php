@@ -20,6 +20,7 @@ use App\Repository\MemberRepository;
 use App\Repository\UserRepository;
 use App\Repository\GroupeRepository;
 use App\DTO\MemberInputDTO;
+use App\DTO\MemberInvitationDTO;
 
 final class MemberController extends AbstractController
 {
@@ -35,7 +36,7 @@ final class MemberController extends AbstractController
 
         /** @var int $groupeId */
         $groupeId = !empty($data->groupeId) ? $data->groupeId : null;
-        $userId = !empty($data->userId) ? $data->userId : null;
+        $username = !empty($data->username) ? $data->username : null;
         $mail = !empty($data->mail) ? $data->mail : null;
         /** @var string $role */
         $role = !empty($data->role) ? $data->role : null;
@@ -49,9 +50,9 @@ final class MemberController extends AbstractController
             return new JsonResponse(['error' => 'Groupe not found'], 404);
         }
 
-        if ($userId) {
+        if($username) {
             /** @var User $user */
-            $user = $this->userRepository->find($userId);
+            $user = $this->userRepository->findOneBy(["username" => $username]);
 
             $member = new Member();
             $member->setRole(MemberRoleEnum::from($role))
@@ -64,8 +65,8 @@ final class MemberController extends AbstractController
 
             // Page de notification avec les demandes d'invitation au sein d'un groupe
             /** @var int $userId */
-            $baseUrl = "{$this->urlClient}/invitation";
-            $invitationLink = $baseUrl . '?userId=' . $userId . '&groupeId=' . $groupeId;
+            $baseUrl = "http://localhost:3000/user/invitation";
+            $invitationLink = $baseUrl . '?userId=' . $user->getId() . '&groupeId=' . $groupeId;
 
             $email = (new Email())
                 ->from('invitation@monea.fr')
@@ -88,7 +89,7 @@ final class MemberController extends AbstractController
             $this->em->persist($invitation);
             $this->em->flush();
 
-            $registerLink = "{$this->urlClient}/auth/register?invitationToken=" . $invitation->getToken();
+            $registerLink = "http://localhost:3000/auth/register?invitationToken=" . $invitation->getToken();
 
             $email = (new Email())
                 ->from('invitation@monea.fr')
@@ -104,9 +105,25 @@ final class MemberController extends AbstractController
         return new JsonResponse(['message' => 'Invitation envoyée']);
     }
 
+    public function getAllInvitation(int $authorId): JsonResponse
+    {
+        $invitationsData = $this->memberRepository->findAllPendingInvitation($authorId);
+        if (!$invitationsData) {
+            return $this->json(['error' => 'Membre introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        $invitations = array_map(
+            fn(Member $member) => new MemberInvitationDTO($member),
+            $invitationsData
+        );
+
+        return $this->json($invitations, Response::HTTP_OK, ['groups' => 'member:read']);
+    }
+
     public function responseInvitation(int $authorId, int $groupeId, Request $request): JsonResponse
     {
-        $response = $request->query->getBoolean('response', false);
+        $data = json_decode($request->getContent(), false);
+        $response = $data->response ?? false;
 
         $member = $this->memberRepository->findOneBy(['groupe' => $groupeId, 'individual' => $authorId]);
         if (!$member) {
