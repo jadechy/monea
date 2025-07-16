@@ -2616,7 +2616,7 @@ const UserSchema = z.object({
     },
     z.date({ message: "La date de création doit être une date valide" })
   ),
-  picture: z.string().nullable(),
+  picture: z.string().nullable().optional(),
   resetToken: z.string().nullable(),
   invitationToken: z.string().optional(),
   googleId: z.string().optional()
