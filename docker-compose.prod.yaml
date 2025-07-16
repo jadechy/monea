@@ -68,13 +68,10 @@ services:
     volumes:
       - ./back:/var/www/html
     depends_on:
-      frontend:
-        condition: service_healthy
       backend:
         condition: service_healthy
     networks:
       - backend_network
-      - frontend_network
 
   db:
     image: mysql:8.0
