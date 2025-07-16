@@ -1,0 +1,166 @@
+services:
+  frontend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "3000:3000"
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
+    depends_on:
+      - backend
+    networks:
+      - frontend_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile.prod
+      args:
+        TIMEZONE: Europe/Paris
+    volumes:
+      - ./back:/var/www/html
+      - vendor-data:/var/www/html/vendor
+    secrets:
+      - mysql_password
+      - mysql_root_password
+      - jwt_passphrase
+      - google_client
+    depends_on:
+      db:
+        condition: service_healthy
+      mailer:
+        condition: service_healthy
+    networks:
+      - backend_network
+    healthcheck:
+      test: ["CMD", "php", "bin/console", "about"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - ./back:/var/www/html
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - backend_network
+
+  db:
+    image: mysql:8.0
+    platform: linux/x86_64
+    restart: always
+    volumes:
+      - ./back/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+      - db-data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - backend_network
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: app_user
+    secrets:
+      - mysql_root_password
+      - mysql_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mailer:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    ports:
+      - "127.0.0.1:8025:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 0
+      MP_SMTP_AUTH_ALLOW_INSECURE: 0
+      MP_SMTP_AUTH_FILE: /run/secrets/mailpit_auth
+      MP_UI_AUTH_FILE: /run/secrets/mailpit_auth
+      MP_SMTP_TLS_CERT: /run/secrets/mailpit_tls_cert
+      MP_SMTP_TLS_KEY: /run/secrets/mailpit_tls_key
+    secrets:
+      - mailpit_auth
+      - mailpit_tls_cert
+      - mailpit_tls_key
+    networks:
+      - backend_network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "8025"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+secrets:
+  mysql_root_password:
+    file: ./secrets/mysql_root_password.txt
+  mysql_password:
+    file: ./secrets/mysql_password.txt
+  mailpit_auth:
+    file: ./secrets/mailpit_auth.txt
+  mailpit_tls_cert:
+    file: ./secrets/mailpit_tls_cert.pem
+  mailpit_tls_key:
+    file: ./secrets/mailpit_tls_key.pem
+  jwt_passphrase:
+    file: ./secrets/jwt_passphrase.txt
+  google_client:
+    file: ./secrets/google_client.txt
+
+volumes:
+  db-data:
+  vendor-data:
+    driver: local
+
+networks:
+  frontend_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+  backend_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.0.0/16

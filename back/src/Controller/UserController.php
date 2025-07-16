@@ -196,7 +196,7 @@ class UserController extends AbstractController
         $this->em->flush();
 
         // Page de reset de mot de passe
-        $baseUrl = "http://localhost:3000/auth/reset";
+        $baseUrl = "{$this->urlClient}/auth/reset";
         $resetLink = $baseUrl . '?resetToken=' . $resetToken;
 
         $email = (new Email())
@@ -224,7 +224,7 @@ class UserController extends AbstractController
         if (!$user) {
             throw $this->createNotFoundException('Jeton de réinitialisation invalide.');
         }
-   
+
         /** @var string $password */
         $password = $data->password;
         $repeatPassword = $data->repeatPassword;
