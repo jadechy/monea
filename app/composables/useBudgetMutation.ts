@@ -1,4 +1,5 @@
-import { ref, type Ref, computed } from "vue";
+import { ref,  computed } from "vue";
+import type {Ref} from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { NewBudgetType } from "~/types/budgetType";
 import { useBudgetService } from "./services/budgetService";

@@ -51,13 +51,13 @@ const handleSave = (newCat: NewCategoryType) => {
 </script>
 
 <template>
-  <BaseSection label="Catégorie sélectionné" v-if="model.length">
+  <BaseSection v-if="model.length" label="Catégorie sélectionné">
     <div class="flex gap-1.5 flex-wrap">
       <ColoredLabelComponent
         v-for="(category, i) in model"
+        :key="i"
         :category="category"
         add
-        :key="i"
       >
         <template #add>
           <i class="pi pi-pencil" @click="openEdit(category)" />
@@ -70,12 +70,12 @@ const handleSave = (newCat: NewCategoryType) => {
     <div class="flex gap-1.5 flex-wrap">
       <ColoredLabelComponent
         v-for="(category, i) in categories"
+        :key="i"
         :category="category"
         add
-        :key="i"
       >
         <template #add>
-          <i class="pi pi-plus" @click="addCategory({ category })"></i>
+          <i class="pi pi-plus" @click="addCategory({ category })"/>
         </template>
       </ColoredLabelComponent>
       <ColoredLabelComponent @click="openCreate" />

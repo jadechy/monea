@@ -4,15 +4,16 @@ import {
   RegisterResponseSchema,
   ForgotResponseSchema,
   ResetResponseSchema,
-  type LoginRequestType,
-  type LoginResponseType,
-  type MeType,
-  type ForgotRequestType,
-  type ForgotResponseType,
-  type ResetRequestType,
-  type ResetResponseType,
-  type RefreshToken,
-  type RegisterResponseType,
+} from "~/types/authType";
+import type {
+  LoginRequestType,
+  LoginResponseType,
+  MeType,
+  ForgotRequestType,
+  ForgotResponseType,
+  ResetRequestType,
+  ResetResponseType,
+  RegisterResponseType,
 } from "~/types/authType";
 import type { UserEditType } from "~/types/user";
 
@@ -38,18 +39,18 @@ export const useAuthService = () => {
         url: "me",
         schema: MeSchema,
       }) as Promise<MeType>,
-    
+
     forgot: ({ email }: ForgotRequestType) =>
       $api.post({
         url: "forgot",
-        body: {email},
+        body: { email },
         schema: ForgotResponseSchema,
       }) as Promise<ForgotResponseType>,
-    
-    reset: ({password, repeatPassword, resetToken}: ResetRequestType) =>
+
+    reset: ({ password, repeatPassword, resetToken }: ResetRequestType) =>
       $api.post({
         url: "reset",
-        body: {password, repeatPassword, resetToken},
+        body: { password, repeatPassword, resetToken },
         schema: ResetResponseSchema,
       }) as Promise<ResetResponseType>,
   };

@@ -10,11 +10,11 @@
     :class="[`bg-${color}-200 hover:bg-${color}-300`]"
   >
     <i
+      v-if="selected"
       class="pi pi-check"
       style="font-weight: bold"
       :class="[`text-${color}-600`]"
-      v-if="selected"
-    ></i>
+    />
   </div>
 </template>
 

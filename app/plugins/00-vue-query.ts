@@ -6,7 +6,12 @@ import {
 } from "@tanstack/vue-query";
 import { defineNuxtPlugin } from "#app";
 import { handleApiError } from "~/utils/errorHandler";
-
+interface HttpError extends Error {
+  response?: {
+    status?: number;
+  };
+  status?: number;
+}
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error, query) => {
@@ -25,7 +30,7 @@ const queryClient = new QueryClient({
   }),
   defaultOptions: {
     queries: {
-      retry: (failureCount, error: any) => {
+      retry: (failureCount, error: HttpError) => {
         if (
           error?.response?.status === 401 ||
           error?.response?.status === 403 ||

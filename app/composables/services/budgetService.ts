@@ -1,12 +1,11 @@
-import {
-  AmountSchema,
-  BudgetByCategorySchema,
-  type AmountType,
-  type BudgetByCategoryType,
-  type BudgetType,
-  type NewBudgetType,
+import { AmountSchema, BudgetByCategorySchema } from "~/types/budgetType";
+import type {
+  AmountType,
+  BudgetByCategoryType,
+  BudgetType,
+  NewBudgetType,
 } from "~/types/budgetType";
-import { CategorySchema, type CategoryType } from "~/types/categoryType";
+import { CategorySchema } from "~/types/categoryType";
 import { formatDateISO } from "~/utils/date";
 
 import { z } from "zod";
@@ -96,12 +95,12 @@ export const useBudgetService = () => {
       schema: BudgetRemainingByMonthSchema,
     }) as Promise<BudgetRemainingByMonthType>;
 
-  const postBudgets = (body: NewBudgetType): Promise<any> =>
+  const postBudgets = (body: NewBudgetType): Promise<void> =>
     $api.post({
       url: `budgets/edit`,
       body,
-      schema: z.any(),
-    }) as Promise<any>;
+      schema: z.void(),
+    });
 
   return {
     fetchBudgetGroupDateRemaining,

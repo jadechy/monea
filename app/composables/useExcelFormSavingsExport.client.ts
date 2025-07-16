@@ -72,7 +72,7 @@ export const useExcelFormSavingsExport = ({
   };
 
   const exportFormToExcel = async () => {
-    if (!process.client) {
+    if (!import.meta.client) {
       console.warn("Excel export is only available on the client side");
       return;
     }

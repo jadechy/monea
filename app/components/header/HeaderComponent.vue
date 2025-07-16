@@ -1,15 +1,9 @@
 <script setup lang="ts">
-import { useAuthStore } from "~/stores/authStore";
-import { useGroupsStore } from "@/stores/groupStore";
-import { storeToRefs } from "pinia";
 import { Button, Drawer } from "primevue";
 
 import { ref } from "vue";
 
 const visible = ref(false);
-const authStore = useAuthStore();
-const { personnalGroup } = storeToRefs(useGroupsStore());
-const router = useRouter();
 </script>
 <template>
   <header class="flex justify-between lg:px-10 px-5 mt-5 items-center">
@@ -22,8 +16,8 @@ const router = useRouter();
     <Button
       icon="pi pi-bars"
       variant="text"
-      @click="visible = true"
       class="md:hidden"
+      @click="visible = true"
     />
     <Drawer v-model:visible="visible" header="Drawer" position="right">
       <nav class="flex flex-col gap-2">

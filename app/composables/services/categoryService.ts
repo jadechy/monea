@@ -1,5 +1,5 @@
-import { CategorySchema, type CategoryType } from "~/types/categoryType";
-import { z } from "zod";
+import { CategorySchema } from "~/types/categoryType";
+import type { CategoryType } from "~/types/categoryType";
 
 export const useCategoryService = () => {
   const { $api } = useNuxtApp();

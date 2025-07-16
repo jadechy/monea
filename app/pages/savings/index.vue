@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import DatePicker from "primevue/calendar";
-import FloatLabel from "primevue/floatlabel";
 
 type InputData = {
   name: string | null;
@@ -62,40 +61,36 @@ const { exportFormToExcel } = useExcelFormSavingsExport({
 </script>
 
 <template>
-  <div class="flex gap-8 mt-6">
-    <FloatLabel>
-      <DatePicker
-        v-model="form.start"
-        dateFormat="dd/mm/yy"
-        showIcon
-        fluid
-        class="w-full"
-        iconDisplay="input"
-      />
-      <label for="start">Date de début</label>
-    </FloatLabel>
+  <div class="flex gap-8 mt-6 w-full md:max-w-3/4">
+    <DatePicker
+      v-model="form.start"
+      date-format="dd/mm/yy"
+      show-icon
+      fluid
+      class="w-full"
+      icon-display="input"
+      placeholder="Date de début"
+    />
 
-    <FloatLabel>
-      <DatePicker
-        v-model="form.end"
-        dateFormat="dd/mm/yy"
-        showIcon
-        fluid
-        class="w-full"
-        iconDisplay="input"
-      />
-      <label for="end">Date de fin</label>
-    </FloatLabel>
+    <DatePicker
+      v-model="form.end"
+      date-format="dd/mm/yy"
+      show-icon
+      fluid
+      class="w-full"
+      icon-display="input"
+      placeholder="Date de fin"
+    />
   </div>
   <div class="flex flex-col lg:flex-row gap-10 mt-6">
     <NewEnter :form="form" category="enters" />
     <NewEnter :form="form" category="exits" />
   </div>
-  <div class="flex justify-end mt-14" v-if="months.length > 0">
+  <div v-if="months.length > 0" class="flex justify-end mt-14">
     <Button
-      @click="async () => await exportFormToExcel()"
       icon="pi pi-file-export"
       label="Exporter via Excel"
+      @click="async () => await exportFormToExcel()"
     />
   </div>
   <Accordion :value="0" class="shadow-sm mt-3">

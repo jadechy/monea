@@ -11,12 +11,18 @@ class GroupInputDTO
     public GroupTypeEnum $type;
     public ColorEnum $color;
 
-    /** @var array<int, CategoryInputDTO>|null */
+    /** @var CategoryInputDTO[]|null */
     public ?array $categories = null;
 
     public function __construct() {}
+    
     /**
-     * @param \stdClass $data
+     * @param object{
+     *     name: string,
+     *     type: int|string,
+     *     color: int|string,
+     *     categories?: array<object{id?: int, label: string, color: string}>
+     * } $data
      */
     public function fromObject(object $data): self
     {

@@ -1,4 +1,3 @@
-// stores/authStore.ts
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
@@ -30,7 +29,7 @@ export const useAuthStore = defineStore("auth", () => {
   const error = ref<string | null>(null);
 
   const { login, me } = useAuthService();
-  const { editUser, uploadFile } = useUserService();
+  const { editUser, uploadFile, deleteUser } = useUserService();
 
   const isAuthenticated = computed(() => !!token.value);
   const userInitials = computed(() => {
@@ -47,7 +46,7 @@ export const useAuthStore = defineStore("auth", () => {
   const USER_KEY = "auth_user";
 
   const initAuth = () => {
-    if (!process.client) return;
+    if (!import.meta.client) return;
     try {
       const savedToken = localStorage.getItem(TOKEN_KEY);
       const savedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
@@ -68,7 +67,7 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const saveToStorage = () => {
-    if (process.client) {
+    if (import.meta.client) {
       if (token.value) {
         localStorage.setItem(TOKEN_KEY, token.value);
       }
@@ -82,7 +81,7 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const clearStorage = () => {
-    if (process.client) {
+    if (import.meta.client) {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(REFRESH_TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
@@ -95,7 +94,7 @@ export const useAuthStore = defineStore("auth", () => {
     user.value = null;
     error.value = null;
     clearStorage();
-    if (process.client) {
+    if (import.meta.client) {
       router.push("/auth/login");
     }
   };
@@ -175,7 +174,7 @@ export const useAuthStore = defineStore("auth", () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
       await refetchMe();
       saveToStorage();
-      router.push({ name: "profil" });
+      router.push("/user");
     },
     onSettled: () => {
       isLoading.value = false;
@@ -197,6 +196,16 @@ export const useAuthStore = defineStore("auth", () => {
       alert("Erreur lors de l'upload");
     },
   });
+  const deleteUserMutation = useMutation({
+    mutationFn: () => deleteUser(),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["me"] });
+      clearAuth();
+    },
+    onSettled: () => {
+      isLoading.value = false;
+    },
+  });
 
   return {
     token,
@@ -216,5 +225,6 @@ export const useAuthStore = defineStore("auth", () => {
     uploadPicture,
 
     clearAuth,
+    deleteUserMutation,
   };
 });

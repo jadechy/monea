@@ -2,19 +2,14 @@
 import { getCurrentMonthIsoString } from "@/utils/date";
 import { truncateToTenth } from "@/utils/number";
 
-import { computed } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useBudgetService } from "~/composables/services/budgetService";
 
-const { label, initialBudget } = withDefaults(
-  defineProps<{
-    label?: string;
-    initialBudget?: boolean;
-  }>(),
-  {
-    label: "Budget restant",
-  }
-);
+const { label = "Budget restant", initialBudget } = defineProps<{
+  label?: string;
+  initialBudget?: boolean;
+}>();
+
 const route = useRoute();
 const { group_id, category_id } = route.params as {
   group_id: string;

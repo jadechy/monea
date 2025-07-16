@@ -24,9 +24,7 @@ use App\DTO\MemberInvitationDTO;
 
 final class MemberController extends AbstractController
 {
-    private string $urlClient;
-
-    public function __construct(private MemberRepository $memberRepository, private UserRepository $userRepository, private GroupeRepository $groupeRepository, private EntityManagerInterface $em, private SerializerInterface $serializer) {}
+    public function __construct(private MemberRepository $memberRepository, private UserRepository $userRepository, private GroupeRepository $groupeRepository, private EntityManagerInterface $em, private SerializerInterface $serializer, private string $urlClient) {}
 
     /**
      * Envoie d'une invitation par mail

@@ -1,21 +1,15 @@
 <script setup lang="ts">
-import { Form, type FormSubmitEvent } from "@primevue/forms";
+import { Form } from "@primevue/forms";
+import type { FormSubmitEvent } from "@primevue/forms";
 import { Button, RadioButton, RadioButtonGroup } from "primevue";
 import { ColorSchema } from "@/types/color";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
-import {
-  GroupTypeEnum,
-  NewGroupSchema,
-  type NewGroupType,
-} from "@/types/groupType";
+import { GroupTypeEnum, NewGroupSchema } from "@/types/groupType";
+import type { NewGroupType } from "@/types/groupType";
 import type { NewCategoryType } from "@/types/categoryType";
 import { useGroupsStore } from "@/stores/groupStore";
 import { getGroupColor as getGroupColor } from "@/utils/getColor";
-import { useGroupMutation } from "@/composables/useGroupMutation";
-// Props
 
-const route = useRoute();
-const group_id = route.params.group_id as string;
 // Store
 const { group } = storeToRefs(useGroupsStore());
 
@@ -61,13 +55,17 @@ const onFormSubmit = (form: FormSubmitEvent) => {
     ],
     categories: currentCategories.value,
   };
-  group.value
-    ? editGroupMutation.mutate(data)
-    : createGroupMutation.mutate(data);
+  if (group.value) {
+    editGroupMutation.mutate(data);
+  } else {
+    createGroupMutation.mutate(data);
+  }
 };
 
 const onDelete = () => {
-  deleteGroupMutation.mutate();
+  if (confirm("Es-tu sûr de vouloir supprimer le groupe ?")) {
+    deleteGroupMutation.mutate();
+  }
 };
 const initialValues =
   group.value && group.value
@@ -84,33 +82,33 @@ const initialValues =
 
   <Form
     v-slot="$form"
-    @submit="onFormSubmit"
-    :initialValues="initialValues"
+    :initial-values="initialValues"
     :resolver="zodResolver(NewGroupSchema)"
     class="flex flex-col gap-10"
+    @submit="onFormSubmit"
   >
     <FormInput
+      v-if="group?.type !== 'personnal'"
       class="w-full lg:w-3/4"
       placeholder="Nom du group"
       name="name"
       :form="$form"
       fluid
-      v-if="group?.type !== 'personnal'"
     />
     <MembersForm v-if="group?.type !== 'personnal'" :group="group"/>
 
-    <BaseSection label="Type de groupe" v-if="group?.type !== 'personnal'">
+    <BaseSection v-if="group?.type !== 'personnal'" label="Type de groupe">
       <RadioButtonGroup name="type" class="flex flex-wrap gap-4">
         <div class="flex items-center gap-2">
           <RadioButton
-            :inputId="GroupTypeEnum.options[1]"
+            :input-id="GroupTypeEnum.options[1]"
             :value="GroupTypeEnum.options[1]"
           />
           <label :for="GroupTypeEnum.options[1]">Occasional</label>
         </div>
         <div class="flex items-center gap-2">
           <RadioButton
-            :inputId="GroupTypeEnum.options[2]"
+            :input-id="GroupTypeEnum.options[2]"
             :value="GroupTypeEnum.options[2]"
           />
           <label :for="GroupTypeEnum.options[2]">Régulier</label>
@@ -123,8 +121,8 @@ const initialValues =
           v-for="(color, i) in ColorSchema.options.filter(
             (color) => color !== 'gray'
           )"
-          :color="color"
           :key="i"
+          :color="color"
           :selected="selectedIndex === i"
           @click="handleClick(i)"
         />
@@ -133,7 +131,7 @@ const initialValues =
 
     <CategoriesSelection v-model="currentCategories" />
 
-    <div class="flex flex-col gap-3 w-64 self-center" v-if="group">
+    <div v-if="group" class="flex flex-col gap-3 w-64 self-center">
       <Button
         :class="[getGroupColor({ color: group?.color })]"
         type="submit"
@@ -143,9 +141,9 @@ const initialValues =
       <Button
         v-if="group.type !== 'personnal' && group.userRole === 'author'"
         variant="outlined"
-        @click="onDelete()"
         :class="getGroupColor({ color: group?.color, outlined: true })"
         label="Supprimer le groupe"
+        @click="onDelete()"
       />
     </div>
     <div v-else class="flex justify-center">

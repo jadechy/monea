@@ -9,7 +9,7 @@ import type { BudgetByCategoryType } from "@/types/budgetType";
 import { formatDateISO, getCurrentMonthStartDate } from "@/utils/date";
 import ChartCategoryBalance from "./ChartCategoryBalance.vue";
 import ChartLinearEvolution from "./ChartLinearEvolution.vue";
-defineProps<{ budgets: BudgetByCategoryType[]; group_id: string }>();
+defineProps<{ budgets: BudgetByCategoryType[] }>();
 </script>
 
 <template>
@@ -34,7 +34,7 @@ defineProps<{ budgets: BudgetByCategoryType[]; group_id: string }>();
         <ChartCategoryBalance :budgets="budgets" />
       </TabPanel>
       <TabPanel value="2" class="flex justify-center h-64 w-full">
-        <ChartLinearEvolution :group_id="group_id" />
+        <ChartLinearEvolution />
       </TabPanel>
     </TabPanels>
   </Tabs>

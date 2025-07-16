@@ -31,7 +31,7 @@ class GoogleController extends AbstractController
      * Cette méthode sera interceptée par GoogleAuthenticator
      */
     #[Route('/connect/google/check', name: 'connect_google_check')]
-    public function connectCheckAction(Request $request, ClientRegistry $clientRegistry)
+    public function connectCheckAction(Request $request, ClientRegistry $clientRegistry): never
     {
         // Cette méthode peut être vide car elle sera interceptée par l'authenticateur
         // Le GoogleAuthenticator va gérer l'authentification automatiquement

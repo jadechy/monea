@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import type { FormModel } from "~/pages/savings/index.vue";
 export type CategoryForm = "exits" | "enters";
-defineProps<{ form: FormModel; category: CategoryForm }>();
+defineProps<{ category: CategoryForm }>();
+const form = defineModel<FormModel>("form");
 </script>
 
 <template>
@@ -12,9 +13,9 @@ defineProps<{ form: FormModel; category: CategoryForm }>();
     <template #content>
       <div class="flex flex-col gap-14 sm:gap-8 mt-3">
         <div
-          class="flex gap-8 justify-between sm:flex-row flex-col"
-          v-for="(current, i) in form[category]"
+          v-for="(current, i) in form?.[category]"
           :key="i"
+          class="flex gap-8 justify-between sm:flex-row flex-col"
         >
           <div class="flex gap-6">
             <FloatLabel class="w-40">
@@ -31,8 +32,8 @@ defineProps<{ form: FormModel; category: CategoryForm }>();
           </div>
 
           <Button
+            v-if="form?.[category] && i === form[category].length - 1"
             class="h-fit"
-            v-if="i === form[category].length - 1"
             :disabled="
               !(
                 current.name &&
@@ -40,9 +41,9 @@ defineProps<{ form: FormModel; category: CategoryForm }>();
                 current.value !== null
               )
             "
-            @click="form[category].push({ name: null, value: null })"
             icon="pi pi-plus"
             :aria-label="`add ${category}`"
+            @click="form?.[category].push({ name: null, value: null })"
           />
         </div>
       </div>

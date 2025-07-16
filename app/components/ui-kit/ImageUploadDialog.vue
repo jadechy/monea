@@ -4,10 +4,15 @@ import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import type { FileUploadSelectEvent } from "primevue";
 
-const { uploadFn } = defineProps<{
-  header?: string;
-  uploadFn: (file: File) => Promise<unknown>;
-}>();
+const { uploadFn } = withDefaults(
+  defineProps<{
+    label?: string;
+    uploadFn: (file: File) => Promise<unknown>;
+  }>(),
+  {
+    label: "Téléverser une image",
+  }
+);
 
 const visible = ref(false);
 const selectedFile = ref<File | null>(null);
@@ -44,18 +49,18 @@ defineExpose({ open, close });
   <Dialog
     v-model:visible="visible"
     modal
-    :header="header || 'Téléverser une image'"
+    :header="label"
     :style="{ width: '30rem' }"
   >
     <div class="flex justify-center items-center gap-10">
       <FileUpload
         ref="uploader"
         name="image"
-        :customUpload="true"
+        :custom-upload="true"
         accept="image/*"
         mode="basic"
         auto
-        chooseLabel="Parcourir"
+        choose-label="Parcourir"
         @select="onSelect"
       />
       <img
@@ -66,12 +71,12 @@ defineExpose({ open, close });
       />
     </div>
     <template #footer>
-      <Button label="Annuler" icon="pi pi-times" @click="close" text />
+      <Button label="Annuler" icon="pi pi-times" text @click="close" />
       <Button
         label="Sauvegarder"
         icon="pi pi-check"
-        @click="submit"
         :disabled="!selectedFile"
+        @click="submit"
       />
     </template>
   </Dialog>

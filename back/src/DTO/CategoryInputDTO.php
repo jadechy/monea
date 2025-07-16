@@ -11,7 +11,7 @@ class CategoryInputDTO
     public ColorEnum $color;
 
     /**
-     * @param \stdClass $data
+     * @param object{id?: int, label: string, color: string} $data
      */
     public function __construct(object $data)
     {
