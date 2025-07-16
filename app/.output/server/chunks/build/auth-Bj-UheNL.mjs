@@ -117,12 +117,13 @@ import '@primeuix/utils/dom';
 import '@tanstack/vue-query';
 import 'zod';
 import 'vue/server-renderer';
-import '../routes/renderer.mjs';
+import './client.manifest.mjs';
 import 'vue-bundle-renderer/runtime';
 import 'unhead/server';
 import 'devalue';
 import 'unhead/utils';
 import 'unhead/plugins';
+import 'file:///app/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs';
 
 const auth = defineNuxtRouteMiddleware(() => {
   const { user } = storeToRefs(useAuthStore());

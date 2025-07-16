@@ -1,4 +1,4 @@
-import { b as buildAssetsURL } from '../nitro/nitro.mjs';
+import { l as buildAssetsURL } from '../nitro/nitro.mjs';
 import { defineComponent, mergeProps, unref, useSSRContext } from 'vue';
 import { ssrRenderAttrs } from 'vue/server-renderer';
 import { a as useRouter } from './server.mjs';

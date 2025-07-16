@@ -1,4 +1,4 @@
-import { b as buildAssetsURL } from '../nitro/nitro.mjs';
+import { l as buildAssetsURL } from '../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
