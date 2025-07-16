@@ -35,7 +35,8 @@ class UserController extends AbstractController
         private EntityManagerInterface $em,
         private UserPasswordHasherInterface $passwordHasher,
         private UserSetupService $userSetupService,
-        private UserRepository $userRepository
+        private UserRepository $userRepository,
+        private string $urlClient
     ) {}
 
     public function register(UserRegisterDto $input): JsonResponse
@@ -161,8 +162,8 @@ class UserController extends AbstractController
         $user->setPicture(null);
         $user->setResetToken(null);
         $user->setGoogleId(null);
-        $user->setPassword(bin2hex(random_bytes(32))); // Invalide le mot de passe
-        $user->setRoles([]); // Optionnel : supprimer ses rôles
+        $user->setPassword(bin2hex(random_bytes(32)));
+        $user->setRoles([]);
 
         $this->em->persist($user);
         $this->em->flush();
@@ -178,7 +179,7 @@ class UserController extends AbstractController
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException('User not authenticated');
         }
-       
+
         $file = $request->files->get('picture');
         if (!$file) {
             return new JsonResponse(['error' => 'No file provided'], 400);
