@@ -247,7 +247,7 @@ class ExpenseController extends AbstractController
         if (isset($data->participants)) {
             foreach ($data->participants as $userDto) {
                 /** @var UserInputDTO $userDto */
-                $user = $this->userRepository->find($userDto->id);
+                $user = $this->userRepository->find($userDto);
 
                 if (!$user) {
                     throw new \Exception("Utilisateur non trouvé.");
@@ -358,7 +358,7 @@ class ExpenseController extends AbstractController
 
             foreach ($data->participants as $userDto) {
                 /** @var UserInputDTO $userDto */
-                $user = $this->userRepository->find($userDto->id);
+                $user = $this->userRepository->find($userDto);
                 if (!$user) {
                     throw new \Exception("Utilisateur non trouvé.");
                 }
@@ -457,7 +457,7 @@ class ExpenseController extends AbstractController
 
             foreach ($data->participants as $userDto) {
                 /** @var UserInputDTO $userDto */
-                $user = $this->userRepository->find($userDto->id);
+                $user = $this->userRepository->find($userDto);
                 if (!$user) {
                     throw new \Exception("Utilisateur non trouvé.");
                 }

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import logo from "../assets/google_logo.webp";
+const config = useRuntimeConfig();
+const router = useRouter();
+
 const handleClick = () => {
-  window.location.href = "https://monea.life/connect/google";
+  router.push(`${config.public.apiBase}/connect/google`);
 };
 </script>
 

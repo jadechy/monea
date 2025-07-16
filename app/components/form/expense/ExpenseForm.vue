@@ -19,6 +19,7 @@ const { group_id, category_id, expense_id } = route.params as {
   category_id?: string;
   expense_id?: string;
 };
+console.log(expense_id);
 // Store
 const { group } = storeToRefs(useGroupsStore());
 const { user } = useAuthStore();
@@ -124,6 +125,7 @@ const onFormSubmit = (form: FormSubmitEvent) => {
       (participant: FormattedMembers) => participant.value
     ),
   };
+  if (expense_id) data["id"] = Number(expense_id);
   if (category && category.value) {
     data["categoryId"] = Number(category.value.id);
   }

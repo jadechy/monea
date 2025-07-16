@@ -11,7 +11,6 @@ const props = defineProps<{
   group: GroupType | undefined;
 }>();
 const groupId = props.group?.id;
-console.log(groupId);
 
 const input = ref("");
 
@@ -45,30 +44,29 @@ const submitInvitation = () => {
 
 <template>
   <BaseSection label="Ajouter un membre">
-    <div class="flex flex-col w-full lg:w-3/4 gap-2">
-      <InputText v-model="input" placeholder="Pseudo/mail" class="w-full" />
-
-      <Select
-        v-model="selectedRole"
-        :options="roles"
-        placeholder="Choisissez un role"
-        class="w-full md:w-56"
-      />
-
-      <!-- <select v-model="selectedRole" class="w-full p-2 border rounded">
-        <option v-for="role in roles" :key="role" :value="role">
-          {{ role }}
-        </option>
-      </select> -->
-
+    <div class="w-full lg:w-3/4 flex flex-col items-end">
+      <div class="flex flex-col md:flex-row gap-5 w-full">
+        <InputText
+          v-model="input"
+          placeholder="Pseudo/mail"
+          class="w-full"
+          fluid
+        />
+        <Select
+          v-model="selectedRole"
+          :options="roles"
+          placeholder="Choisissez un role"
+          class="w-full md:w-56"
+        />
+      </div>
       <Button
         variant="outlined"
         size="small"
         class="mt-2 ml-auto"
         @click="submitInvitation"
-      >
-        <i class="pi pi-inbox"></i> Envoyer la demande
-      </Button>
+        icon="pi pi-inbox"
+        label="Envoyer la demande"
+      />
     </div>
   </BaseSection>
 </template>

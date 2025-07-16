@@ -40,6 +40,7 @@ export const ExpenseSchema = z.object({
 });
 
 export const NewExpenseSchema = z.object({
+  id: z.number().optional(),
   categoryId: z.number().optional(),
   title: ExpenseSchema.shape.title,
   amount: ExpenseSchema.shape.amount,
