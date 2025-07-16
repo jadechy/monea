@@ -68,7 +68,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
             read: false,
             denormalizationContext: ['groups' => ['user:write']],
         ),
-        new Delete(),
+        new Delete(
+            uriTemplate: '/users/delete',
+            controller: UserController::class . '::delete',
+            name: 'user_delete',
+        ),
         new Post(
             uriTemplate: '/users/picture',
             controller: UserController::class . '::uploadPicture',

@@ -19,6 +19,7 @@ use Symfony\Component\Uid\Uuid;
 use App\Entity\User;
 use App\Entity\Member;
 use App\Enum\MemberStatusEnum;
+use App\Enum\MemberRoleEnum;
 use App\Repository\UserRepository;
 use App\Repository\GroupInvitationRepository;
 use App\Service\FileUploader;
@@ -28,8 +29,6 @@ use Symfony\Component\HttpFoundation\Request;
 #[AsController]
 class UserController extends AbstractController
 {
-    private string $urlClient;
-
     public function __construct(
         private GroupInvitationRepository $groupInvitationRepository,
         private ValidatorInterface $validator,
@@ -140,6 +139,37 @@ class UserController extends AbstractController
 
         return $this->json(['message' => 'Utilisateur mis à jour avec succès']);
     }
+
+    public function delete(): JsonResponse
+    {
+        /** @var User|null $user */
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'Utilisateur non authentifié'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        foreach ($user->getMembers() as $member) {
+            $member->setRole(MemberRoleEnum::ANONYME);
+            $member->setStatus(MemberStatusEnum::DELETED);
+            $this->em->persist($member);
+        }
+
+        $user->setEmail('deleted_' . $user->getId() . '@example.com');
+        $user->setUsername('deleted_user_' . $user->getId());
+        $user->setName('');
+        $user->setLastname('');
+        $user->setPicture(null);
+        $user->setResetToken(null);
+        $user->setGoogleId(null);
+        $user->setPassword(bin2hex(random_bytes(32))); // Invalide le mot de passe
+        $user->setRoles([]); // Optionnel : supprimer ses rôles
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return $this->json(['message' => 'Utilisateur anonymisé avec succès']);
+    }
+
     public function uploadPicture(Request $request, FileUploader $uploader, EntityManagerInterface $em): JsonResponse
     {
 
@@ -148,10 +178,8 @@ class UserController extends AbstractController
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException('User not authenticated');
         }
-        /** @var UploadedFile $file */
+       
         $file = $request->files->get('picture');
-
-
         if (!$file) {
             return new JsonResponse(['error' => 'No file provided'], 400);
         }
@@ -161,6 +189,8 @@ class UserController extends AbstractController
                 unlink($oldPath);
             }
         }
+
+        /** @var UploadedFile $file */
         if (!in_array($file->getMimeType(), ['image/jpeg', 'image/png'])) {
             return new JsonResponse(['error' => 'Format non supporté'], 400);
         }
@@ -176,14 +206,13 @@ class UserController extends AbstractController
 
     public function forgot(Request $request, MailerInterface $mailer): Response
     {
+        /** @var object|null $data */
         $data = json_decode($request->getContent());
-
         if (!$data || !isset($data->email)) {
             return new JsonResponse(['message' => 'Email manquant ou JSON invalide.'], 400);
         }
 
         $email = $data->email;
-
         $user = $this->userRepository->findOneBy(['email' => $email]);
         if (!$user) {
             return new JsonResponse(['error' => 'Aucun utilisateur trouvé avec cette email'], 400);
@@ -214,6 +243,7 @@ class UserController extends AbstractController
 
     public function reset(Request $request): JsonResponse
     {
+        /** @var object{resetToken: string, password: string, repeatPassword: string}|null $data */
         $data = json_decode($request->getContent());
         if (!$data || !isset($data->resetToken)) {
             return new JsonResponse(['message' => 'Token manquant ou JSON invalide.'], 400);

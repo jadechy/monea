@@ -32,34 +32,17 @@ use App\Service\UserSetupService;
 
 class GoogleAuthenticator extends OAuth2Authenticator
 {
-    private ClientRegistry $clientRegistry;
-    private EntityManagerInterface $entityManager;
-    private UserRepository $userRepository;
-    private JWTTokenManagerInterface $jwtManager;
-    private RefreshTokenManagerInterface $refreshTokenManager;
-    private UserSetupService $userSetupService;
-    private ValidatorInterface $validator;
-    private string $urlClient;
-
 
     public function __construct(
-        ClientRegistry $clientRegistry,
-        EntityManagerInterface $entityManager,
-        UserRepository $userRepository,
-        JWTTokenManagerInterface $jwtManager,
-        RefreshTokenManagerInterface $refreshTokenManager,
-        UserSetupService $userSetupService,
-        ValidatorInterface $validator,
-        string $urlClient
+        private ClientRegistry $clientRegistry,
+        private EntityManagerInterface $entityManager,
+        private UserRepository $userRepository,
+        private JWTTokenManagerInterface $jwtManager,
+        private RefreshTokenManagerInterface $refreshTokenManager,
+        private UserSetupService $userSetupService,
+        private ValidatorInterface $validator,
+        private string $urlClient
     ) {
-        $this->clientRegistry = $clientRegistry;
-        $this->entityManager = $entityManager;
-        $this->userRepository = $userRepository;
-        $this->jwtManager = $jwtManager;
-        $this->refreshTokenManager = $refreshTokenManager;
-        $this->userSetupService = $userSetupService;
-        $this->validator = $validator;
-        $this->urlClient = $urlClient;
     }
 
     /**
@@ -181,7 +164,6 @@ class GoogleAuthenticator extends OAuth2Authenticator
         ]);
     }
 
-
     /**
      * Télécharge l'image d'avatar et la stocke localement.
      * Retourne le nom du fichier local ou null si erreur.
@@ -197,7 +179,8 @@ class GoogleAuthenticator extends OAuth2Authenticator
             }
 
             $content = $response->getContent();
-            $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+            $path = (string) parse_url($url, PHP_URL_PATH);
+            $ext = pathinfo($path, PATHINFO_EXTENSION);
             if (!$ext) {
                 $ext = 'jpg';
             }
