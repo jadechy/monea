@@ -138,13 +138,12 @@ import 'ipx';
 import 'pinia';
 import '@primeuix/styles/base';
 import 'zod';
-import './client.manifest.mjs';
+import '../routes/renderer.mjs';
 import 'vue-bundle-renderer/runtime';
 import 'unhead/server';
 import 'devalue';
 import 'unhead/utils';
 import 'unhead/plugins';
-import 'file:///app/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs';
 import './index-C1vnj6fg.mjs';
 import './index-ik-SlIj1.mjs';
 

@@ -1,4 +1,4 @@
-import { l as buildAssetsURL } from '../nitro/nitro.mjs';
+import { b as buildAssetsURL } from '../nitro/nitro.mjs';
 import { defineComponent, mergeProps, unref, ref, withCtx, createVNode, toDisplayString, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrRenderComponent, ssrRenderAttr, ssrRenderList, ssrRenderClass, ssrInterpolate } from 'vue/server-renderer';
 import script$1 from './index-atZ0DPFK.mjs';
@@ -131,13 +131,12 @@ import '@primeuix/utils/eventbus';
 import '@primeuix/styles/base';
 import '@tanstack/vue-query';
 import 'zod';
-import './client.manifest.mjs';
+import '../routes/renderer.mjs';
 import 'vue-bundle-renderer/runtime';
 import 'unhead/server';
 import 'devalue';
 import 'unhead/utils';
 import 'unhead/plugins';
-import 'file:///app/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs';
 
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   __name: "TestimonialComponent",

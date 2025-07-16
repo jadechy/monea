@@ -1,5 +1,5 @@
 import { defineComponent, ref, computed, watch, shallowRef, getCurrentInstance, provide, cloneVNode, h, createElementBlock, hasInjectionContext, inject, readonly, onMounted, nextTick, defineAsyncComponent, unref, shallowReactive, Suspense, Fragment, createApp, toRef, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, reactive, effectScope, isReadonly, isRef, isShallow, isReactive, toRaw, mergeProps, getCurrentScope, withCtx, markRaw, useSSRContext } from 'vue';
-import { h as hasProtocol, i as isScriptProtocol, j as joinURL, w as withQuery, s as sanitizeStatusCode, g as getContext, $ as $fetch, b as baseURL, c as createHooks, e as executeAsync, a as createError$1, t as toRouteMatcher, f as createRouter$1, k as defu } from '../nitro/nitro.mjs';
+import { j as hasProtocol, k as isScriptProtocol, l as joinURL, w as withQuery, s as sanitizeStatusCode, m as getContext, $ as $fetch, n as baseURL, o as createHooks, q as executeAsync, f as createError$1, t as toRouteMatcher, r as createRouter$1, v as defu } from '../nitro/nitro.mjs';
 import { defineStore, createPinia, setActivePinia, shouldHydrate } from 'pinia';
 import { useRouter as useRouter$1, useRoute as useRoute$1, RouterView, createMemoryHistory, createRouter, START_LOCATION } from 'vue-router';
 import { EventBus } from '@primeuix/utils/eventbus';
@@ -11,7 +11,7 @@ import { isClient, setAttributes, setAttribute, isExist } from '@primeuix/utils/
 import { useQuery, useQueryClient, useMutation, QueryClient, MutationCache, QueryCache, VueQueryPlugin } from '@tanstack/vue-query';
 import { z } from 'zod';
 import { ssrRenderSuspense, ssrRenderComponent, ssrRenderVNode } from 'vue/server-renderer';
-import { u as useHead$1, h as headSymbol } from './client.manifest.mjs';
+import { u as useHead$1, h as headSymbol } from '../routes/renderer.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -122,7 +122,6 @@ import 'unhead/server';
 import 'devalue';
 import 'unhead/utils';
 import 'unhead/plugins';
-import 'file:///app/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs';
 
 if (!globalThis.$fetch) {
   globalThis.$fetch = $fetch.create({
