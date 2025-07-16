@@ -22,7 +22,7 @@ const sources = [
         "urls": [
             {
                 "loc": "/",
-                "lastmod": "2025-07-13T18:21:43.102Z"
+                "lastmod": "2025-07-16T12:04:33.362Z"
             },
             {
                 "loc": "/terms",
