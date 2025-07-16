@@ -43,8 +43,6 @@ class UserFixtures extends Fixture
 
             $user->setCreatedAt(new \DateTimeImmutable('-' . $faker->numberBetween(0, 365) . ' days'));
 
-            $user->setPicture($faker->imageUrl(200, 200, 'people', true));
-
             $manager->persist($user);
 
             $group = new Groupe();
@@ -52,7 +50,6 @@ class UserFixtures extends Fixture
             $group->setType(GroupTypeEnum::PERSONNAL);
             $group->setCreatedAt(new \DateTimeImmutable());
             $group->setColor(ColorEnum::Pink);
-            $group->setPicture('');
             $manager->persist($group);
             $this->addReference('user_' . $i, $user);
         }

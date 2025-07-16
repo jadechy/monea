@@ -329,7 +329,7 @@ class ExpenseController extends AbstractController
         $jsonData = json_decode($request->getContent(), false);
 
         try {
-            /** @var ExpenseInputDTO $data */
+            /** @var \stdClass $jsonData */
             $data = (new ExpenseInputDTO())->fromObject($jsonData);
         } catch (\Exception $e) {
             return $this->json(['error' => 'JSON invalide : ' . $e->getMessage()], Response::HTTP_BAD_REQUEST);

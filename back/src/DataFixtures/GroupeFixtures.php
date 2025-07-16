@@ -40,7 +40,6 @@ class GroupeFixtures extends Fixture implements DependentFixtureInterface
             /** @var ColorEnum  */
             $color = $faker->randomElement(ColorEnum::cases());
             $groupe->setColor($color);
-            $groupe->setPicture($faker->imageUrl(400, 300, 'business', true));
             /** @var User  */
             $user = $faker->randomElement($users);
             $manager->persist($groupe);

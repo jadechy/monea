@@ -33,15 +33,6 @@ const router = useRouter();
 </script>
 
 <template>
-  <div class="flex justify-between px-10 items-center mt-2">
-    <h1 class="font-extrabold text-center text-4xl">Monéa</h1>
-    <div class="flex gap-4 items-center">
-      <RouterLink :to="{ name: 'index' }">Accueil</RouterLink>
-      <RouterLink :to="{ name: 'auth-login' }"
-        ><Button size="small">Commencer à gerer le budgets</Button></RouterLink
-      >
-    </div>
-  </div>
   <main class="p-10">
     <section class="flex gap-10 items-center">
       <div class="flex flex-col gap-6">
@@ -53,7 +44,7 @@ const router = useRouter();
           Une application intuitive pour suivre vos dépenses, planifier l’avenir
           et garder le contrôle de vos finances personnelles ou en groupe.
         </p>
-        <div class="flex gap-3">
+        <div class="flex gap-3 flex-col md:flex-row">
           <Button
             label="Se connecter"
             :class="[getGroupColor({ color: 'pink' })]"
@@ -66,7 +57,7 @@ const router = useRouter();
           />
         </div>
       </div>
-      <img class="w-1/2 h-full rounded" :src="homepage" >
+      <img class="w-1/2 h-full rounded md:block hidden" :src="homepage" />
     </section>
     <section class="flex justify-center gap-5 my-20">
       <div
@@ -84,5 +75,3 @@ const router = useRouter();
     <TestimonialComponent />
   </main>
 </template>
-
-<style></style>

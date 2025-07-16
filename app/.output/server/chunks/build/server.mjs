@@ -537,7 +537,7 @@ const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import('./index-wxxBKz4F.mjs')
+    component: () => import('./index-DO_64i1M.mjs')
   },
   {
     name: "terms",
@@ -2616,7 +2616,7 @@ const UserSchema = z.object({
     },
     z.date({ message: "La date de création doit être une date valide" })
   ),
-  picture: z.string().nullable(),
+  picture: z.string().nullable().optional(),
   resetToken: z.string().nullable(),
   invitationToken: z.string().optional(),
   googleId: z.string().optional()
@@ -3167,8 +3167,8 @@ const plugins = [
   _02_init_auth_iBnmu1vKEfks3aG4GriGvIdjufQpLRsNtN7r2GoxgBw
 ];
 const layouts = {
-  "auth-layout": defineAsyncComponent(() => import('./AuthLayout-CkFYi9BM.mjs').then((m) => m.default || m)),
-  savings: defineAsyncComponent(() => import('./savings-BYjwQtAH.mjs').then((m) => m.default || m))
+  default: defineAsyncComponent(() => import('./default-CV1HZRb7.mjs').then((m) => m.default || m)),
+  savings: defineAsyncComponent(() => import('./savings-B_OJ-YZj.mjs').then((m) => m.default || m))
 };
 const LayoutLoader = defineComponent({
   name: "LayoutLoader",

@@ -57,9 +57,16 @@ class GroupeController extends AbstractController
 
     public function postGroup(Request $request): JsonResponse
     {
+        /** 
+         * @var object{
+         *     name: string,
+         *     type: int|string,
+         *     color: int|string,
+         *     categories?: array<object{id?: int, label: string, color: string}>
+         * } $jsonData 
+         */
         $jsonData = json_decode($request->getContent(), false);
         try {
-            /** @var \stdClass $jsonData */
             $data = (new GroupInputDTO())->fromObject($jsonData);
         } catch (\InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
@@ -120,9 +127,16 @@ class GroupeController extends AbstractController
 
     public function editGroup(Request $request, Groupe $group): JsonResponse
     {
+        /** 
+         * @phpstan-var object{
+         *     name: string,
+         *     type: int|string,
+         *     color: int|string,
+         *     categories?: array<object{id?: int, label: string, color: string}>
+         * } $jsonData 
+         */
         $jsonData = json_decode($request->getContent(), false);
         try {
-            /** @var \stdClass $jsonData */
             $data = (new GroupInputDTO())->fromObject($jsonData);
         } catch (\InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
@@ -250,22 +264,30 @@ class GroupeController extends AbstractController
 
         return new JsonResponse(['message' => 'Groupe supprimé avec succès']);
     }
+
     public function membersByGroup(int $id): JsonResponse
     {
-        /** @var Groupe */
         $group = $this->groupeRepository->find($id);
         if (!$group) {
             return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
         }
 
+        /** @var Groupe $group */
         $members = $group->getMembers();
         $membersDTO = [];
         foreach ($members as $member) {
             $memberDTO = new MemberDTO($member);
             $role = $memberDTO->role->value;
             $status = $memberDTO->status->value;
-            if ($status === MemberStatusEnum::ACCEPTED && ($role === MemberRoleEnum::AUTHOR || $role === MemberRoleEnum::MEMBER || $role === MemberRoleEnum::ADMIN))
+            if ($status === MemberStatusEnum::ACCEPTED->value &&
+                in_array($role, [
+                    MemberRoleEnum::AUTHOR->value,
+                    MemberRoleEnum::MEMBER->value,
+                    MemberRoleEnum::ADMIN->value,
+                ], true)
+            ) {
                 $membersDTO[] = $memberDTO;
+            }
         }
 
         return $this->json(
@@ -288,19 +310,18 @@ class GroupeController extends AbstractController
             throw $this->createAccessDeniedException('User not authenticated');
         }
 
-        /** @var UploadedFile $file */
         $file = $request->files->get('picture');
-
-
         if (!$file) {
             return new JsonResponse(['error' => 'No file provided'], 400);
         }
+
         if ($user->getPicture()) {
-            $oldPath = $uploader->getTargetDirectory() . '/' . basename($group->getPicture());
+            $oldPath = $uploader->getTargetDirectory() . '/' . basename((string) $group->getPicture());
             if (file_exists($oldPath)) {
                 unlink($oldPath);
             }
         }
+        /** @var UploadedFile $file */
         if (!in_array($file->getMimeType(), ['image/jpeg', 'image/png'])) {
             return new JsonResponse(['error' => 'Format non supporté'], 400);
         }

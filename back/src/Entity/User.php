@@ -68,7 +68,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
             read: false,
             denormalizationContext: ['groups' => ['user:write']],
         ),
-        new Delete(),
+        new Delete(
+            uriTemplate: '/users/delete',
+            controller: UserController::class . '::delete',
+            name: 'user_delete',
+        ),
         new Post(
             uriTemplate: '/users/picture',
             controller: UserController::class . '::uploadPicture',
@@ -414,7 +418,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPicture(): ?string
     {
-        $picture = 'http://localhost:8000' . $this->picture;
+        if ($this->picture)
+            $picture = 'https://monea.life' . $this->picture;
         return $picture;
     }
 

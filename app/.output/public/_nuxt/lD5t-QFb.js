@@ -1,1 +1,0 @@
-import{e as o,j as n,y as t,c as s,o as a}from"./EKjwmu4X.js";const c={class:"p-4 text-center"},p=o({__name:"callback",setup(r){const{loginGoogle:e}=n();return t(async()=>{await e()}),(_,l)=>(a(),s("div",c,"Connexion en cours..."))}});export{p as default};
