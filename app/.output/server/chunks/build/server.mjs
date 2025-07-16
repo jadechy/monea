@@ -557,7 +557,7 @@ const _routes = [
   {
     name: "auth-login",
     path: "/auth/login",
-    component: () => import('./login-yiPbR556.mjs')
+    component: () => import('./login-BC8JQtIH.mjs')
   },
   {
     name: "auth-reset",
@@ -597,7 +597,7 @@ const _routes = [
   {
     name: "auth-register",
     path: "/auth/register",
-    component: () => import('./register-zH8sCszq.mjs')
+    component: () => import('./register-BrBszCNV.mjs')
   },
   {
     name: "savings",
