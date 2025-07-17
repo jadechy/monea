@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import logo from "../assets/google_logo.webp";
+const config = useRuntimeConfig();
 const handleClick = () => {
-  window.location.href = "https://monea.life/connect/google";
+  window.location.href = `${config.public.apiBase}/connect/google`;
 };
 </script>
 

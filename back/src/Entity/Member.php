@@ -41,7 +41,7 @@ use App\DTO\MemberInputDTO;
         read: false,
         validationContext: ['groups' => ['member:write']],
     ),
-    new Get(
+    new Post(
         uriTemplate: '/member/response/{authorId}/{groupeId}',
         uriVariables: [
             'authorId' => new Link(fromClass: null, fromProperty: 'authorId'),
@@ -49,6 +49,17 @@ use App\DTO\MemberInputDTO;
         ],
         controller: MemberController::class  . '::responseInvitation',
         name: 'member_response',
+        deserialize: false,
+        read: false,
+        normalizationContext: ['groups' => ['member:read']]
+    ),
+    new Get(
+        uriTemplate: '/member/invitation/{authorId}',
+        uriVariables: [
+            'authorId' => new Link(fromClass: null, fromProperty: 'authorId'),
+        ],
+        controller: MemberController::class  . '::getAllInvitation',
+        name: 'member_invitation',
         deserialize: false,
         read: false,
         normalizationContext: ['groups' => ['member:read']]

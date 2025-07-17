@@ -69,7 +69,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             denormalizationContext: ['groups' => ['user:write']],
         ),
         new Delete(
-            uriTemplate: '/users/delete',
+            uriTemplate: '/users',
             controller: UserController::class . '::delete',
             name: 'user_delete',
         ),
@@ -418,9 +418,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPicture(): ?string
     {
-        if ($this->picture)
-            $picture = 'https://monea.life' . $this->picture;
-        return $picture;
+        return $this->picture ? 'https://monea.life' . $this->picture : null;
     }
 
     public function setPicture(?string $picture): static

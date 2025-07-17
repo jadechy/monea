@@ -537,7 +537,7 @@ const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import('./index-DO_64i1M.mjs')
+    component: () => import('./index-Cb5CsnSk.mjs')
   },
   {
     name: "terms",
@@ -552,12 +552,12 @@ const _routes = [
   {
     name: "user-edit",
     path: "/user/edit",
-    component: () => import('./edit-CfM_Eu8w.mjs')
+    component: () => import('./edit-C8cPHXdG.mjs')
   },
   {
     name: "auth-login",
     path: "/auth/login",
-    component: () => import('./login-qQEekTc1.mjs')
+    component: () => import('./login-BC8JQtIH.mjs')
   },
   {
     name: "auth-reset",
@@ -567,12 +567,12 @@ const _routes = [
   {
     name: "groups-new",
     path: "/groups/new",
-    component: () => import('./new-r1J28IrP.mjs')
+    component: () => import('./new-B0iWj76i.mjs')
   },
   {
     name: "user",
     path: "/user",
-    component: () => import('./index-BZLjy5uK.mjs')
+    component: () => import('./index-qrAc_r_A.mjs')
   },
   {
     name: "auth-forgot",
@@ -587,7 +587,7 @@ const _routes = [
   {
     name: "groups",
     path: "/groups",
-    component: () => import('./index-CzgGHXUx.mjs')
+    component: () => import('./index-BQYtrYVF.mjs')
   },
   {
     name: "NotFoundView",
@@ -597,12 +597,12 @@ const _routes = [
   {
     name: "auth-register",
     path: "/auth/register",
-    component: () => import('./register-BXzjyq_b.mjs')
+    component: () => import('./register-BrBszCNV.mjs')
   },
   {
     name: "savings",
     path: "/savings",
-    component: () => import('./index-BKUipcU_.mjs')
+    component: () => import('./index-CN9huEJ9.mjs')
   },
   {
     name: "oauth-callback",
@@ -613,6 +613,11 @@ const _routes = [
     name: "user-middleware",
     path: "/user/middleware",
     component: () => import('./middleware-DtKhqbqF.mjs')
+  },
+  {
+    name: "user-invitation",
+    path: "/user/invitation",
+    component: () => import('./invitation-DvsdOgDF.mjs')
   },
   {
     name: "groups-middleware",
@@ -627,47 +632,47 @@ const _routes = [
   {
     name: "groups-group_id-edit",
     path: "/groups/:group_id()/edit",
-    component: () => import('./edit-BS8ImNHb.mjs')
+    component: () => import('./edit-XhYaBeHn.mjs')
   },
   {
     name: "groups-group_id",
     path: "/groups/:group_id()",
-    component: () => import('./index-BS5m6K_2.mjs')
+    component: () => import('./index-B2I6zran.mjs')
   },
   {
     name: "groups-group_id-budget-edit",
     path: "/groups/:group_id()/budget/edit",
-    component: () => import('./edit-DtScjZwz.mjs')
+    component: () => import('./edit-DDUgIZmr.mjs')
   },
   {
     name: "groups-group_id-expense-new",
     path: "/groups/:group_id()/expense/new",
-    component: () => import('./new-CRNN3M83.mjs')
+    component: () => import('./new-n6t2wzbs.mjs')
   },
   {
     name: "groups-group_id-budget",
     path: "/groups/:group_id()/budget",
-    component: () => import('./index-DefZqrCq.mjs')
+    component: () => import('./index-DivVnvER.mjs')
   },
   {
     name: "groups-group_id-budget-forecast",
     path: "/groups/:group_id()/budget/forecast",
-    component: () => import('./forecast-CACJ2hwa.mjs')
+    component: () => import('./forecast-CLTpNamd.mjs')
   },
   {
     name: "groups-group_id-category-categoryId",
     path: "/groups/:group_id()/category/:categoryId()",
-    component: () => import('./_categoryId_-C6j8zcnd.mjs')
+    component: () => import('./_categoryId_-Cb54ov-h.mjs')
   },
   {
     name: "groups-group_id-expense-expense_id-edit",
     path: "/groups/:group_id()/expense/:expense_id()/edit",
-    component: () => import('./edit-B7APtpdZ.mjs')
+    component: () => import('./edit-DSFLCFpx.mjs')
   },
   {
     name: "groups-group_id-expense-expense_id",
     path: "/groups/:group_id()/expense/:expense_id()",
-    component: () => import('./index-CgLyrMZP.mjs')
+    component: () => import('./index-DclmNijK.mjs')
   }
 ];
 const _wrapInTransition = (props, children) => {
@@ -805,7 +810,7 @@ const globalMiddleware = [
   manifest_45route_45rule
 ];
 const namedMiddleware = {
-  auth: () => import('./auth-RdcJRkNt.mjs')
+  auth: () => import('./auth-Bj-UheNL.mjs')
 };
 const plugin$1 = /* @__PURE__ */ defineNuxtPlugin({
   name: "nuxt:router",
@@ -1172,7 +1177,7 @@ const LazySplitButton = defineAsyncComponent(() => import('./index-czqRc7Um.mjs'
 const LazyColumn = defineAsyncComponent(() => import('./index-CjuIug2P.mjs').then((r) => r["default"] || r.default || r));
 const LazyRow = defineAsyncComponent(() => import('./index-BeTmLtpf.mjs').then((r) => r["default"] || r.default || r));
 const LazyColumnGroup = defineAsyncComponent(() => import('./index-DBfi73-9.mjs').then((r) => r["default"] || r.default || r));
-const LazyDataTable = defineAsyncComponent(() => import('./index-D25r9HqR.mjs').then((r) => r["default"] || r.default || r));
+const LazyDataTable = defineAsyncComponent(() => import('./index-sTFyRkH4.mjs').then((r) => r["default"] || r.default || r));
 const LazyDataView = defineAsyncComponent(() => import('./index-Csk540eH.mjs').then((r) => r["default"] || r.default || r));
 const LazyOrderList = defineAsyncComponent(() => import('./index-DivK5ah-.mjs').then((r) => r["default"] || r.default || r));
 const LazyOrganizationChart = defineAsyncComponent(() => import('./index-n7y7V4Pu.mjs').then((r) => r["default"] || r.default || r));
@@ -1208,11 +1213,11 @@ const LazyTab = defineAsyncComponent(() => import('./index-DKbFQW8l.mjs').then((
 const LazyTabPanels = defineAsyncComponent(() => import('./index-IgvGNMhn.mjs').then((r) => r["default"] || r.default || r));
 const LazyTabPanel = defineAsyncComponent(() => import('./index-DXKszH9i.mjs').then((r) => r["default"] || r.default || r));
 const LazyToolbar = defineAsyncComponent(() => import('./index-BwMUeLi7.mjs').then((r) => r["default"] || r.default || r));
-const LazyConfirmDialog = defineAsyncComponent(() => import('./index-C1owbmIC.mjs').then((r) => r["default"] || r.default || r));
-const LazyConfirmPopup = defineAsyncComponent(() => import('./index-BjmQCizw.mjs').then((r) => r["default"] || r.default || r));
+const LazyConfirmDialog = defineAsyncComponent(() => import('./index-NhNAMfjP.mjs').then((r) => r["default"] || r.default || r));
+const LazyConfirmPopup = defineAsyncComponent(() => import('./index-BPRvR6iM.mjs').then((r) => r["default"] || r.default || r));
 const LazyDialog = defineAsyncComponent(() => import('./index-De0VhdmC.mjs').then((r) => r["default"] || r.default || r));
 const LazyDrawer = defineAsyncComponent(() => import('./index-Bd17IegO.mjs').then((r) => r["default"] || r.default || r));
-const LazyDynamicDialog = defineAsyncComponent(() => import('./index-BDFv2X_i.mjs').then((r) => r["default"] || r.default || r));
+const LazyDynamicDialog = defineAsyncComponent(() => import('./index-CW-V9xPS.mjs').then((r) => r["default"] || r.default || r));
 const LazyOverlayPanel = defineAsyncComponent(() => import('./index-BUddGZ9P.mjs').then((r) => r["default"] || r.default || r));
 const LazyPopover = defineAsyncComponent(() => import('./index-Dmuuu1qZ.mjs').then((r) => r["default"] || r.default || r));
 const LazySidebar = defineAsyncComponent(() => import('./index-UhoOymE5.mjs').then((r) => r["default"] || r.default || r));
@@ -2554,8 +2559,8 @@ const GroupSchema = z.object({
   type: GroupTypeEnum,
   picture: z.string().max(255).nullable(),
   color: ColorSchema,
-  userStatus: MemberStatusEnum,
-  userRole: MemberRoleEnum
+  userStatus: MemberStatusEnum.optional(),
+  userRole: MemberRoleEnum.optional()
 });
 const NewGroupSchema = GroupSchema.pick({
   name: true,
@@ -2649,6 +2654,19 @@ const MemberDTOSchema = MemberSchema.pick({
   addOn: true,
   status: true
 }).extend({
+  user: UserDTOSchema
+});
+z.object({
+  role: MemberRoleEnum,
+  groupeId: GroupSchema.shape.id,
+  username: UserDTOSchema.shape.username.optional(),
+  mail: z.string().email().optional()
+});
+const InvitationResponseSchema = z.object({ message: z.string() });
+const MemberInvitationSchema = z.object({
+  role: MemberRoleEnum,
+  group: GroupSchema,
+  status: MemberStatusEnum,
   user: UserDTOSchema
 });
 const FetchGroupByUserSchema = GroupSchema.extend({
@@ -3167,8 +3185,8 @@ const plugins = [
   _02_init_auth_iBnmu1vKEfks3aG4GriGvIdjufQpLRsNtN7r2GoxgBw
 ];
 const layouts = {
-  default: defineAsyncComponent(() => import('./default-CV1HZRb7.mjs').then((m) => m.default || m)),
-  savings: defineAsyncComponent(() => import('./savings-B_OJ-YZj.mjs').then((m) => m.default || m))
+  default: defineAsyncComponent(() => import('./default-Cbe6huP_.mjs').then((m) => m.default || m)),
+  savings: defineAsyncComponent(() => import('./savings-D8bNFgu8.mjs').then((m) => m.default || m))
 };
 const LayoutLoader = defineComponent({
   name: "LayoutLoader",
@@ -3433,7 +3451,7 @@ const _sfc_main$1 = {
     const statusMessage = _error.statusMessage ?? (is404 ? "Page Not Found" : "Internal Server Error");
     const description = _error.message || _error.toString();
     const stack = void 0;
-    const _Error404 = defineAsyncComponent(() => import('./error-404-BZMe4P0-.mjs'));
+    const _Error404 = defineAsyncComponent(() => import('./error-404-Bp7EzWuA.mjs'));
     const _Error = defineAsyncComponent(() => import('./error-500-kNhLIA3P.mjs'));
     const ErrorTemplate = is404 ? _Error404 : _Error;
     return (_ctx, _push, _parent, _attrs) => {
@@ -3516,5 +3534,5 @@ let entry;
 }
 const entry$1 = (ssrContext) => entry(ssrContext);
 
-export { BaseStyle as B, ColorSchema as C, DateSchema as D, FilterService as F, GroupTypeEnum as G, LoginRequestSchema as L, MemberDTOSchema as M, NewGroupSchema as N, PrimeVueService as P, RegisterRequestSchema as R, ToastEventBus as T, UserSchema as U, _export_sfc as _, useRouter as a, useAuthStore as b, useGroupsStore as c, __nuxt_component_0$1 as d, entry$1 as default, useAuthService as e, useRoute as f, useGroupService as g, useNuxtApp as h, CategorySchema as i, GroupSchema as j, useRuntimeConfig as k, nuxtLinkDefaults as l, dateSchema as m, navigateTo as n, UserDTOSchema as o, defineNuxtRouteMiddleware as p, FilterMatchMode as q, resolveRouteObject as r, FilterOperator as s, ConfirmationEventBus as t, useHead as u, DynamicDialogEventBus as v };
+export { BaseStyle as B, ColorSchema as C, DateSchema as D, FilterService as F, GroupTypeEnum as G, InvitationResponseSchema as I, LoginRequestSchema as L, MemberRoleEnum as M, NewGroupSchema as N, PrimeVueService as P, RegisterRequestSchema as R, ToastEventBus as T, UserSchema as U, _export_sfc as _, useRouter as a, useAuthStore as b, useGroupsStore as c, __nuxt_component_0$1 as d, entry$1 as default, useAuthService as e, useRoute as f, useNuxtApp as g, useRuntimeConfig as h, nuxtLinkDefaults as i, useGroupService as j, MemberInvitationSchema as k, MemberDTOSchema as l, GroupSchema as m, navigateTo as n, dateSchema as o, UserDTOSchema as p, CategorySchema as q, resolveRouteObject as r, defineNuxtRouteMiddleware as s, FilterMatchMode as t, useHead as u, FilterOperator as v, ConfirmationEventBus as w, DynamicDialogEventBus as x };
 //# sourceMappingURL=server.mjs.map
