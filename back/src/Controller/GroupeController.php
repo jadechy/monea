@@ -24,6 +24,7 @@ use App\Enum\MemberStatusEnum;
 use App\Repository\BudgetRepository;
 use App\Repository\GroupeRepository;
 use App\Repository\MemberRepository;
+use App\Repository\UserRepository;
 use App\Service\FileUploader;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -34,6 +35,7 @@ class GroupeController extends AbstractController
         private BudgetRepository $budgetRepository,
         private GroupeRepository $groupeRepository,
         private MemberRepository $memberRepository,
+        private UserRepository $userRepository,
         private EntityManagerInterface $em,
         private ValidatorInterface $validator,
     ) {}
@@ -333,5 +335,70 @@ class GroupeController extends AbstractController
         $this->em->flush();
 
         return new JsonResponse(['picture' => $group->getPicture()]);
+    }
+
+    public function bannedMemberGroup(int $id, int $userBannedId): JsonResponse
+    {
+        $group = $this->groupeRepository->find($id);
+
+        if (!$group) {
+            return $this->json(['error' => 'Groupe introuvable'], Response::HTTP_NOT_FOUND);
+        }
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+
+        $userBanned = $this->userRepository->find($userBannedId);
+
+        $member = $this->memberRepository->findOneBy(['groupe' => $group, 'individual' => $userBanned]);
+        if (!$member) {
+            return new JsonResponse(['error' => 'Vous n\'êtes pas un membre du groupe.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $this->denyAccessUnlessGranted('modifier', $group);
+
+        $member->setRole(MemberRoleEnum::BANNED);
+        $this->em->flush();
+
+        return $this->json(['message' => 'Le membre a été banni du groupe'], Response::HTTP_OK);
+    }
+
+    public function updateRoleMemberGroup(int $id, int $userId, Request $request): JsonResponse
+    {
+        $group = $this->groupeRepository->find($id);
+
+        if (!$group) {
+            return $this->json(['error' => 'Groupe introuvable'], Response::HTTP_NOT_FOUND);
+        }
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+
+        $userchoosen = $this->userRepository->find($userId);
+
+        $member = $this->memberRepository->findOneBy(['groupe' => $group, 'individual' => $userchoosen]);
+        if (!$member) {
+            return new JsonResponse(['error' => 'Vous n\'êtes pas un membre du groupe.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $this->denyAccessUnlessGranted('modifier', $group);
+
+        $data = json_decode($request->getContent(), true);
+        $newRole = $data['role'] ?? null;
+
+        if (!$newRole) {
+            return $this->json(['error' => 'Le rôle est requis.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if (!MemberRoleEnum::tryFrom($newRole)) {
+            return $this->json(['error' => 'Rôle invalide.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $member->setRole(MemberRoleEnum::from($newRole));
+        $this->em->flush();
+
+        return $this->json(['message' => 'Le role du membre a été mis à jour'], Response::HTTP_OK);
     }
 }

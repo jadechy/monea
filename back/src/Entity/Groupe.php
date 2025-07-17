@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -73,6 +74,28 @@ use App\Repository\GroupeRepository;
             validate: false,
             inputFormats: ['multipart' => ['multipart/form-data']],
             outputFormats: ['json' => ['application/json']],
+        ),
+        new Patch(
+            uriTemplate: '/groupes/{id}/member/{userBannedId}',
+            controller: GroupeController::class  . '::bannedMemberGroup',
+            uriVariables: [
+                'id' => new Link(fromClass: null, fromProperty: 'id'),
+                'userBannedId' => new Link(fromClass: null, fromProperty: 'userBannedId'),
+            ],
+            name: 'groupe_banned_member',
+            deserialize: false,
+            read: false,
+        ),
+        new Patch(
+            uriTemplate: '/groupes/{id}/member/{userId}/update',
+            controller: GroupeController::class  . '::updateRoleMemberGroup',
+            uriVariables: [
+                'id' => new Link(fromClass: null, fromProperty: 'id'),
+                'userId' => new Link(fromClass: null, fromProperty: 'userId'),
+            ],
+            name: 'groupe_update_role_member',
+            deserialize: false,
+            read: false,
         )
     ]
 )]
