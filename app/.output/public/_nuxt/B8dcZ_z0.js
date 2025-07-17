@@ -1,1 +1,0 @@
-import{e as s,g as p,k as a,o as i,u as e}from"./Ckx6mslq.js";import n from"./BYVjy45l.js";const f=s({__name:"AddAction",props:{to:{},params:{},query:{}},setup(u){const r=p();return(t,o)=>(i(),a(e(n),{size:"large",icon:"pi pi-plus","aria-label":"Filter",class:"fixed bottom-4 right-4",onClick:o[0]||(o[0]=c=>e(r).push(t.to))}))}});export{f as _};
