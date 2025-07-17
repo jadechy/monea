@@ -537,7 +537,7 @@ const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import('./index-B3sVgKJa.mjs')
+    component: () => import('./index-Cb5CsnSk.mjs')
   },
   {
     name: "terms",
@@ -552,12 +552,12 @@ const _routes = [
   {
     name: "user-edit",
     path: "/user/edit",
-    component: () => import('./edit-lg1hzlkP.mjs')
+    component: () => import('./edit-C8cPHXdG.mjs')
   },
   {
     name: "auth-login",
     path: "/auth/login",
-    component: () => import('./login-DILn66J7.mjs')
+    component: () => import('./login-BC8JQtIH.mjs')
   },
   {
     name: "auth-reset",
@@ -567,12 +567,12 @@ const _routes = [
   {
     name: "groups-new",
     path: "/groups/new",
-    component: () => import('./new-D1AB5i1-.mjs')
+    component: () => import('./new-B0iWj76i.mjs')
   },
   {
     name: "user",
     path: "/user",
-    component: () => import('./index-BzIerYaC.mjs')
+    component: () => import('./index-qrAc_r_A.mjs')
   },
   {
     name: "auth-forgot",
@@ -587,7 +587,7 @@ const _routes = [
   {
     name: "groups",
     path: "/groups",
-    component: () => import('./index-DatXQeaM.mjs')
+    component: () => import('./index-BQYtrYVF.mjs')
   },
   {
     name: "NotFoundView",
@@ -597,12 +597,12 @@ const _routes = [
   {
     name: "auth-register",
     path: "/auth/register",
-    component: () => import('./register-CBlB621F.mjs')
+    component: () => import('./register-BrBszCNV.mjs')
   },
   {
     name: "savings",
     path: "/savings",
-    component: () => import('./index-BqwD0sDo.mjs')
+    component: () => import('./index-CN9huEJ9.mjs')
   },
   {
     name: "oauth-callback",
@@ -617,7 +617,7 @@ const _routes = [
   {
     name: "user-invitation",
     path: "/user/invitation",
-    component: () => import('./invitation-DH_02PxY.mjs')
+    component: () => import('./invitation-DvsdOgDF.mjs')
   },
   {
     name: "groups-middleware",
@@ -632,47 +632,47 @@ const _routes = [
   {
     name: "groups-group_id-edit",
     path: "/groups/:group_id()/edit",
-    component: () => import('./edit-DCrzd-8t.mjs')
+    component: () => import('./edit-XhYaBeHn.mjs')
   },
   {
     name: "groups-group_id",
     path: "/groups/:group_id()",
-    component: () => import('./index-Bxt5_r3I.mjs')
+    component: () => import('./index-B2I6zran.mjs')
   },
   {
     name: "groups-group_id-budget-edit",
     path: "/groups/:group_id()/budget/edit",
-    component: () => import('./edit-BjGmNXJH.mjs')
+    component: () => import('./edit-DDUgIZmr.mjs')
   },
   {
     name: "groups-group_id-expense-new",
     path: "/groups/:group_id()/expense/new",
-    component: () => import('./new-Bnz-jpha.mjs')
+    component: () => import('./new-n6t2wzbs.mjs')
   },
   {
     name: "groups-group_id-budget",
     path: "/groups/:group_id()/budget",
-    component: () => import('./index-Bp0Ug4vQ.mjs')
+    component: () => import('./index-DivVnvER.mjs')
   },
   {
     name: "groups-group_id-budget-forecast",
     path: "/groups/:group_id()/budget/forecast",
-    component: () => import('./forecast-C_SPF3cf.mjs')
+    component: () => import('./forecast-CLTpNamd.mjs')
   },
   {
     name: "groups-group_id-category-categoryId",
     path: "/groups/:group_id()/category/:categoryId()",
-    component: () => import('./_categoryId_-DMWN6wep.mjs')
+    component: () => import('./_categoryId_-Cb54ov-h.mjs')
   },
   {
     name: "groups-group_id-expense-expense_id-edit",
     path: "/groups/:group_id()/expense/:expense_id()/edit",
-    component: () => import('./edit-1VnJIG2v.mjs')
+    component: () => import('./edit-DSFLCFpx.mjs')
   },
   {
     name: "groups-group_id-expense-expense_id",
     path: "/groups/:group_id()/expense/:expense_id()",
-    component: () => import('./index-6A1IdFw-.mjs')
+    component: () => import('./index-DclmNijK.mjs')
   }
 ];
 const _wrapInTransition = (props, children) => {
@@ -3185,8 +3185,8 @@ const plugins = [
   _02_init_auth_iBnmu1vKEfks3aG4GriGvIdjufQpLRsNtN7r2GoxgBw
 ];
 const layouts = {
-  default: defineAsyncComponent(() => import('./default-Bu0HviND.mjs').then((m) => m.default || m)),
-  savings: defineAsyncComponent(() => import('./savings-BQxatYOo.mjs').then((m) => m.default || m))
+  default: defineAsyncComponent(() => import('./default-Cbe6huP_.mjs').then((m) => m.default || m)),
+  savings: defineAsyncComponent(() => import('./savings-D8bNFgu8.mjs').then((m) => m.default || m))
 };
 const LayoutLoader = defineComponent({
   name: "LayoutLoader",
@@ -3451,7 +3451,7 @@ const _sfc_main$1 = {
     const statusMessage = _error.statusMessage ?? (is404 ? "Page Not Found" : "Internal Server Error");
     const description = _error.message || _error.toString();
     const stack = void 0;
-    const _Error404 = defineAsyncComponent(() => import('./error-404-C0xmJd1a.mjs'));
+    const _Error404 = defineAsyncComponent(() => import('./error-404-Bp7EzWuA.mjs'));
     const _Error = defineAsyncComponent(() => import('./error-500-kNhLIA3P.mjs'));
     const ErrorTemplate = is404 ? _Error404 : _Error;
     return (_ctx, _push, _parent, _attrs) => {
@@ -3534,5 +3534,5 @@ let entry;
 }
 const entry$1 = (ssrContext) => entry(ssrContext);
 
-export { BaseStyle as B, ColorSchema as C, DateSchema as D, FilterService as F, GroupTypeEnum as G, InvitationResponseSchema as I, LoginRequestSchema as L, MemberRoleEnum as M, NewGroupSchema as N, PrimeVueService as P, RegisterRequestSchema as R, ToastEventBus as T, UserSchema as U, _export_sfc as _, useRouter as a, useAuthStore as b, useGroupsStore as c, __nuxt_component_0$1 as d, entry$1 as default, useAuthService as e, useRuntimeConfig as f, useRoute as g, useNuxtApp as h, nuxtLinkDefaults as i, useGroupService as j, MemberInvitationSchema as k, MemberDTOSchema as l, GroupSchema as m, navigateTo as n, dateSchema as o, UserDTOSchema as p, CategorySchema as q, resolveRouteObject as r, defineNuxtRouteMiddleware as s, FilterMatchMode as t, useHead as u, FilterOperator as v, ConfirmationEventBus as w, DynamicDialogEventBus as x };
+export { BaseStyle as B, ColorSchema as C, DateSchema as D, FilterService as F, GroupTypeEnum as G, InvitationResponseSchema as I, LoginRequestSchema as L, MemberRoleEnum as M, NewGroupSchema as N, PrimeVueService as P, RegisterRequestSchema as R, ToastEventBus as T, UserSchema as U, _export_sfc as _, useRouter as a, useAuthStore as b, useGroupsStore as c, __nuxt_component_0$1 as d, entry$1 as default, useAuthService as e, useRoute as f, useNuxtApp as g, useRuntimeConfig as h, nuxtLinkDefaults as i, useGroupService as j, MemberInvitationSchema as k, MemberDTOSchema as l, GroupSchema as m, navigateTo as n, dateSchema as o, UserDTOSchema as p, CategorySchema as q, resolveRouteObject as r, defineNuxtRouteMiddleware as s, FilterMatchMode as t, useHead as u, FilterOperator as v, ConfirmationEventBus as w, DynamicDialogEventBus as x };
 //# sourceMappingURL=server.mjs.map
