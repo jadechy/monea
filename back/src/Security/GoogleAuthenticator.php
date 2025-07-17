@@ -93,7 +93,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
                     $user->setGoogleId($googleId);
 
                     $user->setName($googleUser->getName());
-                    $user->setLastName($googleUser->getLastName() ?? "");
+                    $user->setLastName($googleUser->getLastName() ?? $googleUser->getName());
                     $user->setUsername($googleEmail);
                     $user->setRoles([UserRoleEnum::USER]);
                     $user->setPlainPassword('password123');
