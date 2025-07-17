@@ -8,6 +8,7 @@ const handleClick = () => {
 </script>
 
 <template>
+  <div>API: {{ config.public.apiBase }}</div>
   <img
     :src="logo"
     class="h-16 shadow rounded-xl w-fit py-4 px-6 hover:bg-gray-100 transition"
