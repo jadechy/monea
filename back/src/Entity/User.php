@@ -69,7 +69,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             denormalizationContext: ['groups' => ['user:write']],
         ),
         new Delete(
-            uriTemplate: '/users/delete',
+            uriTemplate: '/users',
             controller: UserController::class . '::delete',
             name: 'user_delete',
         ),
