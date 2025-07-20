@@ -65,7 +65,7 @@ services:
     ports:
       - "8081:80"
     env_file:
-      - ./back/.env.dev.local
+      - ./back/.env.dev
     depends_on:
       - db
     networks:

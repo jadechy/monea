@@ -42,8 +42,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         private UserSetupService $userSetupService,
         private ValidatorInterface $validator,
         private string $urlClient
-    ) {
-    }
+    ) {}
 
     /**
      * Détermine si cet authenticateur doit être utilisé pour cette requête
@@ -65,63 +64,67 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
         return new SelfValidatingPassport(
             new UserBadge($accessToken->getToken(), function () use ($accessToken, $client) {
-                /** @var GoogleUser $googleUser */
-                $googleUser = $client->fetchUserFromToken($accessToken);
-                /** @var string $googleId */
-                $googleId = $googleUser->getId();
+                try {
+                    /** @var GoogleUser $googleUser */
+                    $googleUser = $client->fetchUserFromToken($accessToken);
+                    /** @var string $googleId */
+                    $googleId = $googleUser->getId();
 
-                $existingUser = $this->userRepository->findOneBy(['googleId' => $googleId]);
+                    $existingUser = $this->userRepository->findOneBy(['googleId' => $googleId]);
 
-                if ($existingUser) {
-                    return $existingUser;
-                }
-                $googleEmail = $googleUser->getEmail();
-                if (!$googleEmail) {
-                    throw new \RuntimeException('Email manquant dans les données Google.');
-                }
-
-                $existingUser = $this->userRepository->findOneBy(['email' => $googleEmail]);
-
-                if ($existingUser) {
-                    $existingUser->setGoogleId($googleId);
-                    $this->entityManager->flush();
-                    return $existingUser;
-                }
-
-                $user = new User();
-                $user->setEmail($googleEmail);
-                $user->setGoogleId($googleId);
-
-                $user->setName($googleUser->getName());
-                $user->setLastName($googleUser->getLastName() ?? "");
-                $user->setUsername($googleUser->getName());
-                $user->setRoles([UserRoleEnum::USER]);
-                $user->setPlainPassword('password123');
-                $user->setPassword('password123');
-                $user->setCreatedAt(new \DateTimeImmutable());
-                $user->setBirthday(new \DateTimeImmutable('2003-09-21'));
-                $avatarUrl = $googleUser->getAvatar();
-                if ($avatarUrl) {
-                    $localFilename = $this->downloadUserAvatar($avatarUrl);
-                    if ($localFilename) {
-                        $user->setPicture($localFilename);
+                    if ($existingUser) {
+                        return $existingUser;
                     }
+                    $googleEmail = $googleUser->getEmail();
+                    if (!$googleEmail) {
+                        throw new \RuntimeException('Email manquant dans les données Google.');
+                    }
+
+                    $existingUser = $this->userRepository->findOneBy(['email' => $googleEmail]);
+
+                    if ($existingUser) {
+                        $existingUser->setGoogleId($googleId);
+                        $this->entityManager->flush();
+                        return $existingUser;
+                    }
+
+                    $user = new User();
+                    $user->setEmail($googleEmail);
+                    $user->setGoogleId($googleId);
+
+                    $user->setName($googleUser->getName());
+                    $user->setLastName($googleUser->getLastName() ?? $googleUser->getName());
+                    $user->setUsername($googleEmail);
+                    $user->setRoles([UserRoleEnum::USER]);
+                    $user->setPlainPassword('password123');
+                    $user->setPassword('password123');
+                    $user->setCreatedAt(new \DateTimeImmutable());
+                    $user->setBirthday(new \DateTimeImmutable('2003-09-21'));
+                    $avatarUrl = $googleUser->getAvatar();
+                    if ($avatarUrl) {
+                        $localFilename = $this->downloadUserAvatar($avatarUrl);
+                        if ($localFilename) {
+                            $user->setPicture($localFilename);
+                        }
+                    }
+
+                    $errorsUser = $this->validator->validate($user);
+                    if (count($errorsUser) > 0) {
+                        throw new \RuntimeException('Erreur lors de la validation de l’utilisateur : ' . (string) $errorsUser);
+                    }
+                    $this->entityManager->persist($user);
+
+                    $error = $this->userSetupService->setupUser($user);
+                    if ($error) {
+                        throw new \RuntimeException('Erreur lors de l\'initialisation de l\'utilisateur : ' . json_encode($error));
+                    }
+
+                    $this->entityManager->flush();
+
+                    return $user;
+                } catch (\Throwable $e) {
+                    throw new \RuntimeException('Erreur durant l’authentification Google : ' . $e->getMessage(), 0, $e);
                 }
-
-                $errorsUser = $this->validator->validate($user);
-                if (count($errorsUser) > 0) {
-                    throw new \RuntimeException('Erreur lors de la validation de l’utilisateur : ' . (string) $errorsUser);
-                }
-                $this->entityManager->persist($user);
-
-                $error = $this->userSetupService->setupUser($user);
-                if ($error) {
-                    throw new \RuntimeException('Erreur lors de l\'initialisation de l\'utilisateur : ' . json_encode($error));
-                }
-
-                $this->entityManager->flush();
-
-                return $user;
             })
         );
     }
