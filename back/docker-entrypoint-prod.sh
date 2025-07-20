@@ -9,7 +9,7 @@ else
   exit 1
 fi
 
-export DATABASE_URL="mysql://${DATABASE_USER:-app_user}:${MYSQL_PASSWORD}@${DATABASE_HOST:-db}:${DATABASE_PORT:-3306}/${DATABASE_NAME:-app_db}"
+export DATABASE_URL="mysql://${MYSQL_USER:-app_user}:${MYSQL_PASSWORD}@${MYSQL_HOST:-db}:${MYSQL_PORT:-3306}/${MYSQL_DATABASE:-app_db}"
 echo "DATABASE_URL=$DATABASE_URL"
 
 
@@ -43,7 +43,7 @@ if [ ! -f config/jwt/private.pem ]; then
 fi
 chown -R www-data:www-data config/jwt
 
-echo "MYSQL_PASSWORD_FILE=${MYSQL_PASSWORD_FILE:-non défini}"
+echo "MYSQL_PASSWORD=${MYSQL_PASSWORD:-non défini}"
 echo "JWT setup terminé"
 
 mkdir -p var/cache var/log

@@ -86,7 +86,7 @@ services:
       - backend_network
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
-      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+      MYSQL_PASSWORD: /run/secrets/mysql_password
       MYSQL_DATABASE: app_db
       MYSQL_USER: app_user
     secrets:

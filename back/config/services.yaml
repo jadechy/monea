@@ -6,12 +6,6 @@
 parameters:
   upload_directory: "%kernel.project_dir%/public/uploads/profile"
   url_client: "%env(URL_CLIENT)%"
-  database_password: "%env(file:resolve:MYSQL_PASSWORD_FILE)%"
-  database_user: "%env(DATABASE_USER)%"
-  database_host: "%env(DATABASE_HOST)%"
-  database_port: "%env(DATABASE_PORT)%"
-  database_name: "%env(DATABASE_NAME)%"
-  database_url: "mysql://%database_user%:%database_password%@%database_host%:%database_port%/%database_name%"
 services:
   App\Service\FileUploader:
     arguments:
