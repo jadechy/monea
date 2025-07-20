@@ -17,7 +17,7 @@ const averages: Average[] = [
     label: "Partage entre membres d’un groupe",
   },
   {
-    icon: "pi-planner",
+    icon: "pi-calendar",
     label: "Vue mensuelle / annuelle",
   },
 ];

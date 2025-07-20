@@ -20,7 +20,7 @@ const { register } = useAuthService();
 const registerMutation = useMutation({
   mutationFn: (data: UserEditType) => register(data),
   onSuccess: () => {
-    router.push({ name: "auth-confirm" });
+    router.push({ name: "groups" });
   },
 });
 
@@ -43,7 +43,7 @@ const submitRegister = async (form: FormSubmitEvent) => {
   registerMutation.mutate(data);
 };
 useSeo({
-  title: "Créer un compte - Monéa",
+  title: "Créer un compte",
   description:
     "Inscrivez-vous sur Monéa pour commencer à gérer facilement vos budgets et vos dépenses.",
   ogTitle: "Création de compte Monéa",
