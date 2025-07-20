@@ -1,6 +1,10 @@
 #!/bin/sh
 set -ex
+echo "=== Initialisation du conteneur backend ==="
 
+if [ -f .env.prod ]; then
+  export $(grep -v '^#' .env.prod | xargs)
+fi
 # Installer les dépendances
  if [ -f /run/secrets/mysql_password ]; then
   export MYSQL_PASSWORD=$(cat /run/secrets/mysql_password)
@@ -8,7 +12,8 @@ else
   echo "Erreur : le secret mysql_password est manquant"
   exit 1
 fi
-
+echo "==========="
+echo "${MYSQL_PASSWORD}"
 export DATABASE_URL="mysql://${MYSQL_USER:-app_user}:${MYSQL_PASSWORD}@${MYSQL_HOST:-db}:${MYSQL_PORT:-3306}/${MYSQL_DATABASE:-app_db}"
 echo "DATABASE_URL=$DATABASE_URL"
 
@@ -21,9 +26,6 @@ if [ ! -f bin/console ]; then
 fi
 
 
-if [ -f .env.prod ]; then
-  export $(grep -v '^#' .env.prod | xargs)
-fi
 
 if [ -z "$JWT_PASSPHRASE" ]; then
   echo "Erreur : JWT_PASSPHRASE n'est pas défini"
