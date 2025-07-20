@@ -46,7 +46,7 @@ services:
     platform: linux/x86_64
     restart: always
     env_file:
-      - ./back/.env.dev.local
+      - ./back/.env
     volumes:
       - db-data:/var/lib/mysql
     ports:
@@ -119,8 +119,6 @@ services:
 volumes:
   db-data:
   vendor-data:
-  # matomo_db_data:
-  # matomo_data:
 
 networks:
   monea:

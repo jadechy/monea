@@ -5,18 +5,30 @@ Elle permet à plusieurs utilisateurs de suivre, catégoriser et planifier leurs
 
 ---
 
-## 🚀 Initialisation du projet
+### 🛠️ Technologies utilisées
 
-Ce projet est basé sur **Docker** et comporte deux parties :
-
-- le **frontend** (Nuxt),
-- le **backend** (API Symfony + MySQL) avec un reverse-prxy (Nginx).
+- ⚙️ Symfony (API Platform)
+- 🎨 Nuxt
+- 🐬 MySQL
+- 🐳 Docker / Docker Compose
+- 🔐 JWT Auth + OAuth Google Login
 
 ---
 
-### 1. 🔧 Configuration des variables d’environnement
+## Développement
 
-#### ➤ Frontend
+###🚀 Initialisation du projet
+
+Ce projet est basé sur **Docker** et comporte deux parties :
+
+- le **frontend** (Nuxt) dans /app,
+- le **backend** (API Symfony + MySQL) avec un reverse-prxy (Nginx) dans /back et /nginx.
+
+---
+
+#### 1. 🔧 Configuration des variables d’environnement
+
+##### ➤ Frontend
 
 Créer un fichier `.env` à la racine du frontend à partir de `.env.sample`.
 
@@ -27,15 +39,15 @@ NUXT_PUBLIC_API_URL=http://localhost:8000
 NUXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 
-#### ➤ Backend
+##### ➤ Backend
 
 Créer un fichier `.env.local` à la racine du backend à partir de `.env.local.sample`.
 
 Variables nécessaires :
 
 ```env
-MYSQL_ROOT_PASSWORD=your_root_password
-MYSQL_DATABASE=your_database
+GOOGLE_CLIENT_SECRET=
+GOOGLE_CLIENT_ID=
 MYSQL_USER=your_user
 MYSQL_PASSWORD=your_password
 PMA_HOST=db
@@ -50,7 +62,7 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 MAILER_DSN=
 ```
 
-## 2. 🐳 Lancer les services Docker
+### 2. 🐳 Lancer les services Docker
 
 Dans la racine du projet, exécute :
 
@@ -68,20 +80,12 @@ Cette commande va :
 
 - Lancer le frontend
 
-## 🔗 Accès rapides
+### 🔗 Accès rapides
 
 | Service        | URL                                                    |
 | -------------- | ------------------------------------------------------ |
 | 📊 PhpMyAdmin  | [http://localhost:8081/](http://localhost:8081/)       |
 | 🧪 Swagger API | [http://localhost:8000/api](http://localhost:8000/api) |
 | 🖥️ Frontend    | [http://localhost:3000/](http://localhost:3000/)       |
-
-## 🛠️ Technologies utilisées
-
-- ⚙️ Symfony (API Platform)
-- 🎨 Nuxt
-- 🐬 MySQL
-- 🐳 Docker / Docker Compose
-- 🔐 JWT Auth + OAuth Google Login
 
 #### Par Cécile LECERF et Jade Chi Yen
