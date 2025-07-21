@@ -418,7 +418,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPicture(): ?string
     {
-        return $this->picture ? 'https://monea.life' . $this->picture : null;
+
+        $baseUrl = getenv('URL_CLIENT') ?: 'https://localhost:3000';
+        return $this->picture ? $baseUrl . $this->picture : null;
     }
 
     public function setPicture(?string $picture): static

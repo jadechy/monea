@@ -22,7 +22,7 @@ const sources = [
         "urls": [
             {
                 "loc": "/",
-                "lastmod": "2025-07-16T12:04:33.362Z"
+                "lastmod": "2025-07-16T16:27:27.165Z"
             },
             {
                 "loc": "/terms",
@@ -34,15 +34,15 @@ const sources = [
             },
             {
                 "loc": "/user/edit",
-                "lastmod": "2025-07-13T18:21:43.103Z"
+                "lastmod": "2025-07-16T16:27:27.166Z"
             },
             {
                 "loc": "/auth/login",
-                "lastmod": "2025-07-13T18:21:43.097Z"
+                "lastmod": "2025-07-16T16:27:27.159Z"
             },
             {
                 "loc": "/auth/reset",
-                "lastmod": "2025-07-13T18:21:43.098Z"
+                "lastmod": "2025-07-16T16:27:27.161Z"
             },
             {
                 "loc": "/groups/new",
@@ -50,11 +50,11 @@ const sources = [
             },
             {
                 "loc": "/user",
-                "lastmod": "2025-07-13T18:21:43.103Z"
+                "lastmod": "2025-07-16T19:13:05.820Z"
             },
             {
                 "loc": "/auth/forgot",
-                "lastmod": "2025-07-13T18:21:43.097Z"
+                "lastmod": "2025-07-16T16:27:27.159Z"
             },
             {
                 "loc": "/auth/confirm",
@@ -66,15 +66,15 @@ const sources = [
             },
             {
                 "loc": "/NotFoundView",
-                "lastmod": "2025-07-13T18:21:43.097Z"
+                "lastmod": "2025-07-16T16:27:27.158Z"
             },
             {
                 "loc": "/auth/register",
-                "lastmod": "2025-07-13T18:21:43.098Z"
+                "lastmod": "2025-07-16T16:27:27.160Z"
             },
             {
                 "loc": "/savings",
-                "lastmod": "2025-07-13T18:21:43.103Z"
+                "lastmod": "2025-07-16T16:27:27.166Z"
             },
             {
                 "loc": "/oauth/callback",
@@ -83,6 +83,10 @@ const sources = [
             {
                 "loc": "/user/middleware",
                 "lastmod": "2025-07-13T18:20:56.204Z"
+            },
+            {
+                "loc": "/user/invitation",
+                "lastmod": "2025-07-16T19:13:05.821Z"
             },
             {
                 "loc": "/groups/middleware",

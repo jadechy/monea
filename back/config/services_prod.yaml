@@ -1,0 +1,14 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+  upload_directory: "%kernel.project_dir%/public/uploads/profile"
+  url_client: "%env(URL_CLIENT)%"
+  database_password: "%env(file:resolve:MYSQL_PASSWORD)%"
+  database_user: "%env(MYSQL_USER)%"
+  database_host: "%env(MYSQL_HOST)%"
+  database_port: "%env(MYSQL_PORT)%"
+  database_name: "%env(MYSQL_DATABASE)%"
+  database_url: "mysql://%database_user%:%database_password%@%database_host%:%database_port%/%database_name%"
