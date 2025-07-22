@@ -131,7 +131,14 @@ export const useAuthStore = defineStore("auth", () => {
     },
     onSuccess: async (res) => {
       if (!res) throw new Error("Identifiants incorrects");
-      queryClient.invalidateQueries({ queryKey: ["profil"] });
+      const { trackEvent } = useMatomoTracker();
+      trackEvent(
+        "Login",
+        "connexion_reussie",
+        "Connexion réussie par un utilisateur"
+      );
+
+      queryClient.invalidateQueries({ queryKey: ["me"] });
       await authSuccess(res);
     },
     onSettled: () => {
@@ -170,7 +177,6 @@ export const useAuthStore = defineStore("auth", () => {
       error.value = null;
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: ["profil"] });
       queryClient.invalidateQueries({ queryKey: ["me"] });
       await refetchMe();
       saveToStorage();
