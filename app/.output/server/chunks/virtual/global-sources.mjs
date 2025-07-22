@@ -22,7 +22,7 @@ const sources = [
         "urls": [
             {
                 "loc": "/",
-                "lastmod": "2025-07-22T09:42:01.943Z"
+                "lastmod": "2025-07-22T21:00:25.777Z"
             },
             {
                 "loc": "/terms",
@@ -38,7 +38,7 @@ const sources = [
             },
             {
                 "loc": "/auth/login",
-                "lastmod": "2025-07-22T09:42:01.942Z"
+                "lastmod": "2025-07-22T21:00:25.775Z"
             },
             {
                 "loc": "/auth/reset",
@@ -50,7 +50,7 @@ const sources = [
             },
             {
                 "loc": "/user",
-                "lastmod": "2025-07-17T19:40:43.286Z"
+                "lastmod": "2025-07-22T21:00:25.778Z"
             },
             {
                 "loc": "/auth/forgot",
@@ -66,7 +66,7 @@ const sources = [
             },
             {
                 "loc": "/auth/register",
-                "lastmod": "2025-07-22T09:42:01.943Z"
+                "lastmod": "2025-07-22T21:00:25.776Z"
             },
             {
                 "loc": "/savings",

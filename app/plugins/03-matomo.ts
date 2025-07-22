@@ -1,5 +1,7 @@
 export default defineNuxtPlugin(() => {
   if (!process.client) return;
+  const config = useRuntimeConfig();
+  const matomo_host = config.public.matomo_host;
 
   if (!window._paq || !Array.isArray(window._paq)) {
     window._paq = [];
@@ -7,11 +9,11 @@ export default defineNuxtPlugin(() => {
   const _paq = (window._paq = window._paq || []);
   _paq.push(["trackPageView"]);
   _paq.push(["enableLinkTracking"]);
-  _paq.push(["setTrackerUrl", "http://localhost:8080/matomo.php"]);
+  _paq.push(["setTrackerUrl", `${matomo_host}/matomo.php`]);
   _paq.push(["setSiteId", "1"]);
 
   const matomoScript = document.createElement("script");
-  matomoScript.src = "http://localhost:8080/matomo.js";
+  matomoScript.src = `${matomo_host}/matomo.js`;
   matomoScript.async = true;
   document.head.appendChild(matomoScript);
 
