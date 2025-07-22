@@ -31,8 +31,8 @@ export const useAuthService = () => {
       $api.post({
         url: "register",
         body: data,
-        schema: RegisterResponseSchema,
-      }) as Promise<RegisterResponseType>,
+        schema: LoginResponseSchema,
+      }) as Promise<LoginResponseType>,
 
     me: () =>
       $api.get({

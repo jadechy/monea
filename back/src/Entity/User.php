@@ -186,7 +186,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Expense>
      */
-    #[ORM\ManyToMany(targetEntity: Expense::class, inversedBy: 'participants')]
+    #[ORM\ManyToMany(targetEntity: Expense::class, inversedBy: 'participants', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'MON_SHARE_EXPENSE')]
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'EXP_ID', referencedColumnName: 'EXP_ID', nullable: false)]
@@ -418,7 +418,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPicture(): ?string
     {
-        return $this->picture ? 'https://monea.life' . $this->picture : null;
+
+        $baseUrl = getenv('URL_CLIENT') ?: 'https://localhost:3000';
+        return $this->picture ? $baseUrl . $this->picture : null;
     }
 
     public function setPicture(?string $picture): static

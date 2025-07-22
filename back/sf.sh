@@ -10,7 +10,7 @@ else
 fi
 
 # Définir l’URL complète de la base
-export DATABASE_URL="mysql://${DATABASE_USER:-app_user}:${MYSQL_PASSWORD}@${DATABASE_HOST:-db}:${DATABASE_PORT:-3306}/${DATABASE_NAME:-app_db}"
+export DATABASE_URL="mysql://${MYSQL_USER:-app_user}:${MYSQL_PASSWORD}@${MYSQL_HOST:-db}:${MYSQL_PORT:-3306}/${MYSQL_DATABASE:-app_db}"
 
 # Exécuter la commande Symfony avec la bonne variable d’environnement
 exec php bin/console "$@"

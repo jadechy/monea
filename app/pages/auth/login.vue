@@ -18,7 +18,7 @@ const submitLogin = async (form: FormSubmitEvent) => {
   });
 };
 useSeo({
-  title: "Connexion - Monéa",
+  title: "Connexion",
   description:
     "Connectez-vous à Monéa pour accéder à vos comptes et gérer vos finances en toute simplicité.",
   ogTitle: "Connexion à Monéa",

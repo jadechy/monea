@@ -50,7 +50,7 @@ final class MemberController extends AbstractController
             return new JsonResponse(['error' => 'Groupe not found'], 404);
         }
 
-        if($username) {
+        if ($username) {
             /** @var User $user */
             $user = $this->userRepository->findOneBy(["username" => $username]);
 
@@ -65,7 +65,7 @@ final class MemberController extends AbstractController
 
             // Page de notification avec les demandes d'invitation au sein d'un groupe
             /** @var int $userId */
-            $baseUrl = "http://localhost:3000/user/invitation";
+            $baseUrl = "{$this->urlClient}/user/invitation";
             $invitationLink = $baseUrl . '?userId=' . $user->getId() . '&groupeId=' . $groupeId;
 
             $email = (new Email())
@@ -89,7 +89,7 @@ final class MemberController extends AbstractController
             $this->em->persist($invitation);
             $this->em->flush();
 
-            $registerLink = "http://localhost:3000/auth/register?invitationToken=" . $invitation->getToken();
+            $registerLink = "{$this->urlClient}/auth/register?invitationToken=" . $invitation->getToken();
 
             $email = (new Email())
                 ->from('invitation@monea.fr')
