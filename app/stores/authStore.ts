@@ -28,7 +28,7 @@ export const useAuthStore = defineStore("auth", () => {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  const { login, me } = useAuthService();
+  const { login, me, register } = useAuthService();
   const { editUser, uploadFile, deleteUser } = useUserService();
 
   const isAuthenticated = computed(() => !!token.value);
@@ -212,7 +212,13 @@ export const useAuthStore = defineStore("auth", () => {
       isLoading.value = false;
     },
   });
-
+  const registerMutation = useMutation({
+    mutationFn: (data: UserEditType) => register(data),
+    onSuccess: async (res) => {
+      await authSuccess(res);
+      router.push({ name: "groups" });
+    },
+  });
   return {
     token,
     refreshToken,
@@ -229,6 +235,7 @@ export const useAuthStore = defineStore("auth", () => {
     refreshAuthToken,
     updateUser,
     uploadPicture,
+    registerMutation,
 
     clearAuth,
     deleteUserMutation,

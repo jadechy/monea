@@ -100,7 +100,7 @@ class UserController extends AbstractController
         $refreshToken->setValid((new \DateTimeImmutable())->modify('+30 days'));
 
         $this->refreshTokenManager->save($refreshToken);
-        return $this->json(['token' => $jwtToken, 'refresh_token' => $refreshToken], Response::HTTP_CREATED);
+        return $this->json(['token' => $jwtToken, 'refresh_token' => $refreshToken->getRefreshToken()], Response::HTTP_CREATED);
     }
 
     public function me(): User
