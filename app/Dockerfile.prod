@@ -10,7 +10,10 @@ WORKDIR /app
 
 # Copier les fichiers nécessaires depuis le builder
 COPY  --chown=nuxt:nodejs .output /app/.output
-  
+COPY  --chown=nuxt:nodejs package*.json /app/
+
+RUN npm ci --only=production && npm cache clean --force
+
 USER nuxt
 
 EXPOSE 3000
