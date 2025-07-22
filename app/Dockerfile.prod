@@ -10,11 +10,7 @@ WORKDIR /app
 
 # Copier les fichiers nécessaires depuis le builder
 COPY  --chown=nuxt:nodejs .output /app/.output
-COPY  --chown=nuxt:nodejs package*.json /app/
-
-# Installer seulement les dépendances de production
-RUN npm ci --only=production && npm cache clean --force
-
+  
 USER nuxt
 
 EXPOSE 3000
@@ -22,12 +18,7 @@ EXPOSE 3000
 ENV NODE_ENV=production
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
+ENV NODE_OPTIONS="--max-old-space-size=512 --max-semi-space-size=64 --optimize-for-size --gc-interval=100"
 
-# Health check script
-# COPY --chown=nuxt:nodejs healthcheck.js /app/
-# RUN chmod +x /app/healthcheck.js
-
-# HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
-#   CMD curl -f http://localhost:3000 || exit 1
 
 CMD ["node", ".output/server/index.mjs"]

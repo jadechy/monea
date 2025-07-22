@@ -23,6 +23,7 @@
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/vue-query": "^5.82.0",
     "chart.js": "^4.4.9",
+    "clinic": "^13.0.0",
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "nuxt": "^3.17.6",

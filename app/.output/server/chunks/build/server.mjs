@@ -1,4 +1,4 @@
-import { defineComponent, ref, computed, watch, shallowRef, getCurrentInstance, provide, cloneVNode, h, createElementBlock, hasInjectionContext, inject, readonly, onMounted, nextTick, defineAsyncComponent, unref, shallowReactive, Suspense, Fragment, createApp, toRef, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, reactive, effectScope, isReadonly, isRef, isShallow, isReactive, toRaw, mergeProps, getCurrentScope, withCtx, markRaw, useSSRContext } from 'vue';
+import { defineComponent, shallowRef, getCurrentInstance, provide, cloneVNode, h, createElementBlock, ref, computed, watch, hasInjectionContext, inject, readonly, onMounted, nextTick, defineAsyncComponent, unref, shallowReactive, Suspense, Fragment, createApp, toRef, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, reactive, effectScope, isReadonly, isRef, isShallow, isReactive, toRaw, mergeProps, withCtx, getCurrentScope, markRaw, useSSRContext } from 'vue';
 import { j as hasProtocol, k as isScriptProtocol, l as joinURL, w as withQuery, s as sanitizeStatusCode, m as getContext, $ as $fetch, n as baseURL, o as createHooks, q as executeAsync, f as createError$1, t as toRouteMatcher, r as createRouter$1, v as defu } from '../nitro/nitro.mjs';
 import { defineStore, createPinia, setActivePinia, shouldHydrate } from 'pinia';
 import { useRouter as useRouter$1, useRoute as useRoute$1, RouterView, createMemoryHistory, createRouter, START_LOCATION } from 'vue-router';
@@ -537,57 +537,52 @@ const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import('./index-Cb5CsnSk.mjs')
+    component: () => import('./index-BycbSUOe.mjs')
   },
   {
     name: "terms",
     path: "/terms",
-    component: () => import('./terms-Bx3g1xR8.mjs')
+    component: () => import('./terms-BSfE4AmK.mjs')
   },
   {
     name: "privacy",
     path: "/privacy",
-    component: () => import('./privacy-B2QOXOpN.mjs')
+    component: () => import('./privacy-KdOE6JHR.mjs')
   },
   {
     name: "user-edit",
     path: "/user/edit",
-    component: () => import('./edit-C8cPHXdG.mjs')
+    component: () => import('./edit-DJA0l_0n.mjs')
   },
   {
     name: "auth-login",
     path: "/auth/login",
-    component: () => import('./login-BC8JQtIH.mjs')
+    component: () => import('./login-BiQAm1jy.mjs')
   },
   {
     name: "auth-reset",
     path: "/auth/reset",
-    component: () => import('./reset-DDMW3a6I.mjs')
+    component: () => import('./reset-CHA42z-g.mjs')
   },
   {
     name: "groups-new",
     path: "/groups/new",
-    component: () => import('./new-B0iWj76i.mjs')
+    component: () => import('./new-CXlRE6on.mjs')
   },
   {
     name: "user",
     path: "/user",
-    component: () => import('./index-qrAc_r_A.mjs')
+    component: () => import('./index-BAqx7sLV.mjs')
   },
   {
     name: "auth-forgot",
     path: "/auth/forgot",
-    component: () => import('./forgot-Ly80FRC0.mjs')
-  },
-  {
-    name: "auth-confirm",
-    path: "/auth/confirm",
-    component: () => import('./confirm-C8Vqc6DX.mjs')
+    component: () => import('./forgot-BeTarzfu.mjs')
   },
   {
     name: "groups",
     path: "/groups",
-    component: () => import('./index-BQYtrYVF.mjs')
+    component: () => import('./index-05mq41et.mjs')
   },
   {
     name: "NotFoundView",
@@ -597,12 +592,12 @@ const _routes = [
   {
     name: "auth-register",
     path: "/auth/register",
-    component: () => import('./register-BrBszCNV.mjs')
+    component: () => import('./register-D6AemPBq.mjs')
   },
   {
     name: "savings",
     path: "/savings",
-    component: () => import('./index-CN9huEJ9.mjs')
+    component: () => import('./index-CTpvjEW3.mjs')
   },
   {
     name: "oauth-callback",
@@ -617,7 +612,7 @@ const _routes = [
   {
     name: "user-invitation",
     path: "/user/invitation",
-    component: () => import('./invitation-DvsdOgDF.mjs')
+    component: () => import('./invitation-q8BiEzCC.mjs')
   },
   {
     name: "groups-middleware",
@@ -632,47 +627,47 @@ const _routes = [
   {
     name: "groups-group_id-edit",
     path: "/groups/:group_id()/edit",
-    component: () => import('./edit-XhYaBeHn.mjs')
+    component: () => import('./edit-DllJH8eD.mjs')
   },
   {
     name: "groups-group_id",
     path: "/groups/:group_id()",
-    component: () => import('./index-B2I6zran.mjs')
+    component: () => import('./index-DiyvlD4c.mjs')
   },
   {
     name: "groups-group_id-budget-edit",
     path: "/groups/:group_id()/budget/edit",
-    component: () => import('./edit-DDUgIZmr.mjs')
+    component: () => import('./edit-DEkbBMrF.mjs')
   },
   {
     name: "groups-group_id-expense-new",
     path: "/groups/:group_id()/expense/new",
-    component: () => import('./new-n6t2wzbs.mjs')
+    component: () => import('./new-CJcmZJnj.mjs')
   },
   {
     name: "groups-group_id-budget",
     path: "/groups/:group_id()/budget",
-    component: () => import('./index-DivVnvER.mjs')
+    component: () => import('./index-BVTeijXm.mjs')
   },
   {
     name: "groups-group_id-budget-forecast",
     path: "/groups/:group_id()/budget/forecast",
-    component: () => import('./forecast-CLTpNamd.mjs')
+    component: () => import('./forecast-BRtS_V1A.mjs')
   },
   {
     name: "groups-group_id-category-categoryId",
     path: "/groups/:group_id()/category/:categoryId()",
-    component: () => import('./_categoryId_-Cb54ov-h.mjs')
+    component: () => import('./_categoryId_-CVXxuDmJ.mjs')
   },
   {
     name: "groups-group_id-expense-expense_id-edit",
     path: "/groups/:group_id()/expense/:expense_id()/edit",
-    component: () => import('./edit-DSFLCFpx.mjs')
+    component: () => import('./edit-DXpC2L1x.mjs')
   },
   {
     name: "groups-group_id-expense-expense_id",
     path: "/groups/:group_id()/expense/:expense_id()",
-    component: () => import('./index-DclmNijK.mjs')
+    component: () => import('./index-C9mg05CF.mjs')
   }
 ];
 const _wrapInTransition = (props, children) => {
@@ -810,7 +805,7 @@ const globalMiddleware = [
   manifest_45route_45rule
 ];
 const namedMiddleware = {
-  auth: () => import('./auth-Bj-UheNL.mjs')
+  auth: () => import('./auth-DesxX4Zx.mjs')
 };
 const plugin$1 = /* @__PURE__ */ defineNuxtPlugin({
   name: "nuxt:router",
@@ -1177,7 +1172,7 @@ const LazySplitButton = defineAsyncComponent(() => import('./index-czqRc7Um.mjs'
 const LazyColumn = defineAsyncComponent(() => import('./index-CjuIug2P.mjs').then((r) => r["default"] || r.default || r));
 const LazyRow = defineAsyncComponent(() => import('./index-BeTmLtpf.mjs').then((r) => r["default"] || r.default || r));
 const LazyColumnGroup = defineAsyncComponent(() => import('./index-DBfi73-9.mjs').then((r) => r["default"] || r.default || r));
-const LazyDataTable = defineAsyncComponent(() => import('./index-sTFyRkH4.mjs').then((r) => r["default"] || r.default || r));
+const LazyDataTable = defineAsyncComponent(() => import('./index-F-La9Nsi.mjs').then((r) => r["default"] || r.default || r));
 const LazyDataView = defineAsyncComponent(() => import('./index-Csk540eH.mjs').then((r) => r["default"] || r.default || r));
 const LazyOrderList = defineAsyncComponent(() => import('./index-DivK5ah-.mjs').then((r) => r["default"] || r.default || r));
 const LazyOrganizationChart = defineAsyncComponent(() => import('./index-n7y7V4Pu.mjs').then((r) => r["default"] || r.default || r));
@@ -1213,11 +1208,11 @@ const LazyTab = defineAsyncComponent(() => import('./index-DKbFQW8l.mjs').then((
 const LazyTabPanels = defineAsyncComponent(() => import('./index-IgvGNMhn.mjs').then((r) => r["default"] || r.default || r));
 const LazyTabPanel = defineAsyncComponent(() => import('./index-DXKszH9i.mjs').then((r) => r["default"] || r.default || r));
 const LazyToolbar = defineAsyncComponent(() => import('./index-BwMUeLi7.mjs').then((r) => r["default"] || r.default || r));
-const LazyConfirmDialog = defineAsyncComponent(() => import('./index-NhNAMfjP.mjs').then((r) => r["default"] || r.default || r));
-const LazyConfirmPopup = defineAsyncComponent(() => import('./index-BPRvR6iM.mjs').then((r) => r["default"] || r.default || r));
+const LazyConfirmDialog = defineAsyncComponent(() => import('./index-D3nwDFUj.mjs').then((r) => r["default"] || r.default || r));
+const LazyConfirmPopup = defineAsyncComponent(() => import('./index-BTax1oRM.mjs').then((r) => r["default"] || r.default || r));
 const LazyDialog = defineAsyncComponent(() => import('./index-De0VhdmC.mjs').then((r) => r["default"] || r.default || r));
 const LazyDrawer = defineAsyncComponent(() => import('./index-Bd17IegO.mjs').then((r) => r["default"] || r.default || r));
-const LazyDynamicDialog = defineAsyncComponent(() => import('./index-CW-V9xPS.mjs').then((r) => r["default"] || r.default || r));
+const LazyDynamicDialog = defineAsyncComponent(() => import('./index-B66xIAEO.mjs').then((r) => r["default"] || r.default || r));
 const LazyOverlayPanel = defineAsyncComponent(() => import('./index-BUddGZ9P.mjs').then((r) => r["default"] || r.default || r));
 const LazyPopover = defineAsyncComponent(() => import('./index-Dmuuu1qZ.mjs').then((r) => r["default"] || r.default || r));
 const LazySidebar = defineAsyncComponent(() => import('./index-UhoOymE5.mjs').then((r) => r["default"] || r.default || r));
@@ -2914,7 +2909,7 @@ const useAuthStore = defineStore("auth", () => {
     },
     onSuccess: async (res) => {
       if (!res) throw new Error("Identifiants incorrects");
-      queryClient2.invalidateQueries({ queryKey: ["profil"] });
+      queryClient2.invalidateQueries({ queryKey: ["me"] });
       await authSuccess(res);
     },
     onSettled: () => {
@@ -2950,7 +2945,6 @@ const useAuthStore = defineStore("auth", () => {
       error.value = null;
     },
     onSuccess: async () => {
-      queryClient2.invalidateQueries({ queryKey: ["profil"] });
       queryClient2.invalidateQueries({ queryKey: ["me"] });
       await refetchMe();
       router.push("/user");
@@ -3170,6 +3164,9 @@ const _02_init_auth_iBnmu1vKEfks3aG4GriGvIdjufQpLRsNtN7r2GoxgBw = /* @__PURE__ *
   const authStore = useAuthStore();
   authStore.initAuth();
 });
+const _03_matomo_zJxmbRanYwVfee4rG7bAWvnnqghTjHFOb6KZ4ENoygc = /* @__PURE__ */ defineNuxtPlugin((nuxtApp) => {
+  return;
+});
 const plugins = [
   payloadPlugin,
   unhead_k2P3m_ZDyjlr2mMYnoDPwavjsDN8hBlk9cFai0bbopU,
@@ -3182,11 +3179,12 @@ const plugins = [
   primevue_plugin_0tbz5Y3Ab_H50qf9PQhqyN3k7XWjmG9dWGLJNwEfVI0,
   _00_vue_query_zHJ5s5mqnA_2vdRL51dNEE0CJSt5fUyeNZx2G_EyCLM,
   _01_api_client_BE2IXZhZuDEd6_vXtTLKnqY40HO3_r1A63it0q_luC4,
-  _02_init_auth_iBnmu1vKEfks3aG4GriGvIdjufQpLRsNtN7r2GoxgBw
+  _02_init_auth_iBnmu1vKEfks3aG4GriGvIdjufQpLRsNtN7r2GoxgBw,
+  _03_matomo_zJxmbRanYwVfee4rG7bAWvnnqghTjHFOb6KZ4ENoygc
 ];
 const layouts = {
-  default: defineAsyncComponent(() => import('./default-Cbe6huP_.mjs').then((m) => m.default || m)),
-  savings: defineAsyncComponent(() => import('./savings-D8bNFgu8.mjs').then((m) => m.default || m))
+  default: defineAsyncComponent(() => import('./default-9VkeJd-Q.mjs').then((m) => m.default || m)),
+  savings: defineAsyncComponent(() => import('./savings-Czw4qFhD.mjs').then((m) => m.default || m))
 };
 const LayoutLoader = defineComponent({
   name: "LayoutLoader",
@@ -3399,37 +3397,38 @@ function normalizeSlot(slot, data) {
   const slotContent = slot(data);
   return slotContent.length === 1 ? h(slotContent[0]) : h(Fragment, void 0, slotContent);
 }
-const _export_sfc = (sfc, props) => {
-  const target = sfc.__vccOpts || sfc;
-  for (const [key, val] of props) {
-    target[key] = val;
+const _sfc_main$2 = {
+  __name: "app",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const trackLoginSuccess = () => {
+    };
+    const nuxtApp = useNuxtApp();
+    nuxtApp.trackLoginSuccess = trackLoginSuccess;
+    return (_ctx, _push, _parent, _attrs) => {
+      const _component_NuxtLayout = __nuxt_component_0;
+      const _component_NuxtPage = __nuxt_component_1;
+      _push(ssrRenderComponent(_component_NuxtLayout, _attrs, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(_component_NuxtPage, null, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(_component_NuxtPage)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
   }
-  return target;
 };
-const _sfc_main$2 = {};
-function _sfc_ssrRender(_ctx, _push, _parent, _attrs) {
-  const _component_NuxtLayout = __nuxt_component_0;
-  const _component_NuxtPage = __nuxt_component_1;
-  _push(ssrRenderComponent(_component_NuxtLayout, _attrs, {
-    default: withCtx((_, _push2, _parent2, _scopeId) => {
-      if (_push2) {
-        _push2(ssrRenderComponent(_component_NuxtPage, null, null, _parent2, _scopeId));
-      } else {
-        return [
-          createVNode(_component_NuxtPage)
-        ];
-      }
-    }),
-    _: 1
-  }, _parent));
-}
 const _sfc_setup$2 = _sfc_main$2.setup;
 _sfc_main$2.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("app.vue");
   return _sfc_setup$2 ? _sfc_setup$2(props, ctx) : void 0;
 };
-const AppComponent = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["ssrRender", _sfc_ssrRender]]);
 const _sfc_main$1 = {
   __name: "nuxt-error-page",
   __ssrInlineRender: true,
@@ -3451,8 +3450,8 @@ const _sfc_main$1 = {
     const statusMessage = _error.statusMessage ?? (is404 ? "Page Not Found" : "Internal Server Error");
     const description = _error.message || _error.toString();
     const stack = void 0;
-    const _Error404 = defineAsyncComponent(() => import('./error-404-Bp7EzWuA.mjs'));
-    const _Error = defineAsyncComponent(() => import('./error-500-kNhLIA3P.mjs'));
+    const _Error404 = defineAsyncComponent(() => import('./error-404-JkQihJvH.mjs'));
+    const _Error = defineAsyncComponent(() => import('./error-500--ja3wafz.mjs'));
     const ErrorTemplate = is404 ? _Error404 : _Error;
     return (_ctx, _push, _parent, _attrs) => {
       _push(ssrRenderComponent(unref(ErrorTemplate), mergeProps({ statusCode: unref(statusCode), statusMessage: unref(statusMessage), description: unref(description), stack: unref(stack) }, _attrs), null, _parent));
@@ -3499,7 +3498,7 @@ const _sfc_main = {
           } else if (unref(SingleRenderer)) {
             ssrRenderVNode(_push, createVNode(resolveDynamicComponent(unref(SingleRenderer)), null, null), _parent);
           } else {
-            _push(ssrRenderComponent(unref(AppComponent), null, null, _parent));
+            _push(ssrRenderComponent(unref(_sfc_main$2), null, null, _parent));
           }
         },
         _: 1
@@ -3534,5 +3533,5 @@ let entry;
 }
 const entry$1 = (ssrContext) => entry(ssrContext);
 
-export { BaseStyle as B, ColorSchema as C, DateSchema as D, FilterService as F, GroupTypeEnum as G, InvitationResponseSchema as I, LoginRequestSchema as L, MemberRoleEnum as M, NewGroupSchema as N, PrimeVueService as P, RegisterRequestSchema as R, ToastEventBus as T, UserSchema as U, _export_sfc as _, useRouter as a, useAuthStore as b, useGroupsStore as c, __nuxt_component_0$1 as d, entry$1 as default, useAuthService as e, useRoute as f, useNuxtApp as g, useRuntimeConfig as h, nuxtLinkDefaults as i, useGroupService as j, MemberInvitationSchema as k, MemberDTOSchema as l, GroupSchema as m, navigateTo as n, dateSchema as o, UserDTOSchema as p, CategorySchema as q, resolveRouteObject as r, defineNuxtRouteMiddleware as s, FilterMatchMode as t, useHead as u, FilterOperator as v, ConfirmationEventBus as w, DynamicDialogEventBus as x };
+export { BaseStyle as B, ColorSchema as C, DateSchema as D, FilterService as F, GroupTypeEnum as G, InvitationResponseSchema as I, LoginRequestSchema as L, MemberRoleEnum as M, NewGroupSchema as N, PrimeVueService as P, RegisterRequestSchema as R, ToastEventBus as T, UserSchema as U, __nuxt_component_0$1 as _, useRouter as a, useAuthStore as b, useGroupsStore as c, useAuthService as d, entry$1 as default, useRoute as e, useGroupService as f, useNuxtApp as g, CategorySchema as h, GroupSchema as i, useRuntimeConfig as j, nuxtLinkDefaults as k, MemberInvitationSchema as l, MemberDTOSchema as m, navigateTo as n, dateSchema as o, UserDTOSchema as p, defineNuxtRouteMiddleware as q, resolveRouteObject as r, FilterMatchMode as s, FilterOperator as t, useHead as u, ConfirmationEventBus as v, DynamicDialogEventBus as w };
 //# sourceMappingURL=server.mjs.map

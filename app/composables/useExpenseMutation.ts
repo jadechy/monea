@@ -43,7 +43,7 @@ export const useExpenseMutation = () => {
     mutationFn: (data: NewExpenseType) => postExpense(data),
     onSuccess: async () => {
       await invalidateQueries();
-      router.push({ name: "group", params: { group_id: group_id } });
+      router.push(`/groups/${group_id}`);
     },
   });
 
@@ -65,7 +65,7 @@ export const useExpenseMutation = () => {
     mutationFn: () => deleteExpense(expense_id!),
     onSuccess: async () => {
       await invalidateQueries();
-      router.push({ name: "group", params: { group_id: group_id } });
+      router.push(`/groups/${group_id}`);
     },
   });
   const { data: expenses } = useQuery({

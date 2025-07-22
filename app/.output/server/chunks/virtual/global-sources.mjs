@@ -22,7 +22,7 @@ const sources = [
         "urls": [
             {
                 "loc": "/",
-                "lastmod": "2025-07-16T16:27:27.165Z"
+                "lastmod": "2025-07-22T09:42:01.943Z"
             },
             {
                 "loc": "/terms",
@@ -38,7 +38,7 @@ const sources = [
             },
             {
                 "loc": "/auth/login",
-                "lastmod": "2025-07-16T16:27:27.159Z"
+                "lastmod": "2025-07-22T09:42:01.942Z"
             },
             {
                 "loc": "/auth/reset",
@@ -50,15 +50,11 @@ const sources = [
             },
             {
                 "loc": "/user",
-                "lastmod": "2025-07-16T19:13:05.820Z"
+                "lastmod": "2025-07-17T19:40:43.286Z"
             },
             {
                 "loc": "/auth/forgot",
                 "lastmod": "2025-07-16T16:27:27.159Z"
-            },
-            {
-                "loc": "/auth/confirm",
-                "lastmod": "2025-07-13T18:20:56.197Z"
             },
             {
                 "loc": "/groups",
@@ -70,7 +66,7 @@ const sources = [
             },
             {
                 "loc": "/auth/register",
-                "lastmod": "2025-07-16T16:27:27.160Z"
+                "lastmod": "2025-07-22T09:42:01.943Z"
             },
             {
                 "loc": "/savings",
@@ -86,7 +82,7 @@ const sources = [
             },
             {
                 "loc": "/user/invitation",
-                "lastmod": "2025-07-16T19:13:05.821Z"
+                "lastmod": "2025-07-17T19:40:43.286Z"
             },
             {
                 "loc": "/groups/middleware",
