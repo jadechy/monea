@@ -265,54 +265,38 @@ class ExpenseController extends AbstractController
             throw $this->createAccessDeniedException('Vous ne pouvez pas créer une dépense car vous ne faites pas partie de ce groupe');
         }
 
-        if ($membre->getRole() !== MemberRoleEnum::VIEWER) {
-            $expense = new Expense();
-            /** @var string */
-            $title = $data->title;
-            /** @var float */
-            $amount = $data->amount;
-            $expense->setTitle($title);
-            $expense->setGroupe($group);
-            $expense->setAmount($amount);
-            $expense->setCreator($creator);
-            $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
-            $expense->setCreatedAt(new \DateTimeImmutable());
-            $expense->setCategory($category);
 
-            if (isset($data->participants)) {
-                foreach ($data->participants as $userDto) {
-                    /** @var UserInputDTO $userDto */
-                    $user = $this->userRepository->find($userDto);
+        if (isset($data->participants)) {
+            foreach ($data->participants as $userDto) {
+                /** @var UserInputDTO $userDto */
+                $user = $this->userRepository->find($userDto);
 
-                    if (!$user) {
-                        throw new \Exception("Utilisateur non trouvé.");
-                    }
-
-                    $expense->addParticipant($user);
+                if (!$user) {
+                    throw new \Exception("Utilisateur non trouvé.");
                 }
+
+                $expense->addParticipant($user);
             }
-
-            $this->em->flush();
-
-            $this->validateExpense($expense);
-            $this->em->persist($expense);
-
-            if (isset($data->recurring)) {
-                try {
-                    $recurringExpenseService->createSeries($expense, $data);
-                } catch (RecurringExpenseValidationException $e) {
-                    return new JsonResponse([
-                        'errors' => (string) $e->getErrors()
-                    ], Response::HTTP_BAD_REQUEST);
-                }
-            }
-
-            $this->em->flush();
-
-            return $this->json(['message' => 'La dépense a bien été enregistrée', 'id' => $expense->getId()], Response::HTTP_CREATED);
-        } else {
-            throw $this->createAccessDeniedException('Vous ne pouvez pas créer une dépense');
         }
+
+        $this->em->flush();
+
+        $this->validateExpense($expense);
+        $this->em->persist($expense);
+
+        if (isset($data->recurring)) {
+            try {
+                $recurringExpenseService->createSeries($expense, $data);
+            } catch (RecurringExpenseValidationException $e) {
+                return new JsonResponse([
+                    'errors' => (string) $e->getErrors()
+                ], Response::HTTP_BAD_REQUEST);
+            }
+        }
+
+        $this->em->flush();
+
+        return $this->json(['message' => 'La dépense a bien été enregistrée', 'id' => $expense->getId()], Response::HTTP_CREATED);
     }
 
     /**

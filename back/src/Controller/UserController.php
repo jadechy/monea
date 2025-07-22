@@ -18,12 +18,15 @@ use Symfony\Component\Uid\Uuid;
 
 use App\Entity\User;
 use App\Entity\Member;
+use App\Entity\RefreshToken;
 use App\Enum\MemberStatusEnum;
 use App\Enum\MemberRoleEnum;
 use App\Repository\UserRepository;
 use App\Repository\GroupInvitationRepository;
 use App\Service\FileUploader;
 use App\Service\UserSetupService;
+use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 #[AsController]
@@ -36,6 +39,8 @@ class UserController extends AbstractController
         private UserPasswordHasherInterface $passwordHasher,
         private UserSetupService $userSetupService,
         private UserRepository $userRepository,
+        private JWTTokenManagerInterface $jwtManager,
+        private RefreshTokenManagerInterface $refreshTokenManager,
         private string $urlClient
     ) {}
 
@@ -88,7 +93,14 @@ class UserController extends AbstractController
         }
         $this->em->flush();
 
-        return $this->json(['message' => 'Utilisateur créé avec succès'], Response::HTTP_CREATED);
+        $jwtToken = $this->jwtManager->create($user);
+        $refreshToken = new RefreshToken();
+        $refreshToken->setUsername($user->getUserIdentifier());
+        $refreshToken->setRefreshToken(bin2hex(random_bytes(64)));
+        $refreshToken->setValid((new \DateTimeImmutable())->modify('+30 days'));
+
+        $this->refreshTokenManager->save($refreshToken);
+        return $this->json(['token' => $jwtToken, 'refresh_token' => $refreshToken], Response::HTTP_CREATED);
     }
 
     public function me(): User

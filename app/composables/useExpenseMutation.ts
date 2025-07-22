@@ -21,6 +21,7 @@ export const useExpenseMutation = () => {
     getExpensesByCategory,
     getMonthlyExpensesByGroup,
   } = useExpenseService();
+  const { trackMatomoEvent } = useMatomoTracker();
   const queryClient = useQueryClient();
   const invalidateQueries = async () => {
     await Promise.all([
@@ -43,6 +44,7 @@ export const useExpenseMutation = () => {
     mutationFn: (data: NewExpenseType) => postExpense(data),
     onSuccess: async () => {
       await invalidateQueries();
+      trackMatomoEvent("Expense", "Create", "create_expense");
       router.push(`/groups/${group_id}`);
     },
   });

@@ -1,4 +1,4 @@
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(() => {
   if (!process.client) return;
 
   if (!window._paq || !Array.isArray(window._paq)) {
@@ -15,22 +15,10 @@ export default defineNuxtPlugin((nuxtApp) => {
   matomoScript.async = true;
   document.head.appendChild(matomoScript);
 
-  nuxtApp.hook("page:finish", () => {
-    if (window._paq) {
-      _paq.push(["setCustomUrl", window.location.href]);
-      _paq.push(["trackPageView"]);
-    }
+  const router = useRouter();
+  router.afterEach((to) => {
+    _paq.push(["setCustomUrl", window.location.origin + to.fullPath]);
+    _paq.push(["setDocumentTitle", document.title]);
+    _paq.push(["trackPageView"]);
   });
-  const trackLoginSuccess = () => {
-    if (window._paq) {
-      _paq.push([
-        "trackEvent",
-        "Login",
-        "connexion_reussie",
-        "Connexion réussie par un utilisateur",
-      ]);
-    }
-  };
-
-  nuxtApp.provide("trackLoginSuccess", trackLoginSuccess);
 });

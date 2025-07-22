@@ -37,6 +37,7 @@ Exemple :
 ```env
 NUXT_PUBLIC_API_URL=http://localhost:8000
 NUXT_PUBLIC_BASE_URL=http://localhost:3000
+NUXT_PUBLIC_BASE_URL=http://localhost:8080
 ```
 
 ##### ➤ Backend
@@ -78,6 +79,7 @@ Cette commande va :
 | 🧪 Swagger API | [http://localhost:8000/api](http://localhost:8000/api) |
 | 🖥️ Frontend    | [http://localhost:3000/](http://localhost:3000/)       |
 | @ Mailer       | [http://localhost:8025/](http://localhost:8025/)       |
+| @ Matomo       | [http://localhost:8080/](http://localhost:8080/)       |
 
 --
 
@@ -103,6 +105,7 @@ Exemple :
 ```env
 NUXT_PUBLIC_API_URL=
 NUXT_PUBLIC_BASE_URL=
+NUXT_PUBLIC_MATOMO_URL=
 ```
 
 ##### ➤ Backend
@@ -168,8 +171,9 @@ Cette commande va :
 ### 🔗 Accès rapides
 
 | Service accessible |
-| ------------------ |
-| 🖥️ Frontend        |
-| @ Mailer           |
+| ------------------ | ------------------------------------------------------ |
+| 🖥️ Frontend        | [https://monea.life/](https://monea.life/)             |
+| @ Mailer           | [https://monea.life/mailer](https://monea.life/mailer) |
+| @ Matomo           | [https://monea.life/matomo](https://monea.life/matomo) |
 
 #### Par Cécile LECERF et Jade Chi Yen

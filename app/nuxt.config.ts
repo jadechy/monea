@@ -9,8 +9,7 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_URL,
       baseUrl: process.env.NUXT_PUBLIC_BASE_URL,
-      matomo_host: "http://localhost:8000",
-      matomo_site_id: 1,
+      matomo_host: process.env.NUXT_PUBLIC_MATOMO_URL,
     },
   },
   modules: [

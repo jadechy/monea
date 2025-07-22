@@ -131,7 +131,7 @@ export const useAuthStore = defineStore("auth", () => {
     },
     onSuccess: async (res) => {
       if (!res) throw new Error("Identifiants incorrects");
-      const { trackEvent } = useMatomoTracker();
+      const { trackMatomoEvent: trackEvent } = useMatomoTracker();
       trackEvent(
         "Login",
         "connexion_reussie",

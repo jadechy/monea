@@ -1,5 +1,5 @@
 # === Image de production ===
-FROM node:22-alpine
+FROM node:20-alpine
 
 # Créer un utilisateur non-root
 RUN addgroup -g 1001 -S nodejs
@@ -18,7 +18,7 @@ EXPOSE 3000
 ENV NODE_ENV=production
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
-ENV NODE_OPTIONS="--max-old-space-size=512 --max-semi-space-size=64 --optimize-for-size --gc-interval=100"
+ENV NODE_OPTIONS="--max-old-space-size=512 --max-semi-space-size=64"
 
 
 CMD ["node", ".output/server/index.mjs"]
