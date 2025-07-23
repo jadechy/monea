@@ -28,7 +28,7 @@ export const useAuthStore = defineStore("auth", () => {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  const { login, me } = useAuthService();
+  const { login, me, register } = useAuthService();
   const { editUser, uploadFile, deleteUser } = useUserService();
 
   const isAuthenticated = computed(() => !!token.value);
@@ -131,7 +131,14 @@ export const useAuthStore = defineStore("auth", () => {
     },
     onSuccess: async (res) => {
       if (!res) throw new Error("Identifiants incorrects");
-      queryClient.invalidateQueries({ queryKey: ["profil"] });
+      const { trackMatomoEvent: trackEvent } = useMatomoTracker();
+      trackEvent(
+        "Login",
+        "connexion_reussie",
+        "Connexion réussie par un utilisateur"
+      );
+
+      queryClient.invalidateQueries({ queryKey: ["me"] });
       await authSuccess(res);
     },
     onSettled: () => {
@@ -170,7 +177,6 @@ export const useAuthStore = defineStore("auth", () => {
       error.value = null;
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: ["profil"] });
       queryClient.invalidateQueries({ queryKey: ["me"] });
       await refetchMe();
       saveToStorage();
@@ -206,7 +212,13 @@ export const useAuthStore = defineStore("auth", () => {
       isLoading.value = false;
     },
   });
-
+  const registerMutation = useMutation({
+    mutationFn: (data: UserEditType) => register(data),
+    onSuccess: async (res) => {
+      await authSuccess(res);
+      router.push({ name: "groups" });
+    },
+  });
   return {
     token,
     refreshToken,
@@ -223,6 +235,7 @@ export const useAuthStore = defineStore("auth", () => {
     refreshAuthToken,
     updateUser,
     uploadPicture,
+    registerMutation,
 
     clearAuth,
     deleteUserMutation,

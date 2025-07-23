@@ -150,7 +150,7 @@ function createNuxtApp(options) {
     globalName: "nuxt",
     versions: {
       get nuxt() {
-        return "3.17.6";
+        return "3.17.7";
       },
       get vue() {
         return nuxtApp.vueApp.version;
@@ -537,7 +537,7 @@ const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import('./index-Cb5CsnSk.mjs')
+    component: () => import('./index-DYgFiPmR.mjs')
   },
   {
     name: "terms",
@@ -552,12 +552,12 @@ const _routes = [
   {
     name: "user-edit",
     path: "/user/edit",
-    component: () => import('./edit-C8cPHXdG.mjs')
+    component: () => import('./edit-CfM_Eu8w.mjs')
   },
   {
     name: "auth-login",
     path: "/auth/login",
-    component: () => import('./login-BC8JQtIH.mjs')
+    component: () => import('./login-CC2RAOhi.mjs')
   },
   {
     name: "auth-reset",
@@ -567,12 +567,12 @@ const _routes = [
   {
     name: "groups-new",
     path: "/groups/new",
-    component: () => import('./new-B0iWj76i.mjs')
+    component: () => import('./new-DkmLK6s3.mjs')
   },
   {
     name: "user",
     path: "/user",
-    component: () => import('./index-qrAc_r_A.mjs')
+    component: () => import('./index-B7Nuynjt.mjs')
   },
   {
     name: "auth-forgot",
@@ -580,14 +580,9 @@ const _routes = [
     component: () => import('./forgot-Ly80FRC0.mjs')
   },
   {
-    name: "auth-confirm",
-    path: "/auth/confirm",
-    component: () => import('./confirm-C8Vqc6DX.mjs')
-  },
-  {
     name: "groups",
     path: "/groups",
-    component: () => import('./index-BQYtrYVF.mjs')
+    component: () => import('./index-CzgGHXUx.mjs')
   },
   {
     name: "NotFoundView",
@@ -597,12 +592,12 @@ const _routes = [
   {
     name: "auth-register",
     path: "/auth/register",
-    component: () => import('./register-BrBszCNV.mjs')
+    component: () => import('./register-BMTA2Ayw.mjs')
   },
   {
     name: "savings",
     path: "/savings",
-    component: () => import('./index-CN9huEJ9.mjs')
+    component: () => import('./index-BKUipcU_.mjs')
   },
   {
     name: "oauth-callback",
@@ -617,7 +612,7 @@ const _routes = [
   {
     name: "user-invitation",
     path: "/user/invitation",
-    component: () => import('./invitation-DvsdOgDF.mjs')
+    component: () => import('./invitation-NXCVAdiC.mjs')
   },
   {
     name: "groups-middleware",
@@ -632,47 +627,47 @@ const _routes = [
   {
     name: "groups-group_id-edit",
     path: "/groups/:group_id()/edit",
-    component: () => import('./edit-XhYaBeHn.mjs')
+    component: () => import('./edit-DkEBVW_0.mjs')
   },
   {
     name: "groups-group_id",
     path: "/groups/:group_id()",
-    component: () => import('./index-B2I6zran.mjs')
+    component: () => import('./index-94K_Xlwl.mjs')
   },
   {
     name: "groups-group_id-budget-edit",
     path: "/groups/:group_id()/budget/edit",
-    component: () => import('./edit-DDUgIZmr.mjs')
+    component: () => import('./edit-DtScjZwz.mjs')
   },
   {
     name: "groups-group_id-expense-new",
     path: "/groups/:group_id()/expense/new",
-    component: () => import('./new-n6t2wzbs.mjs')
+    component: () => import('./new-aod5BxVr.mjs')
   },
   {
     name: "groups-group_id-budget",
     path: "/groups/:group_id()/budget",
-    component: () => import('./index-DivVnvER.mjs')
+    component: () => import('./index-DcrsacS9.mjs')
   },
   {
     name: "groups-group_id-budget-forecast",
     path: "/groups/:group_id()/budget/forecast",
-    component: () => import('./forecast-CLTpNamd.mjs')
+    component: () => import('./forecast-CkeAvEB4.mjs')
   },
   {
     name: "groups-group_id-category-categoryId",
     path: "/groups/:group_id()/category/:categoryId()",
-    component: () => import('./_categoryId_-Cb54ov-h.mjs')
+    component: () => import('./_categoryId_-DC5GIez8.mjs')
   },
   {
     name: "groups-group_id-expense-expense_id-edit",
     path: "/groups/:group_id()/expense/:expense_id()/edit",
-    component: () => import('./edit-DSFLCFpx.mjs')
+    component: () => import('./edit-B6S1SMud.mjs')
   },
   {
     name: "groups-group_id-expense-expense_id",
     path: "/groups/:group_id()/expense/:expense_id()",
-    component: () => import('./index-DclmNijK.mjs')
+    component: () => import('./index-B5cwwNx4.mjs')
   }
 ];
 const _wrapInTransition = (props, children) => {
@@ -727,18 +722,14 @@ const routerOptions0 = {
     if (routeAllowsScrollToTop === false) {
       return false;
     }
-    let position = savedPosition || void 0;
-    if (!position && isChangingPage(to, from)) {
-      position = { left: 0, top: 0 };
-    }
     const hookToWait = nuxtApp._runningTransition ? "page:transition:finish" : "page:loading:end";
     return new Promise((resolve2) => {
       if (from === START_LOCATION) {
-        resolve2(_calculatePosition(to, "instant", position));
+        resolve2(_calculatePosition(to, from, savedPosition, behavior));
         return;
       }
       nuxtApp.hooks.hookOnce(hookToWait, () => {
-        requestAnimationFrame(() => resolve2(_calculatePosition(to, "instant", position)));
+        requestAnimationFrame(() => resolve2(_calculatePosition(to, from, savedPosition, behavior)));
       });
     });
   }
@@ -753,18 +744,23 @@ function _getHashElementScrollMarginTop(selector) {
   }
   return 0;
 }
-function _calculatePosition(to, scrollBehaviorType, position) {
-  if (position) {
-    return position;
+function _calculatePosition(to, from, savedPosition, defaultBehavior) {
+  if (savedPosition) {
+    return savedPosition;
   }
+  const isPageNavigation = isChangingPage(to, from);
   if (to.hash) {
     return {
       el: to.hash,
       top: _getHashElementScrollMarginTop(to.hash),
-      behavior: scrollBehaviorType
+      behavior: isPageNavigation ? defaultBehavior : "instant"
     };
   }
-  return { left: 0, top: 0, behavior: scrollBehaviorType };
+  return {
+    left: 0,
+    top: 0,
+    behavior: isPageNavigation ? defaultBehavior : "instant"
+  };
 }
 const configRouterOptions = {
   hashMode: false,
@@ -810,7 +806,7 @@ const globalMiddleware = [
   manifest_45route_45rule
 ];
 const namedMiddleware = {
-  auth: () => import('./auth-Bj-UheNL.mjs')
+  auth: () => import('./auth-CEXOZ7VS.mjs')
 };
 const plugin$1 = /* @__PURE__ */ defineNuxtPlugin({
   name: "nuxt:router",
@@ -2756,7 +2752,7 @@ const RegisterRequestSchema = z.object({
   confirmPassword: UserSchema.shape.password,
   invitationToken: UserSchema.shape.invitationToken
 });
-const RegisterResponseSchema = z.object({ message: z.string() });
+z.object({ message: z.string() });
 const TokenSchema = z.string();
 const LoginRequestSchema = z.object({
   username: UserSchema.shape.username,
@@ -2799,7 +2795,7 @@ const useAuthService = () => {
     register: (data) => $api.post({
       url: "register",
       body: data,
-      schema: RegisterResponseSchema
+      schema: LoginResponseSchema
     }),
     me: () => $api.get({
       url: "me",
@@ -2867,7 +2863,7 @@ const useAuthStore = defineStore("auth", () => {
   const user = ref(null);
   const isLoading = ref(false);
   const error = ref(null);
-  const { login, me } = useAuthService();
+  const { login, me, register: register2 } = useAuthService();
   const { editUser, uploadFile, deleteUser } = useUserService();
   const isAuthenticated = computed(() => !!token.value);
   const userInitials = computed(() => {
@@ -2914,7 +2910,7 @@ const useAuthStore = defineStore("auth", () => {
     },
     onSuccess: async (res) => {
       if (!res) throw new Error("Identifiants incorrects");
-      queryClient2.invalidateQueries({ queryKey: ["profil"] });
+      queryClient2.invalidateQueries({ queryKey: ["me"] });
       await authSuccess(res);
     },
     onSettled: () => {
@@ -2950,7 +2946,6 @@ const useAuthStore = defineStore("auth", () => {
       error.value = null;
     },
     onSuccess: async () => {
-      queryClient2.invalidateQueries({ queryKey: ["profil"] });
       queryClient2.invalidateQueries({ queryKey: ["me"] });
       await refetchMe();
       router.push("/user");
@@ -2984,6 +2979,13 @@ const useAuthStore = defineStore("auth", () => {
       isLoading.value = false;
     }
   });
+  const registerMutation = useMutation({
+    mutationFn: (data) => register2(data),
+    onSuccess: async (res) => {
+      await authSuccess(res);
+      router.push({ name: "groups" });
+    }
+  });
   return {
     token,
     refreshToken: refreshToken$1,
@@ -2998,6 +3000,7 @@ const useAuthStore = defineStore("auth", () => {
     refreshAuthToken,
     updateUser,
     uploadPicture,
+    registerMutation,
     clearAuth,
     deleteUserMutation
   };
@@ -3170,6 +3173,9 @@ const _02_init_auth_iBnmu1vKEfks3aG4GriGvIdjufQpLRsNtN7r2GoxgBw = /* @__PURE__ *
   const authStore = useAuthStore();
   authStore.initAuth();
 });
+const _03_matomo_zJxmbRanYwVfee4rG7bAWvnnqghTjHFOb6KZ4ENoygc = /* @__PURE__ */ defineNuxtPlugin(() => {
+  return;
+});
 const plugins = [
   payloadPlugin,
   unhead_k2P3m_ZDyjlr2mMYnoDPwavjsDN8hBlk9cFai0bbopU,
@@ -3182,11 +3188,12 @@ const plugins = [
   primevue_plugin_0tbz5Y3Ab_H50qf9PQhqyN3k7XWjmG9dWGLJNwEfVI0,
   _00_vue_query_zHJ5s5mqnA_2vdRL51dNEE0CJSt5fUyeNZx2G_EyCLM,
   _01_api_client_BE2IXZhZuDEd6_vXtTLKnqY40HO3_r1A63it0q_luC4,
-  _02_init_auth_iBnmu1vKEfks3aG4GriGvIdjufQpLRsNtN7r2GoxgBw
+  _02_init_auth_iBnmu1vKEfks3aG4GriGvIdjufQpLRsNtN7r2GoxgBw,
+  _03_matomo_zJxmbRanYwVfee4rG7bAWvnnqghTjHFOb6KZ4ENoygc
 ];
 const layouts = {
-  default: defineAsyncComponent(() => import('./default-Cbe6huP_.mjs').then((m) => m.default || m)),
-  savings: defineAsyncComponent(() => import('./savings-D8bNFgu8.mjs').then((m) => m.default || m))
+  default: defineAsyncComponent(() => import('./default-CV1HZRb7.mjs').then((m) => m.default || m)),
+  savings: defineAsyncComponent(() => import('./savings-B_OJ-YZj.mjs').then((m) => m.default || m))
 };
 const LayoutLoader = defineComponent({
   name: "LayoutLoader",
@@ -3451,7 +3458,7 @@ const _sfc_main$1 = {
     const statusMessage = _error.statusMessage ?? (is404 ? "Page Not Found" : "Internal Server Error");
     const description = _error.message || _error.toString();
     const stack = void 0;
-    const _Error404 = defineAsyncComponent(() => import('./error-404-Bp7EzWuA.mjs'));
+    const _Error404 = defineAsyncComponent(() => import('./error-404-BZMe4P0-.mjs'));
     const _Error = defineAsyncComponent(() => import('./error-500-kNhLIA3P.mjs'));
     const ErrorTemplate = is404 ? _Error404 : _Error;
     return (_ctx, _push, _parent, _attrs) => {
@@ -3534,5 +3541,5 @@ let entry;
 }
 const entry$1 = (ssrContext) => entry(ssrContext);
 
-export { BaseStyle as B, ColorSchema as C, DateSchema as D, FilterService as F, GroupTypeEnum as G, InvitationResponseSchema as I, LoginRequestSchema as L, MemberRoleEnum as M, NewGroupSchema as N, PrimeVueService as P, RegisterRequestSchema as R, ToastEventBus as T, UserSchema as U, _export_sfc as _, useRouter as a, useAuthStore as b, useGroupsStore as c, __nuxt_component_0$1 as d, entry$1 as default, useAuthService as e, useRoute as f, useNuxtApp as g, useRuntimeConfig as h, nuxtLinkDefaults as i, useGroupService as j, MemberInvitationSchema as k, MemberDTOSchema as l, GroupSchema as m, navigateTo as n, dateSchema as o, UserDTOSchema as p, CategorySchema as q, resolveRouteObject as r, defineNuxtRouteMiddleware as s, FilterMatchMode as t, useHead as u, FilterOperator as v, ConfirmationEventBus as w, DynamicDialogEventBus as x };
+export { BaseStyle as B, ColorSchema as C, DateSchema as D, FilterService as F, GroupTypeEnum as G, InvitationResponseSchema as I, LoginRequestSchema as L, MemberRoleEnum as M, NewGroupSchema as N, PrimeVueService as P, RegisterRequestSchema as R, ToastEventBus as T, UserSchema as U, _export_sfc as _, useRouter as a, useAuthStore as b, useGroupsStore as c, __nuxt_component_0$1 as d, entry$1 as default, useAuthService as e, useRoute as f, useGroupService as g, useNuxtApp as h, CategorySchema as i, GroupSchema as j, useRuntimeConfig as k, nuxtLinkDefaults as l, MemberInvitationSchema as m, navigateTo as n, MemberDTOSchema as o, dateSchema as p, UserDTOSchema as q, resolveRouteObject as r, defineNuxtRouteMiddleware as s, FilterMatchMode as t, useHead as u, FilterOperator as v, ConfirmationEventBus as w, DynamicDialogEventBus as x };
 //# sourceMappingURL=server.mjs.map

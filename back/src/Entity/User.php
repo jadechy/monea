@@ -186,7 +186,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Expense>
      */
-    #[ORM\ManyToMany(targetEntity: Expense::class, inversedBy: 'participants')]
+    #[ORM\ManyToMany(targetEntity: Expense::class, inversedBy: 'participants', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'MON_SHARE_EXPENSE')]
     #[ORM\JoinColumn(name: 'USR_ID', referencedColumnName: 'USR_ID', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'EXP_ID', referencedColumnName: 'EXP_ID', nullable: false)]
