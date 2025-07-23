@@ -7,6 +7,8 @@ services:
       - "3000:3000"
     volumes:
       - ./app:/app
+      - /app/node_modules
+      - /app/.nuxt
     depends_on:
       - backend
     networks:

@@ -19,6 +19,7 @@ use App\Repository\BudgetRepository;
 use App\Repository\GroupeRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\ExpenseRepository;
+use App\Voter\GroupVoter;
 use DateTimeImmutable;
 
 #[AsController]
@@ -52,14 +53,15 @@ class BudgetController extends AbstractController
 
     public function getBudget(int $groupeId, DateTimeImmutable $monthStart): JsonResponse
     {
-        /** @var Groupe|null $groupe */
-        $groupe = $this->groupeRepository->find($groupeId);
-        if (!$groupe) {
+        /** @var Groupe|null $group */
+        $group = $this->groupeRepository->find($groupeId);
+        if (!$group) {
             return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
         }
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $group);
 
         $date = ($monthStart)->modify('first day of this month')->setTime(0, 0);
-        $amount = $this->computeTotalBudgetForGroup($groupe, $date);
+        $amount = $this->computeTotalBudgetForGroup($group, $date);
 
         return $this->json([
             'amount' => $amount
@@ -68,13 +70,15 @@ class BudgetController extends AbstractController
 
     public function getRemainingBudget(int $groupeId, DateTimeImmutable $monthStart): JsonResponse
     {
-        /** @var Groupe|null $groupe */
-        $groupe = $this->groupeRepository->find($groupeId);
-        if (!$groupe) {
+        /** @var Groupe|null $group */
+        $group = $this->groupeRepository->find($groupeId);
+        if (!$group) {
             return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
         }
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $group);
+
         $date = ($monthStart)->modify('first day of this month')->setTime(0, 0);
-        $budgetAmount = $this->computeTotalBudgetForGroup($groupe, $date);
+        $budgetAmount = $this->computeTotalBudgetForGroup($group, $date);
 
         $start = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
         $end = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
@@ -91,12 +95,14 @@ class BudgetController extends AbstractController
 
     public function getBudgetByGroupe(int $groupeId, DateTimeImmutable $monthStart): JsonResponse
     {
-        /** @var Groupe|null $groupe */
-        $groupe = $this->groupeRepository->find($groupeId);
-        if (!$groupe) {
+        /** @var Groupe|null $group */
+        $group = $this->groupeRepository->find($groupeId);
+        if (!$group) {
             return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
         }
-        $categories = $this->categoryRepository->findBy(['groupe' => $groupe]);
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $group);
+
+        $categories = $this->categoryRepository->findBy(['groupe' => $group]);
 
         $date = ($monthStart)->modify('first day of this month')->setTime(0, 0);
 
@@ -115,18 +121,20 @@ class BudgetController extends AbstractController
 
     public function getRemainingBudgetList(int $groupeId, DateTimeImmutable $monthStart): JsonResponse
     {
-        /** @var Groupe|null $groupe */
-        $groupe = $this->groupeRepository->find($groupeId);
-        if (!$groupe) {
+        /** @var Groupe|null $group */
+        $group = $this->groupeRepository->find($groupeId);
+        if (!$group) {
             return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
         }
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $group);
+
         /** @var Category[] $categories */
-        $categories = $this->categoryRepository->findBy(['groupe' => $groupe]);
+        $categories = $this->categoryRepository->findBy(['groupe' => $group]);
 
         $date = ($monthStart)->modify('first day of this month')->setTime(0, 0);
 
         $budgets = [];
-        $defaultCategory = $groupe->getDefaultCategory();
+        $defaultCategory = $group->getDefaultCategory();
         if (!$defaultCategory) {
             return new JsonResponse(['error' => 'Catégorie par défaut non définie.'], Response::HTTP_BAD_REQUEST);
         };
@@ -134,7 +142,7 @@ class BudgetController extends AbstractController
 
         $uniqueCategories = [];
         foreach ($categories as $cat) {
-            $uniqueCategories[$cat->getId()] = $cat; // Évite les doublons si la catégorie par défaut est déjà dans la liste
+            $uniqueCategories[$cat->getId()] = $cat;
         }
 
         foreach ($uniqueCategories as $category) {
@@ -420,6 +428,6 @@ class BudgetController extends AbstractController
         };
         $this->em->flush();
 
-        return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+        return new JsonResponse(['message' => 'success'], Response::HTTP_OK);
     }
 }

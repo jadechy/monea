@@ -1,5 +1,5 @@
-import { ref,  computed } from "vue";
-import type {Ref} from "vue";
+import { ref, computed } from "vue";
+import type { Ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { NewBudgetType } from "~/types/budgetType";
 import { useBudgetService } from "./services/budgetService";
@@ -97,10 +97,10 @@ export const useBudget = (year?: Ref<Date | null>) => {
           ],
         }),
         queryClient.invalidateQueries({
-          queryKey: ["budget", "initial", Number(group_id)],
+          queryKey: ["budget", "initial", group_id],
         }),
         queryClient.invalidateQueries({
-          queryKey: ["budget", "remaining", Number(group_id)],
+          queryKey: ["budget", "remaining", group_id],
         }),
       ]);
       router.push(`/groups/${group_id}/budget`);
