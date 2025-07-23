@@ -21,6 +21,7 @@ use App\Repository\UserRepository;
 use App\Repository\GroupeRepository;
 use App\DTO\MemberInputDTO;
 use App\DTO\MemberInvitationDTO;
+use App\Voter\GroupVoter;
 
 final class MemberController extends AbstractController
 {
@@ -148,8 +149,10 @@ final class MemberController extends AbstractController
         }
 
         $groupId = $data->groupId;
+        $group = $this->groupeRepository->find($groupId);
+
         $authorId = $data->authorId;
-        if (!$groupId) {
+        if (!$group) {
             return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
         }
 
@@ -162,23 +165,10 @@ final class MemberController extends AbstractController
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException('User not authenticated');
         }
-
-        $member = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $user->getId()]);
-        if (!$member) {
-            return new JsonResponse(['error' => 'Vous n\'êtes pas un membre du groupe.'], Response::HTTP_NOT_FOUND);
-        }
-
+        $this->denyAccessUnlessGranted(GroupVoter::EDIT, $group);
         $modifMember = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $authorId]);
         if (!$modifMember) {
             return new JsonResponse(['error' => 'Membre introuvable'], Response::HTTP_NOT_FOUND);
-        }
-
-        if ($member->getRole() !== MemberRoleEnum::AUTHOR && $modifMember->getRole() == MemberRoleEnum::AUTHOR) {
-            throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
-        }
-
-        if ($member->getRole() !== MemberRoleEnum::AUTHOR && $member->getRole() !== MemberRoleEnum::ADMIN) {
-            throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
         }
 
         $modifMember->setRole($data->role);
@@ -203,8 +193,10 @@ final class MemberController extends AbstractController
         }
 
         $groupId = $data->groupId;
+        $group = $this->groupeRepository->find($groupId);
+
         $authorId = $data->authorId;
-        if (!$groupId) {
+        if (!$group) {
             return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
         }
 
@@ -217,19 +209,11 @@ final class MemberController extends AbstractController
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException('User not authenticated');
         }
-
-        $member = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $user->getId()]);
-        if (!$member) {
-            return new JsonResponse(['error' => 'Vous n\'êtes pas un membre du groupe.'], Response::HTTP_NOT_FOUND);
-        }
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $group);
 
         $modifMember = $this->memberRepository->findOneBy(['groupe' => $groupId, 'individual' => $authorId]);
         if (!$modifMember) {
             return new JsonResponse(['error' => 'Membre introuvable'], Response::HTTP_NOT_FOUND);
-        }
-
-        if ($member->getIndividual()->getId() !== $modifMember->getIndividual()->getId()) {
-            throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
         }
 
         $modifMember->setRole(MemberRoleEnum::ANONYME);

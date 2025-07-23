@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copier seulement package*.json en premier
 COPY package*.json ./
-RUN npm ci --silent --no-audit --no-fund
+RUN npm install
 COPY . . 
 EXPOSE 3000
 

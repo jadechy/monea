@@ -58,13 +58,16 @@ watch(year, async () => {
 
 const onFormSubmit = (form: FormSubmitEvent) => {
   if (!form.valid || !categories.value || !year.value) return;
-  const budgets: NewBudgetType["budgets"] = Object.entries(form.states).map(
-    (e) => ({
+  const budgets: NewBudgetType["budgets"] = Object.entries(form.states)
+    .filter(([_, field]) => {
+      const value = Number(field?.value);
+      return !isNaN(value) && value >= 0 && value <= 9999;
+    })
+    .map((e) => ({
       amount: Number(e[1] && e[1]?.value ? e[1].value : 0),
       monthStart: formatDateISO(getFirstDayOfMonth(year.value!)),
       categoryId: Number(e[0]),
-    })
-  );
+    }));
   const data: NewBudgetType = {
     groupId: Number(group_id),
     budgets: budgets,
@@ -114,7 +117,7 @@ const initialValues = computed(() => computeInitialValues());
             placeholder="Budget"
             class="w-24"
           >
-            <InputText :name="String(category.id)" fluid />
+            <InputNumber :name="String(category.id)" fluid />
           </WrapperInput>
           <p class="text-2xl">€</p>
         </div>
