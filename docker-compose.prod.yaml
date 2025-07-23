@@ -20,6 +20,14 @@ services:
       - DAC_OVERRIDE
       - SETGID
       - SETUID
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
     depends_on:
       - backend
     networks:
@@ -39,7 +47,7 @@ services:
         TIMEZONE: Europe/Paris
     volumes:
       - ./back:/var/www/html
-      - vendor-data:/var/www/html/vendor
+      - vendor-data-prod:/var/www/html/vendor
     secrets:
       - mysql_password
       - mysql_root_password
@@ -75,11 +83,10 @@ services:
 
   db:
     image: mysql:8.0
-    platform: linux/x86_64
     restart: always
     volumes:
       - ./back/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
-      - db-data:/var/lib/mysql
+      - db-data-prod:/var/lib/mysql
     ports:
       - "3307:3306"
     networks:
@@ -132,6 +139,43 @@ services:
       timeout: 10s
       retries: 3
 
+  matomo:
+    image: matomo:latest
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - MATOMO_DATABASE_HOST=matomo-db
+      - MATOMO_DATABASE_ADAPTER=mysqli
+      - MATOMO_DATABASE_TABLES_PREFIX=matomo_
+      - MATOMO_DATABASE_USERNAME=matomo
+      - MATOMO_DATABASE_PASSWORD_FILE=/run/secrets/matomo_password
+      - MATOMO_DATABASE_DBNAME=matomodb
+    secrets:
+      - matomo_password
+    volumes:
+      - matomo-data-prod:/var/www/html
+    depends_on:
+      - matomo-db
+    networks:
+      - frontend_network
+
+  matomo-db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/matomo_root_password
+      - MYSQL_DATABASE=matomodb
+      - MYSQL_USER=matomo
+      - MYSQL_PASSWORD_FILE=/run/secrets/matomo_password
+    secrets:
+      - matomo_root_password
+      - matomo_password
+    volumes:
+      - matomo-db-data-prod:/var/lib/mysql
+    networks:
+      - frontend_network
+
 secrets:
   mysql_root_password:
     file: ./secrets/mysql_root_password.txt
@@ -147,11 +191,17 @@ secrets:
     file: ./secrets/jwt_passphrase.txt
   google_client:
     file: ./secrets/google_client.txt
+  matomo_password:
+    file: ./secrets/matomo_password.txt
+  matomo_root_password:
+    file: ./secrets/matomo_root_password.txt
 
 volumes:
-  db-data:
-  vendor-data:
+  db-data-prod:
+  vendor-data-prod:
     driver: local
+  matomo-data-prod:
+  matomo-db-data-prod:
 
 networks:
   frontend_network:

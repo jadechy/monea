@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import type { ComputedRef } from "vue";
 import type { GroupType, NewGroupType } from "~/types/groupType";
 import { useGroupService } from "./services/groupService";
+import { useMatomoTracker } from "./useMatomoTracker";
 
 export const useGroupMutation = (
   group: ComputedRef<GroupType | undefined | null>
@@ -15,6 +16,7 @@ export const useGroupMutation = (
     ]);
   };
   const router = useRouter();
+  const { trackMatomoEvent } = useMatomoTracker();
   const createGroupMutation = useMutation({
     mutationFn: (data: NewGroupType) => postGroup(data),
     onSuccess: async () => {
@@ -28,6 +30,7 @@ export const useGroupMutation = (
       if (!group?.value?.id) {
         return Promise.reject(new Error("ID du groupe manquant"));
       }
+      trackMatomoEvent("Group", "Create", "create_group");
       return editGroup(group.value.id, data);
     },
     onSuccess: async () => {

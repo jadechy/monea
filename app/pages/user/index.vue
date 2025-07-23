@@ -8,6 +8,7 @@ const { user } = storeToRefs(useAuthStore());
 const { personnalGroup } = storeToRefs(useGroupsStore());
 const router = useRouter();
 const { clearAuth, uploadPicture } = useAuthStore();
+const { trackMatomoEvent } = useMatomoTracker();
 const dialogRef = ref<InstanceType<typeof ImageUploadDialog> | null>(null);
 useSeo({
   title: "Mon profil",
@@ -79,7 +80,11 @@ useSeo({
         label="Deconnexion"
         severity="danger"
         variant="outlined"
-        @click="(clearAuth(), router.push({ name: 'auth-login' }))"
+        @click="
+          (clearAuth(),
+          trackMatomoEvent('User', 'Logout', 'logout_user'),
+          router.push({ name: 'auth-login' }))
+        "
       />
     </div>
 
