@@ -10,6 +10,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use App\DTO\CategoryDTO;
 use App\Repository\CategoryRepository;
 use App\Repository\GroupeRepository;
+use App\Voter\GroupVoter;
 
 #[AsController]
 class CategoryController extends AbstractController
@@ -22,8 +23,10 @@ class CategoryController extends AbstractController
 
     public function getCategoryByGroup(int $groupeId): JsonResponse
     {
-        $groupe = $this->groupeRepository->find($groupeId);
-        $categoriesData = $this->categoryRepository->findBy(['groupe' => $groupe]);
+        $group = $this->groupeRepository->find($groupeId);
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $group);
+
+        $categoriesData = $this->categoryRepository->findBy(['groupe' => $group]);
 
         $categories = array_map(fn($category) => new CategoryDTO($category), $categoriesData);
 

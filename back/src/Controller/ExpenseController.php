@@ -20,7 +20,6 @@ use App\Entity\Category;
 use App\Entity\Expense;
 use App\Entity\Groupe;
 use App\Entity\User;
-use App\Enum\MemberRoleEnum;
 use App\Voter\CreateExpenseSubject;
 use App\Exception\RecurringExpenseValidationException;
 use App\Repository\GroupeRepository;
@@ -29,6 +28,7 @@ use App\Repository\CategoryRepository;
 use App\Repository\MemberRepository;
 use App\Repository\UserRepository;
 use App\Service\RecurringExpenseService;
+use App\Voter\GroupVoter;
 use DateTimeImmutable;
 
 
@@ -73,13 +73,17 @@ class ExpenseController extends AbstractController
 
     public function getExpenseById(int $id): JsonResponse
     {
+        /** @var Expense|null $expense */
         $expense = $this->expenseRepository->find($id);
+
         if (!$expense) {
             return new JsonResponse(
                 ['message' => 'Dépense non trouvée.'],
                 Response::HTTP_NOT_FOUND
             );
         }
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $expense->getGroupe());
+
         $expenseDTO = new ExpenseDTO($expense);
         $json = $this->serializer->serialize($expenseDTO, 'json', [
             'groups' => ['expense:read'],
@@ -102,6 +106,8 @@ class ExpenseController extends AbstractController
         if (!$groupe) {
             return new JsonResponse(['error' => 'Groupe not found'], Response::HTTP_NOT_FOUND);
         }
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $groupe);
+
         $expensesData = $this->expenseRepository->findBy(['groupe' => $groupe]);
         if (empty($expensesData)) {
             return new JsonResponse(new stdClass(), Response::HTTP_OK);
@@ -113,6 +119,12 @@ class ExpenseController extends AbstractController
 
     public function getAllExpenseByGroupAndMonth(int $groupeId, string $monthStart): JsonResponse
     {
+        $groupe = $this->groupeRepository->find($groupeId);
+        if (!$groupe) {
+            return new JsonResponse(['error' => 'Groupe not found'], Response::HTTP_NOT_FOUND);
+        };
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $groupe);
+
         $date = new \DateTimeImmutable($monthStart);
         $start = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
         $end = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
@@ -131,6 +143,11 @@ class ExpenseController extends AbstractController
 
     public function getAllExpenseByGroupAndDay(int $groupeId, string $day): JsonResponse
     {
+        $groupe = $this->groupeRepository->find($groupeId);
+        if (!$groupe) {
+            return new JsonResponse(['error' => 'Groupe not found'], Response::HTTP_NOT_FOUND);
+        };
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $groupe);
         $date = (new \DateTimeImmutable($day))->setTime(0, 0);
 
         $expensesData = $this->expenseRepository->findExpensesByGroupeAndDay($groupeId, $date);
@@ -149,6 +166,11 @@ class ExpenseController extends AbstractController
 
     public function getAllExpenseByGroupAndWeek(int $groupeId, string $day): JsonResponse
     {
+        $groupe = $this->groupeRepository->find($groupeId);
+        if (!$groupe) {
+            return new JsonResponse(['error' => 'Groupe not found'], Response::HTTP_NOT_FOUND);
+        };
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $groupe);
         $date = new \DateTimeImmutable($day);
 
         $monday = $date->modify('monday this week')->setTime(0, 0, 0);
@@ -170,7 +192,12 @@ class ExpenseController extends AbstractController
 
     public function getAllExpensesByCategory(int $categoryId): JsonResponse
     {
+        /** @var Category|null $category */
         $category = $this->categoryRepository->find($categoryId);
+        if (!$category) {
+            return new JsonResponse(['error' => 'Category not found'], Response::HTTP_NOT_FOUND);
+        };
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $category->getGroupe());
 
         $expensesData = $this->expenseRepository->findBy(['category' => $category]);
 
@@ -188,6 +215,13 @@ class ExpenseController extends AbstractController
 
     public function getAllExpensesByCategoryAndMonth(int $categoryId, string $monthStart): JsonResponse
     {
+
+        /** @var Category|null $category */
+        $category = $this->categoryRepository->find($categoryId);
+        if (!$category) {
+            return new JsonResponse(['error' => 'Category not found'], Response::HTTP_NOT_FOUND);
+        };
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $category->getGroupe());
         $date = (new \DateTimeImmutable($monthStart))->modify('first day of this month')->setTime(0, 0);
 
         $expensesData = $this->expenseRepository->findExpensesByCategoryAndDate($categoryId, $date);
@@ -223,14 +257,9 @@ class ExpenseController extends AbstractController
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         };
 
-        $membre = $this->memberRepository->findOneBy(['groupe' => $group, 'individual' => $creator]);
-        if (!$membre) {
-            return $this->json(['error' => 'Membre introuvable'], Response::HTTP_NOT_FOUND);
-        }
+        $this->denyAccessUnlessGranted(GroupVoter::MANAGE, $group);
 
         $expense = new Expense();
-
-        $this->denyAccessUnlessGranted('creer', new CreateExpenseSubject($group, $creator));
 
         /** @var string */
         $title = $data->title;
@@ -331,6 +360,7 @@ class ExpenseController extends AbstractController
         } catch (\InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
+        $this->denyAccessUnlessGranted(GroupVoter::MANAGE, $group);
 
         if (isset($data->spentAt)) {
             $expense->setSpentAt(new \DateTimeImmutable($data->spentAt));
