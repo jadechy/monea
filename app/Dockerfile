@@ -1,10 +1,10 @@
-FROM node:22-alpine
+FROM node:22
 
 WORKDIR /app
 
 # Copier seulement package*.json en premier
 COPY package*.json ./
-RUN npm install
+RUN npm ci --silent --no-audit --no-fund
 COPY . . 
 EXPOSE 3000
 

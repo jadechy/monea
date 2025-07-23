@@ -28,7 +28,6 @@ export const useGroupMutation = (
       if (!group?.value?.id) {
         return Promise.reject(new Error("ID du groupe manquant"));
       }
-
       return editGroup(group.value.id, data);
     },
     onSuccess: async () => {
