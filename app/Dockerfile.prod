@@ -12,13 +12,13 @@ WORKDIR /app
 COPY  --chown=nuxt:nodejs .output /app/.output
 COPY  --chown=nuxt:nodejs package*.json /app/
 
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --omit=dev --ignore-scripts && \
+    npm cache clean --force
 
 USER nuxt
 
 EXPOSE 3000
 
-ENV NODE_ENV=production
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
 ENV NODE_OPTIONS="--max-old-space-size=512 --max-semi-space-size=64"
