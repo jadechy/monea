@@ -1,0 +1,1 @@
+import{av as t,j as s,i as o,z as r,aw as u}from"./DZ2khTnM.js";const i=t(()=>{const{user:e}=s(o()),{trackMatomoEvent:a}=r();if(!e||!e.value)return a("Security","AccessDenied","access_denied"),u("/auth/login")});export{i as default};

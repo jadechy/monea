@@ -1,0 +1,4 @@
+const default_avatar = "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='UTF-8'?%3e%3c!--%20Uploaded%20to:%20SVG%20Repo,%20www.svgrepo.com,%20Generator:%20SVG%20Repo%20Mixer%20Tools%20--%3e%3csvg%20width='800px'%20height='800px'%20viewBox='0%200%2016%2016'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='m%208%201%20c%20-1.65625%200%20-3%201.34375%20-3%203%20s%201.34375%203%203%203%20s%203%20-1.34375%203%20-3%20s%20-1.34375%20-3%20-3%20-3%20z%20m%20-1.5%207%20c%20-2.492188%200%20-4.5%202.007812%20-4.5%204.5%20v%200.5%20c%200%201.109375%200.890625%202%202%202%20h%208%20c%201.109375%200%202%20-0.890625%202%20-2%20v%20-0.5%20c%200%20-2.492188%20-2.007812%20-4.5%20-4.5%20-4.5%20z%20m%200%200'%20fill='%232e3436'/%3e%3c/svg%3e";
+
+export { default_avatar as d };
+//# sourceMappingURL=default_avatar-ixvbQY52.mjs.map
