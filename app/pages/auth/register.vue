@@ -3,26 +3,11 @@ import { Button, DatePicker, Divider, Message, Password } from "primevue";
 import { Form } from "@primevue/forms";
 import type { FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
-import { useAuthService } from "~/composables/services/authService";
-import { useMutation } from "@tanstack/vue-query";
-import { useRoute } from "vue-router";
 import { RegisterRequestSchema } from "~/types/authType";
 import type { RegisterRequestType } from "~/types/authType";
-import WrapperInput from "~/components/ui-kit/input/WrapperInput.vue";
-import FormInput from "~/components/ui-kit/input/FormInput.vue";
-import GoogleComponent from "~/components/ui-kit/GoogleComponent.vue";
-import type { UserEditType } from "~/types/user";
-import { useSeo } from "~/composables/useSeo";
 
 const route = useRoute();
-const router = useRouter();
-const { register } = useAuthService();
-const registerMutation = useMutation({
-  mutationFn: (data: UserEditType) => register(data),
-  onSuccess: () => {
-    router.push({ name: "auth-confirm" });
-  },
-});
+const { registerMutation } = useAuthStore();
 
 const submitRegister = async (form: FormSubmitEvent) => {
   if (!form.valid) return;
@@ -43,7 +28,7 @@ const submitRegister = async (form: FormSubmitEvent) => {
   registerMutation.mutate(data);
 };
 useSeo({
-  title: "Créer un compte - Monéa",
+  title: "Créer un compte",
   description:
     "Inscrivez-vous sur Monéa pour commencer à gérer facilement vos budgets et vos dépenses.",
   ogTitle: "Création de compte Monéa",

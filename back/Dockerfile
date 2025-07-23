@@ -1,5 +1,5 @@
 # Étape 1 : Récupérer Composer depuis une image officielle
-FROM composer:2 as composer
+FROM composer:latest as composer
 
 # Étape 2 : Image principale PHP allégée
 FROM php:8.2-fpm-alpine

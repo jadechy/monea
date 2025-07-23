@@ -61,7 +61,6 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    # restart: always
     ports:
       - "8081:80"
     env_file:
@@ -70,36 +69,6 @@ services:
       - db
     networks:
       - monea
-
-  # matomo_db:
-  #   image: mysql:8.0
-  #   container_name: matomo-db
-  #   restart: always
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: root
-  #     MYSQL_DATABASE: matomo
-  #     MYSQL_USER: matomo
-  #     MYSQL_PASSWORD: matomo
-  #   volumes:
-  #     - matomo_db_data:/var/lib/mysql
-
-  # matomo:
-  #   image: matomo
-  #   container_name: matomo
-  #   restart: always
-  #   ports:
-  #     - "8080:80"
-  #   environment:
-  #     MATOMO_DATABASE_HOST: matomo_db
-  #     MATOMO_DATABASE_ADAPTER: MYSQLI
-  #     MATOMO_DATABASE_TABLES_PREFIX: matomo_
-  #     MATOMO_DATABASE_USERNAME: matomo
-  #     MATOMO_DATABASE_PASSWORD: matomo
-  #     MATOMO_DATABASE_DBNAME: matomo
-  #   depends_on:
-  #     - matomo_db
-  #   volumes:
-  #     - matomo_data:/var/www/html
 
   mailer:
     image: axllent/mailpit
@@ -116,11 +85,46 @@ services:
       interval: 10s
       timeout: 5s
       retries: 1
+
+  matomo:
+    image: matomo:latest
+    platform: linux/x86_64
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - MATOMO_DATABASE_HOST=matomo-db
+      - MATOMO_DATABASE_ADAPTER=mysqli
+      - MATOMO_DATABASE_TABLES_PREFIX=matomo_
+      - MATOMO_DATABASE_USERNAME=matomo
+      - MATOMO_DATABASE_PASSWORD=matomopassword
+      - MATOMO_DATABASE_DBNAME=matomo
+    volumes:
+      - matomo-data:/var/www/html
+    depends_on:
+      - matomo-db
+    networks:
+      - monea
+
+  matomo-db:
+    image: mysql:8.0
+    platform: linux/x86_64
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=matomoroot
+      - MYSQL_DATABASE=matomo
+      - MYSQL_USER=matomo
+      - MYSQL_PASSWORD=matomopassword
+    volumes:
+      - matomo-db-data:/var/lib/mysql
+    networks:
+      - monea
+
 volumes:
   db-data:
   vendor-data:
-  # matomo_db_data:
-  # matomo_data:
+  matomo-data:
+  matomo-db-data:
 
 networks:
   monea:
