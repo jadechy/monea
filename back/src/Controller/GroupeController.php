@@ -279,7 +279,8 @@ class GroupeController extends AbstractController
             $memberDTO = new MemberDTO($member);
             $role = $memberDTO->role->value;
             $status = $memberDTO->status->value;
-            if ($status === MemberStatusEnum::ACCEPTED->value &&
+            if (
+                $status === MemberStatusEnum::ACCEPTED->value &&
                 in_array($role, [
                     MemberRoleEnum::AUTHOR->value,
                     MemberRoleEnum::MEMBER->value,

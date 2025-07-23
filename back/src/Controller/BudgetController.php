@@ -420,6 +420,6 @@ class BudgetController extends AbstractController
         };
         $this->em->flush();
 
-        return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+        return new JsonResponse(['message' => 'success'], Response::HTTP_OK);
     }
 }
