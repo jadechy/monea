@@ -78,7 +78,6 @@ const initialValues =
     :color="group ? group.color : 'gray'"
     :to="group ? `/groups/${group.id}` : '/groups'"
   />
-  {{ group }}
   <Form
     v-slot="$form"
     :initial-values="initialValues"

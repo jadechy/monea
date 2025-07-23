@@ -55,7 +55,7 @@ const { uploadCoverGroupMutation } = useGroupMutation(group);
           @click="router.push(`/groups/${group.id}/edit`)"
         />
         <Button
-          v-if="hasEditPermission(group)"
+          v-if="hasEditPermission(group) && group.type !== 'personnal'"
           icon="pi pi-download"
           label="Cover"
           size="small"
