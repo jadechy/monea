@@ -50,7 +50,7 @@ const sources = [
             },
             {
                 "loc": "/user",
-                "lastmod": "2025-07-22T21:00:25.778Z"
+                "lastmod": "2025-07-23T08:57:38.291Z"
             },
             {
                 "loc": "/auth/forgot",
@@ -61,12 +61,8 @@ const sources = [
                 "lastmod": "2025-07-13T18:20:56.202Z"
             },
             {
-                "loc": "/NotFoundView",
-                "lastmod": "2025-07-16T16:27:27.158Z"
-            },
-            {
                 "loc": "/auth/register",
-                "lastmod": "2025-07-22T21:00:25.776Z"
+                "lastmod": "2025-07-23T08:57:38.291Z"
             },
             {
                 "loc": "/savings",

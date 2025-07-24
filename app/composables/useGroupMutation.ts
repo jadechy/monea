@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import type { ComputedRef } from "vue";
 import type { GroupType, NewGroupType } from "~/types/groupType";
 import { useGroupService } from "./services/groupService";
+import { useMatomoTracker } from "./useMatomoTracker";
 
 export const useGroupMutation = (
   group: ComputedRef<GroupType | undefined | null>

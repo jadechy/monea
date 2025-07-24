@@ -40,7 +40,6 @@ watch(
 // Mutation
 const { createGroupMutation, editGroupMutation, deleteGroupMutation } =
   useGroupMutation(group);
-
 // Action
 const handleClick = (i: number) => {
   selectedIndex.value = selectedIndex.value === i ? null : i;
@@ -48,8 +47,8 @@ const handleClick = (i: number) => {
 const onFormSubmit = (form: FormSubmitEvent) => {
   if (selectedIndex.value === null) return;
   const data: NewGroupType = {
-    name: form.states.name.value,
-    type: form.states.type.value,
+    name: form.states.name ? form.states.name.value : group.value?.name,
+    type: form.states.type ? form.states.type.value : "personnal",
     color: ColorSchema.options.filter((color) => color !== "gray")[
       selectedIndex.value
     ],
@@ -79,7 +78,6 @@ const initialValues =
     :color="group ? group.color : 'gray'"
     :to="group ? `/groups/${group.id}` : '/groups'"
   />
-
   <Form
     v-slot="$form"
     :initial-values="initialValues"
@@ -122,7 +120,7 @@ const initialValues =
       <div class="grid grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4">
         <ChoiceColor
           v-for="(color, i) in ColorSchema.options.filter(
-            (color) => color !== 'gray'
+            (color: string) => color !== 'gray'
           )"
           :key="i"
           :color="color"

@@ -25,6 +25,7 @@ use App\Repository\BudgetRepository;
 use App\Repository\GroupeRepository;
 use App\Repository\MemberRepository;
 use App\Service\FileUploader;
+use App\Voter\GroupVoter;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[AsController]
@@ -147,7 +148,7 @@ class GroupeController extends AbstractController
             throw $this->createAccessDeniedException('User not authenticated');
         }
 
-        $this->denyAccessUnlessGranted('modifier', $group);
+        $this->denyAccessUnlessGranted(GroupVoter::EDIT, $group);
 
         $group->setName($data->name ?? $group->getName())
             ->setType(isset($data->type) ? $data->type : $group->getType())
@@ -238,9 +239,9 @@ class GroupeController extends AbstractController
 
     public function deleteGroup(int $id): JsonResponse
     {
-        $groupe = $this->groupeRepository->find($id);
+        $group = $this->groupeRepository->find($id);
 
-        if (!$groupe) {
+        if (!$group) {
             return $this->json(['error' => 'Groupe introuvable'], Response::HTTP_NOT_FOUND);
         }
 
@@ -250,16 +251,10 @@ class GroupeController extends AbstractController
             throw $this->createAccessDeniedException('User not authenticated');
         }
 
-        $member = $this->memberRepository->findOneBy(['groupe' => $groupe, 'individual' => $user]);
-        if (!$member) {
-            return new JsonResponse(['error' => 'Vous n\'êtes pas un membre du groupe.'], Response::HTTP_NOT_FOUND);
-        }
+        $this->denyAccessUnlessGranted(GroupVoter::DELETE, $group);
 
-        if ($member->getRole() !== MemberRoleEnum::AUTHOR) {
-            throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour modifier');
-        }
 
-        $this->em->remove($groupe);
+        $this->em->remove($group);
         $this->em->flush();
 
         return new JsonResponse(['message' => 'Groupe supprimé avec succès']);
@@ -271,6 +266,7 @@ class GroupeController extends AbstractController
         if (!$group) {
             return new JsonResponse(['error' => 'Groupe non trouvé.'], Response::HTTP_NOT_FOUND);
         }
+        $this->denyAccessUnlessGranted(GroupVoter::VIEW, $group);
 
         /** @var Groupe $group */
         $members = $group->getMembers();
@@ -279,7 +275,8 @@ class GroupeController extends AbstractController
             $memberDTO = new MemberDTO($member);
             $role = $memberDTO->role->value;
             $status = $memberDTO->status->value;
-            if ($status === MemberStatusEnum::ACCEPTED->value &&
+            if (
+                $status === MemberStatusEnum::ACCEPTED->value &&
                 in_array($role, [
                     MemberRoleEnum::AUTHOR->value,
                     MemberRoleEnum::MEMBER->value,
@@ -309,6 +306,7 @@ class GroupeController extends AbstractController
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException('User not authenticated');
         }
+        $this->denyAccessUnlessGranted(GroupVoter::EDIT, $group);
 
         $file = $request->files->get('picture');
         if (!$file) {

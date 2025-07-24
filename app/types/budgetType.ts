@@ -3,7 +3,10 @@ import { CategorySchema } from "./categoryType";
 import { DateSchema } from "./date";
 import { GroupSchema } from "./groupType";
 
-export const AmountValueSchema = z.number();
+export const AmountValueSchema = z
+  .number()
+  .max(9999, { message: "Le montant ne peut pas dépasser 9999" })
+  .min(0, { message: "Le montant doit être supérieur ou égal à 0" });
 
 export const BudgetSchema = z.object({
   id: z.number(),

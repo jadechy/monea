@@ -1,0 +1,1 @@
+import{d as o,i as n,B as t,c as s,o as a}from"./DZ2khTnM.js";const c={class:"p-4 text-center"},p=o({__name:"callback",setup(r){const{loginGoogle:e}=n();return t(async()=>{await e()}),(_,i)=>(a(),s("div",c,"Connexion en cours..."))}});export{p as default};
