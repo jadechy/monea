@@ -106,9 +106,16 @@ final class MemberController extends AbstractController
         return new JsonResponse(['message' => 'Invitation envoyée']);
     }
 
-    public function getAllInvitation(int $authorId): JsonResponse
+    public function getAllInvitation(): JsonResponse
     {
-        $invitationsData = $this->memberRepository->findAllPendingInvitation($authorId);
+
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+
+        $invitationsData = $this->memberRepository->findAllPendingInvitation($user->getId());
         if (!$invitationsData) {
             return $this->json(['error' => 'Membre introuvable'], Response::HTTP_NOT_FOUND);
         }
@@ -121,12 +128,17 @@ final class MemberController extends AbstractController
         return $this->json($invitations, Response::HTTP_OK, ['groups' => 'member:read']);
     }
 
-    public function responseInvitation(int $authorId, int $groupeId, Request $request): JsonResponse
+    public function responseInvitation(int $groupeId, Request $request): JsonResponse
     {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
         $data = json_decode($request->getContent(), false);
         $response = $data->response ?? false;
 
-        $member = $this->memberRepository->findOneBy(['groupe' => $groupeId, 'individual' => $authorId]);
+        $member = $this->memberRepository->findOneBy(['groupe' => $groupeId, 'individual' => $user->getId()]);
         if (!$member) {
             return $this->json(['error' => 'Membre introuvable'], Response::HTTP_NOT_FOUND);
         }

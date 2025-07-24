@@ -1,5 +1,14 @@
-import { MemberDTOSchema, InvitationResponseSchema, MemberInvitationSchema } from "~/types/memberType";
-import type { MemberDTOType , InvitationResponseType, InvitationType, MemberInvitationType} from "~/types/memberType";
+import {
+  MemberDTOSchema,
+  InvitationResponseSchema,
+  MemberInvitationSchema,
+} from "~/types/memberType";
+import type {
+  MemberDTOType,
+  InvitationResponseType,
+  InvitationType,
+  MemberInvitationType,
+} from "~/types/memberType";
 
 export const useMemberService = () => {
   const { $api } = useNuxtApp();
@@ -9,24 +18,32 @@ export const useMemberService = () => {
       url: `groupes/${groupId}/members`,
       schema: MemberDTOSchema.array(),
     });
-  
-  const sendInvitation = ({role, groupeId, username, mail}:InvitationType): Promise<InvitationResponseType> =>
+
+  const sendInvitation = ({
+    role,
+    groupeId,
+    username,
+    mail,
+  }: InvitationType): Promise<InvitationResponseType> =>
     $api.post({
       url: `member/invitation`,
-      body: {role, groupeId, username, mail},
+      body: { role, groupeId, username, mail },
       schema: InvitationResponseSchema,
     });
-  
-  const getInvitations = (authorId: string): Promise<MemberInvitationType[]> =>
+
+  const getInvitations = (): Promise<MemberInvitationType[]> =>
     $api.get({
-      url: `member/invitation/${authorId}`,
+      url: `member/invitation`,
       schema: MemberInvitationSchema.array(),
     });
-  
-  const responseInvitation = (authorId: Number, groupeId: string, response: boolean): Promise<InvitationResponseType> =>
+
+  const responseInvitation = (
+    groupeId: string,
+    response: boolean
+  ): Promise<InvitationResponseType> =>
     $api.post({
-      url: `member/response/${authorId}/${groupeId}`,
-      body: {response},
+      url: `member/response/${groupeId}`,
+      body: { response },
       schema: InvitationResponseSchema,
     });
 
@@ -34,6 +51,6 @@ export const useMemberService = () => {
     getMembersByGroup,
     sendInvitation,
     getInvitations,
-    responseInvitation
+    responseInvitation,
   };
 };
