@@ -3,17 +3,22 @@ import { ref, onMounted } from "vue";
 import { Button } from "primevue";
 import { useMemberService } from "~/composables/services/memberService";
 import type { MemberInvitationType } from "~/types/memberType";
+const { user } = storeToRefs(useAuthStore());
 
 const route = useRoute();
-const userId = route.query.userId as string | undefined;
+const userId = ref<string | undefined>(route.query.userId as string | undefined);
 const groupeId = route.query.groupeId as string | undefined;
 const invitations = ref<MemberInvitationType[]>([]);
 const { getInvitations, responseInvitation } = useMemberService();
 
 const fetchInvitations = async () => {
-  if (!userId) return;
+  if (!userId.value) {
+    userId.value = user.value?.id?.toString();
+  }
+  if (!userId.value) return;
+
   try {
-    invitations.value = await getInvitations(userId);
+    invitations.value = await getInvitations(userId.value);
   } catch (error) {
     console.error("Erreur lors du chargement des invitations :", error);
   }
